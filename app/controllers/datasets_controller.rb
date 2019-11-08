@@ -1167,7 +1167,7 @@ class DatasetsController < ApplicationController
 
     respond_to do |format|
       if @dataset.save
-        format.html {render confirm_review}
+        format.html {render :confirm_review}
         format.json {render json: {status: :ok}, content_type: request.format, :layout => false}
       else
         format.html {render :edit, alert: "There was a problem updating the dataset. The error has been logged and the Research Data Service has been alerted."}
