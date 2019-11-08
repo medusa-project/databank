@@ -60,14 +60,7 @@
           %span(class="glyphicon glyphicon-eye-open" )
 
           = @dataset.visibility
-          %br
-          %span(class="glyphicon glyphicon-info-sign")
-          Research Data Service team members are available to discuss this dataset in more depth.
-          %button(type="button" onclick='window.open("/help?context=review&key=#{@dataset.key}")' class="btn btn-success")
-            %span(class="glyphicon glyphicon-question-sign")
-            Request Dataset Consultation
-          .request-review-response
-
+            
         .col-md-3
 
           - if @completion_check == 'ok' && @dataset.in_pre_publication_review
