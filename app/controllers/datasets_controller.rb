@@ -654,6 +654,7 @@ class DatasetsController < ApplicationController
     editor_netids = params[:internal_editor] || []
     UserAbility.update_internal_permissions(@dataset.key, reviewer_netids, editor_netids)
 
+    @dataset.save!
     redirect_to "/datasets/#{@dataset.key}"
   end
 
