@@ -12,7 +12,7 @@ class DatasetsController < ApplicationController
 
   protect_from_forgery except: [:cancel_box_upload, :validate_change2published]
   skip_before_action :verify_authenticity_token, :only => :validate_change2published
-  before_action :set_dataset, only: [:show, :edit, :update, :destroy, :download_link, :download_endNote_XML, :download_plaintext_citation, :download_BibTeX, :download_RIS, :publish, :zip_and_download_selected, :request_review, :reserve_doi, :cancel_box_upload, :citation_text, :changelog, :serialization, :download_metrics, :confirmation_message, :get_current_token, :get_new_token, :send_to_medusa, :validate_change2published, :update_permissions, :add_review_request]
+  before_action :set_dataset, only: [:show, :edit, :update, :destroy, :download_link, :download_endNote_XML, :download_plaintext_citation, :download_BibTeX, :download_RIS, :publish, :zip_and_download_selected, :request_review, :reserve_doi, :cancel_box_upload, :citation_text, :changelog, :serialization, :download_metrics, :confirmation_message, :get_current_token, :get_new_token, :send_to_medusa, :validate_change2published, :update_permissions, :add_review_request, :confirm_review]
 
   @@num_box_ingest_deamons = 10
 
@@ -1167,11 +1167,11 @@ class DatasetsController < ApplicationController
 
     respond_to do |format|
       if @dataset.save
-        format.html {redirect_to dataset_path(@dataset.key), notice: "Your request has been submitted. In the meantime, your DOI has been reserved and you can give your citation to your publisher as a placeholder:  #{@dataset.plain_text_citation}"}
+        format.html {render confirm_review}
         format.json {render json: {status: :ok}, content_type: request.format, :layout => false}
       else
-        format.html {redirect_to dataset_path(@dataset.key), notice: "Your request has been submitted."}
-        format.json {render json: {status: :ok}, content_type: request.format, :layout => false}
+        format.html {render :edit, alert: "There was a problem updating the dataset. The error has been logged and the Research Data Service has been alerted."}
+        format.json {render json: @dataset.errors, status: :unprocessable_entity}
       end
     end
   end
@@ -1463,6 +1463,8 @@ class DatasetsController < ApplicationController
   def medusa_info_list
     @datasets = Dataset.all
   end
+
+  def confirm_review; end
 
   private
 

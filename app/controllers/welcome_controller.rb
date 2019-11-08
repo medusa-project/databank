@@ -23,8 +23,7 @@ class WelcomeController < ApplicationController
     end
   end
 
-  def on_failed_registration
-  end
+  def on_failed_registration; end
 
   def robots
     # Don't forget to delete /public/robots.txt
