@@ -2,17 +2,46 @@ require 'csv'
 
 namespace :fix do
 
-  desc 'fix internal user ability records'
-  task :fix_internal_ability => :environment do
+  desc 'clear User Ability reocrds'
+  task :clear_user_ability => :environment do
     UserAbility.all.destroy_all
-    Dataset.all.each do |dataset|
-      next if dataset.internal_view_netids.empty?
+  end
 
-      dataset.internal_view_netids.each do |netid|
+  desc 'fix internal user ability records'
+  task :update_internal_ability => :environment do
+
+    Dataset.all.each do |dataset|
+
+      editor_uids = UserAbility.where(user_provider: 'shibboleth',
+                               resource_type: 'Dataset',
+                               ability: 'edit',
+                               'resource_id': dataset.id).pluck(:user_uid)
+      editor_uid_parts = editor_uids.collect {|x| x.split("@") || [x]}
+
+      editor_netids = editor_uid_parts.collect {|x| x[0] }
+
+      editor_netids.uniq!
+
+      viewer_uids = UserAbility.where(user_provider: 'shibboleth',
+                               resource_type: 'Dataset',
+                               ability: 'view_files',
+                               'resource_id': dataset.id).pluck(:user_uid)
+      viewer_uid_parts = viewer_uids.collect {|x| x.split("@") || [x]}
+
+      viewer_netids = viewer_uid_parts.collect {|x| x[0] }
+
+      viewer_netids.uniq!
+
+      UserAbility.all.destroy_all
+
+      next if viewer_netids.empty?
+
+      viewer_netids.each do |netid|
         UserAbility.grant_internal(dataset, netid, :read)
         UserAbility.grant_internal(dataset, netid, :view_files)
       end
-      dataset.internal_editor_netids.each do |netid|
+
+      editor_netids.each do |netid|
         UserAbility.grant_internal(dataset, netid, :update)
       end
     end

@@ -166,14 +166,14 @@ module Indexable
 
     netids = uid_parts.collect {|x| x[0] }
 
-    netids.uniq
+    netids.uniq - internal_editor_netids
 
   end
 
   def internal_editor_netids
     uids = UserAbility.where(user_provider: 'shibboleth',
                              resource_type: 'Dataset',
-                             ability: 'edit',
+                             ability: 'update',
                              'resource_id': id).pluck(:user_uid)
     uid_parts = uids.collect {|x| x.split("@") || [x]}
 
