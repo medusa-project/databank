@@ -174,7 +174,7 @@ class DatasetsController < ApplicationController
             without(:depositor, 'error')
             any_of do
               with :depositor_email, current_user.email
-              with :internal_editor_netids, current_netid
+              with :internal_view_netids, current_netid
             end
             with(:is_most_recent_version, true)
             with :is_test, false
