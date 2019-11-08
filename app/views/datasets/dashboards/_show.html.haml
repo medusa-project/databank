@@ -11,12 +11,12 @@
       contact the Research Data Service Team
     with questions.
 
-- if ((can? :update, @dataset) && (Databank::Application.file_mode == Databank::FileMode::WRITE_READ))
+- if (can? :update, @dataset) && (Databank::Application.file_mode == Databank::FileMode::WRITE_READ)
   .idb-dashboard.panel.panel-warning
     .panel-body
       .row
         .col-md-9
-          -if(can? :manage, @dataset)
+          -if (can? :manage, @dataset)
             .curator-only
               -if @dataset.in_pre_publication_review
                 .label.label-danger
