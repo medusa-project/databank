@@ -47,7 +47,7 @@ module Exportable
         doi_node = doc.create_element("v1:DOI")
         doi_node.content = dataset.identifier
         doi_node.parent = dataset_node
-        release_date = dataset.release_date | Date.today
+        release_date = dataset.release_date || Date.today
         available_node = doc.create_element("v1:availableDate")
         year_node = doc.create_element("v3:year")
         year_node.content = release_date.strftime("%Y")
