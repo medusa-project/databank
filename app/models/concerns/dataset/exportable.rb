@@ -58,7 +58,7 @@ module Exportable
           organisations_node = doc.create_element("v1:organisations")
           organization_node = doc.create_element("v1:organization")
           org_name_node = doc.create_element("v1:name")
-          org_name_node['contact'] = person_hash[:org]
+          org_name_node.content = person_hash['org']
           org_name_node.parent = organization_node
           organization_node.parent = organisations_node
           organisations_node.parent = person_node

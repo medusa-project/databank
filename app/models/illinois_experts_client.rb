@@ -84,11 +84,11 @@ class IllinoisExpertsClient
     return nil unless doc
 
     person_hash = {email: email}
-    begin
-      person_hash[:org] = doc.xpath("//organisationalUnit/@uuid") | "unknown"
-    rescue ArgumentError, StandardError
-      person_hash[:org] = "unknown"
-    end
+    #begin
+    person_hash['org'] = doc.xpath("//organisationalUnit/@uuid") | "unknown"
+    #rescue ArgumentError, StandardError
+    #  person_hash['org'] = "unknown"
+    #end
 
     person_hash
 
