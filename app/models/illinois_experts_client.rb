@@ -83,6 +83,8 @@ class IllinoisExpertsClient
     doc = self.person_xml(email)
     return nil unless doc
 
+    raise(doc.class) unless doc.class == Nokogiri::XML::NodeSet
+
     person_hash = {email: email}
     #begin
     person_hash['org'] = doc.xpath("//organisationalUnit/@uuid") | "unknown"
