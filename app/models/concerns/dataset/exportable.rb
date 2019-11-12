@@ -6,7 +6,7 @@ module Exportable
   class_methods do
     def to_illinois_experts
 
-      datasets = Dataset.where(is_test: false).select(&:metadata_public?)
+      datasets = Dataset.where(is_test: false).where(org_creators: false).select(&:metadata_public?)
 
       return nil unless datasets.count.positive?
 
@@ -22,7 +22,7 @@ module Exportable
         title_node.content = dataset.title
         title_node.parent = dataset_node
         managing_org_node = doc.create_element("v1:managingOrganisation")
-        managing_org_node["lookupId"] = "7f2b0ff4-2618-4382-8f81-015ef617a9af"
+        managing_org_node["lookupId"] = IDB_CONFIG[:illinois_experts][:org_id]
         managing_org_node.parent = dataset_node
         if dataset.description && !dataset.description.empty?
           descriptions_node = doc.create_element("v1:descriptions")
@@ -33,26 +33,38 @@ module Exportable
         end
         persons_node = doc.create_element("v1:persons")
         dataset.individual_creators.each do |creator|
+
+          person_hash = IllinoisExpertsClient.person_hash(creator.email)
+          next unless person_hash
+
           person_node = doc.create_element("v1:person")
-          if IllinoisExpertsClient.email_exist?(creator.email)
-            person_node[:lookupId] = creator.email
-            if creator.at_illinois?
+          person_node[:lookupId] = creator.email
+          role_node = doc.create_element("v1:role")
+          role_node.content = "creator"
+          role_node.parent = person_node
+          if experts_person && !experts_person(creator.email).nil? && creator.at_illinois?
               person_node[:lookupHint] = "synchronisedPerson"
-            else
-              person_node["origin"] = "external"
-            end
           else
-            person_node["origin"] = "external" unless creator.at_illinois?
-            first_name_node = doc.create_element("v1:firstName")
-            first_name_node.content = creator.given_name
-            first_name_node.parent = person_node
-            last_name_node = doc.create_element("v1:lastName")
-            last_name_node.content = creator.family_name
-            last_name_node.parent = person_node
+              person_node[:origin] = "external"
           end
-          person_node[:id] = creator.email
-          person_node[:contactPerson] = "true" if creator.at_illinois? && creator.is_contact
+          first_name_node = doc.create_element("v1:firstName")
+          first_name_node.content = creator.given_name
+          first_name_node.parent = person_node
+          last_name_node = doc.create_element("v1:lastName")
+          last_name_node.content = creator.family_name
+          last_name_node.parent = person_node
+          person_node[:contactPerson] = "true" if creator.is_contact
+
+          organisations_node = doc.create_element("v1:organisations")
+          organization_node = doc.create_element("v1:organization")
+          org_name_node = doce.create_element("v1:name")
+          org_name_node[:contact] = person_hash[:org]
+          org_name_node.parent = organization_node
+          organization_node.parent = organisations_node
+          organisations_node.parent = person_node
+
           person_node.parent = persons_node
+
         end
         persons_node.parent = dataset_node
 
@@ -67,7 +79,7 @@ module Exportable
         available_node.parent = dataset_node
 
         publisher_node = doc.create_element("v1:publisher")
-        publisher_node["lookupId"]="56642890-b1ea-4da9-97e1-3519e99db9f2"
+        publisher_node["lookupId"]=IDB_CONFIG[:illinois_experts][:publisher_id]
         publisher_node.parent = dataset_node
 
       end

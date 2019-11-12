@@ -5,8 +5,10 @@
   :secret_key: <%= Rails.application.credentials[:recaptcha][:secret_key] %>
 
 :illinois_experts:
-  :key: <%= Rails.application.credentials[:illinois_experts][:key] %>
-  :endpoint: <%= Rails.application.credentials[:illinois_experts][:endpoint] %>
+  :key: <%= Rails.application.credentials[Rails.env.to_sym][:illinois_experts][:key] %>
+  :endpoint: <%= Rails.application.credentials[Rails.env.to_sym][:illinois_experts][:endpoint] %>
+  :org_id: <%= Rails.application.credentials[Rails.env.to_sym][:illinois_experts][:org_id] %>
+  :publisher_id: <%= Rails.application.credentials[Rails.env.to_sym][:illinois_experts][:publisher] %>
 
 :admin:
   :netids: <%= Rails.application.credentials[Rails.env.to_sym][:admin][:netids] %>

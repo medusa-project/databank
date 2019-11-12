@@ -40,6 +40,7 @@ stop.sh
 /public/backups
 /public/sitemaps
 /public/assets
+/puplic/illinois_experts.xml
 /dataset_staging
 /data
 /extractions
