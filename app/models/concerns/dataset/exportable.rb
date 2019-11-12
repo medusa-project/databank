@@ -32,14 +32,17 @@ module Exportable
           descriptions_node.parent = dataset_node
         end
         persons_node = doc.create_element("v1:persons")
+
+        dataset_release_date = dataset.release_date || Date.today
+
         dataset.individual_creators.each do |creator|
           person_xml_doc = IllinoisExpertsClient.person_xml_doc(creator.email)
           person_node = if !person_xml_doc.nil?
-            self.internal_expert(doc, creator, person_xml_doc)
+            self.internal_expert(doc, creator, person_xml_doc, dataset_release_date)
           elsif creator.at_illinois?
-            self.illinois_external_expert(doc, creator)
+            self.illinois_external_expert(doc, creator, dataset_release_date)
           else
-            self.external_expert(doc, creator)
+            self.external_expert(doc, creator, dataset_release_date)
                         end
           person_node.parent = persons_node
         end
@@ -77,20 +80,16 @@ module Exportable
       doc.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::AS_XML)
     end
 
-    def internal_expert(doc, creator, person_xml_doc)
+    def internal_expert(doc, creator, person_xml_doc, dataset_release_date)
       person_node = doc.create_element("v1:person")
-      person_node['lookupId'] = creator.email
+      person_node['id'] = creator.email
+      person_node['contactPerson'] = "true" if creator.is_contact
       role_node = doc.create_element("v1:role")
       role_node.content = "creator"
       role_node.parent = person_node
-      person_node['lookupHint'] = "synchronisedPerson"
-      first_name_node = doc.create_element("v1:firstName")
-      first_name_node.content = creator.given_name
-      first_name_node.parent = person_node
-      last_name_node = doc.create_element("v1:lastName")
-      last_name_node.content = creator.family_name
-      last_name_node.parent = person_node
-      person_node['contactPerson'] = "true" if creator.is_contact
+      nested_person_node = doc.create_element("v1:person")
+      nested_person_node['lookupId'] = creator.email
+      nested_person_node.parent = person_node
       organisations_node = doc.create_element("v1:organisations")
       org_uuids = person_xml_doc.xpath("//organisationalUnit/@uuid")
       if org_uuids.empty?
@@ -108,7 +107,7 @@ module Exportable
       date_node = doc.create_element("v1:associationStartDate")
       start_date_nodeset = person_xml_doc.xpath("//period/startDate")
       date_node.content = if start_date_nodeset.empty?
-        Date.today.strftime("%Y-%m-%d")
+        dataset_release_date.strftime("%Y-%m-%d")
       else
         start_date_nodeset.first.content
                           end
@@ -116,18 +115,19 @@ module Exportable
       person_node
     end
 
-    def external_expert(doc, creator)
+    def external_expert(doc, creator, dataset_release_date)
       person_node = doc.create_element("v1:person")
       role_node = doc.create_element("v1:role")
       role_node.content = "creator"
       role_node.parent = person_node
-      person_node['origin'] = "external"
+      nested_person_node = doc.create_element("v1:person")
+      nested_person_node['origin'] = "external"
       first_name_node = doc.create_element("v1:firstName")
       first_name_node.content = creator.given_name
-      first_name_node.parent = person_node
+      first_name_node.parent = nested_person_node
       last_name_node = doc.create_element("v1:lastName")
       last_name_node.content = creator.family_name
-      last_name_node.parent = person_node
+      last_name_node.parent = nested_person_node
       person_node['contactPerson'] = "true" if creator.is_contact
       organisations_node = doc.create_element("v1:organisations")
       organization_node = doc.create_element("v1:organization")
@@ -137,12 +137,12 @@ module Exportable
       organization_node.parent = organisations_node
       organisations_node.parent = person_node
       date_node = doc.create_element("v1:associationStartDate")
-      date_node.content = Date.today.strftime("%Y-%m-%d")
+      date_node.content = dataset_release_date.strftime("%Y-%m-%d")
       date_node.parent = person_node
       person_node
     end
 
-    def illinois_external_expert(doc, creator)
+    def illinois_external_expert(doc, creator, dataset_release_date)
       person_node = doc.create_element("v1:person")
       person_node['lookupId'] = creator.email
       role_node = doc.create_element("v1:role")
@@ -162,7 +162,7 @@ module Exportable
       organization_node.parent = organisations_node
       organisations_node.parent = person_node
       date_node = doc.create_element("v1:associationStartDate")
-      date_node.content = Date.today.strftime("%Y-%m-%d")
+      date_node.content = dataset_release_date.strftime("%Y-%m-%d")
       date_node.parent = person_node
       person_node
     end
