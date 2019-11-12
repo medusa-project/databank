@@ -108,7 +108,7 @@ module Exportable
       date_node = doc.create_element("v1:associationStartDate")
       start_date_nodeset = doc.xpath("//period/startDate")
       date_node.content = if start_date_nodeset.empty?
-        Date.today.strftime("%Y-%m-d")
+        Date.today.strftime("%Y-%m-%d")
       else
         start_date_nodeset.first.content
                           end
