@@ -89,7 +89,7 @@ class IllinoisExpertsClient
     rescue ArgumentError, StandardError
       person_hash[:org] = "unknown"
     end
-    
+
     person_hash
 
   end

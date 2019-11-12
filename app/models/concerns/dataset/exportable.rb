@@ -42,7 +42,7 @@ module Exportable
           role_node = doc.create_element("v1:role")
           role_node.content = "creator"
           role_node.parent = person_node
-          if experts_person && !experts_person(creator.email).nil? && creator.at_illinois?
+          if person_hash && !person_hash[:email].nil? && creator.at_illinois?
               person_node[:lookupHint] = "synchronisedPerson"
           else
               person_node[:origin] = "external"
