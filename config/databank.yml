@@ -8,7 +8,7 @@
   :key: <%= Rails.application.credentials[Rails.env.to_sym][:illinois_experts][:key] %>
   :endpoint: <%= Rails.application.credentials[Rails.env.to_sym][:illinois_experts][:endpoint] %>
   :org_id: <%= Rails.application.credentials[Rails.env.to_sym][:illinois_experts][:org_id] %>
-  :publisher_id: <%= Rails.application.credentials[Rails.env.to_sym][:illinois_experts][:publisher] %>
+  :publisher_id: <%= Rails.application.credentials[Rails.env.to_sym][:illinois_experts][:publisher_id] %>
 
 :admin:
   :netids: <%= Rails.application.credentials[Rails.env.to_sym][:admin][:netids] %>

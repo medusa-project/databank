@@ -64,7 +64,7 @@ module Exportable
         day_node.parent = available_node
         available_node.parent = dataset_node
         publisher_node = doc.create_element("v1:publisher")
-        publisher_node["lookupId"]=IDB_CONFIG[:illinois_experts][:publisher_id]
+        publisher_node["lookupId"] = IDB_CONFIG[:illinois_experts][:publisher_id]
         publisher_node.parent = dataset_node
         if dataset.keywords && dataset.keywords.length > 0
           keywords_node = doc.create_element("v1:keywords")
@@ -146,21 +146,24 @@ module Exportable
 
     def illinois_external_expert(doc, creator, dataset_release_date)
       person_node = doc.create_element("v1:person")
-      person_node['lookupId'] = creator.email
+      person_node['id'] = creator.email
       role_node = doc.create_element("v1:role")
       role_node.content = "creator"
       role_node.parent = person_node
-      person_node['origin'] = "external"
+      nested_person_node = doc.create_element("v1:person")
+      nested_person_node['origin'] = "external"
       first_name_node = doc.create_element("v1:firstName")
       first_name_node.content = creator.given_name
-      first_name_node.parent = person_node
+      first_name_node.parent = nested_person_node
       last_name_node = doc.create_element("v1:lastName")
       last_name_node.content = creator.family_name
-      last_name_node.parent = person_node
-      person_node['contactPerson'] = "true" if creator.is_contact
+      last_name_node.parent = nested_person_node
+      nested_person_node.parent = person_node
       organisations_node = doc.create_element("v1:organisations")
       organization_node = doc.create_element("v1:organization")
-      organization_node["lookupId"] = IDB_CONFIG[:illinois_experts][:publisher_id]
+      org_name_node = doc.create_element("v1:name")
+      org_name_node.content = IDB_CONFIG[:illinois_experts][:publisher_id]
+      org_name_node.parent = organization_node
       organization_node.parent = organisations_node
       organisations_node.parent = person_node
       date_node = doc.create_element("v1:associationStartDate")
