@@ -38,14 +38,14 @@ module Exportable
           next unless person_hash
 
           person_node = doc.create_element("v1:person")
-          person_node[:lookupId] = creator.email
+          person_node['lookupId'] = creator.email
           role_node = doc.create_element("v1:role")
           role_node.content = "creator"
           role_node.parent = person_node
           if person_hash && !person_hash[:email].nil? && creator.at_illinois?
-              person_node[:lookupHint] = "synchronisedPerson"
+              person_node['lookupHint'] = "synchronisedPerson"
           else
-              person_node[:origin] = "external"
+              person_node['origin'] = "external"
           end
           first_name_node = doc.create_element("v1:firstName")
           first_name_node.content = creator.given_name
@@ -53,12 +53,12 @@ module Exportable
           last_name_node = doc.create_element("v1:lastName")
           last_name_node.content = creator.family_name
           last_name_node.parent = person_node
-          person_node[:contactPerson] = "true" if creator.is_contact
+          person_node['contactPerson'] = "true" if creator.is_contact
 
           organisations_node = doc.create_element("v1:organisations")
           organization_node = doc.create_element("v1:organization")
           org_name_node = doc.create_element("v1:name")
-          org_name_node[:contact] = person_hash[:org]
+          org_name_node['contact'] = person_hash[:org]
           org_name_node.parent = organization_node
           organization_node.parent = organisations_node
           organisations_node.parent = person_node
