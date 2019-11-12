@@ -137,7 +137,7 @@ module Exportable
       organization_node.parent = organisations_node
       organisations_node.parent = person_node
       date_node = doc.create_element("v1:associationStartDate")
-      date_node.content = Date.today.strftime("%Y-%m-d")
+      date_node.content = Date.today.strftime("%Y-%m-%d")
       date_node.parent = person_node
       person_node
     end
@@ -162,7 +162,7 @@ module Exportable
       organization_node.parent = organisations_node
       organisations_node.parent = person_node
       date_node = doc.create_element("v1:associationStartDate")
-      date_node.content = Date.today.strftime("%Y-%m-d")
+      date_node.content = Date.today.strftime("%Y-%m-%d")
       date_node.parent = person_node
       person_node
     end
