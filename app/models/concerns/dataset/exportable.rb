@@ -128,6 +128,7 @@ module Exportable
       last_name_node = doc.create_element("v1:lastName")
       last_name_node.content = creator.family_name
       last_name_node.parent = nested_person_node
+      nested_person_node.parent = person_node
       person_node['contactPerson'] = "true" if creator.is_contact
       organisations_node = doc.create_element("v1:organisations")
       organization_node = doc.create_element("v1:organization")
