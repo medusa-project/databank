@@ -10,10 +10,20 @@ namespace :experts do
 
   desc 'explore persons'
   task :explore_persons => :environment do
-    puts "before call"
-    hash = IllinoisExpertsClient.person_hash("zulauf@illinois.edu")
-    puts "after call"
-    puts hash
-  end
+    doc = IllinoisExpertsClient.person_xml_doc("netid@illinois.edu")
 
+    start_date = doc.xpath("//period/startDate")
+    puts "start_date: #{start_date}"
+
+    org_uuids = doc.xpath("//organisationalUnit/@uuid")
+    if org_uuids.empty?
+      puts "org_uuids was empty"
+    else
+      org_uuids.each do |org_uuid|
+        puts "org_uuid_class: #{org_uuid.class.name}"
+        puts "org_uuid:"
+        puts org_uuid.content
+      end
+    end
+  end
 end

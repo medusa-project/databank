@@ -92,7 +92,7 @@ module Exportable
       last_name_node.parent = person_node
       person_node['contactPerson'] = "true" if creator.is_contact
       organisations_node = doc.create_element("v1:organisations")
-      org_uuids = doc.xpath("//organisationalUnit/@uuid")
+      org_uuids = person_xml_doc.xpath("//organisationalUnit/@uuid")
       if org_uuids.empty?
         organization_node = doc.create_element("v1:organization")
         organization_node["lookupId"] = IDB_CONFIG[:illinois_experts][:publisher_id]
@@ -106,7 +106,7 @@ module Exportable
       end
       organisations_node.parent = person_node
       date_node = doc.create_element("v1:associationStartDate")
-      start_date_nodeset = doc.xpath("//period/startDate")
+      start_date_nodeset = person_xml_doc.xpath("//period/startDate")
       date_node.content = if start_date_nodeset.empty?
         Date.today.strftime("%Y-%m-%d")
       else
