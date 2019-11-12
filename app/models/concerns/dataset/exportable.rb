@@ -36,6 +36,7 @@ module Exportable
         dataset_release_date = dataset.release_date || Date.today
 
         dataset.individual_creators.each do |creator|
+          next if creator.email.strip == ""
           person_xml_doc = IllinoisExpertsClient.person_xml_doc(creator.email)
           person_node = if !person_xml_doc.nil?
             self.internal_expert(doc, creator, person_xml_doc, dataset_release_date)
