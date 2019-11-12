@@ -12,8 +12,8 @@ class IllinoisExpertsClient
   private_constant :ENDPOINT
   private_constant :KEY
 
-  def self.person(email)
-    return nil unless email
+  def self.person_xml_doc(email)
+    raise ArgumentError.new("must provide email address string") unless email
 
     encoded_email = CGI.escape(email)
 
@@ -34,7 +34,16 @@ class IllinoisExpertsClient
 
     case response
     when Net::HTTPSuccess, Net::HTTPCreated, Net::HTTPRedirection
-      return response.body
+      begin
+        doc = Nokogiri::XML(response.body)
+        doc.remove_namespaces!
+        count = doc.xpath("//count").first.content
+        return nil unless count.to_i > 0
+
+        return doc
+      rescue Nokogiri::XML::SyntaxError
+        return nil
+      end
     else
       return nil
     end
@@ -62,38 +71,6 @@ class IllinoisExpertsClient
     else
       return nil
     end
-  end
-
-  def self.person_xml(email)
-
-    person_response = self.person(email)
-
-    return nil unless person_response
-
-    begin
-      doc = Nokogiri::XML(person_response)
-      doc.remove_namespaces!
-      return doc
-    rescue Nokogiri::XML::SyntaxError
-      return nil
-    end
-  end
-
-  def self.person_hash(email)
-    doc = self.person_xml(email)
-    return nil unless doc
-
-    raise(doc.class) unless doc.class == Nokogiri::XML::NodeSet
-
-    person_hash = {email: email}
-    #begin
-    person_hash['org'] = doc.xpath("//organisationalUnit/@uuid") | "unknown"
-    #rescue ArgumentError, StandardError
-    #  person_hash['org'] = "unknown"
-    #end
-
-    person_hash
-
   end
 
 end

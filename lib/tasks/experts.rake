@@ -7,4 +7,13 @@ namespace :experts do
       f << Dataset.to_illinois_experts
     end
   end
+
+  desc 'explore persons'
+  task :explore_persons => :environment do
+    puts "before call"
+    hash = IllinoisExpertsClient.person_hash("zulauf@illinois.edu")
+    puts "after call"
+    puts hash
+  end
+  
 end

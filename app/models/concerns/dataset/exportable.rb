@@ -33,57 +33,138 @@ module Exportable
         end
         persons_node = doc.create_element("v1:persons")
         dataset.individual_creators.each do |creator|
-
-          person_hash = IllinoisExpertsClient.person_hash(creator.email)
-          next unless person_hash
-
-          person_node = doc.create_element("v1:person")
-          person_node['lookupId'] = creator.email
-          role_node = doc.create_element("v1:role")
-          role_node.content = "creator"
-          role_node.parent = person_node
-          if person_hash && !person_hash[:email].nil? && creator.at_illinois?
-              person_node['lookupHint'] = "synchronisedPerson"
+          person_xml_doc = IllinoisExpertsClient.person_xml_doc(creator.email)
+          person_node = if !person_xml_doc.nil?
+            self.internal_expert(doc, creator, person_xml_doc)
+          elsif creator.at_illinois?
+            self.illinois_external_expert(doc, creator)
           else
-              person_node['origin'] = "external"
-          end
-          first_name_node = doc.create_element("v1:firstName")
-          first_name_node.content = creator.given_name
-          first_name_node.parent = person_node
-          last_name_node = doc.create_element("v1:lastName")
-          last_name_node.content = creator.family_name
-          last_name_node.parent = person_node
-          person_node['contactPerson'] = "true" if creator.is_contact
-
-          organisations_node = doc.create_element("v1:organisations")
-          organization_node = doc.create_element("v1:organization")
-          org_name_node = doc.create_element("v1:name")
-          org_name_node.content = person_hash['org']
-          org_name_node.parent = organization_node
-          organization_node.parent = organisations_node
-          organisations_node.parent = person_node
-
+            self.external_expert(doc, creator)
+                        end
           person_node.parent = persons_node
-
         end
         persons_node.parent = dataset_node
-
         doi_node = doc.create_element("v1:DOI")
         doi_node.content = dataset.identifier
         doi_node.parent = dataset_node
-
+        release_date = dataset.release_date | Date.today
         available_node = doc.create_element("v1:availableDate")
-        year_node = doc.create_element("v1:year")
-        year_node.content = dataset.publication_year
+        year_node = doc.create_element("v3:year")
+        year_node.content = release_date.strftime("%Y")
         year_node.parent = available_node
+        month_node = doc.create_element("v3:month")
+        month_node.content = release_date.strftime("%m")
+        month_node.parent = available_node
+        day_node = doc.create_element("v3:day")
+        day_node.content = release_date.strftime("%d")
+        day_node.parent = available_node
         available_node.parent = dataset_node
-
         publisher_node = doc.create_element("v1:publisher")
         publisher_node["lookupId"]=IDB_CONFIG[:illinois_experts][:publisher_id]
         publisher_node.parent = dataset_node
-
+        if dataset.keywords && dataset.keywords.length > 0
+          keywords_node = doc.create_element("v1:keywords")
+          keywords = dataset.keywords.split(";")
+          keywords = keywords.collect(&:squish)
+          keywords.each do |keyword|
+            keyword_node = doc.create_element("v1:keyword")
+            keyword_node.content = keyword
+            keyword_node.parent = keywords_node
+          end
+          keywords_node.parent = dataset_node
+        end
       end
       doc.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::AS_XML)
+    end
+
+    def internal_expert(doc, creator, person_xml_doc)
+      person_node = doc.create_element("v1:person")
+      person_node['lookupId'] = creator.email
+      role_node = doc.create_element("v1:role")
+      role_node.content = "creator"
+      role_node.parent = person_node
+      person_node['lookupHint'] = "synchronisedPerson"
+      first_name_node = doc.create_element("v1:firstName")
+      first_name_node.content = creator.given_name
+      first_name_node.parent = person_node
+      last_name_node = doc.create_element("v1:lastName")
+      last_name_node.content = creator.family_name
+      last_name_node.parent = person_node
+      person_node['contactPerson'] = "true" if creator.is_contact
+      organisations_node = doc.create_element("v1:organisations")
+      org_uuids = doc.xpath("//organisationalUnit/@uuid")
+      if org_uuids.empty?
+        organization_node = doc.create_element("v1:organization")
+        organization_node["lookupId"] = IDB_CONFIG[:illinois_experts][:publisher_id]
+        organization_node.parent = organisations_node
+      else
+        org_uuids.each do |org_uuid|
+          organization_node = doc.create_element("v1:organization")
+          organization_node["lookupId"] = org_uuid.content
+          organization_node.parent = organisations_node
+        end
+      end
+      organisations_node.parent = person_node
+      date_node = doc.create_element("v1:associationStartDate")
+      start_date_nodeset = doc.xpath("//period/startDate")
+      date_node.content = if start_date_nodeset.empty?
+        Date.today.strftime("%Y-%m-d")
+      else
+        start_date_nodeset.first.content
+                          end
+      date_node.parent = person_node
+      person_node
+    end
+
+    def external_expert(doc, creator)
+      person_node = doc.create_element("v1:person")
+      role_node = doc.create_element("v1:role")
+      role_node.content = "creator"
+      role_node.parent = person_node
+      person_node['origin'] = "external"
+      first_name_node = doc.create_element("v1:firstName")
+      first_name_node.content = creator.given_name
+      first_name_node.parent = person_node
+      last_name_node = doc.create_element("v1:lastName")
+      last_name_node.content = creator.family_name
+      last_name_node.parent = person_node
+      person_node['contactPerson'] = "true" if creator.is_contact
+      organisations_node = doc.create_element("v1:organisations")
+      organization_node = doc.create_element("v1:organization")
+      org_name_node = doc.create_element("v1:name")
+      org_name_node.content = "unknown"
+      org_name_node.parent = organization_node
+      organization_node.parent = organisations_node
+      organisations_node.parent = person_node
+      date_node = doc.create_element("v1:associationStartDate")
+      date_node.content = Date.today.strftime("%Y-%m-d")
+      date_node.parent = person_node
+      person_node
+    end
+
+    def illinois_external_expert(doc, creator)
+      person_node = doc.create_element("v1:person")
+      person_node['lookupId'] = creator.email
+      role_node = doc.create_element("v1:role")
+      role_node.content = "creator"
+      role_node.parent = person_node
+      person_node['origin'] = "external"
+      first_name_node = doc.create_element("v1:firstName")
+      first_name_node.content = creator.given_name
+      first_name_node.parent = person_node
+      last_name_node = doc.create_element("v1:lastName")
+      last_name_node.content = creator.family_name
+      last_name_node.parent = person_node
+      person_node['contactPerson'] = "true" if creator.is_contact
+      organisations_node = doc.create_element("v1:organisations")
+      organization_node = doc.create_element("v1:organization")
+      organization_node["lookupId"] = IDB_CONFIG[:illinois_experts][:publisher_id]
+      organization_node.parent = organisations_node
+      organisations_node.parent = person_node
+      date_node = doc.create_element("v1:associationStartDate")
+      date_node.content = Date.today.strftime("%Y-%m-d")
+      date_node.parent = person_node
+      person_node
     end
   end
 
