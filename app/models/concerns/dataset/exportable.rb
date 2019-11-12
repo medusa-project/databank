@@ -117,6 +117,7 @@ module Exportable
 
     def external_expert(doc, creator, dataset_release_date)
       person_node = doc.create_element("v1:person")
+      person_node['id'] = creator.email
       role_node = doc.create_element("v1:role")
       role_node.content = "creator"
       role_node.parent = person_node
@@ -129,7 +130,6 @@ module Exportable
       last_name_node.content = creator.family_name
       last_name_node.parent = nested_person_node
       nested_person_node.parent = person_node
-      person_node['contactPerson'] = "true" if creator.is_contact
       organisations_node = doc.create_element("v1:organisations")
       organization_node = doc.create_element("v1:organization")
       org_name_node = doc.create_element("v1:name")
