@@ -94,12 +94,12 @@ module Exportable
       organisations_node = doc.create_element("v1:organisations")
       org_uuids = person_xml_doc.xpath("//organisationalUnit/@uuid")
       if org_uuids.empty?
-        organization_node = doc.create_element("v1:organization")
+        organization_node = doc.create_element("v1:organisation")
         organization_node["lookupId"] = IDB_CONFIG[:illinois_experts][:publisher_id]
         organization_node.parent = organisations_node
       else
         org_uuids.each do |org_uuid|
-          organization_node = doc.create_element("v1:organization")
+          organization_node = doc.create_element("v1:organisation")
           organization_node["lookupId"] = org_uuid.content
           organization_node.parent = organisations_node
         end
@@ -132,7 +132,7 @@ module Exportable
       last_name_node.parent = nested_person_node
       nested_person_node.parent = person_node
       organisations_node = doc.create_element("v1:organisations")
-      organization_node = doc.create_element("v1:organization")
+      organization_node = doc.create_element("v1:organisation")
       org_name_node = doc.create_element("v1:name")
       org_name_node.content = "unknown"
       org_name_node.parent = organization_node
@@ -160,7 +160,7 @@ module Exportable
       last_name_node.parent = nested_person_node
       nested_person_node.parent = person_node
       organisations_node = doc.create_element("v1:organisations")
-      organization_node = doc.create_element("v1:organization")
+      organization_node = doc.create_element("v1:organisation")
       organization_node["lookupId"] = IDB_CONFIG[:illinois_experts][:publisher_id]
       organization_node.parent = organisations_node
       organisations_node.parent = person_node
