@@ -161,9 +161,7 @@ module Exportable
       nested_person_node.parent = person_node
       organisations_node = doc.create_element("v1:organisations")
       organization_node = doc.create_element("v1:organization")
-      org_name_node = doc.create_element("v1:name")
-      org_name_node.content = IDB_CONFIG[:illinois_experts][:publisher_id]
-      org_name_node.parent = organization_node
+      organization_node["lookupId"] = IDB_CONFIG[:illinois_experts][:publisher_id]
       organization_node.parent = organisations_node
       organisations_node.parent = person_node
       date_node = doc.create_element("v1:associationStartDate")
