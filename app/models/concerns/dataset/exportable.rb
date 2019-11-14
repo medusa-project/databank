@@ -25,11 +25,9 @@ module Exportable
         managing_org_node["lookupId"] = IDB_CONFIG[:illinois_experts][:org_id]
         managing_org_node.parent = dataset_node
         if dataset.description && !dataset.description.empty?
-          descriptions_node = doc.create_element("v1:descriptions")
           description_node = doc.create_element("v1:description")
           description_node.content = dataset.description
-          description_node.parent = descriptions_node
-          descriptions_node.parent = dataset_node
+          description_node.parent = dataset_node
         end
         persons_node = doc.create_element("v1:persons")
 
