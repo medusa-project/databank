@@ -115,8 +115,13 @@ ready = function () {
 
     $(".upload-consistent").tooltip({
         html: "true",
-        title: "<table class='upload-key'><tr class='highlight-background'> <td> <span class='fas upload-guide fa-circle'></span></td> <td> consistent </td><td> Reliable performance for a variety of connection speeds and configurations. </td> </tr> <tr> <td> <span class='fas upload-guide fa-adjust'></span> <td>inconsistent</td> </td> <td> Depends for reliability on connection strength and speed. Works well on campus, but home and coffee-shop environments vary. </td> </tr> <tr> <td> <span class='far upload-guide fa-circle'></span> <td>unavailable</td> </td> <td> Either does not work at all, or is so unreliable as to be inadvisable. </td> </tr> </table> </table>"
+        title: "consistent"
     });
+
+    // $(".upload-consistent").tooltip({
+    //     html: "true",
+    //     title: "<table class='upload-key'><tr class='highlight-background'> <td> <span class='fas upload-guide fa-circle'></span></td> <td> consistent </td><td> Reliable performance for a variety of connection speeds and configurations. </td> </tr> <tr> <td> <span class='fas upload-guide fa-adjust'></span> <td>inconsistent</td> </td> <td> Depends for reliability on connection strength and speed. Works well on campus, but home and coffee-shop environments vary. </td> </tr> <tr> <td> <span class='far upload-guide fa-circle'></span> <td>unavailable</td> </td> <td> Either does not work at all, or is so unreliable as to be inadvisable. </td> </tr> </table> </table>"
+    // });
 
     $(".upload-inconsistent").tooltip({
         html: "true",
