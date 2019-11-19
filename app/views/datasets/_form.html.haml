@@ -272,13 +272,13 @@
                 %i(class="fa fa-cloud-upload-alt fa-2x" aria-hidden="true" )
                 Drop files in this area
             %td
-              %span(class="fa upload-inconsistent fa-circle")
+              %span(class="fas upload-consistent fa-circle")
             %td
-              %span(class="fa upload-unavailable fa-adjust")
+              %span(class="fas upload-inconsistent fa-adjust")
             %td
-              %span(class="fa upload-unavailable fa-circle-o")
+              %span(class="far upload-unavailable fa-circle")
             %td
-              %span(class="fa upload-unavailable fa-circle-o")
+              %span(class="far upload-unavailable fa-circle")
 
           %tr.row
             %td.fileselect(id="file-select-area")
@@ -287,25 +287,25 @@
                   %span(class="fa fa-laptop fa-lg" )
                   Select files from your computer
             %td
-              %span(class="fa upload-inconsistent fa-circle")
+              %span(class="fas upload-consistent fa-circle")
             %td
-              %span(class="fa upload-unavailable fa-adjust")
+              %span(class="fas upload-inconsisent fa-adjust")
             %td
-              %span(class="fa upload-unavailable fa-circle-o")
+              %span(class="far upload-unavailable fa-circle")
             %td
-              %span(class="fa upload-unavailable fa-circle-o")
+              %span(class="far upload-unavailable fa-circle")
 
           %tr.row
             %td
               %div(id="box-select" data-link-type="direct" data-multiselect="true" data-client-id="r5tgofc05460skm84yjepz1ck16ptotr" role="button" )
             %td
-              %span(class="fa upload-consistent fa-circle")
+              %span(class="fas upload-consistent fa-circle")
             %td
-              %span(class="fa upload-consistent fa-circle")
+              %span(class="fas upload-consistent fa-circle")
             %td
-              %span(class="fa upload-unavailable fa-circle-o")
+              %span(class="far upload-unavailable fa-circle")
             %td
-              %span(class="fa upload-unavailable fa-circle-o")
+              %span(class="far upload-unavailable fa-circle")
 
 
           - if can? :manage, @dataset
@@ -315,13 +315,13 @@
                   %span(class="glyphicon glyphicon-link")
                   Provide a URL
               %td.curator-only
-                %span(class="fa upload-consistent fa-circle")
+                %span(class="fas upload-consistent fa-circle")
               %td.curator-only
-                %span(class="fa upload-consistent fa-circle")
+                %span(class="fas upload-consistent fa-circle")
               %td.curator-only
-                %span(class="fa upload-inconsistent fa-adjust")
+                %span(class="fas upload-inconsistent fa-adjust")
               %td.curator-only
-                %span(class="fa upload-inconsistent fa-circle-o")
+                %span(class="far upload-unavailable fa-circle")
 
           %tr.row
             %td
@@ -338,13 +338,13 @@
                       View token for command line tools
 
             %td
-              %span(class="fa upload-consistent fa-circle")
+              %span(class="fas upload-consistent fa-circle")
             %td
-              %span(class="fa upload-consistent fa-circle")
+              %span(class="fas upload-consistent fa-circle")
             %td
-              %span(class="fa upload-consistent fa-adjust")
+              %span(class="fas upload-inconsisent fa-adjust")
             %td
-              %span(class="fa upload-inconsistent fa-adjust")
+              %span(class="far upload-unavailable fa-circle")
 
           %tr.row
             %td
@@ -353,13 +353,13 @@
                   &#x1f45f;
                 Request physical pickup
             %td
-              %span(class="fa upload-consistent fa-circle")
+              %span(class="fas upload-consistent fa-circle")
             %td
-              %span(class="fa upload-consistent fa-circle")
+              %span(class="fas upload-consistent fa-circle")
             %td
-              %span(class="fa upload-consistent fa-circle")
+              %span(class="fas upload-consistent fa-circle")
             %td
-              %span(class="fa upload-consistent fa-circle")
+              %span(class="fas upload-consistent fa-circle")
 
     %hr
     %div(id="divFiles")
