@@ -8,10 +8,8 @@ module Publishable
     return_json = {status: :error_occurred,
                    error_text: "Incomplete workflow in publish attempt."}
     completion_check_result = Dataset.completion_check(self, user)
-    # DEBUG
-    #Rails.logger.warn completion_check_result
-    complete = (completion_check_result == "ok")
-    return {status: :error_occurred, error_text: completion_check_result} unless complete
+
+    return {status: :error_occurred, error_text: completion_check_result} unless completion_check_result == "ok"
 
     release_date ||= Date.current
 
@@ -51,10 +49,8 @@ module Publishable
         (hold_state.nil? || (hold_state == Databank::PublicationState::TempSuppress::NONE))
 
     if metadata_should_be_public
-      #Rails.logger.warn "metadata should be public"
       datacite_ok = publish_doi
     else
-      #Rails.logger.warn "metadata should not be public"
       datacite_ok = register_doi
     end
 
