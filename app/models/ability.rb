@@ -42,6 +42,7 @@ class Ability
 
     can :view_files, Dataset do |dataset|
       dataset.files_public? ||
+          dataset.depositor_email == user.email ||
           UserAbility.user_can?("Dataset", dataset.id, :update, user) ||
           UserAbility.user_can?("Dataset", dataset.id, :read, user) ||
           dataset.data_curation_network && user.is?(Databank::UserRole::NETWORK_REVIEWER)
