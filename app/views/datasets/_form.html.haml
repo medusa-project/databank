@@ -244,9 +244,7 @@
           .panel-collapse.collapse(id="relatedPanel" role="tabpanel" aria-labelledby="relatedHeading" )
             .panel-body
               = render partial: 'materials_subform', locals: {f: f}
-      %em before files
       = render partial: 'datafiles_subform', locals: {f: f}
-      %em after files
 
   - if (@dataset.publication_state == Databank::PublicationState::DRAFT) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
 

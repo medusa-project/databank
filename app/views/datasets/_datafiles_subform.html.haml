@@ -1,5 +1,6 @@
-%em inside datafiles subform
+%p outside datafiles-form
 %div(id="datafiles-form")
+  %p inside datafiles-form
   %input(type="hidden" name="datafile_index_max" id="datafile_index_max" value="#{@dataset.complete_datafiles.count.to_i}" )
   .panel-group(id="files" role="tablist" aria-multiselectable="true" style="display: #{@dataset.complete_datafiles.count > 0 ? 'block' : 'none' }")
     .panel.panel-default
