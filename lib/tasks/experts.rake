@@ -8,6 +8,14 @@ namespace :experts do
     end
   end
 
+  desc 'fetch demo export doc'
+  task :fetch_demo_doc => :environment do
+    demo_doc = Nokogiri::XML(open("https://demo.databank.illinois.edu/illinois_experts.xml"))
+    File.open(File.join(Rails.root, "public", "illinois_experts_demo.xml"), 'w') do |f|
+      f << demo_doc.to_xml
+    end
+  end
+
   desc 'explore persons'
   task :explore_persons => :environment do
     doc = IllinoisExpertsClient.person_xml_doc("netid@illinois.edu")
