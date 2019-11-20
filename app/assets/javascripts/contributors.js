@@ -121,10 +121,6 @@ function handlecontributorTable() {
             // set contributor row num display
             //$("td:first", this).html("<span style='display:inline;'>  " + i + "     </span><span style='display:inline;' class='glyphicon glyphicon-resize-vertical'></span>" );
 
-            //console.log("i: " + i);
-            //console.log("hidden_row_count: " + hidden_row_count);
-            //console.log("table row count: " + $("#contributor_table tr").length );
-
             if ((i + 1) == ($("#contributor_table tr").length)) {
                 $("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_contributor_row(\x22" + contributor_index + "\x22 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_contributor_row()' type='button'><span class='glyphicon glyphicon-plus'></span></button>");
             } else {
@@ -160,14 +156,7 @@ function generate_contributor_preview() {
         var split_id = (this.id).split('_');
         var contributor_index = split_id[2];
 
-        //console.log("inside tr each for contributor index " + contributor_index);
-
-        //console.log($("#dataset_contributors_attributes_" + contributor_index + "__destroy").val());
-        ;
         if ((i > 0) && (($("#dataset_contributors_attributes_" + contributor_index + "_family_name").val() != "") || ($("#dataset_contributors_attributes_" + contributor_index + "_given_name").val() != ""))) {
-
-            //console.log("inside generate contributor 2");
-            //console.log($("#dataset_contributors_attributes_" + contributor_index + "_family_name").val());
 
             if (contributor_list_preview.length > 0) {
 

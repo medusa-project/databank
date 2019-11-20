@@ -2,11 +2,7 @@
 
 var related_materials_ready;
 related_materials_ready = function () {
-    //$('.material-text').css("visibility", "hidden");
-
     handleMaterialTable();
-    // console.log ("user role: " + user_role);
-    // alert("related_materials.js javascript working");
 }
 
 function handleMaterialChange(materialIndex) {
@@ -38,15 +34,11 @@ function handleMaterialChange(materialIndex) {
 
 function handleMaterialTable() {
     $('#material_table tr.item').each(function (i) {
-        //console.log("i to string: " + i.toString());
-        //console.log("length to string:" +($("#material_table tr.item").length).toString());
 
         var split_id = (this.id).split('_');
         var material_index = split_id[2];
 
         if ((i + 1 ) == ($("#material_table tr.item").length)) {
-            //console.log("Supposed to do something here.");
-            //console.log( $("td:last-child", this).html());
             $("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_material_row(\x22" + material_index + "\x22 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_material_row()' type='button'><span class='glyphicon glyphicon-plus'></span></button>");
         } else {
             $("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_material_row(\x22" + material_index + "\x22 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>");
@@ -146,7 +138,7 @@ function add_material_row() {
 }
 
 function remove_material_row(material_index) {
-    //console.log("material_index:" + material_index);
+
     if ($("#dataset_related_materials_attributes_" + material_index + "_id").val() != undefined) {
         $("#dataset_related_materials_attributes_" + material_index + "__destroy").val("true");
         $("#deleted_material_table > tbody:last-child").append($("#material_index_" + material_index));

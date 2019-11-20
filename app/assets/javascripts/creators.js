@@ -20,8 +20,6 @@ creators_ready = function () {
         cells = $('#creator_table').find('tr')[0].cells.length;
         desired_width = table_width / cells + 'px';
 
-        console.log(dataset_creator_type);
-
         handleCreatorTable(dataset_creator_type);
 
         $('#creator_table td').css('width', desired_width);
@@ -179,16 +177,10 @@ function handleCreatorTable(creator_type) {
             var split_id = (this.id).split('_');
             var creator_index = split_id[2];
 
-            console.log("creator_index: " + creator_index);
-
             $("#dataset_creators_attributes_" + creator_index + "_row_position").val(i);
 
             // set creator row num display
             //$("td:first", this).html("<span style='display:inline;'>  " + i + "     </span><span style='display:inline;' class='glyphicon glyphicon-resize-vertical'></span>" );
-
-            //console.log("i: " + i);
-            //console.log("hidden_row_count: " + hidden_row_count);
-            //console.log("table row count: " + $("#creator_table tr").length );
 
             if ((i + 1) == ($("#creator_table tr").length)) {
 
@@ -212,10 +204,6 @@ function handleCreatorTable(creator_type) {
 }
 
 function handle_creator_email_change(input) {
-
-    console.log("creator");
-    console.log($(input).val());
-    console.log(isEmail($(input).val()));
 
     if (isEmail($(input).val())) {
         $(input).closest('td').removeClass('input-field-required');
@@ -283,7 +271,6 @@ function generate_creator_preview() {
 function handle_contact_change() {
     // set is_contact value to match selection staus and highlight required email input field if blank
     var selectedVal = $("input[type='radio'][name='primary_contact']:checked").val();
-    console.log("selected value: " + selectedVal);
 
     $('#creator_table tr').each(function (i) {
         if (i > 0) {

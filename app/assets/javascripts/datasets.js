@@ -68,7 +68,6 @@ ready = function () {
         $("#dataset_release_date").prop({type: "text"});
         $("#dataset_release_date").prop({placeholder: "YYYY-MM-DD"});
         $("#dataset_release_date").prop({"data-mask": "9999-99-99"});
-        //console.log($("#dataset_release_date").val());
 
         $("#dataset_release_date").datepicker({
             inline: true,
@@ -273,8 +272,6 @@ ready = function () {
         window.location.assign('/datasets?depositor_email=' + current_user_email);
     });
 
-    // console.log("val: " + $('#dataset_embargo').val());
-
     $("#chunked-upload-btn").click(function () {
         window.location.assign('/datasets/' + dataset_key + '/datafiles/add');
     });
@@ -314,7 +311,6 @@ ready = function () {
     $("#api-modal-btn").click(function () {
 
         $.getJSON("/datasets/" + dataset_key + "/get_current_token", function (data) {
-            console.log(data);
             if (data.token && data.expires && data.token != "none") {
                 $('#token-header').text('Here is your token:');
                 setTokenExamples(data.token, data.expires);
@@ -331,8 +327,6 @@ ready = function () {
     $("#reserve-doi-btn").click(function () {
 
         $.getJSON("/datasets/" + dataset_key + "/reserve_doi", function (data) {
-            console.log("You are here.");
-            console.log(data);
             if (data.status && data.status == "ok") {
 
                 $("#deposit").modal('show');
@@ -351,8 +345,6 @@ ready = function () {
     var boxSelect = new BoxSelect();
     // Register a success callback handler
     boxSelect.success(function (response) {
-        //console.log(response);
-
         $('#files').css("display", "block");
         $('#collapseFiles').collapse('show');
 
@@ -607,7 +599,6 @@ function offerDownloadLink() {
         web_id_string = web_id_string + $(value).val();
     });
     if (web_id_string != "") {
-        console.log(web_id_string)
         $.ajax({
             url: "/datasets/" + dataset_key + "/download_link?",
             data: {"web_ids": web_id_string},
@@ -620,7 +611,6 @@ function offerDownloadLink() {
                     }
                     $('#downloadLinkModal').modal('show');
                 } else {
-                    console.log(result);
                     $('.download-link').html("An unexpected error occurred.<br/>Details have been logged for review.<br/><a href='/help' target='_blank'>Contact the Research Data Service Team</a> with any questions.");
                     $('#downloadLinkModal').modal('show');
                 }
@@ -706,11 +696,6 @@ function update_and_publish() {
 
 function confirm_update() {
 
-    // console.log ("inside confirm_update");
-    // Use Ajax to submit form data
-
-    // console.log($("[id^=edit_dataset]").serialize());
-
     // using patch because that method designation is in the form already
     if ($(".invalid-email").length > 0) {
         alert("Email address must be in a valid format.");
@@ -722,7 +707,6 @@ function confirm_update() {
         $(".invalid-name > input").first().focus();
         return
     }
-    // console.log("inside valid input ok");
 
     $('#validation-warning').empty();
     $.ajax({
@@ -731,7 +715,6 @@ function confirm_update() {
         data: $("[id^=edit_dataset]").serialize(),
         datatype: 'json',
         success: function (data) {
-            console.log(data);
 
             if (data.message == "ok") {
                 reset_confirm_msg();
@@ -761,16 +744,11 @@ function show_release_date() {
 
 function reset_confirm_msg() {
 
-    //console.log("inside reset confirm msg");
-
     if ($('.publish-msg').html() != undefined && $('.publish-msg').html().length > 0) {
         var new_embargo = $('#dataset_embargo').val();
         var release_date = $('#dataset_release_date').val();
 
-        //console.log(new_embargo);
-
         $.getJSON("/datasets/" + dataset_key + "/confirmation_message?new_embargo_state=" + new_embargo + "&release_date=" + release_date, function (data) {
-            //console.log(data);
             $('.publish-msg').html(data.message);
         })
             .fail(function (xhr, textStatus, errorThrown) {
@@ -791,7 +769,6 @@ function clear_alert_message() {
 
 function getNewToken() {
     $.getJSON("/datasets/" + dataset_key + "/get_new_token", function (data) {
-        //console.log(data);
         window.has_current_token = true;
         $('#token-header').text('Here is your new token:');
         setTokenExamples(data.token, data.expires);
@@ -838,7 +815,6 @@ function deleteSelected() {
 
     if (window.confirm("Are you sure?")) {
 
-        //console.log($('#checkFileSelectedCount').html());
         $('.checkFileSelectedCount').html('(' + numChecked + ')');
         $('#checkAllFiles').prop('checked', false);
 
@@ -873,7 +849,6 @@ function handleKeywordKeyup() {
     });
 
     if (keyword_count > 0) {
-        //console.log(keywordArr);
         $('#keyword-label').html("Keywords (" + keyword_count + " -- semicolon separated)");
     } else {
         $('#keyword-label').html("Keywords");

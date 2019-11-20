@@ -104,8 +104,6 @@ function create_from_remote_unknown_size(){
         datatype: 'json',
         success: function (data) {
 
-            //console.log(data);
-
             var maxId = Number($('#datafile_index_max').val());
             var newId = 1;
 
@@ -148,8 +146,6 @@ function create_from_remote_unknown_size(){
 
 function create_from_remote(){
 
-    //console.log("inside create from remote");
-
     if (filename_isdup($('#remote_filename').val())) {
         alert("Duplicate filename error: A file named " + $('#remote_filename').val() + " is already in this dataset.  For help, please contact the Research Data Service.");
     }
@@ -161,39 +157,13 @@ function create_from_remote(){
             data: $('#form_for_remote').serialize(),
             datatype: 'json',
             success: function (data) {
-                //console.log("inside success");
-                //console.log(data);
-                //console.log(data.status);
                 if(data.status == "ok" ) {
                     var content_length = data.remote_content_length;
 
                     if (content_length > 100000000000){
                         alert("For files larger than 100 GB, please contact the Research Data Service.");
-                        //
-                        // *** temporarily, at least, don't try to use progress bar
-                        // } else if (content_length > 0) {
-                        //     item = {
-                        //         "name": $('#remote_filename').val(),
-                        //         "size": content_length,
-                        //         "url": $('#remote_url').val(),
-                        //         "dataset_key": dataset_key
-                        //     };
-                        //
-                        //     $.ajax({
-                        //         type: "POST",
-                        //         url: "/datafiles/create_from_url",
-                        //         data: item,
-                        //         success: function (data) {
-                        //             eval($(data).text());
-                        //         },
-                        //         error: function (data) {
-                        //             console.log(data);
-                        //         },
-                        //         dataType: 'script'
-                        //     });
                     } else {
                         // getting here means not known to be too big
-                        //console.log("content length not larger than 0");
                         create_from_remote_unknown_size();
                     }
                 }
@@ -347,8 +317,6 @@ function uploadSelectedFiles(files){
     for (var i = 0; i < files.length; i++) { //Progress bar and status label's for each file genarate dynamically
         var fileId = i;
 
-        //console.log(files[i].name.toString());
-
         $('#datafiles_upload_progress').append('<div class="container-fluid" id="progress_' + fileId + '">' +
             '<div class="row">' +
             '<div class="col-md-10">' +
@@ -425,27 +393,19 @@ function uploadSingleFile(file, i){
         },
         onError: function(error) {
             $("#status_" + fileId).text("Upload Failed because: " + error);
-            //console.log("Failed because: " + error)
         },
         onProgress: function(bytesUploaded, bytesTotal) {
             var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
             $('#progressbar_' + fileId).css("width", percentage + "%")
-            //console.log(bytesUploaded, bytesTotal, percentage + "%")
         },
         onSuccess: function() {
-
-            //console.log("inside upload onsuccess");
 
             var ajax = new XMLHttpRequest();
             ajax.addEventListener("load", function (event) {
 
-                //console.log(event.target.responseText);
-
                 var response = JSON.parse(event.target.responseText);
 
                 var newFile = response.files[0];
-
-                //console.log(newFile.name);
 
                 $("#status_" + fileId).text(event.target.responseText);
                 $('#progressbar_' + fileId).css("width", "100%");
@@ -509,8 +469,6 @@ function appendFileRow(newFile){
     $('#datafile_index_max').val(newId);
 
     var file = newFile;
-
-    //console.log(file);
 
     var row =
         '<tr id="datafile_index_' + newId + '"><td><div class = "row checkbox">' +
