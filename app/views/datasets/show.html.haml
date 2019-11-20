@@ -9,24 +9,25 @@
           %h4.modal-title(id = "prompt-title")
             Log in required to view restricted dataset
         .modal-footer.container-fluid
-          %button{onclick: "window.location = '/login'", type: "button", class: "btn btn-primary", 'data-dismiss' => "modal", id: "login-button"}>
-            %span.pull-left
-              =image_tag 'favicon.ico'
-              %span.glyphicon.glyphicon-log-in
-              &nbsp;
-              Log in with Illinois NetID
-          %br
-          %button{onclick: "window.location = '/data_curation_network/login'", type: "button", class: "btn btn-info", 'data-dismiss' => "modal", id: "login-button"}>
-            %span.pull-left
-              %span.glyphicon.glyphicon-user
-              %span.glyphicon.glyphicon-log-in
-              &nbsp;
-              Log in with Data Curation Network
-          %br
-          %span.pull-right
-            %button{:onclick => "window.location = '/help'", type: "button", class: "btn btn-success"}
-              %span.glyphicon.glyphicon-question-sign
-              Get Help
-            %button{:onclick => "window.location = '/'", type: "button", class: "btn btn-danger"}
-              %span.glyphicon.glyphicon-remove
-              Cancel
+          .row
+            %button{onclick: "window.location = '/login'", type: "button", class: "btn btn-primary", 'data-dismiss' => "modal", id: "login-button"}>
+              %span.pull-left
+                =image_tag 'favicon.ico'
+                %span.glyphicon.glyphicon-log-in
+                &nbsp;
+                Log in with Illinois NetID
+          .row
+            %button{onclick: "window.location = '/data_curation_network/login'", type: "button", class: "btn btn-info", 'data-dismiss' => "modal", id: "login-button"}>
+              %span.pull-left
+                %span.glyphicon.glyphicon-user
+                %span.glyphicon.glyphicon-log-in
+                &nbsp;
+                Log in with Data Curation Network
+          .row
+            %span.pull-right
+              %button{:onclick => "window.location = '/help'", type: "button", class: "btn btn-success"}
+                %span.glyphicon.glyphicon-question-sign
+                Get Help
+              %button{:onclick => "window.location = '/'", type: "button", class: "btn btn-danger"}
+                %span.glyphicon.glyphicon-remove
+                Cancel
