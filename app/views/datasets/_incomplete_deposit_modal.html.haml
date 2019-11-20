@@ -7,9 +7,9 @@
         &times;
       .modal-body.container-fluid
         .completion-warning
-        %p.ds-paragraph
-          %span.glyphicon.glyphicon-alert
-          = @completion_check
+          %p.ds-paragraph
+            %span.glyphicon.glyphicon-alert
+            = @completion_check
       .modal-footer.container-fluid
         %button.btn.btn-success.idb{"onclick"=>%Q(window.location="/datasets/#{@dataset.key}/edit"), 'type'=>'button', 'data-dismiss'=>"modal", 'id' =>"login-button"  }
           %span(class="glyphicon glyphicon-edit")
