@@ -73,3 +73,23 @@ set :deploy_to, '/home/databank'
 #     auth_methods: %w(publickey password)
 #     # password: 'please use keys'
 #   }
+
+namespace :deploy do
+
+  after :restart, :clear_cache do
+    on roles(:web), in: :groups, limit: 3, wait: 10 do
+      # Here we can do anything such as:
+      # within release_path do
+      #   execute :rake, 'cache:clear'
+      # end
+    end
+  end
+
+  task :restart do
+    on roles(:app) do
+      execute "RAILS_ENV=aws-demo ~/shared/bin/databank restart"
+    end
+  end
+
+  after 'deploy:publishing', 'deploy:restart'
+end
