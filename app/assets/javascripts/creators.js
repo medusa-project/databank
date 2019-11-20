@@ -170,16 +170,11 @@ function remove_creator_row(creator_index, creator_type) {
 
 function handleCreatorTable(creator_type) {
 
-    console.log("inside handleCreatorTable");
-
-    console.log(creator_type);
-
     var person_creators_type = 0;
     var org_creators_type = 1;
 
     $('#creator_table tr').each(function (i) {
         // for all but header row, set the row_position value of the input to match the table row position
-        console.log("inside handleCreatorTable each");
         if (i > 0) {
             var split_id = (this.id).split('_');
             var creator_index = split_id[2];
