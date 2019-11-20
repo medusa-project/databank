@@ -1,7 +1,7 @@
 - if can? :read, @dataset
   = render partial: 'landing'
 - else
-  = render partial: 'welcome'
+  = render partial: 'welcome/welcome'
   .modal.fade{"id" => "login-prompt", "aria-hidden" => "true", "aria-labelledby" => "agreement-label", :role => "dialog", :tabindex => "-1"}
     .modal-dialog
       .modal-content
