@@ -10,24 +10,26 @@
             Log in required to view restricted dataset
         .modal-footer.container-fluid
           .row
-            .col-md-6
+            .col-md-8
               %button{onclick: "window.location = '/login'", type: "button", class: "btn btn-primary btn-block", 'data-dismiss' => "modal", id: "login-button"}>
                 =image_tag 'favicon.ico'
                 %span.glyphicon.glyphicon-log-in
                 &nbsp;
                 Log in with Illinois NetID
-            .col-md-6
+          %br
+          .row
+            .col-md-8
               %button{onclick: "window.location = '/data_curation_network/login'", type: "button", class: "btn btn-info btn-block", 'data-dismiss' => "modal", id: "login-button"}>
                 %span.glyphicon.glyphicon-user
                 %span.glyphicon.glyphicon-log-in
                 &nbsp;
                 Log in with Data Curation Network
           .row
-            .col-md-3.col-md-offset-3
+            .col-md-2.col-md-offset-8
               %button{:onclick => "window.location = '/help'", type: "button", class: "btn btn-success btn-block"}
                 %span.glyphicon.glyphicon-question-sign
                 Get Help
-            .col-md-3
+            .col-md-2
               %button{:onclick => "window.location = '/'", type: "button", class: "btn btn-danger btn-block"}
                 %span.glyphicon.glyphicon-remove
                 Cancel
