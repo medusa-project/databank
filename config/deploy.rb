@@ -62,7 +62,7 @@ namespace :deploy do
 
   task :restart do
     on roles(:app) do
-      execute '~/shared/bin/databank restart'
+      execute "RAILS_ENV=#{Rails.env} ~/shared/bin/databank restart"
     end
   end
 
