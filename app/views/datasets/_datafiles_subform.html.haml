@@ -1,8 +1,5 @@
-%p outside datafiles-form
 %div(id="datafiles-form")
-  %p inside datafiles-form
   %input(type="hidden" name="datafile_index_max" id="datafile_index_max" value="#{@dataset.complete_datafiles.count.to_i}" )
-  %p after datafile_index_max
   .panel-group(id="files" role="tablist" aria-multiselectable="true" style="display: #{@dataset.complete_datafiles.count > 0 ? 'block' : 'none' }")
     .panel.panel-default
       .panel-heading(role="tab" id="filesHeading")
@@ -11,7 +8,6 @@
             %span(class="metadata-label" ) Files
       .panel-collapse.collapse.in(id="collapseFiles" role="tabpanel" aria-labelledby="filesHeading" )
         .panel-body
-          %p inside panel-body
           %table(class="table table-striped" id="datafiles")
             %tbody
               -if @dataset.complete_datafiles.count > 0
