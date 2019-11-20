@@ -10,19 +10,23 @@
             Log in required to view restricted dataset
         .modal-footer.container-fluid
           .row
-            %button{onclick: "window.location = '/login'", type: "button", class: "btn btn-primary", 'data-dismiss' => "modal", id: "login-button"}>
-              %span.pull-left
-                =image_tag 'favicon.ico'
-                %span.glyphicon.glyphicon-log-in
-                &nbsp;
-                Log in with Illinois NetID
+            .col-md-12
+              %button{onclick: "window.location = '/login'", type: "button", class: "btn btn-primary", 'data-dismiss' => "modal", id: "login-button"}>
+                %span.pull-left
+                  =image_tag 'favicon.ico'
+                  %span.glyphicon.glyphicon-log-in
+                  &nbsp;
+                  Log in with Illinois NetID
+          %br
           .row
-            %button{onclick: "window.location = '/data_curation_network/login'", type: "button", class: "btn btn-info", 'data-dismiss' => "modal", id: "login-button"}>
-              %span.pull-left
-                %span.glyphicon.glyphicon-user
-                %span.glyphicon.glyphicon-log-in
-                &nbsp;
-                Log in with Data Curation Network
+            .col-md-12
+              %button{onclick: "window.location = '/data_curation_network/login'", type: "button", class: "btn btn-info", 'data-dismiss' => "modal", id: "login-button"}>
+                %span.pull-left
+                  %span.glyphicon.glyphicon-user
+                  %span.glyphicon.glyphicon-log-in
+                  &nbsp;
+                  Log in with Data Curation Network
+          %br
           .row
             %span.pull-right
               %button{:onclick => "window.location = '/help'", type: "button", class: "btn btn-success"}
