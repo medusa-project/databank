@@ -602,8 +602,6 @@ class DatasetsController < ApplicationController
   # GET /datasets/1.json
   def show
 
-    authorize! :read, @dataset
-
     if Rails.env.aws_production?
       @datacite_fabrica_url = "https://doi.datacite.org/"
     else
