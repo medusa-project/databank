@@ -30,9 +30,9 @@ module Identifiable
 
   def doi_state
     info = doi_infohash
-    return nil unless info.has_key?(:data)
-    return nil unless info[:data].has_key?(:attributes)
-    return nil unless info[:data][:attributes].has_key?(:state)
+    raise("missing data element doi_state #{key}, info: #{info}") unless info.has_key?(:data)
+    raise("missing attribute element doi_state #{key}, info: #{info}") unless info[:data].has_key?(:attributes)
+    raise("missing state element doi_state #{key}, info: #{info}") unless info[:data][:attributes].has_key?(:state)
 
     info[:data][:attributes][:state]
   end
@@ -62,6 +62,8 @@ module Identifiable
     #return false unless identifier_present?
 
     current_state = doi_state
+
+    raise "current doi_state not detected" unless current_state
 
     return update_doi if current_state == Databank::DoiState::FINDABLE
 
@@ -551,7 +553,7 @@ module Identifiable
   def doi_infohash
     response = doi_info_from_datacite
 
-    return {} unless response
+    raise("no response to doi info call") unless response
 
     case response
 
