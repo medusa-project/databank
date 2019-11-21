@@ -53,6 +53,8 @@ module Identifiable
     draft_json = %Q({"data": {"type": "dois", "attributes": {"doi": "#{identifier}"}}})
     response = Dataset.post_to_datacite(draft_json)
     raise("response to attempt to create draft doi is nil") if response.nil?
+    raise("problem attempting to create draft doi code: #{response.code}")
+    raise("problem attempting to create draft doi body: #{response.body}")
     response.code == "201"
   end
 
