@@ -45,17 +45,14 @@ module Identifiable
 
   def create_draft_doi
     self.identifier ||= default_identifier
-    Rails.logger.warn "identifier: #{self.identifier}"
-    save!
+    self.save!
     # should not draft doi if doi record already exists in DataCite
     raise("record already exists in DataCite for dataset #{key}") if !doi_infohash.empty? && doi_infohash.has_key(:data)
 
     # minimal json to create draft record
     draft_json = %Q({"data": {"type": "dois", "attributes": {"doi": "#{self.identifier}"}}})
-    Rails.logger.warn draft_json
     response = Dataset.post_to_datacite(draft_json)
-    raise("response to attempt to create draft doi is nil") if response.nil?
-    raise("problem attempting to create draft doi code: #{response.code}, #{response.body}")
+    raise("problem attempting to create draft doi code: #{response.code}, #{response.body}") if response.code != "201"
     response.code == "201"
   end
 
