@@ -30,7 +30,9 @@ module Identifiable
 
   def doi_state
     info = doi_infohash
-    raise("missing data element doi_state #{key}, info: #{info}") unless info.has_key?(:data)
+    return Databank::DoiState::UNREGISTERED if info == {}
+
+    raise("missing data element doi_state #{key}")unless info.has_key?(:data)
     raise("missing attribute element doi_state #{key}, info: #{info}") unless info[:data].has_key?(:attributes)
     raise("missing state element doi_state #{key}, info: #{info}") unless info[:data][:attributes].has_key?(:state)
 
@@ -52,7 +54,6 @@ module Identifiable
     response = Dataset.post_to_datacite(draft_json)
     raise("response to attempt to create draft doi is nil") if response.nil?
     response.code == "201"
-
   end
 
   # publish - Triggers a state move from draft or registered to findable
@@ -63,11 +64,9 @@ module Identifiable
 
     current_state = doi_state
 
-    raise "current doi_state not detected" unless current_state
-
     return update_doi if current_state == Databank::DoiState::FINDABLE
 
-    if current_state.nil?
+    if current_state.nil? || current_state == Databank::DoiState::UNREGISTERED
       result =  create_draft_doi
       raise("unknown problem creating draft doi") if result.nil?
       sleep(1.5)

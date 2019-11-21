@@ -114,6 +114,7 @@ module Databank
   end
 
   class DoiState
+    UNREGISTERED = 'unregistered'
     DRAFT = 'draft'
     REGISTERED = 'registered'
     FINDABLE = 'findable'
