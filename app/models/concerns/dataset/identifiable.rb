@@ -352,6 +352,7 @@ module Identifiable
           affiliation_node["affiliationIdentifier"] = "https://ror.org/047426m28"
           affiliation_node["affiliationIdentifierScheme"] = "ROR"
           affiliation_node.content = "University of Illinois"
+          affiliation_node.parent = creator_node
         end
       elsif creator.type_of == Databank::CreatorType::INSTITUTION
         creator_name_node = doc.create_element("creatorName")

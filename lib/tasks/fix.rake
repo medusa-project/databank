@@ -99,6 +99,7 @@ namespace :fix do
     end
   end
 
+  desc 'update datacite metadata store'
   task :update_datacite => :environment do
     datasets = Dataset.select(&:metadata_public?)
     datasets.each do |dataset|
