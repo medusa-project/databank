@@ -99,6 +99,15 @@ namespace :fix do
     end
   end
 
+  task :update_datacite => :environment do
+    datasets = Dataset.select(&:metadata_public?)
+    datasets.each do |dataset|
+      dataset.update_doi
+    end
+
+  end
+
+
   desc 'remove draft files if medusa ingest successful'
   task :remove_draft_if_in_medusa => :environment do
     MedusaIngest.remove_draft_if_in_medusa

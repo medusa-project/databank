@@ -251,7 +251,7 @@ module Identifiable
     root_string = %(<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" )
     root_string += %(xmlns="http://datacite.org/schema/kernel-4" )
     root_string += %(xsi:schemaLocation="http://datacite.org/schema/kernel-4 )
-    root_string += %(http://schema.datacite.org/meta/kernel-4.1/metadata.xsd">)
+    root_string += %(http://schema.datacite.org/meta/kernel-4.3/metadata.xsd">)
     root_string + %(</resource>)
   end
 
@@ -347,6 +347,12 @@ module Identifiable
         family_name_node = doc.create_element("familyName")
         family_name_node.content = creator.family_name
         family_name_node.parent = creator_node
+        if creator.email.split('@').last == "illinois.edu"
+          affiliation_node = doc.create_element("affiliation")
+          affiliation_node["affiliationIdentifier"] = "https://ror.org/047426m28"
+          affiliation_node["affiliationIdentifierScheme"] = "ROR"
+          affiliation_node.content = "University of Illinois"
+        end
       elsif creator.type_of == Databank::CreatorType::INSTITUTION
         creator_name_node = doc.create_element("creatorName")
         creator_name_node["nameType"] = "Organizational"
