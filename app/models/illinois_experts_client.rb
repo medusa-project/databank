@@ -15,7 +15,9 @@ class IllinoisExpertsClient
   def self.person_xml_doc(email)
     raise ArgumentError.new("must provide email address string") unless email
 
-    encoded_email = CGI.escape(email)
+    stripped_email = email.strip
+
+    encoded_email = CGI.escape(stripped_email)
 
     uri = URI.parse("#{ENDPOINT}/persons?q=#{encoded_email}&apiKey=#{KEY}")
 
@@ -40,13 +42,23 @@ class IllinoisExpertsClient
         count = doc.xpath("//count").first.content
         return nil unless count.to_i > 0
 
-        return doc
+        return IllinoisExpertsClient.exact_match(stripped_email, doc)
+
       rescue Nokogiri::XML::SyntaxError
         return nil
       end
     else
       return nil
     end
+  end
+
+  def self.exact_match(email, doc)
+    items = doc.xpath("//items")
+    items.each do |item_node|
+      external_id = item_node.attr('externalId')
+      return item if external_id == email
+    end
+    nil
   end
 
   def self.example
