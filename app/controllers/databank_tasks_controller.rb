@@ -24,6 +24,15 @@ class DatabankTasksController < ApplicationController
     end
   end
 
-
-
+  def audit
+    @datafiles = Array.new
+    datasets = Dataset.where(is_test: false).select(&:metadata_public?)
+    datasets.each do |dataset|
+      dataset.complete_datafiles.each do |datafile|
+        if datafile.peek_type.nil? || datafile.peek_type == Databank::PeekType::NONE
+          @datafiles << datafile
+        end
+      end
+    end
+  end
 end

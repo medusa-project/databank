@@ -1,0 +1,9 @@
+-@datafiles.each do |datafile|
+  .row
+    .col-md-2
+      =datafile.dataset.title
+    .col-md-4
+      =datafile.bytestream_name
+    .col-md-2
+      =datafile.peek_type
+
