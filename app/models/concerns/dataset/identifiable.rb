@@ -103,7 +103,7 @@ module Identifiable
 
   # register - Triggers a state move from draft to registered
   def register_doi
-    return false unless identifier_present?
+    raise("identifier required to register a doi") unless identifier_present?
 
     current_state = doi_state
 
@@ -114,11 +114,15 @@ module Identifiable
       current_state = doi_state
     end
 
-    return false unless current_state == Databank::DoiState::DRAFT
+    raise("expected draft, found: #{current_state}") unless current_state == Databank::DoiState::DRAFT
 
     Dataset.put_to_datacite(identifier, datacite_json_body(Databank::DoiEvent::REGISTER))
     current_state = doi_state
-    defined?(current_state) && current_state == Databank::DoiState::REGISTERED
+    raise("error while attempting to register with DataCite") unless defined?(current_state)
+
+    raise("expected registered, found: #{current_state}") unless current_state == Databank::DoiState::REGISTERED
+
+    return true
   end
 
   # hide - Triggers a state move from findable to registered, or deletes draft

@@ -7,10 +7,13 @@ require "mime/types"
 require "minitar"
 require "zlib"
 require "rest-client"
+require "concerns/datafile/viewable"
+require "concerns/datafile/processable"
 
 class Datafile < ActiveRecord::Base
   include ActiveModel::Serialization
   include Viewable
+  include Processable
   belongs_to :dataset
   has_many :nested_items, dependent: :destroy
 
@@ -287,16 +290,6 @@ class Datafile < ActiveRecord::Base
     return nil unless Application.storage_manager.draft_root.exist?("#{storage_key}.info")
 
     Application.storage_manager.draft_root.delete_content("#{storage_key}.info")
-  end
-
-  def initiate_processing_task
-    databank_task = DatabankTask.create_remote(self.web_id)
-    raise("error attempting to send datafile for processing: #{self.web_id}") unless databank_task
-
-    task_id = databank_task
-    raise("error attempting to create remote task: #{web_id}") unless task_id
-
-    save
   end
 
   def job
