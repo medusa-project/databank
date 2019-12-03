@@ -13,10 +13,10 @@ Rails.application.routes.draw do
   resources :user_abilities
   resources :contributors
   resources :invitees
-  resources :databank_tasks, only: [:index, :show]
   get '/databank_tasks/audit', to: 'databank_tasks#audit'
   get '/databank_tasks/pending', to: 'databank_tasks#pending'
   post '/databank_tasks/update_status', to: 'databank_tasks#update_status', defaults: {format: 'json'}
+  resources :databank_tasks, only: [:index, :show]
   resources :ingest_responses
   #mount API::Base => '/api'
 

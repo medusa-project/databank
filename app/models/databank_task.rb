@@ -38,10 +38,15 @@ class DatabankTask
 
   def self.get_remote_task(task_id)
     endpoint = "#{TASKS_URL}/tasks/#{task_id}"
-    response = RestClient.get endpoint
-    raise("problem getting remote task for task: #{task_id}") unless response.code == 200
+    begin
+      response = RestClient.get endpoint
+      raise("problem getting remote task for task: #{task_id}") unless response.code == 200
+      return JSON.parse(response)
+    rescue RestClient::NotFound
+      raise("task not found for databank task: #{task_id}")
+    end
 
-    JSON.parse(response)
+
   end
 
   def self.set_remote_task_status(task_id, new_status)
