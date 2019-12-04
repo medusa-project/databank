@@ -110,9 +110,12 @@ module Identifiable
 
     current_state = doi_state
 
+    Rails.logger.warn("current state in register_doi: #{current_state}")
+
     return true if current_state == Databank::DoiState::REGISTERED
 
     if current_state.nil?
+      Rails.logger.warn("inside nil current state detected")
       create_draft_doi
       current_state = doi_state
     end
