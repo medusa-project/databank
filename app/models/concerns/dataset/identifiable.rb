@@ -44,8 +44,6 @@ module Identifiable
   end
 
   def create_draft_doi
-    #DEBUG
-    Rails.logger.warn("inside create draft doi")
     self.identifier ||= default_identifier
     self.save!
     # should not draft doi if doi record already exists in DataCite
@@ -55,7 +53,6 @@ module Identifiable
     draft_json = %Q({"data": {"type": "dois", "attributes": {"doi": "#{self.identifier}"}}})
     response = Dataset.post_to_datacite(draft_json)
     raise("problem attempting to create draft doi code: #{response.code}, #{response.body}") if response.code != "201"
-    Rails.logger.warn("response.code: #{response.code}")
     response.code == "201"
   end
 
@@ -110,12 +107,9 @@ module Identifiable
 
     current_state = doi_state
 
-    Rails.logger.warn("current state in register_doi: #{current_state}")
-
     return true if current_state == Databank::DoiState::REGISTERED
 
-    if current_state.nil?
-      Rails.logger.warn("inside nil current state detected")
+    if current_state.nil? || current_state == Databank::DoiState::UNREGISTERED
       create_draft_doi
       current_state = doi_state
     end
