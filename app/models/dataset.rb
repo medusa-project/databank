@@ -462,6 +462,10 @@ class Dataset < ActiveRecord::Base
             review_requests.count.positive?)
   end
 
+  def error_hash(message)
+    {status: "error", error_text: message}
+  end
+
   private
 
   def generate_auth_token

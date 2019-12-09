@@ -18,6 +18,7 @@ module Complete
       e_arr += Dataset.duplicate_doi_error(dataset) || []
       e_arr += Dataset.duplicate_datafile_error(dataset) || []
       e_arr += Dataset.embargo_errors(dataset) || []
+      e_arr += Dataset.import_date_errors(dataset) || []
       return "ok" if e_arr.empty?
 
       validation_error_message = "Required elements for a complete dataset missing: "
@@ -83,7 +84,13 @@ module Complete
         return ["a delayed publication (embargo) selection for a future release date"]
       end
 
-      return nil
+      nil
+    end
+
+    def import_date_errors(dataset)
+      return ["a release date for imported dataset"] if dataset.is_import && dataset.release_date.empty?
+
+      nil
     end
   end
 end

@@ -4,57 +4,48 @@ module Publishable
   extend ActiveSupport::Concern
 
   def publish(user)
-
-    return_json = {status: :error_occurred,
-                   error_text: "Incomplete workflow in publish attempt."}
     completion_check_result = Dataset.completion_check(self, user)
 
-    return {status: :error_occurred, error_text: completion_check_result} unless completion_check_result == "ok"
-
-    release_date ||= Date.current
+    return error_hash(completion_check_result) unless completion_check_result == "ok"
 
     old_publication_state = publication_state
 
     if (old_publication_state != Databank::PublicationState::DRAFT) &&
         (!identifier || identifier == "")
-      return {status: :error_occurred,
+      return {status:     "error",
               error_text: "Missing identifier for dataset that is not a draft. Dataset: #{key}"}
     end
 
-    if old_publication_state == Databank::PublicationState::DRAFT && (!self.identifier || self.identifier == "")
+    if old_publication_state == Databank::PublicationState::DRAFT && (!identifier || identifier == "")
       self.identifier = default_identifier
     end
 
     # set publication_state
-    embargo_list = [Databank::PublicationState::Embargo::FILE, Databank::PublicationState::Embargo::METADATA]
-    publication_state = if embargo && embargo_list.include?(embargo)
-                          embargo
-                        else
-                          Databank::PublicationState::RELEASED
-                        end
+    self.publication_state = if embargo && Databank::PublicationState::EMBARGO_ARRAY.include?(embargo)
+                               embargo
+                             else
+                               Databank::PublicationState::RELEASED
+                             end
 
     if old_publication_state == Databank::PublicationState::DRAFT &&
-        publication_state != Databank::PublicationState::DRAFT
-
-      # set release date to current if not embargo
-      self.release_date = Date.current if publication_state == Databank::PublicationState::RELEASED
+        self.publication_state == Databank::PublicationState::RELEASED &&
+        !is_import
+      self.release_date = Date.current
     end
 
     save!
 
-    metadata_should_be_public = [Databank::PublicationState::RELEASED,
-                                 Databank::PublicationState::Embargo::FILE,
-                                 Databank::PublicationState::TempSuppress::FILE,
-                                 Databank::PublicationState::PermSuppress::FILE].include?(publication_state) &&
-        (hold_state.nil? || (hold_state == Databank::PublicationState::TempSuppress::NONE))
-
-    if metadata_should_be_public
-      datacite_ok = publish_doi
-    else
-      datacite_ok = register_doi
+    unless Databank::PublicationState::PUB_ARRAY.include?(self.publication_state)
+      return {status: "error", error_text: "problem publishing dataset: #{key}"}
     end
 
-    if datacite_ok
+    datacite_attempt = if self.metadata_public?
+                         publish_doi
+                       else
+                         register_doi
+                       end
+
+    if datacite_attempt[:status] == "ok"
       MedusaIngest.send_dataset_to_medusa(self)
 
       if IDB_CONFIG[:local_mode] && IDB_CONFIG[:local_mode] == true
@@ -69,12 +60,10 @@ module Publishable
           notification.deliver_now
         end
       end
-      return {status: :ok, old_publication_state: old_publication_state}
+      {status: "ok", old_publication_state: old_publication_state}
     else
-      return {status: :error_occurred,
-              error_text: "Error in publishing dataset has been logged for review by the Research Data Service."}
+      error_hash("Error in publishing dataset has been logged for review by the Research Data Service.")
     end
-
-    return_json
   end
+
 end

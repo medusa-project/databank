@@ -46,131 +46,168 @@ module Identifiable
   def create_draft_doi
     self.identifier ||= default_identifier
     self.save!
+
     # should not draft doi if doi record already exists in DataCite
-    raise("record already exists in DataCite for dataset #{key}") if !doi_infohash.empty? && doi_infohash.has_key(:data)
+    if !doi_infohash.empty? && doi_infohash.has_key(:data)
+      return error_hash("record already exists in DataCite for dataset #{key}")
+    end
 
     # minimal json to create draft record
     draft_json = %Q({"data": {"type": "dois", "attributes": {"doi": "#{self.identifier}"}}})
     response = Dataset.post_to_datacite(draft_json)
-    raise("problem attempting to create draft doi code: #{response.code}, #{response.body}") if response.code != "201"
-    response.code == "201"
+    unless response.code == "201"
+      return error_hash("problem attempting to create draft doi code: #{response.code}, #{response.body}")
+    end
+
+    {status: "ok"}
   end
 
-  # publish - Triggers a state move from draft or registered to findable
+  # publish - Triggers a state move to findable
+  # should not be done for datasets with embargoed metadata
   def publish_doi
 
-    raise "no identifier present" unless identifier_present?
-    #return false unless identifier_present?
+    return error_hash("no identifier present") unless identifier_present?
+
+    return error_hash("Cannot make dataset findable if metadata can not be public.") unless self.metadata_public?
 
     current_state = doi_state
 
     return update_doi if current_state == Databank::DoiState::FINDABLE
 
     if current_state.nil? || current_state == Databank::DoiState::UNREGISTERED
-      result =  create_draft_doi
-      raise("unknown problem creating draft doi") if result.nil?
+      draft_result = create_draft_doi
+      return draft_result unless draft_result[:status] == "ok"
+
       sleep(1.5)
       current_state = doi_state
     end
 
     unless [Databank::DoiState::DRAFT, Databank::DoiState::REGISTERED].include?(current_state)
-      raise "invalid state for publish_doi, must be draft or registered: #{current_state}"
+      return {status: "error", error_text: "invalid state for publish_doi, must be draft or registered, not: #{current_state}"}
     end
 
     publish_body = datacite_json_body(Databank::DoiEvent::PUBLISH)
 
     Dataset.put_to_datacite(identifier, publish_body)
 
+    sleep(1.5)
     current_state = doi_state
 
     unless defined?(current_state) && current_state == Databank::DoiState::FINDABLE
-      raise("problem sending metadata to DataCite #{key}")
+      return {status: "error", error_text: "problem sending metadata to DataCite #{key}"}
     end
 
-    #return false unless defined?(current_state) && current_state == Databank::DoiState::FINDABLE
-
-    if publication_state != Databank::PublicationState::RELEASED
-      if update(publication_state: Databank::PublicationState::RELEASED)
-        return true
-      else
-        raise "problem updating dataset record to published state"
-      end
-    end
-
-    true
-
+    {status: "ok"}
   end
 
   # register - Triggers a state move from draft to registered
   def register_doi
-    raise("identifier required to register a doi") unless identifier_present?
+    return error_hash("no identifier present") unless identifier_present?
 
-    current_state = doi_state
-
-    return true if current_state == Databank::DoiState::REGISTERED
-
-    if current_state.nil? || current_state == Databank::DoiState::UNREGISTERED
-      create_draft_doi
-      current_state = doi_state
+    current_state = doi_state || Databank::DoiState::UNREGISTERED
+    if current_state == Databank::DoiState::REGISTERED
+      if update(publication_state: self.publication_state)
+        return {status: "ok"}
+      else
+        return error_hash("problem updating Illinois Data Bank dataset during doi registration #{self.key}")
+      end
     end
 
-    raise("expected draft, found: #{current_state}") unless current_state == Databank::DoiState::DRAFT
+    if current_state == Databank::DoiState::UNREGISTERED
+      create_draft_doi
+      sleep(1.5)
+      return error_hash("problem creating draft #{self.key}") unless doi_state == Databank::DoiState::DRAFT
+    end
 
-    Dataset.put_to_datacite(identifier, datacite_json_body(Databank::DoiEvent::REGISTER))
     current_state = doi_state
-    raise("error while attempting to register with DataCite") unless defined?(current_state)
+    unless current_state == Databank::DoiState::DRAFT
+      return("invalid DataCite state (#{current_state}) to register dataset: #{self.key}")
+    end
 
-    raise("expected registered, found: #{current_state}") unless current_state == Databank::DoiState::REGISTERED
+    # DOI confirmed to be in a draft state with DataCite at this point
+    Dataset.put_to_datacite(identifier, datacite_json_body(Databank::DoiEvent::REGISTER))
+    sleep(1.5)
+    current_state = doi_state
+    unless current_state.defined && current_state == Databank::DoiState::REGISTERED
+      return error_hash("error while attempting to register with DataCite #{self.key}")
+    end
 
-    return true
+    {status: "ok"}
   end
 
   # hide - Triggers a state move from findable to registered, or deletes draft
   def hide_doi
-    return false unless identifier_present?
+    return error_hash("no identifier present") unless identifier_present?
+
     current_state = doi_state
-    return true if current_state.nil?
 
-    return delete_doi if current_state == Databank::DoiState::DRAFT
+    case current_state
+    when Databank::DoiState::UNREGISTERED, Databank::DoiState::REGISTERED
+      return {status: "ok"}
+    when Databank::DoiState::DRAFT
+      return delete_doi
+    when Databank::DoiState::FINDABLE
+      Dataset.put_to_datacite(identifier, datacite_json_body(Databank::DoiEvent::HIDE))
+      sleep(1.5)
+    else
+      return
+    end
 
-    return true if current_state == Databank::DoiState::REGISTERED
-
-    return false unless current_state == Databank::DoiState::FINDABLE
-
-    Dataset.put_to_datacite(identifier, datacite_json_body(Databank::DoiEvent::HIDE))
-
-    doi_state == Databank::DoiState::REGISTERED
+    if doi_state == Databank::DoiState::REGISTERED
+      {status: "ok"}
+    else
+      error_hash("problem changing state in DataCite metadata store for dataset #{self.key}")
+    end
   end
 
+  # update_doi assumes that this dataset is in the correct publication state already
   def update_doi
-    return nil unless identifier_present?
+    return error_hash("no identifier present") unless identifier_present?
 
     if doi_state == Databank::DoiState::FINDABLE && publication_state != Databank::PublicationState::RELEASED
-      update(publication_state: Databank::PublicationState::RELEASED)
+      if update(publication_state: Databank::PublicationState::RELEASED)
+        return {status: "ok"}
+      else
+        return error_hash("error updating Illinois Data Bank for dataset #{self.key}")
+      end
     end
 
     response = Dataset.put_to_datacite(identifier, datacite_json_body(nil))
 
-    response.code == "200"
+    return error_hash("error updating DataCite for #{self.key}, code: #{response.code}") unless response.code == "200"
+
+    {status: "ok"}
   end
 
   def delete_doi
-    return nil unless identifier_present?
+    return error_hash("no identifier present") unless identifier_present?
 
-    url = URI("#{URI_BASE}/#{identifier}")
-    http = Net::HTTP.new(url.host, url.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request = Net::HTTP::Delete.new(url)
-    request["accept"] = "application/vnd.api+json"
-    request["content-type"] = "application/vnd.api+json"
-    request.basic_auth(CLIENT_ID, PASSWORD)
-    request.body = json_body
-    http.request(request)
+    current_state = doi_state
+    case current_state
+    when nil, Databank::DoiState::UNREGISTERED
+      return {status: "ok"}
+    when Databank::DoiState::DRAFT
+      url = URI("#{URI_BASE}/#{identifier}")
+      http = Net::HTTP.new(url.host, url.port)
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      request = Net::HTTP::Delete.new(url)
+      request["accept"] = "application/vnd.api+json"
+      request["content-type"] = "application/vnd.api+json"
+      request.basic_auth(CLIENT_ID, PASSWORD)
+      request.body = json_body
+      response = http.request(request)
+      unless response.code == "204"
+        return error_hash("error removing DOI from DataCite for #{self.key}, code: #{response.code}")
+      end
+      return {status: "ok"}
+    else
+      return error_hash("can only remove DataCite DOIs in draft state for #{self.key}, not: #{current_state}")
+    end
   end
 
   def datacite_json_body(event)
-    return nil unless identifier_present?
+    raise("identifier required for DataCite JSON body generation, key: #{self.key}") unless identifier_present?
 
     json_body = %Q({"data": {"id": "#{identifier}", "type": "dois", "attributes": {)
     if event.present?
@@ -621,7 +658,7 @@ module Identifiable
   end
 
   def doi_info_from_datacite
-    return nil unless identifier_present?
+    raise("cannot get information from DataCite without identifier for #{self.key}") unless identifier_present?
 
     url = URI("#{URI_BASE}/#{identifier.downcase}")
     http = Net::HTTP.new(url.host, url.port)
@@ -639,6 +676,5 @@ module Identifiable
   rescue JSON::ParserError
     false
   end
-
 
 end

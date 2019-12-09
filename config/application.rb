@@ -28,6 +28,8 @@ module Databank
       FILE = 'files permanently suppressed'
       METADATA = 'metadata permanently suppressed'
     end
+    PUB_ARRAY = [Databank::PublicationState::RELEASED, Databank::PublicationState::Embargo::FILE, Databank::PublicationState::Embargo::METADATA]
+    EMBARGO_ARRAY = [Databank::PublicationState::Embargo::FILE, Databank::PublicationState::Embargo::METADATA]
   end
 
   class FileMode
