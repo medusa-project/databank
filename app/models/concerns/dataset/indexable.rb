@@ -162,11 +162,14 @@ module Indexable
                              resource_type: 'Dataset',
                              ability: 'view_files',
                              'resource_id': self.id).pluck(:user_uid)
-    uid_parts = uids.collect {|x| x.split("@") || [x]}
+    net_ids = []
 
-    netids = uid_parts.collect {|x| x[0] }
+    uids.each do |uid|
+      uid_parts = uid.split("@")
+      net_ids << uid_parts[0]
+    end
 
-    netids.uniq - internal_editor_netids
+    net_ids.uniq - internal_editor_netids
 
   end
 
@@ -175,11 +178,14 @@ module Indexable
                              resource_type: 'Dataset',
                              ability: 'update',
                              'resource_id': id).pluck(:user_uid)
-    uid_parts = uids.collect {|x| x.split("@") || [x]}
+    net_ids = []
 
-    netids = uid_parts.collect {|x| x[0] }
+    uids.each do |uid|
+      uid_parts = uid.split("@")
+      net_ids << uid_parts[0]
+    end
 
-    netids.uniq
+    net_ids.uniq
   end
 
   def grant_numbers
