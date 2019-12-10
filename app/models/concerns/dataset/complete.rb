@@ -88,7 +88,7 @@ module Complete
     end
 
     def import_date_errors(dataset)
-      return ["a release date for imported dataset"] if dataset.is_import && dataset.release_date.empty?
+      return ["a release date for imported dataset"] if dataset.is_import && dataset.release_date.nil?
 
       nil
     end
