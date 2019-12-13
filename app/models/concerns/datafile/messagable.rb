@@ -7,14 +7,21 @@ module Messagable
     def read_only_message
       msg_first = %Q[<p>Illinois Data Bank system is undergoing maintenance, and <strong>datasets cannot currently be added or edited.</strong>]
       msg_last = %Q[<br/>Please <a href="/help#contact" target="_blank">contact the Research Data Service Team</a> with questions.</p>]
-      msg_path = IDB_CONFIG[:read_only_msg_path]
-      return msg_first + msg_last unless File.file?(msg_path)
+      msg_middle = Datafile.read_only_msg_middle
 
-      msg_middle = File.read(msg_path)
-      msg_middle.strip!
       return msg_first + " " + msg_last unless msg_middle.present?
 
       msg_first + " " + msg_middle + " " + msg_last
+    end
+
+    def read_only_msg_middle
+      msg_path = IDB_CONFIG[:read_only_msg_path]
+      return nil unless File.file?(msg_path)
+
+      msg_middle = File.read(msg_path)
+      msg_middle.strip!
+      return nil unless msg_middle.present?
+      msg_middle
     end
 
     def update_read_only_message(new_message)

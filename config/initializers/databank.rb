@@ -15,6 +15,7 @@ IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, 'config', 'databa
 STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, 'config', 'medusa_storage.yml'))).result)[Rails.env]
 
 Application.read_only_message = Datafile.read_only_message
+Application.read_only_msg_middle = Datafile.read_only_msg_middle
 Application.storage_manager = StorageManager.new
 # Initializes a Markdown parser
 Application.markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)

@@ -29,6 +29,7 @@ class WelcomeController < ApplicationController
 
     respond_to do |format|
       if params.has_key?('msg_middle') && Datafile.update_read_only_message(params['msg_middle'])
+        Application.read_only_msg_middle = params['msg_middle']
         Application.read_only_message = Datafile.read_only_message
         format.html {render :index, notice: "Message was successfully updated."}
         format.json {render :index, status: :ok}
