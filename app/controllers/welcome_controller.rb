@@ -25,10 +25,23 @@ class WelcomeController < ApplicationController
 
   def on_failed_registration; end
 
+  def update_read_only_message
+    respond_to do |format|
+      if params.has_key?(:msg_middle) && Datafile.update_read_only_message(params[:msg_middle])
+        format.html {redirect_to @datafile, notice: 'Datafile was successfully updated.'}
+        format.json {render :show, status: :ok, location: @datafile}
+      elsif Datafile.remove_read_only_message
+
+      else
+        format.html {render :index}
+        format.json {render json: @datafile.errors, status: :unprocessable_entity}
+      end
+    end
+  end
+
   def robots
     # Don't forget to delete /public/robots.txt
     respond_to :text
   end
-
 
 end

@@ -10,17 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_26_204129) do
+ActiveRecord::Schema.define(version: 2019_12_13_144414) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "admin", id: :serial, force: :cascade do |t|
-    t.text "read_only_alert"
-    t.integer "singleton_guard"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "audits", id: :serial, force: :cascade do |t|
     t.integer "auditable_id"
@@ -374,16 +367,6 @@ ActiveRecord::Schema.define(version: 2019_07_26_204129) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "username"
-  end
-
-  create_table "visualizations", force: :cascade do |t|
-    t.string "dataset_key"
-    t.string "datafile_web_id"
-    t.text "data"
-    t.text "options"
-    t.string "chart_class"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
 end

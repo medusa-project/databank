@@ -1,16 +1,5 @@
 -if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
-  .alert.alert-alert
-    Illinois Data Bank system is undergoing maintenance, and
-    %strong datasets cannot currently be added or edited.
-    -if Admin.instance.read_only_alert && Admin.instance.read_only_alert != ''
-      %br
-      =Admin.instance.read_only_alert
-    %br
-    Please
-    %a(href="/help#contact" target="_blank")
-      contact the Research Data Service Team
-    with questions.
-
+  =render partial: 'read_only_alert'
 -else
   %div(id="main-form-top")
     = form_for(@dataset, :html => {"data-toggle" => "validator", :multipart => true, :role => "form", :enctype => "multipart/form-data", :class => "input-append dataset-form" }) do |f|

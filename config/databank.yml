@@ -81,3 +81,5 @@ medusa_info:
   password: <%= Rails.application.credentials[Rails.env.to_sym][:medusa_info][:password] %>
 
 :testers: "tester@example.com,not_tester@example.com"
+
+:read_only_msg_path:  <%= Rails.root.join('public', 'read_only_msg_plus.txt') %>

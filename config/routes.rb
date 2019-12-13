@@ -108,6 +108,8 @@ Rails.application.routes.draw do
 
   get '/', to: 'welcome#index'
 
+  post '/welcome/update_read_only_message', to: 'welcome#update_read_only_message'
+
   get '/check_token', to: 'welcome#check_token'
 
   get '/restoration_events', to: 'restoration_events#index'

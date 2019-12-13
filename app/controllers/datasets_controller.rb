@@ -1483,7 +1483,7 @@ class DatasetsController < ApplicationController
   end
 
   def set_file_mode(mode = Databank::FileMode::WRITE_READ)
-    Databank::Application.file_mode = mode
+    Application.file_mode = mode
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

@@ -761,9 +761,9 @@ function reset_confirm_msg() {
 
 }
 
-function clear_alert_message() {
+function clear_msg_middle() {
 
-    $('#read-only-alert-text').val("");
+    $('#msg_middle').val("");
     //$('.edit_admin').submit();
 }
 

@@ -62,6 +62,11 @@ module Publishable
       end
       {status: "ok", old_publication_state: old_publication_state}
     else
+      self.publication_state = old_publication_state
+      self.save!
+      Rails.logger.warn(datacite_attempt.to_yaml)
+      notification = DatabankMailer.error("Error in publishing dataset #{self.key}: #{datacite_attempt.to_yaml}")
+      notification.deliver_now
       error_hash("Error in publishing dataset has been logged for review by the Research Data Service.")
     end
   end

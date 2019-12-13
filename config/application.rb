@@ -128,6 +128,10 @@ module Databank
 
     attr_accessor :file_mode
 
+    attr_accessor :read_only_message
+
+    attr_accessor :read_only_msg_middle
+
     attr_accessor :settings
 
     attr_accessor :storage_manager
