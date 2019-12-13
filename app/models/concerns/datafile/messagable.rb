@@ -5,8 +5,8 @@ module Messagable
 
   class_methods do
     def read_only_message
-      msg_first = %Q[Illinois Data Bank system is undergoing maintenance, and <strong>datasets cannot currently be added or edited.</strong>]
-      msg_last = %Q[<br/>Please <a href="/help#contact" target="_blank">contact the Research Data Service Team</a> with questions.]
+      msg_first = %Q[<p>Illinois Data Bank system is undergoing maintenance, and <strong>datasets cannot currently be added or edited.</strong>]
+      msg_last = %Q[<br/>Please <a href="/help#contact" target="_blank">contact the Research Data Service Team</a> with questions.</p>]
       msg_path = IDB_CONFIG[:read_only_msg_path]
       return msg_first + msg_last unless File.file?(msg_path)
 
