@@ -31,10 +31,12 @@ class WelcomeController < ApplicationController
       if params.has_key?('msg_middle') && Datafile.update_read_only_message(params['msg_middle'])
         Application.read_only_msg_middle = params['msg_middle']
         Application.read_only_message = Datafile.read_only_message
-        format.html {render :index, notice: "Message was successfully updated."}
+        format.html {redirect_to "/", notice: "Message was successfully updated."}
         format.json {render :index, status: :ok}
       elsif Datafile.remove_read_only_message
-        format.html {render :index, notice: "Message was successfully removed."}
+        Application.read_only_msg_middle = nil
+        Application.read_only_message = Datafile.read_only_message
+        format.html {redirect_to "/", notice: "Message was successfully removed."}
         format.json {render :index, status: :ok}
       else
         format.html {render :index, notice: "unexpected error"}
