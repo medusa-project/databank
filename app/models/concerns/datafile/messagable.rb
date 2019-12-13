@@ -23,7 +23,7 @@ module Messagable
 
       msg_path = IDB_CONFIG[:read_only_msg_path]
       worked = false
-      File.open(msg_path, 'w') do |f|
+      File.open(msg_path, 'w') do |file|
         bytes_written = file.write(new_message)
         worked = bytes_written > 0
       end
