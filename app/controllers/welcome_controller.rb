@@ -28,13 +28,13 @@ class WelcomeController < ApplicationController
   def update_read_only_message
     respond_to do |format|
       if params.has_key?(:msg_middle) && Datafile.update_read_only_message(params[:msg_middle])
-        format.html {redirect_to @datafile, notice: 'Datafile was successfully updated.'}
-        format.json {render :show, status: :ok, location: @datafile}
+        format.html {render :index, notice: 'Message was successfully updated.'}
+        format.json {render :index, status: :ok}
       elsif Datafile.remove_read_only_message
 
       else
         format.html {render :index}
-        format.json {render json: @datafile.errors, status: :unprocessable_entity}
+        format.json {render json: {}, status: :unprocessable_entity}
       end
     end
   end
