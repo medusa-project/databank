@@ -18,6 +18,9 @@ module Messagable
     end
 
     def update_read_only_message(new_message)
+
+      Rails.logger.warn("new_message: #{new_message}")
+
       return false unless new_message.present?
       return false unless remove_read_only_message
 

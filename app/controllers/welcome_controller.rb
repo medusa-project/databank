@@ -26,14 +26,17 @@ class WelcomeController < ApplicationController
   def on_failed_registration; end
 
   def update_read_only_message
+
     respond_to do |format|
-      if params.has_key?(:msg_middle) && Datafile.update_read_only_message(params[:msg_middle])
-        format.html {render :index, notice: 'Message was successfully updated.'}
+      if params.has_key?('msg_middle') && Datafile.update_read_only_message(params['msg_middle'])
+        Application.read_only_message = Datafile.read_only_message
+        format.html {render :index, notice: "Message was successfully updated."}
         format.json {render :index, status: :ok}
       elsif Datafile.remove_read_only_message
-
+        format.html {render :index, notice: "Message was successfully removed."}
+        format.json {render :index, status: :ok}
       else
-        format.html {render :index}
+        format.html {render :index, notice: "unexpected error"}
         format.json {render json: {}, status: :unprocessable_entity}
       end
     end
