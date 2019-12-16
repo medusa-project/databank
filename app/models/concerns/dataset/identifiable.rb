@@ -88,12 +88,15 @@ module Identifiable
 
     publish_body = datacite_json_body(Databank::DoiEvent::PUBLISH)
 
-    Dataset.put_to_datacite(identifier, publish_body)
+    response = Dataset.put_to_datacite(identifier, publish_body)
 
     sleep(1.5)
     current_state = doi_state
 
     unless defined?(current_state) && current_state == Databank::DoiState::FINDABLE
+      Rails.logger.warn("Error in publishing dataset #{self.key}: #{response}")
+      notification = DatabankMailer.error("Error in publishing dataset #{self.key}: #{response}")
+      notification.deliver_now
       return {status: "error", error_text: "problem sending metadata to DataCite #{key}"}
     end
 

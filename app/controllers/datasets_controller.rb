@@ -1185,15 +1185,15 @@ class DatasetsController < ApplicationController
         Rails.logger.warn "publish failed, but sent ok status for #{dataset.key}"
         format.html {redirect_to dataset_path(@dataset.key), notice: 'Error in publishing dataset has been logged for review by the Research Data Service.'}
         format.json {render json: {status: :unprocessable_entity}, content_type: request.format, :layout => false}
-      elsif  publish_attempt_result[:status] == "ok" && @dataset.save
+      elsif publish_attempt_result[:status] == "ok" && @dataset.save
         pub_notice = Dataset.deposit_confirmation_notice(publish_attempt_result[:old_publication_state], @dataset)
         format.html {redirect_to dataset_path(@dataset.key), notice: pub_notice}
         format.json {render json: :show, status: :ok, location: dataset_path(@dataset.key)}
-      elsif publish_attempt_result[:status] == :error_occurred
+      elsif publish_attempt_result[:status] == "error"
         format.html {redirect_to dataset_path(@dataset.key), notice: publish_attempt_result[:error_text]}
         format.json {render json: {status: :unprocessable_entity}, content_type: request.format, :layout => false}
       else
-        Rails.logger.warn "unexepected error in attempt to publish:"
+        Rails.logger.warn "unexepected error in attempt to publish: #{publish_attempt_result}"
         format.html {redirect_to dataset_path(@dataset.key), notice: 'Error in publishing dataset has been logged for review by the Research Data Service.'}
         format.json {render json: {status: :unprocessable_entity}, content_type: request.format, :layout => false}
       end
