@@ -94,7 +94,7 @@ module Identifiable
     current_state = doi_state
 
     unless defined?(current_state) && current_state == Databank::DoiState::FINDABLE
-      Rails.logger.warn("Error in publishing dataset #{self.key}: #{response}")
+      Rails.logger.warn("Error in publishing dataset #{self.key}. publish_body: #{publish_body}, response: #{response}")
       notification = DatabankMailer.error("Error in publishing dataset #{self.key}: #{response}")
       notification.deliver_now
       return {status: "error", error_text: "problem sending metadata to DataCite #{key}"}
