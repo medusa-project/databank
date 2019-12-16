@@ -19,7 +19,7 @@ class IllinoisExpertsClient
 
     encoded_email = CGI.escape(stripped_email)
 
-    uri = URI.parse("#{ENDPOINT}/persons?q=#{encoded_email}&apiKey=#{KEY}")
+    uri = URI.parse("#{ENDPOINT}/persons/#{encoded_email}?apiKey=#{KEY}")
 
     return nil unless uri.respond_to?(:request_uri)
 
@@ -39,26 +39,13 @@ class IllinoisExpertsClient
       begin
         doc = Nokogiri::XML(response.body)
         doc.remove_namespaces!
-        count = doc.xpath("//count").first.content
-        return nil unless count.to_i > 0
-
-        return IllinoisExpertsClient.exact_match(stripped_email, doc)
-
+        return doc
       rescue Nokogiri::XML::SyntaxError
         return nil
       end
     else
       return nil
     end
-  end
-
-  def self.exact_match(email, doc)
-    items = doc.xpath("//items")
-    items.each do |item_node|
-      external_id = item_node.attr('externalId')
-      return item if external_id == email
-    end
-    nil
   end
 
   def self.example
