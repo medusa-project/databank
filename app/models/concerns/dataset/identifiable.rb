@@ -635,13 +635,16 @@ module Identifiable
 
       case response
       when Net::HTTPUnauthorized
-        raise("credentials could not be verified")
+        Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
+        return nil
       when Net::HTTPUnprocessableEntity, Net::HTTPNotFound
-        raise("#{response.code} in post to datacite: #{json_body}")
+        Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
+        return nil
       when Net::HTTPSuccess, Net::HTTPRedirection
         return response
       else
-        raise("unexpected response from DataCite: #{response.code}, #{response.body}")
+        Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
+        return nil
       end
     end
 
@@ -659,13 +662,16 @@ module Identifiable
 
       case response
       when Net::HTTPUnauthorized
-        raise("credentials could not be verified")
+        Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
+        return nil
       when Net::HTTPUnprocessableEntity, Net::HTTPNotFound
-        raise("#{response.code} in put to datacite: #{json_body}")
+        Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
+        return nil
       when Net::HTTPSuccess, Net::HTTPRedirection
         return response
       else
-        raise("unexpected response from DataCite in put_to_datacite: #{response.code}, #{response.body}")
+        Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
+        return nil
       end
     end
 
