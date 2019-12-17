@@ -639,9 +639,6 @@ module Identifiable
       when Net::HTTPUnprocessableEntity, Net::HTTPNotFound
         raise("#{response.code} in post to datacite: #{json_body}")
       when Net::HTTPSuccess, Net::HTTPRedirection
-        response_body = response.body
-        raise("response not valid JSON: #{response_body}") unless json?(response_body)
-
         return response
       else
         raise("unexpected response from DataCite: #{response.code}, #{response.body}")
@@ -666,9 +663,6 @@ module Identifiable
       when Net::HTTPUnprocessableEntity, Net::HTTPNotFound
         raise("#{response.code} in put to datacite: #{json_body}")
       when Net::HTTPSuccess, Net::HTTPRedirection
-        response_body = response.body
-        raise("response not valid JSON in put_to_datacite: #{response_body}") unless json?(response_body)
-
         return response
       else
         raise("unexpected response from DataCite in put_to_datacite: #{response.code}, #{response.body}")
