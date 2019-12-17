@@ -658,7 +658,7 @@ module Identifiable
       request["content-type"] = "application/vnd.api+json"
       request.basic_auth(CLIENT_ID, PASSWORD)
       request.body = json_body
-      http.request(request)
+      response = http.request(request)
 
       case response
       when Net::HTTPUnauthorized
