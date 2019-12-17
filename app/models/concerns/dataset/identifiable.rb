@@ -88,15 +88,12 @@ module Identifiable
 
     publish_body = datacite_json_body(Databank::DoiEvent::PUBLISH)
 
-    response = Dataset.put_to_datacite(identifier, publish_body)
+    Dataset.put_to_datacite(identifier, publish_body)
 
     sleep(1.5)
     current_state = doi_state
 
     unless defined?(current_state) && current_state == Databank::DoiState::FINDABLE
-      Rails.logger.warn("Error in publishing dataset #{self.key}. publish_body: #{publish_body}, response: #{response}")
-      notification = DatabankMailer.error("Error in publishing dataset #{self.key}: #{response}")
-      notification.deliver_now
       return {status: "error", error_text: "problem sending metadata to DataCite #{key}"}
     end
 
@@ -634,7 +631,21 @@ module Identifiable
       request["content-type"] = "application/vnd.api+json"
       request.basic_auth(CLIENT_ID, PASSWORD)
       request.body = json_body
-      http.request(request)
+      response = http.request(request)
+
+      case response
+      when Net::HTTPUnauthorized
+        raise("credentials could not be verified")
+      when Net::HTTPUnprocessableEntity, Net::HTTPNotFound
+        raise("#{response.code} in post to datacite: #{json_body}")
+      when Net::HTTPSuccess, Net::HTTPRedirection
+        response_body = response.body
+        raise("response not valid JSON: #{response_body}") unless json?(response_body)
+
+        return response
+      else
+        raise("unexpected response from DataCite: #{response.code}, #{response.body}")
+      end
     end
 
     def put_to_datacite(identifier, json_body)
@@ -648,6 +659,20 @@ module Identifiable
       request.basic_auth(CLIENT_ID, PASSWORD)
       request.body = json_body
       http.request(request)
+
+      case response
+      when Net::HTTPUnauthorized
+        raise("credentials could not be verified")
+      when Net::HTTPUnprocessableEntity, Net::HTTPNotFound
+        raise("#{response.code} in put to datacite: #{json_body}")
+      when Net::HTTPSuccess, Net::HTTPRedirection
+        response_body = response.body
+        raise("response not valid JSON in put_to_datacite: #{response_body}") unless json?(response_body)
+
+        return response
+      else
+        raise("unexpected response from DataCite in put_to_datacite: #{response.code}, #{response.body}")
+      end
     end
 
   end
