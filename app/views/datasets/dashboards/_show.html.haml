@@ -29,6 +29,9 @@
               -else
                 .label.label-default
                   ="released: N/A"
+              -if Databank::PublicationState::PUB_ARRAY.include? @dataset.publication_state
+                %button(id="resendPubnoteBtn" type="btn" class="btn btn-primary" onclick="sendPublicationNotice()" )
+                  Send Publication Notice
             %br
 
           - if @completion_check == 'ok'
@@ -51,6 +54,7 @@
           %span(class="glyphicon glyphicon-eye-open" )
 
           = @dataset.visibility
+
 
         .col-md-3
 

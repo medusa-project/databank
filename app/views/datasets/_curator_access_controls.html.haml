@@ -1,10 +1,6 @@
 %form(role="form" id="suppression_form")
   %input(id="suppression_action" type="hidden" name="suppression_action" )
 .curator-only
-  -if Databank::PublicationState::PUB_ARRAY.include? @dataset.publication_state
-    %button(id="resendPubnoteBtn" type="btn" class="btn btn-lg btn-primary" onclick="sendPublicationNotice()" )
-      Send Publication Notice
-
   .panel-group(id="access" role="tablist" aria-multiselectable="true")
     .panel.panel-default
       .panel-heading(role="tab" id="accessHeading")
