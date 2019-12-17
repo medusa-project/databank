@@ -29,6 +29,7 @@
               -else
                 .label.label-default
                   ="released: N/A"
+              &nbsp;
               = " | "
               -if Databank::PublicationState::PUB_ARRAY.include? @dataset.publication_state
                 %button(id="resendPubnoteBtn" type="btn" class="btn btn-primary" onclick="sendPublicationNotice()" )

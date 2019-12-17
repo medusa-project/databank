@@ -44,7 +44,7 @@
       - flash.each do |key, value|
         %div{class: "alert alert-#{key}"}
           = sanitize(value)
-      %div{id: "message", class: "alert alert-notice"}
+      %div{id: "message"}
       - if current_page?(root_path) || ( request.original_fullpath.include?('featured_researchers') && request.original_fullpath.include?('preview')  )
         #welcome-image.hidden-xs
           #welcome-overlay

@@ -884,9 +884,9 @@ function sendPublicationNotice(){
         dataType: "json",
         url: "/datasets/" + dataset_key + "/send_publication_notice"
     }).done(function(data, textStatus, jqXHR) {
-        $('.message').html("<p>Publication notification sent.</p>");
+        $('#message').html("<p class='alert alert-notice'>Publication notification sent.</p>");
     }).fail(function (xhr, textStatus, errorThrown) {
-        $('.message').html("<p>Problem sending notification. " +  xhr.responseText + "</p>");
+        $('#message').html("<p class='alert alert-alert'>Problem sending notification. " +  xhr.responseText + "</p>");
         console.log("error" + textStatus);
         console.log(xhr.responseText);
     });
