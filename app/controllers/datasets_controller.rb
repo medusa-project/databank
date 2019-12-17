@@ -12,7 +12,7 @@ class DatasetsController < ApplicationController
 
   protect_from_forgery except: [:cancel_box_upload, :validate_change2published]
   skip_before_action :verify_authenticity_token, :only => :validate_change2published
-  before_action :set_dataset, only: [:show, :edit, :update, :destroy, :download_link, :download_endNote_XML, :download_plaintext_citation, :download_BibTeX, :download_RIS, :publish, :zip_and_download_selected, :request_review, :reserve_doi, :cancel_box_upload, :citation_text, :changelog, :serialization, :download_metrics, :confirmation_message, :get_current_token, :get_new_token, :send_to_medusa, :validate_change2published, :update_permissions, :add_review_request, :confirm_review]
+  before_action :set_dataset, only: [:show, :edit, :update, :destroy, :download_link, :download_endNote_XML, :download_plaintext_citation, :download_BibTeX, :download_RIS, :publish, :zip_and_download_selected, :request_review, :reserve_doi, :cancel_box_upload, :citation_text, :changelog, :serialization, :download_metrics, :confirmation_message, :get_current_token, :get_new_token, :send_to_medusa, :validate_change2published, :update_permissions, :add_review_request, :confirm_review, :send_publication_notice]
 
   @@num_box_ingest_deamons = 10
 
@@ -1197,6 +1197,15 @@ class DatasetsController < ApplicationController
         format.html {redirect_to dataset_path(@dataset.key), notice: 'Error in publishing dataset has been logged for review by the Research Data Service.'}
         format.json {render json: {status: :unprocessable_entity}, content_type: request.format, :layout => false}
       end
+    end
+  end
+
+  def send_publication_notice
+    authorize! :manage, @dataset
+    if @dataset.send_publication_notice
+      {render: {status: :ok}, content_type: :json, layout: false}
+    else
+      {render: {status: :unprocessable_entity}, content_type: :json, layout: false}
     end
   end
 

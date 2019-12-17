@@ -42,8 +42,9 @@
           %small
             To leverage emerging technologies, the Illinois Data Bank is moving to the cloud. As part of the transition, from 2/16 through 2/18, the Illinois Data Bank will not be able to accept new datasets or any changes. Full functionality should return by 2/19, though very brief service interruptions may be experienced.
       - flash.each do |key, value|
-        %div{:class => "alert alert-#{key}"}
+        %div{class: "alert alert-#{key}"}
           = sanitize(value)
+      %div{id: "message", class: "alert alert-notice"}
       - if current_page?(root_path) || ( request.original_fullpath.include?('featured_researchers') && request.original_fullpath.include?('preview')  )
         #welcome-image.hidden-xs
           #welcome-overlay

@@ -3,6 +3,19 @@
 module Publishable
   extend ActiveSupport::Concern
 
+  def send_publication_notice
+    begin
+      notification = DatabankMailer.confirm_deposit(key)
+      notification.deliver_now
+      return true
+    rescue StandardError => e
+      notification = DatabankMailer.confirmation_not_sent(key, e)
+      notification.deliver_now
+      return false
+    end
+    return false
+  end
+
   def publish(user)
     completion_check_result = Dataset.completion_check(self, user)
 
@@ -52,13 +65,7 @@ module Publishable
         Rails.logger.warn "Dataset #{key} succesfully deposited."
         return {status: :ok, old_publication_state: old_publication_state}
       else
-        begin
-          notification = DatabankMailer.confirm_deposit(key)
-          notification.deliver_now
-        rescue StandardError => e
-          notification = DatabankMailer.confirmation_not_sent(key, e)
-          notification.deliver_now
-        end
+        send_publication_notice
       end
       {status: "ok", old_publication_state: old_publication_state}
     else
