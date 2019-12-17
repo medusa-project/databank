@@ -77,6 +77,7 @@ Rails.application.routes.draw do
     member do
       post 'permissions', to: 'datasets#update_permissions'
       get 'confirm_review', to: 'datasets#confirm_review'
+      match 'send_publication_notice', to: 'datasets#send_publication_notice', via: [:get, :post]
     end
 
     resources :datafiles do
