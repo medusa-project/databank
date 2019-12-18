@@ -128,7 +128,7 @@ module Identifiable
     Dataset.put_to_datacite(identifier, datacite_json_body(Databank::DoiEvent::REGISTER))
     sleep(1.5)
     current_state = doi_state
-    unless current_state.defined && current_state == Databank::DoiState::REGISTERED
+    unless current_state == Databank::DoiState::REGISTERED
       return error_hash("error while attempting to register with DataCite #{self.key}")
     end
 
