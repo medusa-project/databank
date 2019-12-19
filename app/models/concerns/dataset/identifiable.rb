@@ -389,6 +389,14 @@ module Identifiable
         family_name_node = doc.create_element("familyName")
         family_name_node.content = creator.family_name
         family_name_node.parent = creator_node
+        # ORCID assumption hard-coded here, but in the model there is a field for identifier_scheme
+        if creator.identifier.present?
+          creator_identifier_node = doc.create_element("nameIdentifier")
+          creator_identifier_node["schemeURI"] = "http://orcid.org/"
+          creator_identifier_node["nameIdentifierScheme"] = "ORCID"
+          creator_identifier_node.content = creator.identifier.to_s
+          creator_identifier_node.parent = creator_node
+        end
         if creator.email.split('@').last == "illinois.edu"
           affiliation_node = doc.create_element("affiliation")
           affiliation_node["affiliationIdentifier"] = "https://ror.org/047426m28"
@@ -401,15 +409,6 @@ module Identifiable
         creator_name_node["nameType"] = "Organizational"
         creator_name_node.content = creator.list_name
         creator_name_node.parent = creator_node
-      end
-
-      # ORCID assumption hard-coded here, but in the model there is a field for identifier_scheme
-      if creator.identifier.present?
-        creator_identifier_node = doc.create_element("nameIdentifier")
-        creator_identifier_node["schemeURI"] = "http://orcid.org/"
-        creator_identifier_node["nameIdentifierScheme"] = "ORCID"
-        creator_identifier_node.content = creator.identifier.to_s
-        creator_identifier_node.parent = creator_node
       end
       creator_node.parent = creators_node
     end
