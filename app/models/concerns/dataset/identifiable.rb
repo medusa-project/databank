@@ -173,6 +173,7 @@ module Identifiable
     end
 
     response = Dataset.put_to_datacite(identifier, datacite_json_body(nil))
+    return error_hash("error updating DataCite for #{self.key}") unless response
 
     return error_hash("error updating DataCite for #{self.key}, code: #{response.code}") unless response.code == "200"
 
