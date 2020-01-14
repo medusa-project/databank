@@ -2,52 +2,6 @@ require 'csv'
 
 namespace :fix do
 
-  desc 'clear User Ability reocrds'
-  task :clear_user_ability => :environment do
-    UserAbility.all.destroy_all
-  end
-
-  desc 'fix internal user ability records'
-  task :update_internal_ability => :environment do
-
-    Dataset.all.each do |dataset|
-
-      editor_uids = UserAbility.where(user_provider: 'shibboleth',
-                               resource_type: 'Dataset',
-                               ability: 'edit',
-                               'resource_id': dataset.id).pluck(:user_uid)
-      editor_uid_parts = editor_uids.collect {|x| x.split("@") || [x]}
-
-      editor_netids = editor_uid_parts.collect {|x| x[0] }
-
-      editor_netids.uniq!
-
-      viewer_uids = UserAbility.where(user_provider: 'shibboleth',
-                               resource_type: 'Dataset',
-                               ability: 'view_files',
-                               'resource_id': dataset.id).pluck(:user_uid)
-      viewer_uid_parts = viewer_uids.collect {|x| x.split("@") || [x]}
-
-      viewer_netids = viewer_uid_parts.collect {|x| x[0] }
-
-      viewer_netids.uniq!
-
-      UserAbility.all.destroy_all
-
-      next if viewer_netids.empty?
-
-      viewer_netids.each do |netid|
-        UserAbility.grant_internal(dataset, netid, :read)
-        UserAbility.grant_internal(dataset, netid, :view_files)
-      end
-
-      editor_netids.each do |netid|
-        UserAbility.grant_internal(dataset, netid, :update)
-      end
-    end
-    
-  end
-
   desc 'hide embargoed resources'
   task :hide_embargoed => :environment do
     Dataset.where(publication_state: Databank::PublicationState::RELEASED,
@@ -81,24 +35,7 @@ namespace :fix do
       end
     end
   end
-
-  # to be run AFTER switching dev system config to test system
-  desc 'add dev dois to DataCite test system'
-  task :add_test_dois => :environment do
-    Dataset.all.each do |dataset|
-      next unless dataset.identifier&.present?
-      dataset.identifier = dataset.default_identifier
-      dataset.save
-      next if dataset.publication_state == Databank::PublicationState::DRAFT
-
-      if dataset.metadata_public?
-        puts "problem publishing #{dataset.key}" unless dataset.publish_doi
-      else
-        puts "problem registering #{dataset.key}" unless dataset.register_doi
-      end
-    end
-  end
-
+  
   desc 'update datacite metadata store'
   task :update_datacite => :environment do
     datasets = Dataset.select(&:metadata_public?)
