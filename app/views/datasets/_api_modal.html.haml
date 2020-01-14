@@ -45,12 +45,7 @@
               .command-to-copy
                 %pre
                   %code
-                    -if IDB_CONFIG[:root_url_text].include?("dev")
-                      ="python databank_api_client.py #{@dataset.key} [TOKEN] myfile.csv development"
-                    -elsif IDB_CONFIG[:root_url_text].include?("aws")
-                      ="python databank_api_client.py #{@dataset.key} [TOKEN] myfile.csv aws_test"
-                    -else
-                      ="python databank_api_client.py #{@dataset.key} [TOKEN] myfile.csv "
+                    ="python databank_api_client.py #{@dataset.key} [TOKEN] myfile.csv "
 
               %p
                 For more help, and for notes on using this script on
