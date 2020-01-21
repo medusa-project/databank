@@ -180,6 +180,7 @@ gem "modernizr-rails"
 
 # use rubocop linter to support consisitent style
 gem "rubocop", require: false
+gem "rubocop-rails"
 gem "rubocop-performance"
 
 # Access an IRB console on exception pages or by using <%= console %> in views
