@@ -12,7 +12,7 @@ Arguments:
  FILE      input file
  DATASET   dataset key, obtained on screen opened by API button on dataset edit screen
  TOKEN     API token, obtained on screen opened by API button on dataset edit screen
- SYSTEM    optional system indicator (local | development | production | aws_test), default is production
+ SYSTEM    optional system indicator (local | development | production ), default is production
 """
 from __future__ import division
 from __future__ import print_function
@@ -44,11 +44,11 @@ size = 0
 mime_type = 'unknown/unknown'
 
 # If a SYSTEM argument is provided, validate it, otherwise use production as default.
-valid_system_list = ["local", "development", "production", "aws_test"]
+valid_system_list = ["local", "development", "production"]
 if not any(system in s for s in valid_system_list):
 
    print(arguments)
-   print("SYSTEM argument must be one of local|development|production|pilot|aws_test, production is default.\n")
+   print("SYSTEM argument must be one of local|development|production, production is default.\n")
    sys.exit("Usage: python databank_api_client_v2.py <DATASET> <TOKEN> <FILE> [<SYSTEM>]")
 
 # ensure file exists
@@ -70,16 +70,12 @@ if system == 'production':
    upload_endpoint += "s://databank.illinois.edu/files/"
 
 elif system == 'development':
-   create_endpoint += "s://rds-dev.library.illinois.edu/api/dataset/" + dataset_key + "/datafile"
-   upload_endpoint += "s://rds-dev.library.illinois.edu/files/"
+   create_endpoint += "s://demo.databank.illinois.edu/api/dataset/" + dataset_key + "/datafile"
+   upload_endpoint += "s://demo.databank.illinois.edu/files/"
 
 elif system == 'local':
    create_endpoint += "://localhost:3000/api/dataset/" + dataset_key + "/datafile"
    upload_endpoint += "://localhost:3000/files/"
-
-elif system == 'aws_test':
-   create_endpoint += "s://aws-databank-alb.library.illinois.edu/api/dataset/" + dataset_key + "/datafile"
-   upload_endpoint += "s://aws-databank-alb.library.illinois.edu/files/"
 
 else:
    sys.exit('Internal Error, please contact the Research Data Service databank@library.illinois.edu')

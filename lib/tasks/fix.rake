@@ -311,16 +311,6 @@ namespace :fix do
 
   end
 
-  desc 'make aws-test datasets not findable in datacite'
-  task :redact_aws_test => :environment do
-
-    Dataset.where.not(publication_state: Databank::PublicationState::DRAFT).where('identifier LIKE ?', '%TESTIDB%').each do |dataset|
-      puts dataset.title
-      dataset.hide_doi
-    end
-
-  end
-
   desc 'fix specific test records in datacite'
   task :fix_datacite_custom => :environment do
 

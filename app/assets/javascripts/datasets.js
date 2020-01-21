@@ -778,7 +778,7 @@ function getNewToken() {
 function setTokenExamples(upload_token, token_expiration) {
     $('.current-token').html("<p><strong>Current HTTP Authentication Token: </strong>" + upload_token + "<br/><strong>Expires:</strong> " + (new Date(token_expiration)).toISOString() + "</p>");
     $('#token-button-text').text('View token for command line tools');
-    $('.command-to-copy').html("<pre><code>python databank_api_client_v2.py " + dataset_key + " " + upload_token + " myfile.csv aws_test</code></pre>");
+    $('.command-to-copy').html("<pre><code>python databank_api_client_v2.py " + dataset_key + " " + upload_token + " myfile.csv</code></pre>");
     $('.curl-to-copy').html("<pre><code>curl -F &quot;binary=@my_datafile.csv&quot; -H &quot;Authorization: Token token=" + upload_token + "&quot; -H &quot;Transfer-Encoding: chunked&quot; -X POST https://databank.illinois.edu/api/dataset/" + dataset_key + "/datafile -o output.txt</code></pre>");
 }
 
