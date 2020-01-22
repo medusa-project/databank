@@ -129,14 +129,10 @@ because dataset not found for key: #{dataset_key}."
   end
 
   def prepend_system_code(subject)
-    if IDB_CONFIG[:root_url_text].include?('dev')
-      '[DEV: ' + subject
-    elsif IDB_CONFIG[:root_url_text].include?('demo')
+    if IDB_CONFIG[:root_url_text].include?('demo')
       '[DEMO: ' + subject
     elsif IDB_CONFIG[:root_url_text].include?('localhost')
       '[LOCAL: ' + subject
-    elsif IDB_CONFIG[:root_url_text].include?('aws-demo')
-      '[TEST: ' + subject
     else
       '[' + subject
     end

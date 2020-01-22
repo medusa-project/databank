@@ -9,7 +9,7 @@ development:
   :fail_if_no_peer_cert: false
   :heartbeat: 10
 
-aws-demo:
+demo:
   :ssl: true
   :host: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:host] %>
   :user: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:user] %>
@@ -20,7 +20,7 @@ aws-demo:
   :fail_if_no_peer_cert: false
   :heartbeat: 10
 
-aws-production:
+production:
   :ssl: true
   :host: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:host] %>
   :user: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:user] %>

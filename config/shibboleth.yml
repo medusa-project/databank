@@ -13,7 +13,7 @@ development:
     name: displayName
     email: mail
 
-aws-demo:
+demo:
   host: demo.databank.illinois.edu
   uid_field: eppn
   extra_fields:
@@ -28,7 +28,7 @@ aws-demo:
     name: displayName
     email: mail
 
-aws-production:
+production:
   host: databank.illinois.edu
   uid_field: eppn
   extra_fields:

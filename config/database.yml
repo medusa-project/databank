@@ -20,21 +20,14 @@ development:
   password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
   host: localhost
 
-staging:
+production:
   <<: *default
   database: databank
   username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>
   password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
   host: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:host] %>
 
-aws-production:
-  <<: *default
-  database: databank
-  username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>
-  password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
-  host: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:host] %>
-
-aws-demo:
+demo:
   <<: *default
   database: databank
   username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>

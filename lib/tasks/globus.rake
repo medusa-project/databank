@@ -2,7 +2,7 @@ namespace :globus do
   desc 'copy datasets to globus'
   task :copy_demo_datasets => :environment do
     # start with one demo system dataset
-    return unless Rails.env == "aws-demo"
+    return unless Rails.env == "demo"
     datasets = Dataset.where(key: 'idbdev-5230909')
     datasets.each do |dataset|
       puts "copying dataset: #{dataset.title}, key: #{dataset.key}"

@@ -6,9 +6,12 @@
 # server 'example.com', user: 'deploy', roles: %w{app db web}, my_property: :my_value
 # server 'example.com', user: 'deploy', roles: %w{app web}, other_property: :other_value
 # server 'db.example.com', user: 'deploy', roles: %w{db}
-server 'databank-prod.library.illinois.edu', user: 'databank', roles: %w{app db web}
+server 'databank-demo.library.illinois.edu', user: 'databank', roles: %w{app db web}
 
-set :rails_env, 'aws-production'
+set :rails_env, 'demo'
+
+# RAILS_GROUPS env value for the assets:precompile task. Default to nil.
+set :rails_assets_groups, :assets
 
 set :ssh_options, {
     forward_agent: true,
@@ -70,6 +73,7 @@ set :deploy_to, '/home/databank'
 #     auth_methods: %w(publickey password)
 #     # password: 'please use keys'
 #   }
+
 namespace :deploy do
 
   after :restart, :clear_cache do
@@ -83,7 +87,7 @@ namespace :deploy do
 
   task :restart do
     on roles(:app) do
-      execute "RAILS_ENV=aws-production ~/shared/bin/databank restart"
+      execute "RAILS_ENV=demo ~/shared/bin/databank restart"
     end
   end
 

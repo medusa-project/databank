@@ -12,14 +12,14 @@ test:
     log_level: INFO
     path: /solr/test
 
-aws-demo:
+demo:
   solr:
     hostname: aws-rabbitmq-solr-demo.library.illinois.edu
     port: 8983
     log_level: WARNING
     path: /solr/databank
 
-aws-production:
+production:
   solr:
     hostname: solr-prod.library.illinois.edu
     port: 8983

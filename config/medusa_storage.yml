@@ -16,7 +16,7 @@ test:
       :type: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_type] %>
       :path: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_path] %>
 
-aws-demo:
+demo:
   :storage:
     - :name: draft
       :type: s3
@@ -47,7 +47,7 @@ aws-demo:
       :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:globus_bucket] %>
       :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:globus_ingest_prefix] %>
 
-aws-production:
+production:
   :storage:
     - :name: draft
       :type: s3
