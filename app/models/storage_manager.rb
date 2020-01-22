@@ -8,7 +8,7 @@ class StorageManager
     self.root_set = MedusaStorage::RootSet.new(storage_config)
     self.draft_root = self.root_set.at('draft')
     self.medusa_root = self.root_set.at('medusa')
-    if Rails.env.aws_production? || Rails.env.aws_demo?
+    if Rails.env.aws-production? || Rails.env.aws-demo?
       self.globus_download_root = self.root_set.at("globus_download")
       self.globus_ingest_root = self.root_set.at("globus_ingest")
     end
