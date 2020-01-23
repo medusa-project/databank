@@ -13,7 +13,7 @@ namespace :globus do
         puts "does not already exist in the globus download area"
         Application.storage_manager.globus_download_root.copy_content_to("#{dataset.key}/#{datafile.binary_name}",
                                                                          datafile.current_root,
-                                                                         datafile.key)
+                                                                         datafile.storage_key)
       end
     end
   end
