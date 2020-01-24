@@ -13,7 +13,7 @@ TEST_PREFIXES = ["10.70114"]
 
 IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, 'config', 'databank.yml'))).result)
 STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, 'config', 'medusa_storage.yml'))).result)[Rails.env]
-GLOBUS_CONFIG = YAML.load(File.read(Rails.root, 'config', 'globus.yml'))[Rails.env]
+GLOBUS_CONFIG = YAML.load_file(File.read(Rails.root, 'config', 'globus.yml'))[Rails.env]
 
 Application.read_only_message = Datafile.read_only_message
 Application.read_only_msg_middle = Datafile.read_only_msg_middle
