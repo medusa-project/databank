@@ -13,6 +13,7 @@ require 'concerns/dataset/versionable'
 require 'concerns/dataset/publishable'
 require 'concerns/dataset/exportable'
 require 'concerns/dataset/identifiable'
+require 'concerns/dataset/globusable'
 require "action_pack"
 require "openssl"
 
@@ -27,6 +28,7 @@ class Dataset < ActiveRecord::Base
   include Publishable
   include Exportable
   include Identifiable
+  include Globusable
 
   audited except: %i[creator_text key complete is_test is_import updated_at embargo], allow_mass_assignment: true
   has_associated_audits
