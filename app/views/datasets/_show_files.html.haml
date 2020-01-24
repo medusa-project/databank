@@ -121,6 +121,6 @@
           -if @dataset.globus_downloadable?
             %a(href="#{@dataset.globus_download_dir}" class="btn btn-primary idb" )
               Download from Globus
-          -else
-            %a(href="#{@dataset.globus_download_dir}" class="btn btn-primary idb" )
-              Download from Globus (not detected as downloadable)
+            -#%a(href="#" data-toggle="modal" data-target="#globusModal" tabindex="-1" )
+            -#  %span(class="far fa-question-circle")
+            -#    what's this?

@@ -3,10 +3,9 @@ class HelpController < ApplicationController
     if params.has_key?('key')
       @dataset = Dataset.find_by_key(params['key'])
     end
-    # Rails.logger.warn @dataset.to_yaml
   end
 
-  def sensitive
+  def globus
   end
 
   def help_mail
@@ -20,10 +19,6 @@ class HelpController < ApplicationController
       redirect_to '/help'
     end
 
-  end
-
-  def quarantine
-    # not quarantining yet - just passing through for now
   end
 
 end
