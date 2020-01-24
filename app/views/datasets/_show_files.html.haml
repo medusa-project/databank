@@ -118,5 +118,5 @@
 
                             .row.loading.text-center
                               %i(class="far fa-spinner fa-spin fa-4x view-load-spinner spinner_#{datafile.web_id}" )
-          %a(href="#{@dataset.globus_download_dir}")
-            =@dataset.globus_download_dir
+          %a(href="#{@dataset.globus_download_dir}" class="btn btn-primary idb" )
+            Download from Globus
