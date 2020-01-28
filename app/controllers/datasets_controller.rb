@@ -790,14 +790,14 @@ class DatasetsController < ApplicationController
   def get_new_token
     authorize! :update, @dataset
     @token = @dataset.new_token
-    render json: {token: @token.identifier, expires: @token.expires}
+    render json: {token: @token.identifier}
   end
 
   def get_current_token
     authorize! :update, @dataset
     if @dataset.current_token && !@dataset.current_token.nil?
       @token = @dataset.current_token
-      render json: {token: @token.identifier, expires: @token.expires}
+      render json: {token: @token.identifier}
     else
       @token = nil
       render json: {token: "token"}

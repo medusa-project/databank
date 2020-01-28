@@ -207,24 +207,19 @@ class Dataset < ActiveRecord::Base
   end
 
   def current_token
-    tokens = Token.where("dataset_key = ? AND expires > ?", self.key, DateTime.now.in_time_zone)
+    tokens = Token.where(dataset_key: self.key)
     return tokens.first if tokens.count == 1
 
     if tokens.count > 1
       tokens.destroy_all
-      new_token
+      return new_token
     end
     nil
   end
 
-  def expired_token_only?
-    expired_tokens = Token.where("dataset_key = ? AND expires < ?", self.key, DateTime.now.in_time_zone)
-    expired_tokens.count.positive? && current_token.nil?
-  end
-
   def new_token
     Token.where(dataset_key: key).destroy_all
-    Token.create(dataset_key: key, identifier: generate_auth_token, expires: (Time.now.in_time_zone + 3.days))
+    Token.create(dataset_key: key, identifier: generate_auth_token)
   end
 
   def set_primary_contact

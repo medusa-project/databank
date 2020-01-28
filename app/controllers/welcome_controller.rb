@@ -9,7 +9,7 @@ class WelcomeController < ApplicationController
   def check_token
     if params.has_key?('token')
 
-      identified_tokens = Token.where("identifier = ? AND expires > ?", params['token'], DateTime.now)
+      identified_tokens = Token.where(identifier: params['token'])
 
       if identified_tokens.count > 0
         render :json => {'isValid': true, 'token': params['token']}

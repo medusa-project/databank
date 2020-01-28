@@ -311,10 +311,9 @@ ready = function () {
     $("#api-modal-btn").click(function () {
 
         $.getJSON("/datasets/" + dataset_key + "/get_current_token", function (data) {
-            if (data.token && data.expires && data.token != "none") {
+            if (data.token && data.token != "none") {
                 $('#token-header').text('Here is your token:');
-                setTokenExamples(data.token, data.expires);
-
+                setTokenExamples(data.token);
             } else {
                 getNewToken();
             }
@@ -771,12 +770,12 @@ function getNewToken() {
     $.getJSON("/datasets/" + dataset_key + "/get_new_token", function (data) {
         window.has_current_token = true;
         $('#token-header').text('Here is your new token:');
-        setTokenExamples(data.token, data.expires);
+        setTokenExamples(data.token);
     });
 }
 
-function setTokenExamples(upload_token, token_expiration) {
-    $('.current-token').html("<p><strong>Current HTTP Authentication Token: </strong>" + upload_token + "<br/><strong>Expires:</strong> " + (new Date(token_expiration)).toISOString() + "</p>");
+function setTokenExamples(upload_token) {
+    $('.current-token').html("<p><strong>Current HTTP Authentication Token: </strong>" + upload_token);
     $('#token-button-text').text('View token for command line tools');
     $('.command-to-copy').html("<pre><code>python databank_api_client_v2.py " + dataset_key + " " + upload_token + " myfile.csv</code></pre>");
     $('.curl-to-copy').html("<pre><code>curl -F &quot;binary=@my_datafile.csv&quot; -H &quot;Authorization: Token token=" + upload_token + "&quot; -H &quot;Transfer-Encoding: chunked&quot; -X POST https://databank.illinois.edu/api/dataset/" + dataset_key + "/datafile -o output.txt</code></pre>");

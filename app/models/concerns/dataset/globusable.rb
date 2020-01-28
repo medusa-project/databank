@@ -21,6 +21,18 @@ module Globusable
   end
 
   def globus_ingest_dir
+    if Rails.env.demo? || Rails.env.production?
+      "#{GLOBUS_CONFIG[:ingest_url_base]}#{self.key}"
+    else
+      "https://app.globus.org"
+    end
+  end
+
+  def ingest_from_globus
+    raise "invalid environment, must be demo or production" unless Rails.env.demo? || Rails.env.production?
+
+
 
   end
+
 end

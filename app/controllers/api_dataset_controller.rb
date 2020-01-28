@@ -81,7 +81,7 @@ class ApiDatasetController < ApplicationController
 
   def authenticate_token
     authenticate_or_request_with_http_token do |token, options|
-      identified_tokens = Token.where("identifier = ? AND dataset_key = ? AND expires > ?", token, @dataset.key, DateTime.now)
+      identified_tokens = Token.where("identifier = ? AND dataset_key = ?", token, @dataset.key)
       if identified_tokens.count == 1
         return identified_tokens.first
       elsif identified_token > 1
