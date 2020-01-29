@@ -44,7 +44,7 @@ namespace :globus do
 
   task :test_listing => :environment do
 
-    test_key = "DEMOIDB-0690780"
+    test_key = "DEMOIDB-0690780/"
     raise "files not found on Globus endpoint" unless Application.storage_manager.draft_root.exist?(test_key)
     keys = Application.storage_manager.draft_root.file_keys(test_key)
     keys.each do |key|
