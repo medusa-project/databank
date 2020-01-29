@@ -144,6 +144,9 @@ Rails.application.routes.draw do
   # nuke
   get '/datasets/:id/nuke', to: 'datasets#nuke'
 
+  # import from Globus
+  get '/datasets/:id/import_from_globus', to: 'datasets#import_from_globus', defaults: {format: 'json'}
+
   # review agreement
   get '/review_deposit_agreement', to: 'datasets#review_deposit_agreement'
   get '/datasets/:id/review_deposit_agreement', to: 'datasets#review_deposit_agreement'

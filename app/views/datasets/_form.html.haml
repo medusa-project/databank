@@ -335,7 +335,7 @@
               %button(type="button" id="portable-upload" class="btn btn-success fileinput-button" )
                 %span(class="large-text" )
                   &#x1f45f;
-                Arrange physical pickup, Globus, or SFTP
+                Arrange physical pickup or Globus
             %td
               %span(class="fas upload-consistent fa-circle")
             %td
@@ -359,20 +359,6 @@
                 %span(class="fas upload-inconsistent fa-circle")
               %td.curator-only
                 %span(class="fas upload-unavailable fa-circle")
-
-            %tr.row
-              %td.curator-only
-                %button(type="button" class="btn btn-success fileinput-button" onclick="importFromSFTP()" )
-                  %span(class="glyphicon glyphicon-link")
-                  Import from SFTP
-              %td.curator-only
-                %span(class="fas upload-consistent fa-circle")
-              %td.curator-only
-                %span(class="fas upload-consistent fa-circle")
-              %td.curator-only
-                %span(class="fas upload-inconsistent fa-adjust")
-              %td.curator-only
-                %span(class="far upload-unavailable fa-circle")
 
     %hr
     %div(id="divFiles")

@@ -30,7 +30,7 @@ module Globusable
 
   def ingest_from_globus
     raise "invalid environment, must be demo or production" unless Rails.env.demo? || Rails.env.production?
-    raise "files not found on Globus endpoint" unless Application.storage_manager.draft_root.exist?(self.key)
+    raise "files not found on Globus endpoint" unless Application.storage_manager.draft_root.exist?("#{self.key}/")
     storage_keys = Application.storage_manager.draft_root.file_keys(self.key)
     storage_keys.each do |storage_key|
       key_parts = storage_key.split("/")

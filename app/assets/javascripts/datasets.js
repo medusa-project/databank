@@ -880,5 +880,18 @@ function sendPublicationNotice(){
     });
 }
 
+function importFromGlobus(){
+    $.ajax({
+        dataType: "json",
+        url: "/datasets/" + dataset_key + "/import_from_globus"
+    }).done(function(data, textStatus, jqXHR) {
+        $('#message').html("<div class='alert alert-alert'><p>Refresh page to see datafiles</p></div>");
+    }).fail(function (xhr, textStatus, errorThrown) {
+        $('#message').html("<div class='alert alert-alert'><p>Problem ingesting datafiles. " +  xhr.responseText + "</p></div>");
+        console.log("error" + textStatus);
+        console.log(xhr.responseText);
+    });
+}
+
 $(document).ready(ready);
 $(document).on('page:load', ready);

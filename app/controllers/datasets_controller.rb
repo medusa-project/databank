@@ -22,6 +22,15 @@ class DatasetsController < ApplicationController
   # enable zipline
   include Zipline
 
+  def import_from_globus
+    begin
+      @dataset.import_from_globus
+      render json: {}, status: :ok
+    rescue StandardError => error
+      render json: {error: error.message}, status: :unprocessable_entity
+    end
+  end
+
   # GET /datasets
   # GET /datasets.json
   def index
