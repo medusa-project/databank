@@ -249,7 +249,7 @@
             %td.col-md-1
               < 15 GB
             %td.col-md-1
-              < 100 GB
+              < 50 GB
             %td.col-md-1
               < 2 TB
 
@@ -295,7 +295,6 @@
             %td
               %span(class="far upload-unavailable fa-circle")
 
-
           - if can? :manage, @dataset
             %tr.row
               %td.curator-only
@@ -336,7 +335,7 @@
               %button(type="button" id="portable-upload" class="btn btn-success fileinput-button" )
                 %span(class="large-text" )
                   &#x1f45f;
-                Request physical pickup
+                Arrange physical pickup, Globus, or SFTP
             %td
               %span(class="fas upload-consistent fa-circle")
             %td
@@ -345,6 +344,35 @@
               %span(class="fas upload-consistent fa-circle")
             %td
               %span(class="fas upload-consistent fa-circle")
+
+          - if can? :manage, @dataset
+            %tr.row
+              %td.curator-only
+                %button(type="button" class="btn btn-success fileinput-button" onclick="importFromGlobus()" )
+                  %span(class="glyphicon glyphicon-link")
+                  Import from Globus
+              %td.curator-only
+                %span(class="fas upload-consistent fa-circle")
+              %td.curator-only
+                %span(class="fas upload-consistent fa-circle")
+              %td.curator-only
+                %span(class="fas upload-inconsistent fa-circle")
+              %td.curator-only
+                %span(class="fas upload-unavailable fa-circle")
+
+            %tr.row
+              %td.curator-only
+                %button(type="button" class="btn btn-success fileinput-button" onclick="importFromSFTP()" )
+                  %span(class="glyphicon glyphicon-link")
+                  Import from SFTP
+              %td.curator-only
+                %span(class="fas upload-consistent fa-circle")
+              %td.curator-only
+                %span(class="fas upload-consistent fa-circle")
+              %td.curator-only
+                %span(class="fas upload-inconsistent fa-adjust")
+              %td.curator-only
+                %span(class="far upload-unavailable fa-circle")
 
     %hr
     %div(id="divFiles")
