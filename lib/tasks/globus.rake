@@ -3,7 +3,7 @@ namespace :globus do
   task :copy_demo_datasets => :environment do
     # start with one demo system dataset
     return unless Rails.env == "demo"
-    datasets = Dataset.where(publication_state: Databank::PublicationState::RELEASED)
+    datasets = Dataset.select(&:files_public?)
     datasets.each do |dataset|
       puts "copying dataset: #{dataset.title}, key: #{dataset.key}"
       dataset.datafiles.each do |datafile|
@@ -25,7 +25,7 @@ namespace :globus do
   task :copy_prod_datasets => :environment do
     # start with one demo system dataset
     return unless Rails.env == "production"
-    datasets = Dataset.where(publication_state: Databank::PublicationState::RELEASED)
+    datasets = Dataset.select(&:files_public?)
     datasets.each do |dataset|
       puts "copying dataset: #{dataset.title}, key: #{dataset.key}"
       datasets.each do |dataset|
@@ -40,17 +40,6 @@ namespace :globus do
         end
       end
     end
-  end
-
-  task :test_listing => :environment do
-
-    test_key = "DEMOIDB-0690780/"
-    raise "files not found on Globus endpoint" unless Application.storage_manager.draft_root.exist?(test_key)
-    keys = Application.storage_manager.draft_root.file_keys(test_key)
-    keys.each do |key|
-      puts key
-    end
-
   end
 
 end

@@ -1143,16 +1143,25 @@ class DatasetsController < ApplicationController
 
   def permanently_suppress_files
     authorize! :manage, @dataset
-    @dataset.publication_state = Databank::PublicationState::PermSuppress::FILE
-    @dataset.hold_state = Databank::PublicationState::PermSuppress::FILE
-    @dataset.tombstone_date = Date.current
-    respond_to do |format|
-      if @dataset.save
-        format.html {redirect_to dataset_path(@dataset.key), notice: %Q[Dataset files have been permanently supressed.]}
-        format.json {render :show, status: :ok, location: dataset_path(@dataset.key)}
-      else
-        format.html {redirect_to dataset_path(@dataset.key), notice: %Q[Error - see log.]}
-        format.json {render json: @dataset.errors, status: :unprocessable_entity}
+      @dataset.publication_state = Databank::PublicationState::PermSuppress::FILE
+      @dataset.hold_state = Databank::PublicationState::PermSuppress::FILE
+      @dataset.tombstone_date = Date.current
+    begin
+      @dataset.remove_from_globus_download
+      respond_to do |format|
+        if @dataset.save
+          format.html {redirect_to dataset_path(@dataset.key), notice: %Q[Dataset files have been permanently supressed.]}
+          format.json {render :show, status: :ok, location: dataset_path(@dataset.key)}
+        else
+          format.html {redirect_to dataset_path(@dataset.key), notice: %Q[Error - see log.]}
+          format.json {render json: @dataset.errors, status: :unprocessable_entity}
+        end
+      end
+    rescue StandardError
+      @dataset.save
+      respond_to do |format|
+        format.html {redirect_to dataset_path(@dataset.key), notice: %Q[Failed to remove from Globus Download.]}
+        format.json {render json: {}, status: :unprocessable_entity}
       end
     end
   end
@@ -1164,13 +1173,26 @@ class DatasetsController < ApplicationController
     @dataset.tombstone_date = Date.current.iso8601
     @dataset.embargo = Databank::PublicationState::Embargo::NONE
     @dataset.save
-    if @dataset.hide_doi
-      format.html {redirect_to dataset_path(@dataset.key), notice: %Q[Dataset has been permanently supressed in Illinois Data Bank and DataCite.]}
-      format.json {render :show, status: :ok, location: dataset_path(@dataset.key)}
-    else
-      format.html {redirect_to dataset_path(@dataset.key), alert: %Q[Dataset metadata and files have been permenantly suppressed in Illinois Data Bank, but DataCite has not been updated.]}
-      format.json {render :show, status: :unprocessable_entity, location: dataset_path(@dataset.key)}
+    begin
+      @dataset.hide_doi
+      @dataset.remove_from_globus_download
+      respond_to do |format|
+        if @dataset.save
+          format.html {redirect_to dataset_path(@dataset.key), notice: %Q[Dataset has been permanently supressed in Illinois Data Bank and DataCite.]}
+          format.json {render :show, status: :ok, location: dataset_path(@dataset.key)}
+        else
+          format.html {redirect_to dataset_path(@dataset.key), %Q[Error - see log.]}
+          format.json {render json: @dataset.errors, status: :unprocessable_entity}
+        end
+      end
+    rescue StandardError
+      @dataset.save
+      respond_to do |format|
+        format.html {redirect_to dataset_path(@dataset.key), alert: %Q[Failed to remove from DataCite or Globus Download.]}
+        format.json {render json: {}, status: :unprocessable_entity}
+      end
     end
+
   end
 
   def request_review
