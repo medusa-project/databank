@@ -12,7 +12,31 @@ class DatasetsController < ApplicationController
 
   protect_from_forgery except: [:cancel_box_upload, :validate_change2published]
   skip_before_action :verify_authenticity_token, :only => :validate_change2published
-  before_action :set_dataset, only: [:show, :edit, :update, :destroy, :download_link, :download_endNote_XML, :download_plaintext_citation, :download_BibTeX, :download_RIS, :publish, :zip_and_download_selected, :request_review, :reserve_doi, :cancel_box_upload, :citation_text, :changelog, :serialization, :download_metrics, :confirmation_message, :get_current_token, :get_new_token, :send_to_medusa, :validate_change2published, :update_permissions, :add_review_request, :confirm_review, :send_publication_notice]
+  before_action :set_dataset, only: [:show,
+                                     :edit,
+                                     :update,
+                                     :destroy,
+                                     :download_link,
+                                     :download_endNote_XML,
+                                     :download_plaintext_citation,
+                                     :download_BibTeX,
+                                     :download_RIS,
+                                     :publish,
+                                     :zip_and_download_selected,
+                                     :request_review,
+                                     :cancel_box_upload,
+                                     :citation_text,
+                                     :serialization,
+                                     :download_metrics,
+                                     :confirmation_message,
+                                     :get_current_token,
+                                     :get_new_token,
+                                     :send_to_medusa,
+                                     :validate_change2published,
+                                     :update_permissions,
+                                     :confirm_review,
+                                     :send_publication_notice,
+                                     :import_from_globus]
 
   @@num_box_ingest_deamons = 10
 
