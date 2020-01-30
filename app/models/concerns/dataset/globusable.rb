@@ -37,7 +37,7 @@ module Globusable
       name_part = key_parts.last
       existing_datafile = Datafile.find_by(dataset_id: self.id, binary_name: name_part)
       next if existing_datafile
-      
+
       obj_size = Application.storage_manager.draft_root.size(storage_key)
       Datafile.create(dataset_id: self.id,
                       binary_name: name_part,
