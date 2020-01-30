@@ -91,6 +91,7 @@ class Dataset < ActiveRecord::Base
 
   before_create :set_key
   after_create :store_agreement
+  after_create :ensure_globus_ingest_dir
   before_save :set_primary_contact
   before_destroy :remove_system_files
   before_destroy :destroy_audit

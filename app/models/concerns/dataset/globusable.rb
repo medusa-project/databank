@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'net/http'
+require 'aws-sdk-s3'
+
 module Globusable
   extend ActiveSupport::Concern
   def globus_downloadable?
@@ -18,6 +21,23 @@ module Globusable
       "https://app.globus.org"
     end
 
+  end
+
+  def ensure_globus_ingest_dir
+    return false unless Rails.env.demo? || Rails.env.production?
+
+    return true if Application.storage_manager.globus_ingest_root.exist?("#{self.key}/")
+
+    if IDB_CONFIG[:aws][:s3_mode] == true
+      bucket = Rails.application.credentials[Rails.env.to_sym][:storage][:draft_bucket]
+      prefix = Rails.application.credentials[Rails.env.to_sym][:storage][:draft_prefix]
+      dir_key = "#{prefix}/#{self.key}/"
+      client = Application.aws_client
+      client.put_object(bucket: bucket, key: dir_key)
+      Application.storage_manager.globus_ingest_root.exist?("#{self.key}/")
+    else
+      false
+    end
   end
 
   def globus_ingest_dir
