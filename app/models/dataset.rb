@@ -95,6 +95,8 @@ class Dataset < ActiveRecord::Base
   before_save :set_primary_contact
   before_destroy :remove_system_files
   before_destroy :destroy_audit
+  before_destroy :remove_globus_ingest_dir
+  before_destroy :remove_from_globus_download
 
   def to_param
     key

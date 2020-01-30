@@ -24,7 +24,7 @@ module Globusable
   end
 
   def ensure_globus_ingest_dir
-    return false unless Rails.env.demo? || Rails.env.production?
+    return nil unless Rails.env.demo? || Rails.env.production?
 
     return true if Application.storage_manager.globus_ingest_root.exist?("#{self.key}/")
 
@@ -36,7 +36,7 @@ module Globusable
       client.put_object(bucket: bucket, key: dir_key)
       Application.storage_manager.globus_ingest_root.exist?("#{self.key}/")
     else
-      false
+      nil
     end
   end
 
@@ -77,6 +77,18 @@ module Globusable
       Application.storage_manager.globus_download_root.delete_content(storage_key)
     end
     Application.storage_manager.globus_download_root.delete_content("#{self.key}/")
+  end
+
+  def remove_globus_ingest_dir
+    return nil unless Rails.env.demo? || Rails.env.production?
+
+    return nil unless Application.storage_manager.globus_ingest_root.exist?("#{self.key}/")
+
+    storage_keys = Application.storage_manager.globus_ingest_root.file_keys(self.key)
+    storage_keys.each do |storage_key|
+      Application.storage_manager.globus_ingest_root.delete_content(storage_key)
+    end
+    Application.storage_manager.globus_ingest_root.delete_content("#{self.key}/")
   end
 
 end
