@@ -38,7 +38,7 @@
                           -if @dataset.globus_downloadable?
                             %button(class="btn btn-primary" type="button" onclick='window.location.href = "#{@dataset.globus_download_dir}";')
                               %span
-                                =image_tag("globus.png", size: "24")
+                                =image_tag("globus.png", size: "24x18")
                               Open in Globus File Manager
                             %a(href="/help#globus") More about Globus
                     -if dataset.complete_datafiles.count > 0
