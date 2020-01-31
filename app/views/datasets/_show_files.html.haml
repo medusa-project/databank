@@ -15,28 +15,37 @@
               .form-group(id="select-files-form-group")
                 %table(id="show-files-table" class="table table-striped")
                   %tbody
-                    %tr.row
-                      %td.col-md-4
-                        -if dataset.fileset_preserved?
-                          %button(class="btn btn-primary" type="button" onclick="offerDownloadLink()")
-                            %span.glyphicon.glyphicon-download
-                            Get Custom Zip and Download Link for Selected
-                            %span.checkFileSelectedCount
-                      %td.col-md-4
-                        -if @dataset.globus_downloadable?
-                          %button(class="btn btn-primary" type="button" onclick='window.location.href = "#{@dataset.globus_download_dir}";')
-                            %span
-                              =image_tag("globus.png", size: "24x18")
-                            Open in Globus File Manager
-                      %td.col-md-4
-                        %a(href="/help#globus") More about Globus
-                    -if dataset.fileset_preserved?
+                    -if dataset.fileset_preserved? #|| (dataset.total_filesize && (dataset.total_filesize < Dataset.local_zip_max_size))
                       %tr.row
-                        .checkbox.col-md-4
-                          %label
-                            %input(type="checkbox" id="checkAllFiles" value="checkAllFiles")
-                            Select all
-                            ="(#{dataset.complete_datafiles.count})"
+                        %td
+                          .row
+                            .col-md-4
+                              -if dataset.fileset_preserved?
+                                %button(class="btn btn-primary" type="button" onclick="offerDownloadLink()")
+                                  %span.glyphicon.glyphicon-download
+                                  Get Custom Zip and Download Link for Selected
+                                  %span.checkFileSelectedCount
+
+                              -else
+                                %button(class="btn btn-primary" type="submit")
+                                  %span.glyphicon.glyphicon-download
+                                  Zip and Download Selected
+                                  %span.checkFileSelectedCount
+                            .col-md-8
+                              -if @dataset.globus_downloadable?
+                                %button(class="btn btn-primary" type="button" onclick='window.location.href = "#{@dataset.globus_download_dir}";')
+                                  %span
+                                    =image_tag("globus.png", size: "24x18")
+                                  Open in Globus File Manager
+                                %a(href="/help#globus") More about Globus
+                          -if dataset.fileset_preserved?
+                            .row
+                              .checkbox.col-md-4
+                                %label
+                                  %input(type="checkbox" id="checkAllFiles" value="checkAllFiles")
+                                  Select all
+
+                                  ="(#{dataset.complete_datafiles.count})"
                     -if dataset.complete_datafiles.count > 0
                       - dataset.complete_datafiles.each do |datafile|
                         %tr.row
