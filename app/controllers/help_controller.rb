@@ -5,9 +5,6 @@ class HelpController < ApplicationController
     end
   end
 
-  def globus
-  end
-
   def help_mail
     if params.has_key?("nobots")
       # ignore the spam
