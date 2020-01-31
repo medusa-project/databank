@@ -40,7 +40,9 @@
                               %span
                                 =image_tag("globus.png", size: "24x18")
                               Open in Globus File Manager
-                            %a(href="/help#globus") More about Globus
+                      %td
+                        .col-md-4
+                          %a(href="/help#globus") More about Globus
                     -if dataset.complete_datafiles.count > 0
 
                       - dataset.complete_datafiles.each do |datafile|
