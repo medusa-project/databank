@@ -37,7 +37,10 @@
                                   %span
                                     =image_tag("globus.png", size: "24x18")
                                   Open in Globus File Manager
-                                %a(href="/help#globus") More about Globus
+                                    %a(href="/help/globus" target="_blank" )
+                                      %span(class="far fa-question-circle")
+                                      %span(class="idb-help-prompt" )
+                                        what's this?
                           -if dataset.fileset_preserved?
                             .row
                               .checkbox.col-md-4
