@@ -137,6 +137,9 @@ Rails.application.routes.draw do
   # reserve doi
   get '/datasets/:id/reserve_doi', to: 'datasets#reserve_doi', defaults: {format: 'json'}
 
+  # open in Globus
+  get '/datasets/:id/open_in_globus', to: 'datasets#open_in_globus'
+
   # tombstone
   get '/datasets/:id/tombstone', to: 'datasets#tombstone'
 

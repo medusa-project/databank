@@ -36,6 +36,7 @@ class DatasetsController < ApplicationController
                                      :update_permissions,
                                      :confirm_review,
                                      :send_publication_notice,
+                                     :open_in_globus,
                                      :import_from_globus]
 
   @@num_box_ingest_deamons = 10
@@ -1286,6 +1287,13 @@ class DatasetsController < ApplicationController
     else
       @agreement_text = File.read(Rails.root.join("public", "deposit_agreement.txt"))
     end
+  end
+
+  def open_in_globus
+    @dataset.datafiles.each do |datafile|
+      datafile.record_download(request.remote_ip)
+    end
+    redirect_to @dataset.globus_download_dir
   end
 
   def zip_and_download_selected

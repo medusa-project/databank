@@ -33,10 +33,10 @@
                                   %span.checkFileSelectedCount
                             .col-md-8
                               -if @dataset.globus_downloadable?
-                                %button(class="btn btn-primary" type="button" onclick='window.location.href = "#{@dataset.globus_download_dir}";')
-                                  %span
-                                    =image_tag("globus.png", size: "24x18")
-                                    Open in Globus File Manager
+                                =link_to "#{image_tag("globus.png", size: "24x18")} Open in Globus File Manager",
+                                open_in_globus_path,
+                                target: "_blank",
+                                class: "btn btn-primary"
                                 %a(href="/help#globus" target="_blank" )
                                   %span(class="far fa-question-circle")
                                   %span(class="idb-help-prompt" )
