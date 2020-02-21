@@ -20,29 +20,29 @@ demo:
   :storage:
     - :name: draft
       :type: s3
-      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+#      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
+#      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
       :region: us-east-2
       :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_bucket] %>
       :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_prefix] %>
     - :name: medusa
       :type: s3
-      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+#      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
+#      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
       :region: us-east-2
       :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_bucket] %>
       :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_prefix] %>
     - :name: globus_download
       :type: s3
-      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+#      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
+#      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
       :region: us-east-2
       :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:globus_bucket] %>
       :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:globus_download_prefix] %>
     - :name: globus_ingest
       :type: s3
-      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+#      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
+#      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
       :region: us-east-2
       :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_bucket] %>
       :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_prefix] %>

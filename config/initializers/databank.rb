@@ -25,10 +25,12 @@ Tus::Server.opts[:max_size] = 2 * 1024*1024*1024*1024 # 2TB
 
 if IDB_CONFIG[:aws][:s3_mode] == true
 
-  Aws.config.update({
-                        region: IDB_CONFIG[:aws][:region],
-                        credentials: Aws::Credentials.new(IDB_CONFIG[:aws][:access_key_id], IDB_CONFIG[:aws][:secret_access_key])
-                    })
+  Aws.config.update({region: IDB_CONFIG[:aws][:region]})
+
+  # Aws.config.update({
+  #                       region: IDB_CONFIG[:aws][:region],
+  #                       credentials: Aws::Credentials.new(IDB_CONFIG[:aws][:access_key_id], IDB_CONFIG[:aws][:secret_access_key])
+  #                   })
 
   Application.aws_signer = Aws::S3::Presigner.new
 
@@ -36,10 +38,14 @@ if IDB_CONFIG[:aws][:s3_mode] == true
 
   Tus::Server.opts[:storage] = Tus::Storage::S3.new(prefix: 'uploads',
       bucket:            STORAGE_CONFIG[:storage][0][:bucket], # required
-      access_key_id:     IDB_CONFIG[:aws][:access_key_id],
-      secret_access_key: IDB_CONFIG[:aws][:secret_access_key],
-      region:            IDB_CONFIG[:aws][:region],
-      )
+      region:            IDB_CONFIG[:aws][:region])
+
+  # Tus::Server.opts[:storage] = Tus::Storage::S3.new(prefix: 'uploads',
+  #                                                   bucket:            STORAGE_CONFIG[:storage][0][:bucket], # required
+  #                                                   access_key_id:     IDB_CONFIG[:aws][:access_key_id],
+  #                                                   secret_access_key: IDB_CONFIG[:aws][:secret_access_key],
+  #                                                   region:            IDB_CONFIG[:aws][:region],
+  #                                                   )
 
 else
 
