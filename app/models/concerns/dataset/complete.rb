@@ -39,7 +39,7 @@ module Complete
         netid = creator.email.split("@").first
         # check to see if netid is found, to prevent email system errors
         begin
-          open("https://quest.grainger.uiuc.edu/directory/ed/person/#{netid}").read
+          open("https://quest.library.illinois.edu/directory/ed/person/#{netid}").read
         rescue OpenURI::HTTPError
           e_arr << "correct netid in email for #{creator.given_name} #{creator.family_name}"
         end
