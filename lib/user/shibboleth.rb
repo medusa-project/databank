@@ -87,7 +87,7 @@ class User::Shibboleth < User::User
         return true
       end
 
-      response = open("http://quest.grainger.uiuc.edu/directory/ed/person/#{netid}").read
+      response = open("https://quest.library.illinois.edu/directory/ed/person/#{netid}").read
       # Rails.logger.warn response
       # response_nospace = response.gsub(">\r\n", "")
       #response_nospace = response_nospace.gsub("> ", "") while response_nospace.include?("> ")
@@ -184,7 +184,7 @@ class User::Shibboleth < User::User
 
       begin
 
-        response = open("http://quest.grainger.uiuc.edu/directory/ed/person/#{netid}").read
+        response = open("https://quest.library.illinois.edu/directory/ed/person/#{netid}").read
         xml_doc = Nokogiri::XML(response)
         xml_doc.remove_namespaces!
         display_name = xml_doc.xpath("//attr[@name='displayname']").text()
