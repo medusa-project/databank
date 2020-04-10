@@ -128,7 +128,7 @@ namespace :testing do
 
   desc 'hit quest directory service'
   task :blast_directory => :environment do
-    Creator.all.each.do |creator|
+    Creator.all.each do |creator|
       puts creator.email
 
       next if creator.email.nil?
