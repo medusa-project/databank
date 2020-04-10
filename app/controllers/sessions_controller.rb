@@ -12,6 +12,8 @@ class SessionsController < ApplicationController
     auth = request.env["omniauth.auth"]
 
     if auth[:provider] && auth[:provider] == 'shibboleth'
+      Rails.logger.warn Time.now.iso8601
+      Rails.logger.warn auth
       user = User::Shibboleth.from_omniauth(auth)
     elsif auth[:provider] && auth[:provider] == 'identity'
       user = User::Identity.from_omniauth(auth)
