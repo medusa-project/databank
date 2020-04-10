@@ -139,7 +139,7 @@ namespace :testing do
       netid = email_parts.first
       begin
         puts "checking #{netid}"
-        open("https://quest.library.illinois.edu/directory/ed/person/#{netid}").read
+        open("https://iisdev1.library.illinois.edu/Directory/ed/person/#{netid}").read
       rescue OpenURI::HTTPError
         puts "netid #{netid} not found"
       end
