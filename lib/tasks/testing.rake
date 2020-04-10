@@ -129,7 +129,8 @@ namespace :testing do
   desc 'hit quest directory service'
   task :blast_directory => :environment do
     Creators.each.do |creator|
-      next unless creator.email
+
+      next if creator.email.nil?
 
       email_parts = creator.email.split("@")
       next unless email_parts.last == 'illinois.edu'
