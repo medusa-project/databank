@@ -126,4 +126,23 @@ namespace :testing do
     end
   end
 
+  desc 'hit quest directory service'
+  task :blast_directory => :environment do
+    Creators.each.do |creator|
+      next unless creator.email
+
+      email_parts = creator.email.split("@")
+      next unless email_parts.last == 'illinois.edu'
+
+      netid = email_parts.first
+      begin
+        puts "checking #{netid}"
+        open("https://quest.library.illinois.edu/directory/ed/person/#{netid}").read
+      rescue OpenURI::HTTPError
+        puts "netid #{netid} not found"
+      end
+    end
+
+  end
+
 end
