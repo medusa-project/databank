@@ -140,11 +140,11 @@ namespace :testing do
       begin
         puts "checking #{netid}"
         open("https://iisdev1.library.illinois.edu/Directory/ed/person/#{netid}").read
+        puts "OK"
       rescue OpenURI::HTTPError
         puts "netid #{netid} not found"
       end
     end
-
   end
 
 end
