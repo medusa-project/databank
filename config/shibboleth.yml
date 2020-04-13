@@ -7,7 +7,12 @@ development:
     - uid
     - sn
     - nickname
+    - mail
     - givenName
+    - displayName
+    - primary-affiliation
+    - iTrustAffiliation
+    - uiucEduStudentLevelCode
   request_type: header
   info_fields:
     name: displayName
@@ -42,7 +47,12 @@ production:
     - uid
     - sn
     - nickname
+    - mail
     - givenName
+    - displayName
+    - primary-affiliation
+    - iTrustAffiliation
+    - uiucEduStudentLevelCode
   request_type: header
   info_fields:
     name: displayName
@@ -57,7 +67,12 @@ test:
     - uid
     - sn
     - nickname
+    - mail
     - givenName
+    - displayName
+    - primary-affiliation
+    - iTrustAffiliation
+    - uiucEduStudentLevelCode
   request_type: header
   info_fields:
     name: displayName
