@@ -395,7 +395,7 @@ class Dataset < ActiveRecord::Base
   def depositor
     return "unknown|Unknown Depositor" unless depositor_email
     email = depositor_email
-    user = User.find_by(email: email)
+    user = User::Shibboleth.find_by(email: email)
     return "unknown|Unknown Depositor" unless user
     "#{user.uid}|#{user.name}"
   end
