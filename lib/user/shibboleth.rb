@@ -52,7 +52,7 @@ class User::Shibboleth < User::User
       if affiliations.respond_to?(:length) && affiliations.length > 0
         return Databank::UserRole::DEPOSITOR if affiliations.include?("staff")
         Rails.logger.warn("affiliations not staff: #{affiliations.to_yaml}")
-        Rails.logger.warn("student_level: #{["extra"]["raw_info"]["uiucEduStudentLevelCode"]}")
+        Rails.logger.warn("student_level: #{auth["extra"]["raw_info"]["uiucEduStudentLevelCode"]}")
         if affiliations.include?("student")
           if auth["extra"]["raw_info"]["uiucEduStudentLevelCode"] == "1U"
             return Databank::UserRole::NO_DEPOSIT
