@@ -636,7 +636,7 @@ class DatasetsController < ApplicationController
   # GET /datasets/1.json
   def show
 
-    Rails.logger.warn("user, role: #{user.uid}, #{user.role}")
+    Rails.logger.warn("current_user, role: #{current_user.uid}, #{current_user.role}")
     if Rails.env.aws_production?
       @datacite_fabrica_url = "https://doi.datacite.org/"
     else
