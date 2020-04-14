@@ -50,6 +50,7 @@ class User::Shibboleth < User::User
       affiliations = auth["extra"]["raw_info"]["iTrustAffiliation"].split(";")
 
       if affiliations.respond_to?(:length) && affiliations.length > 0
+        Rails.logger.warn("affiliations found: #{auth.to_yaml}")
         return Databank::UserRole::DEPOSITOR if affiliations.include?("staff")
         if affiliations.include?("student")
           if auth["extra"]["raw_info"]["uiucEduStudentLevelCode"] == "1U"

@@ -10,7 +10,6 @@ development:
     - mail
     - givenName
     - displayName
-    - primary-affiliation
     - iTrustAffiliation
     - uiucEduStudentLevelCode
   request_type: header
@@ -30,7 +29,6 @@ demo:
     - mail
     - givenName
     - displayName
-    - primary-affiliation
     - iTrustAffiliation
     - uiucEduStudentLevelCode
   request_type: header
@@ -50,7 +48,6 @@ production:
     - mail
     - givenName
     - displayName
-    - primary-affiliation
     - iTrustAffiliation
     - uiucEduStudentLevelCode
   request_type: header
@@ -70,7 +67,6 @@ test:
     - mail
     - givenName
     - displayName
-    - primary-affiliation
     - iTrustAffiliation
     - uiucEduStudentLevelCode
   request_type: header
