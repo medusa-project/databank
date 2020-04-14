@@ -397,7 +397,7 @@ class Dataset < ActiveRecord::Base
     email = depositor_email
     user = User::Shibboleth.find_by(email: email)
     return "unknown|Unknown Depositor" unless user
-    "#{user.uid}|#{user.name}"
+    "#{depositor_netid}|#{user.name}"
   end
 
   def depositor_netid
