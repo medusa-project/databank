@@ -53,13 +53,15 @@ class User::Shibboleth < User::User
         return Databank::UserRole::DEPOSITOR if affiliations.include?("staff")
         if affiliations.include?("student")
           if auth["extra"]["raw_info"]["uiucEduStudentLevelCode"] == "1U"
+            Rails.logger.warn("undergrad auth: #{auth.to_yaml}")
             return Databank::UserRole::NO_DEPOSIT
           else
             return Databank::UserRole::DEPOSITOR
           end
         end
       end
-      return Databank::UserRole::NO_DEPOSIT
+      Rails.logger.warn("unexpected auth: #{auth.to_yaml}")
+      return Databank::UserRole::DEPOSITOR
     end
     return Databank::UserRole::GUEST
   end
