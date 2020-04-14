@@ -50,9 +50,9 @@ class User::Shibboleth < User::User
       affiliations = auth["extra"]["raw_info"]["iTrustAffiliation"].split(";")
 
       if affiliations.respond_to?(:length) && affiliations.length > 0
-        return Databank::UserRole::DEPOSITOR if affiliations.include("staff")
+        return Databank::UserRole::DEPOSITOR if affiliations.include?("staff")
 
-        if affiliations.include("student") &&
+        if affiliations.include?("student") &&
             auth["extra"]["raw_info"]["iTrustAffiliation"]["uiucEduStudentLevelCode"] == "1U"
           return Databank::UserRole::NO_DEPOSIT
 
