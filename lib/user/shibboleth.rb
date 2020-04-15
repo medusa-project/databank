@@ -42,32 +42,39 @@ class User::Shibboleth < User::User
   end
 
   def self.user_role(auth)
-    Rails.logger.warn auth
-    admins = IDB_CONFIG[:admin][:netids].split(",").collect{|x| x.strip || x }
-    net_id = auth["info"]["email"].split('@').first
-    return Databank::UserRole::ADMIN if admins.include?(net_id)
+    begin
+      admins = IDB_CONFIG[:admin][:netids].split(",").collect { |x| x.strip || x }
+      net_id = auth["info"]["email"].split('@').first
+      return Databank::UserRole::ADMIN if admins.include?(net_id)
 
-    if auth["extra"]["raw_info"]["iTrustAffiliation"].respond_to?(:split)
-      affiliations = auth["extra"]["raw_info"]["iTrustAffiliation"].split(";")
-      if affiliations.respond_to?(:length) && affiliations.length > 0
-        return Databank::UserRole::DEPOSITOR if affiliations.include?("staff")
-        
-        if affiliations.include?("student")
-          if auth["extra"]["raw_info"]["uiucEduStudentLevelCode"] == "1U"
-            return Databank::UserRole::NO_DEPOSIT
-          else
-            return Databank::UserRole::DEPOSITOR
+      if auth["extra"]["raw_info"]["iTrustAffiliation"].respond_to?(:split)
+        affiliations = auth["extra"]["raw_info"]["iTrustAffiliation"].split(";")
+        if affiliations.respond_to?(:length) && affiliations.length > 0
+          return Databank::UserRole::DEPOSITOR if affiliations.include?("staff")
+
+          if affiliations.include?("student")
+            if auth["extra"]["raw_info"]["uiucEduStudentLevelCode"] == "1U"
+              return Databank::UserRole::NO_DEPOSIT
+            else
+              return Databank::UserRole::DEPOSITOR
+            end
           end
+        else
+          Rails.logger.warn("unexpected auth: #{auth.to_yaml}")
+          notification = DatabankMailer.error("Unexpected auth response: #{auth.to_yaml}")
+          notification.deliver_now
+          return Databank::UserRole::NO_DEPOSIT
         end
       else
-        Rails.logger.warn("unexpected auth: #{auth.to_yaml}")
-        notification = DatabankMailer.error("Unexpected auth response: #{auth.to_yaml}")
-        notification.deliver_now
-        return Databank::UserRole::NO_DEPOSIT
+        raise("missing iTrustAffiliation")
       end
-    end
-    return Databank::UserRole::GUEST
-  end
 
+    rescue StandardError => e
+      Rails.logger.warn("error determining user role #{e.message} for #{auth.to_yaml}")
+      notification = DatabankMailer.error("error determining user role #{e.message} for #{auth.to_yaml}")
+      notification.deliver_now
+      return Databank::UserRole::NO_DEPOSIT
+    end
+  end
 end
 
