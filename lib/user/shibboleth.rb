@@ -42,6 +42,7 @@ class User::Shibboleth < User::User
   end
 
   def self.user_role(auth)
+    Rails.logger.warn(auth.to_yaml)
     admins = IDB_CONFIG[:admin][:netids].split(",").collect{|x| x.strip || x }
     net_id = auth["info"]["email"].split('@').first
     return Databank::UserRole::ADMIN if admins.include?(net_id)
@@ -50,18 +51,15 @@ class User::Shibboleth < User::User
       affiliations = auth["extra"]["raw_info"]["iTrustAffiliation"].split(";")
 
       if affiliations.respond_to?(:length) && affiliations.length > 0
-        Rails.logger.warn("affiliations found: #{auth.to_yaml}")
         return Databank::UserRole::DEPOSITOR if affiliations.include?("staff")
         if affiliations.include?("student")
           if auth["extra"]["raw_info"]["uiucEduStudentLevelCode"] == "1U"
-            Rails.logger.warn("undergrad auth: #{auth.to_yaml}")
             return Databank::UserRole::NO_DEPOSIT
           else
             return Databank::UserRole::DEPOSITOR
           end
         end
       end
-      Rails.logger.warn("unexpected auth: #{auth.to_yaml}")
       return Databank::UserRole::DEPOSITOR
     end
     return Databank::UserRole::GUEST
