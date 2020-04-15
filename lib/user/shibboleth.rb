@@ -42,6 +42,7 @@ class User::Shibboleth < User::User
   end
 
   def self.user_role(auth)
+    Rails.logger.warn auth
     admins = IDB_CONFIG[:admin][:netids].split(",").collect{|x| x.strip || x }
     net_id = auth["info"]["email"].split('@').first
     return Databank::UserRole::ADMIN if admins.include?(net_id)
