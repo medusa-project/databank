@@ -68,7 +68,6 @@ class User::Shibboleth < User::User
       else
         raise("missing iTrustAffiliation")
       end
-
     rescue StandardError => e
       Rails.logger.warn("error determining user role #{e.message} for #{auth.to_yaml}")
       notification = DatabankMailer.error("error determining user role #{e.message} for #{auth.to_yaml}")
