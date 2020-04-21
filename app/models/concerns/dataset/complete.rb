@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'net-ldap'
+
 module Complete
   extend ActiveSupport::Concern
 
@@ -38,9 +40,7 @@ module Complete
 
         netid = creator.email.split("@").first
         # check to see if netid is found, to prevent email system errors
-        begin
-          open("https://quest.library.illinois.edu/directory/ed/person/#{netid}").read
-        rescue OpenURI::HTTPError
+        unless valid_netid(netid)
           e_arr << "correct netid in email for #{creator.given_name} #{creator.family_name}"
         end
       end
@@ -67,7 +67,7 @@ module Complete
       dataset.datafiles.each do |datafile|
         datafiles_arr << datafile.bytestream_name
       end
-      first_dup = datafiles_arr.find {|e| datafiles_arr.count(e) > 1 }
+      first_dup = datafiles_arr.find { |e| datafiles_arr.count(e) > 1 }
       ["no duplicate filenames (#{first_dup})"] if first_dup
     end
 
@@ -92,5 +92,44 @@ module Complete
 
       nil
     end
+
+    def valid_netid(netid)
+
+      return false unless netid && netid.respond_to?(:to_str)
+
+      netid = netid.to_str unless netid.class == String
+
+      treebase = "ou=people,dc=ad,dc=uillinois,dc=edu"
+
+      attrs = ['uiucEduRegistryInactiveDate', 'uiucEduUserEmailAddr']
+
+      filter = "(cn=#{netid})"
+
+      entries = Application.ldap.search(:base => treebase,
+                                        :filter => filter,
+                                        :attributes => attrs)
+
+      return false unless entries.length.positive?
+
+      ldap_hash = to_ldap_hash(entries)
+
+      return false if ldap_hash.has_key?('uiuceduregistryinactivedate')
+
+      return false unless ldap_hash.has_key?('uiuceduuseremailaddr')
+
+      true
+    end
+
+    #expects result of ldap search, an array of entries
+    def to_ldap_hash(entries)
+      ldap_hash = {}
+      entries.each do |entry|
+        entry.each do |attribute, values|
+          ldap_hash[attribute.to_s] = values
+        end
+      end
+      ldap_hash
+    end
+
   end
 end

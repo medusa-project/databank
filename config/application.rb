@@ -136,6 +136,8 @@ module Databank
 
     attr_accessor :storage_manager
 
+    attr_accessor :ldap
+
     attr_accessor :markdown
 
     attr_accessor :aws_signer
