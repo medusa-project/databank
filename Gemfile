@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 source "https://rubygems.org"
-ruby "2.5.2"
+ruby "2.6.6"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem "rails", "~> 5.2", ">= 5.2.2"
+gem "rails", "~> 5.2", ">= 5.2.3"
 
 # Use postgresql as the database for Active Record
 gem "pg"
