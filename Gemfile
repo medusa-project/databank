@@ -108,14 +108,6 @@ gem "redcarpet"
 # Use 'rest-client' to interaction with file processor api
 gem "rest-client"
 
-# Use highcharts and daru for interactive graphs
-gem "daru", git: "https://github.com/SciRuby/daru.git"
-gem "daru-data_tables", git: "https://github.com/Shekharrajak/daru-data_tables.git"
-gem "daru-view", git: "https://github.com/sciruby/daru-view.git"
-gem "google_visualr", git: "https://github.com/winston/google_visualr.git"
-gem "highcharts-rails"
-gem "nyaplot", git: "https://github.com/SciRuby/nyaplot.git"
-
 # gem 'httpclient', git: 'git://github.com/medusa-project/httpclient.git'
 
 gem "equivalent-xml"
