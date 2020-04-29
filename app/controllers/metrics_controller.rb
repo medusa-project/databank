@@ -120,7 +120,7 @@ class MetricsController < ApplicationController
 
       datasets.each do |dataset|
         dataset.datafiles.each do |datafile|
-          if datafile.is_archive?
+          if datafile.archive?
             content_files = datafile.content_files
             content_files.each do |content_hash|
 

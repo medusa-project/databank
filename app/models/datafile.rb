@@ -7,15 +7,13 @@ require "mime/types"
 require "minitar"
 require "zlib"
 require "rest-client"
-require "concerns/datafile/messagable"
-require "concerns/datafile/processable"
-require "concerns/datafile/viewable"
 
 class Datafile < ActiveRecord::Base
+
   include ActiveModel::Serialization
   include Messagable
-  include Processable
   include Viewable
+  include Processable
   belongs_to :dataset
   has_many :nested_items, dependent: :destroy
 
