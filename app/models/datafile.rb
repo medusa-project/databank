@@ -11,9 +11,9 @@ require "rest-client"
 class Datafile < ActiveRecord::Base
 
   include ActiveModel::Serialization
-  include Messagable
-  include Viewable
-  include Processable
+  include Datafile::Viewable
+  include Datafile::Processable
+  include Datafile::Messagble
   belongs_to :dataset
   has_many :nested_items, dependent: :destroy
 
