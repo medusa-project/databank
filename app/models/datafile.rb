@@ -13,7 +13,7 @@ class Datafile < ActiveRecord::Base
   include ActiveModel::Serialization
   include Datafile::Viewable
   include Datafile::Processable
-  include Datafile::Messagble
+  include Datafile::Messagable
   belongs_to :dataset
   has_many :nested_items, dependent: :destroy
 
