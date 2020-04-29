@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Datafile < ApplicationRecord
-  module Processable
+  module Datafile::Processable
     extend ActiveSupport::Concern
 
     def initiate_processing_task

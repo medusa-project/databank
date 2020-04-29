@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Datafile < ApplicationRecord
-  module Messagable
+  module Datafile::Messagable
     extend ActiveSupport::Concern
 
     class_methods do

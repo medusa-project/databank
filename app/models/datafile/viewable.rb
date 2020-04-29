@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Datafile < ApplicationRecord
-  module Viewable
+  module Datafile::Viewable
     extend ActiveSupport::Concern
 
     def preview
