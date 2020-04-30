@@ -4,7 +4,7 @@ require "uri"
 require "net/http"
 require "base64"
 
-module Identifiable
+module Dataset::Identifiable
   extend ActiveSupport::Concern
 
   URI_BASE ||= "https://#{IDB_CONFIG[:datacite][:endpoint]}/dois"

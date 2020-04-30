@@ -1,4 +1,6 @@
-module MessageText
+# frozen_string_literal: true
+
+module Dataset::MessageText
   extend ActiveSupport::Concern
 
   class_methods do

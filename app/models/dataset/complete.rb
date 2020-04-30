@@ -2,7 +2,7 @@
 
 require 'net-ldap'
 
-module Complete
+module Dataset::Complete
   extend ActiveSupport::Concern
 
   class_methods do

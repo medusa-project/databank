@@ -1,4 +1,6 @@
-module Recovery
+# frozen_string_literal: true
+
+module Dataset::Recovery
   extend ActiveSupport::Concern
 
   class_methods do

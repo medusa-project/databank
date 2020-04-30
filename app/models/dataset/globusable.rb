@@ -3,7 +3,7 @@
 require 'net/http'
 require 'aws-sdk-s3'
 
-module Globusable
+module Dataset::Globusable
   extend ActiveSupport::Concern
   def globus_downloadable?
     return false unless self.publication_state == Databank::PublicationState::RELEASED

@@ -6,29 +6,21 @@ require "open-uri"
 require "uri"
 require "net/http"
 require "securerandom"
-require "concerns/dataset/indexable"
-require 'concerns/dataset/stringable'
-require 'concerns/dataset/complete'
-require 'concerns/dataset/versionable'
-require 'concerns/dataset/publishable'
-require 'concerns/dataset/exportable'
-require 'concerns/dataset/identifiable'
-require 'concerns/dataset/globusable'
 require "action_pack"
 require "openssl"
 
 class Dataset < ActiveRecord::Base
   include ActiveModel::Serialization
-  include Recovery
-  include MessageText
-  include Indexable
-  include Stringable
-  include Complete
-  include Versionable
-  include Publishable
-  include Exportable
-  include Identifiable
-  include Globusable
+  include Dataset::Recovery
+  include Dataset::MessageText
+  include Dataset::Indexable
+  include Dataset::Stringable
+  include Dataset::Complete
+  include Dataset::Versionable
+  include Dataset::Publishable
+  include Dataset::Exportable
+  include Dataset::Identifiable
+  include Dataset::Globusable
 
   audited except: %i[creator_text key complete is_test is_import updated_at embargo], allow_mass_assignment: true
   has_associated_audits

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Stringable
+module Dataset::Stringable
   extend ActiveSupport::Concern
 
   def plain_text_citation

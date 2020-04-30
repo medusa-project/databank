@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Publishable
+module Dataset::Publishable
   extend ActiveSupport::Concern
 
   def send_publication_notice

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Exportable
+module Dataset::Exportable
   extend ActiveSupport::Concern
 
   class_methods do

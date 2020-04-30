@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Versionable
+module Dataset::Versionable
   extend ActiveSupport::Concern
   def version_group
     self_version_entry = related_version_entry_hash

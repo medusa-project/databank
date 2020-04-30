@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Indexable
+module Dataset::Indexable
   extend ActiveSupport::Concern
 
   def visibility
