@@ -13,7 +13,7 @@ module Dataset::Publishable
       notification.deliver_now
       return false
     end
-    return false
+    false
   end
 
   def publish(user)
@@ -41,18 +41,18 @@ module Dataset::Publishable
                              end
 
     if old_publication_state == Databank::PublicationState::DRAFT &&
-        self.publication_state == Databank::PublicationState::RELEASED &&
+        publication_state == Databank::PublicationState::RELEASED &&
         !is_import
       self.release_date = Date.current
     end
 
     save!
 
-    unless Databank::PublicationState::PUB_ARRAY.include?(self.publication_state)
+    unless Databank::PublicationState::PUB_ARRAY.include?(publication_state)
       return {status: "error", error_text: "problem publishing dataset: #{key}"}
     end
 
-    datacite_attempt = if self.metadata_public?
+    datacite_attempt = if metadata_public?
                          publish_doi
                        else
                          register_doi
@@ -70,12 +70,11 @@ module Dataset::Publishable
       {status: "ok", old_publication_state: old_publication_state}
     else
       self.publication_state = old_publication_state
-      self.save!
+      save!
       Rails.logger.warn(datacite_attempt.to_yaml)
-      notification = DatabankMailer.error("Error in publishing dataset #{self.key}: #{datacite_attempt.to_yaml}")
+      notification = DatabankMailer.error("Error in publishing dataset #{key}: #{datacite_attempt.to_yaml}")
       notification.deliver_now
       error_hash("Error in publishing dataset has been logged for review by the Research Data Service.")
     end
   end
-
 end

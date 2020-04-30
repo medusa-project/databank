@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'net-ldap'
+require "net-ldap"
 
 module Dataset::Complete
   extend ActiveSupport::Concern
 
   class_methods do
     # making completion_check a class method with passed-in dataset, so it can be used by controller before save
-    def completion_check(dataset, current_user)
+    def completion_check(dataset, _current_user)
       e_arr = []
       e_arr << "title" if dataset.title.blank?
       e_arr << "at least one creator" if dataset.creators.count < 1
@@ -40,9 +40,7 @@ module Dataset::Complete
 
         netid = creator.email.split("@").first
         # check to see if netid is found, to prevent email system errors
-        unless valid_netid(netid)
-          e_arr << "correct netid in email for #{creator.given_name} #{creator.family_name}"
-        end
+        e_arr << "correct netid in email for #{creator.given_name} #{creator.family_name}" unless valid_netid(netid)
       end
       e_arr
     end
@@ -59,6 +57,7 @@ module Dataset::Complete
 
     def duplicate_doi_error(dataset)
       return nil if dataset.identifier.blank?
+
       ["a unique DOI"] if Dataset.where(identifier: dataset.identifier).count > 1
     end
 
@@ -67,7 +66,7 @@ module Dataset::Complete
       dataset.datafiles.each do |datafile|
         datafiles_arr << datafile.bytestream_name
       end
-      first_dup = datafiles_arr.find { |e| datafiles_arr.count(e) > 1 }
+      first_dup = datafiles_arr.find {|e| datafiles_arr.count(e) > 1 }
       ["no duplicate filenames (#{first_dup})"] if first_dup
     end
 
@@ -94,33 +93,32 @@ module Dataset::Complete
     end
 
     def valid_netid(netid)
-
-      return false unless netid && netid.respond_to?(:to_str)
+      return false unless netid&.respond_to?(:to_str)
 
       netid = netid.to_str unless netid.class == String
 
       treebase = "ou=people,dc=ad,dc=uillinois,dc=edu"
 
-      attrs = ['uiucEduRegistryInactiveDate', 'uiucEduUserEmailAddr']
+      attrs = %w[uiucEduRegistryInactiveDate uiucEduUserEmailAddr]
 
       filter = "(cn=#{netid})"
 
-      entries = Application.ldap.search(:base => treebase,
-                                        :filter => filter,
-                                        :attributes => attrs)
+      entries = Application.ldap.search(base:       treebase,
+                                        filter:     filter,
+                                        attributes: attrs)
 
       return false unless entries.length.positive?
 
       ldap_hash = to_ldap_hash(entries)
 
-      return false if ldap_hash.has_key?('uiuceduregistryinactivedate')
+      return false if ldap_hash.has_key?("uiuceduregistryinactivedate")
 
-      return false unless ldap_hash.has_key?('uiuceduuseremailaddr')
+      return false unless ldap_hash.has_key?("uiuceduuseremailaddr")
 
       true
     end
 
-    #expects result of ldap search, an array of entries
+    # expects result of ldap search, an array of entries
     def to_ldap_hash(entries)
       ldap_hash = {}
       entries.each do |entry|
@@ -130,6 +128,5 @@ module Dataset::Complete
       end
       ldap_hash
     end
-
   end
 end

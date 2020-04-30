@@ -85,7 +85,7 @@ module Dataset::Stringable
         return_string += "]"
       end
 
-      return_string ++ %(, "citation":"#{plain_text_citation.gsub('"', '\\"')}")
+      return_string + + %(, "citation":"#{plain_text_citation.gsub('"', '\\"')}")
 
       license_link = nil
 
@@ -106,9 +106,7 @@ module Dataset::Stringable
       return_string
 
     else
-
       ""
-
     end
   end
 
@@ -186,7 +184,7 @@ module Dataset::Stringable
     end
 
     content += "\n[ #{'File'.pluralize(datafiles.count)} (#{datafiles.count}): ] \n"
-    
+
     complete_datafiles.each do |datafile|
       formatted_size = ApplicationController.helpers.number_to_human_size(datafile.bytestream_size)
       content += ". #{datafile.bytestream_name}, #{formatted_size}\n"
@@ -196,7 +194,7 @@ module Dataset::Stringable
   end
 
   def store_agreement
-    base_content = File.join(Rails.root, "public", "deposit_agreement.txt")
+    base_content = Rails.root.join("public", "deposit_agreement.txt")
 
     agent_text = "License granted by #{depositor_name} on #{created_at.iso8601}\n\n"
     agent_text += "=================================================================================================================\n\n"
@@ -218,7 +216,6 @@ module Dataset::Stringable
   end
 
   def full_changelog
-
     changes = audits + associated_audits
     changes_arr = []
     changes.each do |change|
@@ -236,8 +233,8 @@ module Dataset::Stringable
       changes_arr << {"change" => change_hash, "agent" => agent}
     rescue ArgumentError
       Rails.logger.warn("ArgumentError in changelog: #{change.to_yaml}")
-    rescue StandardError => ex
-      raise ex unless ex.message.include?("BinaryUploader")
+    rescue StandardError => e
+      raise e unless e.message.include?("BinaryUploader")
     end
     {"changes" => changes_arr}
   end
@@ -262,8 +259,8 @@ module Dataset::Stringable
           medusa_changes_arr << change.id
         end
       end
-    rescue StandardError => ex
-      raise ex unless ex.message.include?("BinaryUploader")
+    rescue StandardError => e
+      raise e unless e.message.include?("BinaryUploader")
     end
 
     if publication
@@ -273,7 +270,6 @@ module Dataset::Stringable
       Rails.logger.warn "no changes found for dataset #{attributes[:dataset_id]}"
       {}
     end
-
   end
 
   def creator_list
@@ -282,7 +278,7 @@ module Dataset::Stringable
     elsif creators.count == 1
       creator = creators.first
       if creator.institution_name && creator.institution_name != "" || creator.family_name && creator.family_name != ""
-        return creator.list_name
+        creator.list_name
       end
     else
       return_list = ""
@@ -300,7 +296,7 @@ module Dataset::Stringable
     elsif creators.count == 1
       creator = creators.first
       if creator.institution_name && creator.institution_name != "" || creator.family_name && creator.family_name != ""
-        return creator.list_name
+        creator.list_name
       end
     else
       return_list = ""

@@ -87,11 +87,11 @@ module Dataset::Indexable
           end
         end
         report_text += "\nDownloads: #{dataset.total_downloads} "
-        if dataset.release_datetime
-          start_time = dataset.release_datetime.to_date.iso8601
-        else
-          start_time = Date.current.iso8601
-        end
+        start_time = if dataset.release_datetime
+                       dataset.release_datetime.to_date.iso8601
+                     else
+                       Date.current.iso8601
+                     end
 
         report_text += "(#{start_time} to #{Date.current.iso8601} )\n"
         5.times do
@@ -101,7 +101,6 @@ module Dataset::Indexable
 
       report_text
     end
-
   end
 
   def visibility
@@ -149,8 +148,6 @@ module Dataset::Indexable
     return_string
   end
 
-
-
   def visibility_code
     return_string = case hold_state
                     when Databank::PublicationState::TempSuppress::METADATA
@@ -196,8 +193,6 @@ module Dataset::Indexable
     return_string
   end
 
-
-
   def funder_names
     Funder.where(dataset_id: id).pluck(:name)
   end
@@ -215,10 +210,10 @@ module Dataset::Indexable
   end
 
   def internal_reviewer_netids
-    uids = UserAbility.where(user_provider: 'shibboleth',
-                             resource_type: 'Dataset',
-                             ability: 'view_files',
-                             'resource_id': self.id).pluck(:user_uid)
+    uids = UserAbility.where(user_provider: "shibboleth",
+                             resource_type: "Dataset",
+                             ability:       "view_files",
+                             'resource_id': id).pluck(:user_uid)
     net_ids = []
 
     uids.each do |uid|
@@ -227,13 +222,12 @@ module Dataset::Indexable
     end
 
     net_ids.uniq - internal_editor_netids
-
   end
 
   def internal_editor_netids
-    uids = UserAbility.where(user_provider: 'shibboleth',
-                             resource_type: 'Dataset',
-                             ability: 'update',
+    uids = UserAbility.where(user_provider: "shibboleth",
+                             resource_type: "Dataset",
+                             ability:       "update",
                              'resource_id': id).pluck(:user_uid)
     net_ids = []
 
@@ -296,5 +290,4 @@ module Dataset::Indexable
   def datafile_extensions_fulltext
     datafile_extensions.join(" ")
   end
-
 end

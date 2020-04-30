@@ -11,7 +11,7 @@ require "openssl"
 
 class Dataset < ActiveRecord::Base
   include ActiveModel::Serialization
-  include Dataset::Recovery
+  include Dataset::Recoverable
   include Dataset::MessageText
   include Dataset::Indexable
   include Dataset::Stringable

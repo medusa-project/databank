@@ -32,7 +32,7 @@ module Dataset::Identifiable
     info = doi_infohash
     return Databank::DoiState::UNREGISTERED if info == {}
 
-    raise("missing data element doi_state #{key}")unless info.has_key?(:data)
+    raise("missing data element doi_state #{key}") unless info.has_key?(:data)
     raise("missing attribute element doi_state #{key}, info: #{info}") unless info[:data].has_key?(:attributes)
     raise("missing state element doi_state #{key}, info: #{info}") unless info[:data][:attributes].has_key?(:state)
 
@@ -45,7 +45,7 @@ module Dataset::Identifiable
 
   def create_draft_doi
     self.identifier ||= default_identifier
-    self.save!
+    save!
 
     # should not draft doi if doi record already exists in DataCite
     if !doi_infohash.empty? && doi_infohash.has_key(:data)
@@ -53,7 +53,7 @@ module Dataset::Identifiable
     end
 
     # minimal json to create draft record
-    draft_json = %Q({"data": {"type": "dois", "attributes": {"doi": "#{self.identifier}"}}})
+    draft_json = %({"data": {"type": "dois", "attributes": {"doi": "#{self.identifier}"}}})
     response = Dataset.post_to_datacite(draft_json)
     unless response.code == "201"
       return error_hash("problem attempting to create draft doi code: #{response.code}, #{response.body}")
@@ -65,10 +65,9 @@ module Dataset::Identifiable
   # publish - Triggers a state move to findable
   # should not be done for datasets with embargoed metadata
   def publish_doi
-
     return error_hash("no identifier present") unless identifier_present?
 
-    return error_hash("Cannot make dataset findable if metadata can not be public.") unless self.metadata_public?
+    return error_hash("Cannot make dataset findable if metadata can not be public.") unless metadata_public?
 
     current_state = doi_state
 
@@ -106,22 +105,22 @@ module Dataset::Identifiable
 
     current_state = doi_state || Databank::DoiState::UNREGISTERED
     if current_state == Databank::DoiState::REGISTERED
-      if update(publication_state: self.publication_state)
+      if update(publication_state: publication_state)
         return {status: "ok"}
       else
-        return error_hash("problem updating Illinois Data Bank dataset during doi registration #{self.key}")
+        return error_hash("problem updating Illinois Data Bank dataset during doi registration #{key}")
       end
     end
 
     if current_state == Databank::DoiState::UNREGISTERED
       create_draft_doi
       sleep(1.5)
-      return error_hash("problem creating draft #{self.key}") unless doi_state == Databank::DoiState::DRAFT
+      return error_hash("problem creating draft #{key}") unless doi_state == Databank::DoiState::DRAFT
     end
 
     current_state = doi_state
     unless current_state == Databank::DoiState::DRAFT
-      return("invalid DataCite state (#{current_state}) to register dataset: #{self.key}")
+      return("invalid DataCite state (#{current_state}) to register dataset: #{key}")
     end
 
     # DOI confirmed to be in a draft state with DataCite at this point
@@ -129,7 +128,7 @@ module Dataset::Identifiable
     sleep(1.5)
     current_state = doi_state
     unless current_state == Databank::DoiState::REGISTERED
-      return error_hash("error while attempting to register with DataCite #{self.key}")
+      return error_hash("error while attempting to register with DataCite #{key}")
     end
 
     {status: "ok"}
@@ -156,7 +155,7 @@ module Dataset::Identifiable
     if doi_state == Databank::DoiState::REGISTERED
       {status: "ok"}
     else
-      error_hash("problem changing state in DataCite metadata store for dataset #{self.key}")
+      error_hash("problem changing state in DataCite metadata store for dataset #{key}")
     end
   end
 
@@ -168,14 +167,14 @@ module Dataset::Identifiable
       if update(publication_state: Databank::PublicationState::RELEASED)
         return {status: "ok"}
       else
-        return error_hash("error updating Illinois Data Bank for dataset #{self.key}")
+        return error_hash("error updating Illinois Data Bank for dataset #{key}")
       end
     end
 
     response = Dataset.put_to_datacite(identifier, datacite_json_body(nil))
-    return error_hash("error updating DataCite for #{self.key}") unless response
+    return error_hash("error updating DataCite for #{key}") unless response
 
-    return error_hash("error updating DataCite for #{self.key}, code: #{response.code}") unless response.code == "200"
+    return error_hash("error updating DataCite for #{key}, code: #{response.code}") unless response.code == "200"
 
     {status: "ok"}
   end
@@ -186,7 +185,7 @@ module Dataset::Identifiable
     current_state = doi_state
     case current_state
     when nil, Databank::DoiState::UNREGISTERED
-      return {status: "ok"}
+      {status: "ok"}
     when Databank::DoiState::DRAFT
       url = URI("#{URI_BASE}/#{identifier}")
       http = Net::HTTP.new(url.host, url.port)
@@ -199,23 +198,22 @@ module Dataset::Identifiable
       request.body = json_body
       response = http.request(request)
       unless response.code == "204"
-        return error_hash("error removing DOI from DataCite for #{self.key}, code: #{response.code}")
+        return error_hash("error removing DOI from DataCite for #{key}, code: #{response.code}")
       end
-      return {status: "ok"}
+
+      {status: "ok"}
     else
-      return error_hash("can only remove DataCite DOIs in draft state for #{self.key}, not: #{current_state}")
+      error_hash("can only remove DataCite DOIs in draft state for #{key}, not: #{current_state}")
     end
   end
 
   def datacite_json_body(event)
-    raise("identifier required for DataCite JSON body generation, key: #{self.key}") unless identifier_present?
+    raise("identifier required for DataCite JSON body generation, key: #{key}") unless identifier_present?
 
-    json_body = %Q({"data": {"id": "#{identifier}", "type": "dois", "attributes": {)
-    if event.present?
-      json_body += %Q("event": "#{event}", )
-    end
-    json_body += %Q("doi": "#{identifier}", "url": "#{databank_url}", )
-    json_body + %Q("xml": "#{Base64.strict_encode64(to_datacite_xml)}"}}})
+    json_body = %({"data": {"id": "#{identifier}", "type": "dois", "attributes": {)
+    json_body += %("event": "#{event}", ) if event.present?
+    json_body += %("doi": "#{identifier}", "url": "#{databank_url}", )
+    json_body + %("xml": "#{Base64.strict_encode64(to_datacite_xml)}"}}})
   end
 
   def to_datacite_xml
@@ -397,7 +395,7 @@ module Dataset::Identifiable
           creator_identifier_node.content = creator.identifier.to_s
           creator_identifier_node.parent = creator_node
         end
-        if creator.email.split('@').last == "illinois.edu"
+        if creator.email.split("@").last == "illinois.edu"
           affiliation_node = doc.create_element("affiliation")
           affiliation_node["affiliationIdentifier"] = "https://ror.org/047426m28"
           affiliation_node["affiliationIdentifierScheme"] = "ROR"
@@ -517,7 +515,7 @@ module Dataset::Identifiable
     resource_type_node.content = "Dataset"
     resource_type_node.parent = resource_node
 
-    keyword_arr = keywords.split(";") if (defined?(keywords)) && keywords.present?
+    keyword_arr = keywords.split(";") if defined?(keywords) && keywords.present?
     keyword_arr ||= []
     if keyword_arr.length.positive?
       subjects_node = doc.create_element("subjects")
@@ -540,7 +538,7 @@ module Dataset::Identifiable
     version_node.content = dataset_version || "1"
     version_node.parent = resource_node
 
-    if (defined?(license)) && license.present? && ["CC01", "CCBY4", "license.txt"].include?(license)
+    if defined?(license) && license.present? && ["CC01", "CCBY4", "license.txt"].include?(license)
       rights_list_node = doc.create_element("rightsList")
       rights_node = doc.create_element("rights")
       case license
@@ -561,7 +559,7 @@ module Dataset::Identifiable
       end
     end
 
-    if (defined?(description)) && description.present?
+    if defined?(description) && description.present?
       descriptions_node = doc.create_element("descriptions")
       descriptions_node.parent = resource_node
       description_node = doc.create_element("description")
@@ -609,12 +607,12 @@ module Dataset::Identifiable
     when Net::HTTPUnprocessableEntity
       raise("bad get_doi request for dataset: #{key}")
     when Net::HTTPNotFound
-      return {}
+      {}
     when Net::HTTPSuccess, Net::HTTPRedirection
       response_body = response.body
       raise("response not valid JSON: #{response_body}") unless json?(response_body)
 
-      return JSON.parse(response_body, symbolize_names: true)
+      JSON.parse(response_body, symbolize_names: true)
     else
       raise("unexpected response from DataCite for #{doi}: #{response.body}")
     end
@@ -636,15 +634,15 @@ module Dataset::Identifiable
       case response
       when Net::HTTPUnauthorized
         Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
-        return nil
+        nil
       when Net::HTTPUnprocessableEntity, Net::HTTPNotFound
         Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
-        return nil
+        nil
       when Net::HTTPSuccess, Net::HTTPRedirection
-        return response
+        response
       else
         Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
-        return nil
+        nil
       end
     end
 
@@ -663,18 +661,17 @@ module Dataset::Identifiable
       case response
       when Net::HTTPUnauthorized
         Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
-        return nil
+        nil
       when Net::HTTPUnprocessableEntity, Net::HTTPNotFound
         Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
-        return nil
+        nil
       when Net::HTTPSuccess, Net::HTTPRedirection
-        return response
+        response
       else
         Rails.logger.warn("#{response.code}, #{response.body}, #{json_body}")
-        return nil
+        nil
       end
     end
-
   end
 
   private
@@ -686,7 +683,7 @@ module Dataset::Identifiable
   end
 
   def doi_info_from_datacite
-    raise("cannot get information from DataCite without identifier for #{self.key}") unless identifier_present?
+    raise("cannot get information from DataCite without identifier for #{key}") unless identifier_present?
 
     url = URI("#{URI_BASE}/#{identifier.downcase}")
     http = Net::HTTP.new(url.host, url.port)
@@ -704,5 +701,4 @@ module Dataset::Identifiable
   rescue JSON::ParserError
     false
   end
-
 end
