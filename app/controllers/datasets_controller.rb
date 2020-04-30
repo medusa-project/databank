@@ -624,7 +624,7 @@ class DatasetsController < ApplicationController
       @search.facet(:funder_codes).rows << Placeholder_FacetRow.new(outer_row.value, 0) unless has_this_row
     end
 
-    @report = Indexable.citation_report(@search, request.original_url, current_user)
+    @report = Dataset.citation_report(@search, request.original_url, current_user)
 
     if params.has_key?('download') && params['download'] == 'now'
       send_data @report, :filename => 'report.txt'

@@ -27,7 +27,7 @@
           ="released: N/A"
       &nbsp;
       .label.label-default
-        =Indexable.visibility_name_from_code(dataset.visibility_code)
+        =Dataset.visibility_name_from_code(dataset.visibility_code)
       &nbsp;
       .label.label-default
         -if dataset.subject && dataset.subject != ""

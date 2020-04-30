@@ -3,6 +3,107 @@
 module Dataset::Indexable
   extend ActiveSupport::Concern
 
+  class_methods do
+    def visibility_name_from_code(code)
+      case code
+      when "released"
+        "Metadata and Files Published"
+      when "draft"
+        "Draft"
+      when "new"
+        "Unsaved Draft"
+      when "suppressed_mf"
+        "Metadata and Files Temporarily Suppressed"
+      when "suppressed_f"
+        "Metadata Published, Files Temporarily Suppressed"
+      when "embargoed_mf"
+        "Metadata and Files Publication Delayed (Embargoed)"
+      when "embargoed_f"
+        "Metadata Published, Files Publication Delayed (Embargoed)"
+
+      when "withdrawn_mf"
+        "Metadata and Files Withdrawn"
+      when "withdrawn_f"
+        "Metadata Published, Files Withdrawn"
+      else
+        "Error: publication state not found"
+      end
+    end
+
+    def license_name_from_code(code)
+      if %w[unselected custom].include?(code)
+        code
+      else
+        licenses = LICENSE_INFO_ARR.select {|license| license.code == code }
+        return code if licenses.blank?
+
+        licenses[0].name
+      end
+    end
+
+    def funder_name_from_code(code)
+      if code == "other"
+        "Other"
+      else
+        funders = FUNDER_INFO_ARR.select {|funder| funder.code == code }
+        return "funder not found" if funders.blank?
+
+        funders[0].name
+      end
+    end
+
+    def pubstate_name_from_code(code)
+      case code
+      when Databank
+        "draft"
+      else
+        "not draft"
+      end
+    end
+
+    def citation_report(search, request_url, current_user)
+      report_text = ""
+
+      15.times do
+        report_text += "="
+      end
+
+      report_text += "\nIllinois Data Bank\nDatasets Report, generated #{Date.current.iso8601}"
+      report_text += " by #{current_user.username}" if current_user&.username
+      report_text += "\nQuery URL: #{request_url}\n"
+
+      15.times do
+        report_text += "="
+      end
+
+      report_text += "\n"
+
+      search.each_hit_with_result do |_hit, dataset|
+        report_text += "\n\n#{dataset.plain_text_citation}"
+        if dataset.funders.count.positive?
+          dataset.funders.each do |funder|
+            report_text += "\nFunder: #{funder.name}"
+            report_text += ", Grant: #{funder.grant}" if funder.grant && funder.grant != ""
+          end
+        end
+        report_text += "\nDownloads: #{dataset.total_downloads} "
+        if dataset.release_datetime
+          start_time = dataset.release_datetime.to_date.iso8601
+        else
+          start_time = Date.current.iso8601
+        end
+
+        report_text += "(#{start_time} to #{Date.current.iso8601} )\n"
+        5.times do
+          report_text += "-"
+        end
+      end
+
+      report_text
+    end
+
+  end
+
   def visibility
     return_string = case hold_state
                     when Databank::PublicationState::TempSuppress::METADATA
@@ -48,31 +149,7 @@ module Dataset::Indexable
     return_string
   end
 
-  def self.visibility_name_from_code(code)
-    case code
-    when "released"
-      "Metadata and Files Published"
-    when "draft"
-      "Draft"
-    when "new"
-      "Unsaved Draft"
-    when "suppressed_mf"
-      "Metadata and Files Temporarily Suppressed"
-    when "suppressed_f"
-      "Metadata Published, Files Temporarily Suppressed"
-    when "embargoed_mf"
-      "Metadata and Files Publication Delayed (Embargoed)"
-    when "embargoed_f"
-      "Metadata Published, Files Publication Delayed (Embargoed)"
 
-    when "withdrawn_mf"
-      "Metadata and Files Withdrawn"
-    when "withdrawn_f"
-      "Metadata Published, Files Withdrawn"
-    else
-      "Error: publication state not found"
-    end
-  end
 
   def visibility_code
     return_string = case hold_state
@@ -119,27 +196,7 @@ module Dataset::Indexable
     return_string
   end
 
-  def self.license_name_from_code(code)
-    if %w[unselected custom].include?(code)
-      code
-    else
-      licenses = LICENSE_INFO_ARR.select {|license| license.code == code }
-      return code if licenses.blank?
 
-      licenses[0].name
-    end
-  end
-
-  def self.funder_name_from_code(code)
-    if code == "other"
-      "Other"
-    else
-      funders = FUNDER_INFO_ARR.select {|funder| funder.code == code }
-      return "funder not found" if funders.blank?
-
-      funders[0].name
-    end
-  end
 
   def funder_names
     Funder.where(dataset_id: id).pluck(:name)
@@ -228,15 +285,6 @@ module Dataset::Indexable
     filenames.join(" ")
   end
 
-  def self.pubstate_name_from_code(code)
-    case code
-    when Databank
-      "draft"
-    else
-      "not draft"
-    end
-  end
-
   def datafile_extensions
     return_arr = []
     datafiles.each do |datafile|
@@ -249,44 +297,4 @@ module Dataset::Indexable
     datafile_extensions.join(" ")
   end
 
-  def self.citation_report(search, request_url, current_user)
-    report_text = ""
-
-    15.times do
-      report_text += "="
-    end
-
-    report_text += "\nIllinois Data Bank\nDatasets Report, generated #{Date.current.iso8601}"
-    report_text += " by #{current_user.username}" if current_user&.username
-    report_text += "\nQuery URL: #{request_url}\n"
-
-    15.times do
-      report_text += "="
-    end
-
-    report_text += "\n"
-
-    search.each_hit_with_result do |_hit, dataset|
-      report_text += "\n\n#{dataset.plain_text_citation}"
-      if dataset.funders.count.positive?
-        dataset.funders.each do |funder|
-          report_text += "\nFunder: #{funder.name}"
-          report_text += ", Grant: #{funder.grant}" if funder.grant && funder.grant != ""
-        end
-      end
-      report_text += "\nDownloads: #{dataset.total_downloads} "
-      if dataset.release_datetime
-        start_time = dataset.release_datetime.to_date.iso8601
-      else
-        start_time = Date.current.iso8601
-      end
-
-      report_text += "(#{start_time} to #{Date.current.iso8601} )\n"
-      5.times do
-        report_text += "-"
-      end
-    end
-
-    report_text
-  end
 end
