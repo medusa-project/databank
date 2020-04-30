@@ -1,5 +1,7 @@
-class ReviewRequest < ActiveRecord::Base
+# frozen_string_literal: true
+
+class ReviewRequest < ApplicationRecord
   def dataset
-    Dataset.find_by_key(self.dataset_key)
+    Dataset.find_by(key: dataset_key)
   end
 end

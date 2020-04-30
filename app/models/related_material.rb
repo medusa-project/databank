@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'rest-client'
-require 'uri'
+require "rest-client"
+require "uri"
 
 # represents a related material as defined in DataCite metadata schema
-class RelatedMaterial < ActiveRecord::Base
+class RelatedMaterial < ApplicationRecord
   include ActiveModel::Serialization
   belongs_to :dataset
   audited associated_with: :dataset
@@ -22,8 +22,8 @@ class RelatedMaterial < ActiveRecord::Base
   end
 
   def relationship_arr
-    if datacite_list && datacite_list != ''
-      datacite_list.split(',')
+    if datacite_list && datacite_list != ""
+      datacite_list.split(",")
     else
       []
     end
@@ -34,19 +34,17 @@ class RelatedMaterial < ActiveRecord::Base
   end
 
   def link_status
-    unless nonversion_relationships.count.positive?
-      return 'no non-version related materials'
-    end
+    return "no non-version related materials" unless nonversion_relationships.count.positive?
 
-    return 'no link' unless link
+    return "no link" unless link
 
-    return 'invalid url' unless link =~ /\A#{URI.regexp(%w[http https])}\z/
+    return "invalid url" unless link =~ /\A#{URI::DEFAULT_PARSER.make_regexp(%w[http https])}\z/
 
     link_attempt_status
   end
 
   def report_row
-    return '' unless nonversion_relationships.count.positive?
+    return "" unless nonversion_relationships.count.positive?
 
     "<tr><td>#{dataset.identifier}</td>\
 <td>#{IDB_CONFIG[:root_url_text]}/datasets/#{dataset.key}</td>\
@@ -65,7 +63,7 @@ class RelatedMaterial < ActiveRecord::Base
         report += material.report_row
       end
     end
-    report += '</table>'
+    report += "</table>"
   end
 
   private
@@ -73,15 +71,15 @@ class RelatedMaterial < ActiveRecord::Base
   # link status given a validly formatted link
   def link_attempt_status
     RestClient.get link
-  rescue RestClient::Unauthorized, RestClient::Forbidden => err
-    'access denied'
+  rescue RestClient::Unauthorized, RestClient::Forbidden => e
+    "access denied"
   rescue RestClient::RequestTimeout
-    'timeout'
+    "timeout"
   rescue RestClient::SSLCertificateNotVerified
-    'SSL certificate not verified'
+    "SSL certificate not verified"
   rescue RestClient::Exception
-    'invalid or unresponsive'
+    "invalid or unresponsive"
   else
-    'ok'
+    "ok"
   end
 end

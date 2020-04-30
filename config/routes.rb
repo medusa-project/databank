@@ -1,5 +1,4 @@
 # config/routes.rb
-require './lib/api/base'
 
 Rails.application.routes.draw do
 

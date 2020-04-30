@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 # represents a contributor as defined in DataCite metadata schema
-class Contributor < ActiveRecord::Base
+class Contributor < ApplicationRecord
   include ActiveModel::Serialization
   belongs_to :dataset
-  audited except: %i[row_order
-                     type_of
-                     identifier_scheme
-                     dataset_id
-                     institution_name],
+  audited except:          %i[row_order
+                              type_of
+                              identifier_scheme
+                              dataset_id
+                              institution_name],
           associated_with: :dataset
 
   default_scope { order(:row_position) }

@@ -8,12 +8,10 @@ require "minitar"
 require "zlib"
 require "rest-client"
 
-class Datafile < ActiveRecord::Base
-
+class Datafile < ApplicationRecord
   include ActiveModel::Serialization
   include Datafile::Viewable
   include Datafile::Processable
-  include Datafile::Messagable
   belongs_to :dataset
   has_many :nested_items, dependent: :destroy
 
@@ -61,7 +59,7 @@ class Datafile < ActiveRecord::Base
   end
 
   def current_root
-    Application.storage_manager.root_set.at(storage_root)
+    StorageManager.instance.root_set.at(storage_root)
   end
 
   def storage_root_bucket
@@ -100,7 +98,7 @@ class Datafile < ActiveRecord::Base
   def tmpdir_for_with_input_file
     expected_size = binary_size || current_root.size(storage_key)
     if expected_size > 500.megabytes
-      Application.storage_manager.tmpdir
+      StorageManager.instance.tmpdir
     else
       Dir.tmpdir
     end
@@ -149,7 +147,7 @@ class Datafile < ActiveRecord::Base
     filename_split = bytestream_name.split(".")
     return "" unless filename_split.count > 1
 
-    return filename_split.last
+    filename_split.last
   end
 
   def ip_downloaded_file_today(request_ip)
@@ -175,22 +173,22 @@ class Datafile < ActiveRecord::Base
 
     # datafile_target_key = "#{dataset.dirname}/dataset_files/#{self.binary_name}"
 
-    if Application.storage_manager.medusa_root.exist?(target_key)
+    if StorageManager.instance.medusa_root.exist?(target_key)
       in_medusa = true
 
       if storage_root && storage_key && storage_root == "draft" && storage_key != ""
 
         # If the binary object also exists in draft system, delete duplicate.
         #  Can't do full equivalence check (S3 etag is not always MD5), so check sizes.
-        if Application.storage_manager.draft_root.exist?(storage_key)
-          draft_size = Application.storage_manager.draft_root.size(storage_key)
-          medusa_size = Application.storage_manager.medusa_root.size(target_key)
+        if StorageManager.instance.draft_root.exist?(storage_key)
+          draft_size = StorageManager.instance.draft_root.size(storage_key)
+          medusa_size = StorageManager.instance.medusa_root.size(target_key)
 
           if draft_size == medusa_size
             # If the ingest into Medusa was successful,
             # delete redundant binary object
             # and update Illinois Data Bank datafile record
-            Application.storage_manager.draft_root.delete_content(storage_key)
+            StorageManager.instance.draft_root.delete_content(storage_key)
             in_medusa = true
           else
             in_medusa = false
@@ -283,13 +281,13 @@ class Datafile < ActiveRecord::Base
   def remove_binary
     return nil unless storage_key
 
-    if Application.storage_manager.draft_root.exist?(storage_key)
-      Application.storage_manager.draft_root.delete_content(storage_key)
+    if StorageManager.instance.draft_root.exist?(storage_key)
+      StorageManager.instance.draft_root.delete_content(storage_key)
     end
 
-    return nil unless Application.storage_manager.draft_root.exist?("#{storage_key}.info")
+    return nil unless StorageManager.instance.draft_root.exist?("#{storage_key}.info")
 
-    Application.storage_manager.draft_root.delete_content("#{storage_key}.info")
+    StorageManager.instance.draft_root.delete_content("#{storage_key}.info")
   end
 
   def job
@@ -333,10 +331,10 @@ class Datafile < ActiveRecord::Base
 
     return Databank::PeekType::MARKDOWN if mime_parts[0] == "markdown"
 
-    text_subtypes = ["csv", "xml", "x-sh", "x-javascript", "json", "r", "rb"]
+    text_subtypes = %w[csv xml x-sh x-javascript json r rb]
     supported_image_subtypes = %w[jp2 jpeg dicom gif png bmp]
-    nonzip_archive_subtypes = ["x-7z-compressed", "x-tar"]
-    pdf_subtypes = ["pdf", "x-pdf"]
+    nonzip_archive_subtypes = %w[x-7z-compressed x-tar]
+    pdf_subtypes = %w[pdf x-pdf]
     microsoft_subtypes = ["msword",
                           "vnd.openxmlformats-officedocument.wordprocessingml.document",
                           "vnd.openxmlformats-officedocument.wordprocessingml.template",
@@ -362,21 +360,21 @@ class Datafile < ActiveRecord::Base
 
       return Databank::PeekType::ALL_TEXT unless num_bytes > ALLOWED_DISPLAY_BYTES
 
-      return Databank::PeekType::PART_TEXT
+      Databank::PeekType::PART_TEXT
     elsif mime_parts[0] == "image"
       return Databank::PeekType::NONE unless supported_image_subtypes.include?(subtype)
 
-      return Databank::PeekType::IMAGE
+      Databank::PeekType::IMAGE
     elsif microsoft_subtypes.include?(subtype)
-      return Databank::PeekType::MICROSOFT
+      Databank::PeekType::MICROSOFT
     elsif pdf_subtypes.include?(subtype)
-      return Databank::PeekType::PDF
+      Databank::PeekType::PDF
     elsif subtype == "zip"
-      return Databank::PeekType::LISTING
+      Databank::PeekType::LISTING
     elsif nonzip_archive_subtypes.include?(subtype)
-      return Databank::PeekType::LISTING
+      Databank::PeekType::LISTING
     else
-      return Databank::PeekType::NONE
+      Databank::PeekType::NONE
     end
   end
 
@@ -399,7 +397,7 @@ class Datafile < ActiveRecord::Base
       end
       part_text_string
     rescue Aws::S3::Errors::NotFound
-      return nil
+      nil
     end
   end
 
@@ -415,7 +413,7 @@ class Datafile < ActiveRecord::Base
 
       all_text_string.encode("UTF-8", invalid: :replace, undef: :replace)
     rescue Aws::S3::Errors::NotFound
-      return nil
+      nil
     end
   end
 

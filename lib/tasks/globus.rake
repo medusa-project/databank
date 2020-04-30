@@ -9,9 +9,9 @@ namespace :globus do
       dataset.datafiles.each do |datafile|
         #check if key exists
         begin
-          next if Application.storage_manager.globus_download_root.exist?("#{dataset.key}/#{datafile.binary_name}")
+          next if StorageManager.instance.globus_download_root.exist?("#{dataset.key}/#{datafile.binary_name}")
           puts "copying #{datafile.binary_name}"
-          Application.storage_manager.globus_download_root.copy_content_to("#{dataset.key}/#{datafile.binary_name}",
+          StorageManager.instance.globus_download_root.copy_content_to("#{dataset.key}/#{datafile.binary_name}",
                                                                            datafile.current_root,
                                                                            datafile.storage_key)
         rescue Aws::S3::Errors::NotFound
@@ -32,9 +32,9 @@ namespace :globus do
         puts "copying dataset: #{dataset.title}, key: #{dataset.key}"
         dataset.datafiles.each do |datafile|
           #check if key exists
-          next if Application.storage_manager.globus_download_root.exist?("#{dataset.key}/#{datafile.binary_name}")
+          next if StorageManager.instance.globus_download_root.exist?("#{dataset.key}/#{datafile.binary_name}")
           puts "copying #{datafile.binary_name}"
-          Application.storage_manager.globus_download_root.copy_content_to("#{dataset.key}/#{datafile.binary_name}",
+          StorageManager.instance.globus_download_root.copy_content_to("#{dataset.key}/#{datafile.binary_name}",
                                                                            datafile.current_root,
                                                                            datafile.storage_key)
         end

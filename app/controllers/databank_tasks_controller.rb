@@ -13,7 +13,7 @@ class DatabankTasksController < ApplicationController
   end
 
   def pending
-    @databank_tasks = DatabankTask.get_pending_tasks
+    @databank_tasks = DatabankTask.pending_tasks
   end
 
   def update_status

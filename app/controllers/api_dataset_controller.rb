@@ -22,14 +22,14 @@ class ApiDatasetController < ApplicationController
 
         uploaded_io = params['binary']
 
-        df.storage_root = Application.storage_manager.draft_root.name
+        df.storage_root = StorageManager.instance.draft_root.name
         df.binary_name = uploaded_io.original_filename
         df.storage_key = File.join(df.web_id, df.binary_name)
         df.binary_size = uploaded_io.size
         df.mime_type = uploaded_io.content_type
 
         # Moving the file to some safe place; as tmp files will be flushed timely
-        Application.storage_manager.draft_root.copy_io_to(df.storage_key, uploaded_io, nil, uploaded_io.size)
+        StorageManager.instance.draft_root.copy_io_to(df.storage_key, uploaded_io, nil, uploaded_io.size)
 
         df.save
 
@@ -47,7 +47,7 @@ class ApiDatasetController < ApplicationController
         tus_url_arr = tus_url.split('/')
         tus_key = tus_url_arr[-1]
 
-        df.storage_root = Application.storage_manager.draft_root.name
+        df.storage_root = StorageManager.instance.draft_root.name
         df.binary_name = params[:filename]
         df.storage_key = tus_key
         df.binary_size = params[:size]

@@ -9,7 +9,7 @@ require "securerandom"
 require "action_pack"
 require "openssl"
 
-class Dataset < ActiveRecord::Base
+class Dataset < ApplicationRecord
   include ActiveModel::Serialization
   include Dataset::Recoverable
   include Dataset::MessageText
@@ -294,7 +294,7 @@ class Dataset < ActiveRecord::Base
   end
 
   def medusa_ingests
-    MedusaIngest.all.select { |m| m.dataset_key == key }
+    MedusaIngest.all.select {|m| m.dataset_key == key }
   end
 
   def fileset_preserved?
@@ -303,7 +303,7 @@ class Dataset < ActiveRecord::Base
     fileset_preserved = true
 
     datafiles.each do |df|
-      fileset_preserved = false if df.storage_root != Application.storage_manager.medusa_root.name
+      fileset_preserved = false if df.storage_root != StorageManager.instance.medusa_root.name
     end
 
     fileset_preserved
@@ -386,9 +386,11 @@ class Dataset < ActiveRecord::Base
 
   def depositor
     return "unknown|Unknown Depositor" unless depositor_email
+
     email = depositor_email
     user = User::Shibboleth.find_by(email: email)
     return "unknown|Unknown Depositor" unless user
+
     "#{depositor_netid}|#{user.name}"
   end
 
@@ -465,7 +467,7 @@ class Dataset < ActiveRecord::Base
   end
 
   def remove_system_files
-    root = Application.storage_manager.draft_root
+    root = StorageManager.instance.draft_root
     system_files.each do |system_file|
       root.delete_content(system_file.storage_key) if root.exist?(system_file.storage_key)
     end

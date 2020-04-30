@@ -115,7 +115,7 @@ namespace :medusa do
   desc 'update keys from ingests'
   task :update_keys_from_ingests => :environment do
 
-    medusa_root = Application.storage_manager.medusa_root
+    medusa_root = StorageManager.instance.medusa_root
 
     MedusaIngest.where.not(medusa_path: nil) do |ingest|
       if ingest.idb_class == 'dataset' && ingest.idb_identifier && ingest.idb_identifier != ''

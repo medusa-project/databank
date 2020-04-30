@@ -1,5 +1,7 @@
-class Definition < ActiveRecord::Base
+# frozen_string_literal: true
+
+class Definition < ApplicationRecord
   def to_param
-    self.term
+    term
   end
 end

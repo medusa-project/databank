@@ -10,7 +10,7 @@ module Dataset::Globusable
 
     begin
       datafiles.each do |datafile|
-        return false unless Application.storage_manager.globus_download_root.exist?("#{key}/#{datafile.binary_name}")
+        return false unless StorageManager.instance.globus_download_root.exist?("#{key}/#{datafile.binary_name}")
       end
     rescue StandardError => e
       Rails.logger.warn("Error #{e.message} attempting to check if dataset available in Globus: #{key}")
@@ -31,7 +31,7 @@ module Dataset::Globusable
   def ensure_globus_ingest_dir
     return nil unless Rails.env.demo? || Rails.env.production?
 
-    return true if Application.storage_manager.globus_ingest_root.exist?("#{key}/")
+    return true if StorageManager.instance.globus_ingest_root.exist?("#{key}/")
 
     return nil unless IDB_CONFIG[:aws][:s3_mode] == true
 
@@ -40,7 +40,7 @@ module Dataset::Globusable
     dir_key = "#{prefix}/#{key}/"
     client = Application.aws_client
     client.put_object(bucket: bucket, key: dir_key)
-    Application.storage_manager.globus_ingest_root.exist?("#{key}/")
+    StorageManager.instance.globus_ingest_root.exist?("#{key}/")
   end
 
   def globus_ingest_dir
@@ -53,16 +53,16 @@ module Dataset::Globusable
 
   def import_from_globus
     raise "invalid environment, must be demo or production" unless Rails.env.demo? || Rails.env.production?
-    raise "files not found on Globus endpoint" unless Application.storage_manager.globus_ingest_root.exist?("#{key}/")
+    raise "files not found on Globus endpoint" unless StorageManager.instance.globus_ingest_root.exist?("#{key}/")
 
-    storage_keys = Application.storage_manager.globus_ingest_root.file_keys(key)
+    storage_keys = StorageManager.instance.globus_ingest_root.file_keys(key)
     storage_keys.each do |storage_key|
       key_parts = storage_key.split("/")
       name_part = key_parts.last
       existing_datafile = Datafile.find_by(dataset_id: id, binary_name: name_part)
       next if existing_datafile
 
-      obj_size = Application.storage_manager.draft_root.size(storage_key)
+      obj_size = StorageManager.instance.draft_root.size(storage_key)
       Datafile.create(dataset_id:   id,
                       binary_name:  name_part,
                       binary_size:  obj_size,
@@ -73,24 +73,24 @@ module Dataset::Globusable
 
   def remove_from_globus_download
     return nil unless Rails.env.demo? || Rails.env.production?
-    return nil unless Application.storage_manager.globus_download_root.exist?("#{key}/")
+    return nil unless StorageManager.instance.globus_download_root.exist?("#{key}/")
 
-    storage_keys = Application.storage_manager.globus_download_root.file_keys(key)
+    storage_keys = StorageManager.instance.globus_download_root.file_keys(key)
     storage_keys.each do |storage_key|
-      Application.storage_manager.globus_download_root.delete_content(storage_key)
+      StorageManager.instance.globus_download_root.delete_content(storage_key)
     end
-    Application.storage_manager.globus_download_root.delete_content("#{key}/")
+    StorageManager.instance.globus_download_root.delete_content("#{key}/")
   end
 
   def remove_globus_ingest_dir
     return nil unless Rails.env.demo? || Rails.env.production?
 
-    return nil unless Application.storage_manager.globus_ingest_root.exist?("#{key}/")
+    return nil unless StorageManager.instance.globus_ingest_root.exist?("#{key}/")
 
-    storage_keys = Application.storage_manager.globus_ingest_root.file_keys(key)
+    storage_keys = StorageManager.instance.globus_ingest_root.file_keys(key)
     storage_keys.each do |storage_key|
-      Application.storage_manager.globus_ingest_root.delete_content(storage_key)
+      StorageManager.instance.globus_ingest_root.delete_content(storage_key)
     end
-    Application.storage_manager.globus_ingest_root.delete_content("#{key}/")
+    StorageManager.instance.globus_ingest_root.delete_content("#{key}/")
   end
 end

@@ -1,20 +1,20 @@
-class UserAbility < ActiveRecord::Base
+# frozen_string_literal: true
 
+class UserAbility < ApplicationRecord
   class << self
-
     def user_can?(model, model_id, ability, user)
       user ||= User::Shibboleth.new # guest user (not logged in)
       UserAbility.where(resource_type: model,
-                        resource_id: model_id,
+                        resource_id:   model_id,
                         user_provider: user.provider,
-                        user_uid: user.uid,
-                        ability: ability).exists?
-
+                        user_uid:      user.uid,
+                        ability:       ability).exists?
     end
 
-    def update_internal_permissions(dataset_key, form_reviewers = [], form_editors = [])
+    def update_internal_permissions(dataset_key, form_reviewers=[], form_editors=[])
       dataset = Dataset.find_by(key: dataset_key)
       raise("dataset not found") unless dataset
+
       current_reviewers = dataset.internal_reviewer_netids || []
       current_editors = dataset.internal_editor_netids || []
 
@@ -46,25 +46,25 @@ class UserAbility < ActiveRecord::Base
 
     def grant_internal(dataset, netid, ability)
       existing_record = UserAbility.find_by(resource_type: "Dataset",
-                                                          resource_id: dataset.id,
-                                                          user_provider: "shibboleth",
-                                                          user_uid: "#{netid}@illinois.edu",
-                                                          ability: ability)
-      existing_record = UserAbility.create!(resource_type: "Dataset",
-                                                          resource_id: dataset.id,
-                                                          user_provider: "shibboleth",
-                                                          user_uid: "#{netid}@illinois.edu",
-                                                          ability: ability) unless existing_record
+                                            resource_id:   dataset.id,
+                                            user_provider: "shibboleth",
+                                            user_uid:      "#{netid}@illinois.edu",
+                                            ability:       ability)
+      existing_record ||= UserAbility.create!(resource_type: "Dataset",
+                                              resource_id:   dataset.id,
+                                              user_provider: "shibboleth",
+                                              user_uid:      "#{netid}@illinois.edu",
+                                              ability:       ability)
       raise "#{ability} record not created for #{netid}, #{dataset.key}" unless existing_record
     end
 
     def revoke_internal(dataset, netid, ability)
       existing_record = UserAbility.find_by(resource_type: "Dataset",
-                                            resource_id: dataset.id,
+                                            resource_id:   dataset.id,
                                             user_provider: "shibboleth",
-                                            user_uid: "#{netid}@illinois.edu",
-                                            ability: ability)
-      existing_record.destroy if existing_record
+                                            user_uid:      "#{netid}@illinois.edu",
+                                            ability:       ability)
+      existing_record&.destroy
     end
   end
 end

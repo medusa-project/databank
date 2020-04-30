@@ -13,7 +13,7 @@ namespace :s3update do
           datafile.binary_name = datafile.medusa_path.split("/")[-1]
           datafile.save
 
-          if Application.storage_manager.medusa_root.exist?(datafile.medusa_path)
+          if StorageManager.instance.medusa_root.exist?(datafile.medusa_path)
             datafile.storage_root = 'medusa'
             datafile.storage_key = datafile.medusa_path
             datafile.save
@@ -29,7 +29,7 @@ namespace :s3update do
           draft_key = "#{datafile.web_id}/#{datafile.binary_name}"
 
           unless datafile.storage_root && datafile.storage_root != '' && datafile.storage_key && datafile.storage_key != ''
-            if Application.storage_manager.draft_root.exist?(draft_key)
+            if StorageManager.instance.draft_root.exist?(draft_key)
               datafile.storage_root = 'draft'
               datafile.storage_key = draft_key
               datafile.save

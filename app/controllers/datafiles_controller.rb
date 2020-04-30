@@ -5,8 +5,6 @@ require 'fileutils'
 require 'net/http'
 require 'browser'
 
-OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-
 class DatafilesController < ApplicationController
 
   before_action :set_datafile, only: [:show, :edit, :update, :destroy, :download, :record_download, :download_no_record, :download_url,
@@ -63,7 +61,7 @@ class DatafilesController < ApplicationController
       tus_url_arr = tus_url.split('/')
       tus_key = tus_url_arr[-1]
 
-      @datafile.storage_root = Application.storage_manager.draft_root.name
+      @datafile.storage_root = StorageManager.instance.draft_root.name
       @datafile.binary_name = params[:datafile][:filename]
       @datafile.storage_key = tus_key
       @datafile.binary_size = params[:datafile][:size]

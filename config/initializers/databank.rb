@@ -15,9 +15,6 @@ IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, 'config', 'databa
 STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, 'config', 'medusa_storage.yml'))).result)[Rails.env]
 GLOBUS_CONFIG = YAML.load_file(Rails.root.join('config', 'globus.yml'))[Rails.env]
 
-Application.read_only_message = Datafile.read_only_message
-Application.read_only_msg_middle = Datafile.read_only_msg_middle
-Application.storage_manager = StorageManager.new
 # Initializes a Markdown parser
 Application.markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
 
@@ -48,51 +45,7 @@ if IDB_CONFIG[:aws][:s3_mode] == true
   #                                                   )
 
 else
-
   Tus::Server.opts[:storage] = Tus::Storage::Filesystem.new(STORAGE_CONFIG[:storage][0][:path] )
-
 end
 
-if Rails.env.development?
-  # create local identity accounts for admins
-  admins = IDB_CONFIG[:admin][:netids].split(",").collect {|x| x.strip || x}
-  admins.each do |netid|
-    email = "#{netid}@illinois.edu"
-    name = "admin #{netid}"
-    invitee = Invitee.find_or_create_by(email: email)
-    invitee.role = Databank::UserRole::ADMIN
-    invitee.expires_at = Time.zone.now + 1.years
-    invitee.save!
-    identity = Identity.find_or_create_by(email: email)
-    salt = BCrypt::Engine.generate_salt
-    localpass = IDB_CONFIG[:admin][:localpass]
-    encrypted_password = BCrypt::Engine.hash_secret(localpass, salt)
-    identity.password_digest = encrypted_password
-    identity.update_attributes(password: localpass, password_confirmation: localpass)
-    identity.name = name
-    identity.activated = true
-    identity.activated_at = Time.zone.now
-    identity.save!
-  end
-
-  testers = IDB_CONFIG[:testers].split(",").collect {|x| x.strip || x}
-  testers.each do |email|
-    name = email
-    invitee = Invitee.find_or_create_by(email: email)
-    invitee.role = Databank::UserRole::DEPOSITOR
-    invitee.expires_at = Time.zone.now + 1.years
-    invitee.save!
-    identity = Identity.find_or_create_by(email: email)
-    salt = BCrypt::Engine.generate_salt
-    localpass = IDB_CONFIG[:admin][:localpass]
-    encrypted_password = BCrypt::Engine.hash_secret(localpass, salt)
-    identity.password_digest = encrypted_password
-    identity.update_attributes(password: localpass, password_confirmation: localpass)
-    identity.name = name
-    identity.activated = true
-    identity.activated_at = Time.zone.now
-    identity.save!
-  end
-
-end
 

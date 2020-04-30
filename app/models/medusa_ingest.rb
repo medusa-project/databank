@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-class MedusaIngest < ActiveRecord::Base
-
+class MedusaIngest < ApplicationRecord
   def dataset_key
-    if idb_class == 'datafile'
+    if idb_class == "datafile"
       datafile = Datafile.find_by(web_id: idb_identifier)
       return nil unless datafile
+
       dataset = datafile.dataset
       dataset.key
     else
@@ -14,20 +14,24 @@ class MedusaIngest < ActiveRecord::Base
   end
 
   def datafile_web_id
-    return nil unless idb_class == 'datafile'
+    return nil unless idb_class == "datafile"
+
     datafile = Datafile.find_by(web_id: idb_identifier)
     return nil unless datafile
+
     datafile.web_id
   end
 
   def draft_obj_exist?
     return false unless staging_key
-    Application.storage_manager.draft_root.exist?(staging_key)
+
+    StorageManager.instance.draft_root.exist?(staging_key)
   end
 
   def medusa_obj_exist?
     return false unless target_key
-    Application.storage_manager.medusa_root.exist?(target_key)
+
+    StorageManager.instance.medusa_root.exist?(target_key)
   end
 
   def self.incoming_queue
@@ -39,15 +43,14 @@ class MedusaIngest < ActiveRecord::Base
   end
 
   def self.on_medusa_message(response)
-
     response_hash = JSON.parse(response)
 
     if MedusaIngest.message_valid?(response) && response_hash["status"] == "ok"
-      ingest_response = IngestResponse.new(status: "ok",
+      ingest_response = IngestResponse.new(status:        "ok",
                                            response_time: Time.current.iso8601,
-                                           staging_key: response_hash["staging_key"],
-                                           medusa_key: response_hash["medusa_key"],
-                                           uuid: response_hash["uuid"])
+                                           staging_key:   response_hash["staging_key"],
+                                           medusa_key:    response_hash["medusa_key"],
+                                           uuid:          response_hash["uuid"])
       ingest_response.as_text = response
       ingest_response.save!
       on_medusa_succeeded_message(response_hash)
@@ -60,14 +63,13 @@ class MedusaIngest < ActiveRecord::Base
   def self.message_valid?(response)
     response_hash = JSON.parse(response)
     if
-      response_hash.has_key?('status') && ["ok", "error"].include?(response_hash['status'])
-      return true
+      response_hash.has_key?("status") && %w[ok error].include?(response_hash["status"])
+      true
     else
       notification = DatabankMailer.error("invalid message, #{response_hash['status']}")
       notification.deliver_now
-      return false
+      false
     end
-
   end
 
   def self.send_dataset_to_medusa(dataset)
@@ -78,7 +80,7 @@ class MedusaIngest < ActiveRecord::Base
     # always send a description file
     description_xml = dataset.to_datacite_xml
     description_key = "#{dataset.dirname}/system/description.#{file_time}.xml"
-    Application.storage_manager.draft_root.write_string_to(description_key, description_xml)
+    StorageManager.instance.draft_root.write_string_to(description_key, description_xml)
     SystemFile.create(dataset_id: dataset.id, storage_root: "draft", storage_key: description_key, file_type: "description")
 
     medusa_ingest = MedusaIngest.new
@@ -104,8 +106,8 @@ class MedusaIngest < ActiveRecord::Base
     # END datafiles
 
     # START deposit agreement
-    draft_exists = Application.storage_manager.draft_root.exist?(dataset.draft_agreement_key)
-    medusa_exists = Application.storage_manager.medusa_root.exist?(dataset.medusa_agreement_key)
+    draft_exists = StorageManager.instance.draft_root.exist?(dataset.draft_agreement_key)
+    medusa_exists = StorageManager.instance.medusa_root.exist?(dataset.medusa_agreement_key)
 
     if draft_exists && !medusa_exists
       medusa_ingest = MedusaIngest.new
@@ -117,10 +119,10 @@ class MedusaIngest < ActiveRecord::Base
       medusa_ingest.send_medusa_ingest_message
 
     elsif draft_exists && medusa_exists
-      draft_size = Application.storage_manager.draft_root.size(dataset.draft_agreement_key)
-      medusa_size = Application.storage_manager.medusa_root.size(dataset.medusa_agreement_key)
+      draft_size = StorageManager.instance.draft_root.size(dataset.draft_agreement_key)
+      medusa_size = StorageManager.instance.medusa_root.size(dataset.medusa_agreement_key)
       if draft_size == medusa_size
-        Application.storage_manager.draft_root.delete_content(dataset.draft_agreement_key)
+        StorageManager.instance.draft_root.delete_content(dataset.draft_agreement_key)
       else
         exception_string("Agreement file exists in both draft and medusa storage systems, but the sizes are different. Dataset: #{dataset.key}.")
         notification = DatabankMailer.error(exception_string)
@@ -137,7 +139,7 @@ class MedusaIngest < ActiveRecord::Base
     # always send a serialization
     serialization_json = dataset.recovery_serialization.to_json
     serialization_key = "#{dataset.dirname}/system/serialization.#{file_time}.json"
-    Application.storage_manager.draft_root.write_string_to(serialization_key, serialization_json)
+    StorageManager.instance.draft_root.write_string_to(serialization_key, serialization_json)
     SystemFile.create(dataset_id:   dataset.id,
                       storage_root: "draft",
                       storage_key:  serialization_key,
@@ -156,7 +158,7 @@ class MedusaIngest < ActiveRecord::Base
     # always send a changelog
     changelog_json = dataset.full_changelog.to_json
     changelog_key = "#{dataset.dirname}/system/changelog.#{file_time}.json"
-    Application.storage_manager.draft_root.write_string_to(changelog_key, changelog_json)
+    StorageManager.instance.draft_root.write_string_to(changelog_key, changelog_json)
     SystemFile.create(dataset_id:   dataset.id,
                       storage_root: "draft",
                       storage_key:  changelog_key,
@@ -169,9 +171,9 @@ class MedusaIngest < ActiveRecord::Base
     medusa_ingest.idb_identifier = dataset.key
     medusa_ingest.send_medusa_ingest_message
     if medusa_ingest.save
-      return "ingest record #{IDB_CONFIG[:root_url_text]}/medusa_ingests/#{medusa_ingest.id}"
+      "ingest record #{IDB_CONFIG[:root_url_text]}/medusa_ingests/#{medusa_ingest.id}"
     else
-      return "error recording ingest record"
+      "error recording ingest record"
     end
   end
 
@@ -182,7 +184,7 @@ class MedusaIngest < ActiveRecord::Base
     return nil if datafile.in_medusa
     return nil unless datafile.storage_root
     return nil unless datafile.storage_key
-    return nil unless Application.storage_manager.draft_root.exist?(datafile.storage_key)
+    return nil unless StorageManager.instance.draft_root.exist?(datafile.storage_key)
 
     datafile_target_key = "#{datafile.dataset.dirname}/dataset_files/#{datafile.binary_name}"
 
@@ -196,8 +198,8 @@ class MedusaIngest < ActiveRecord::Base
   end
 
   def self.on_medusa_succeeded_message(response_hash)
-    draft_root = Application.storage_manager.draft_root
-    medusa_root = Application.storage_manager.medusa_root
+    draft_root = StorageManager.instance.draft_root
+    medusa_root = StorageManager.instance.medusa_root
 
     ingest = nil
 
@@ -275,7 +277,7 @@ class MedusaIngest < ActiveRecord::Base
           medusa_size = medusa_root.size(response_hash["medusa_key"])
           if draft_size == medusa_size
             draft_root.delete_content(response_hash["staging_key"])
-            info_key = "#{response_hash["staging_key"]}.info"
+            info_key = "#{response_hash['staging_key']}.info"
             draft_root.delete_contant(info_key) if draft_root.exist?(info_key)
           else
             notification = DatabankMailer.error("file exists in both draft and medusa, but not same size #{response_hash.to_yaml}")
@@ -283,7 +285,7 @@ class MedusaIngest < ActiveRecord::Base
           end
         end
 
-        system_files = SystemFile.where(dataset_id: dataset.id, storage_key: response_hash['staging_key'])
+        system_files = SystemFile.where(dataset_id: dataset.id, storage_key: response_hash["staging_key"])
         system_file = nil
         if system_files.count == 1
           system_file = system_files.first
@@ -293,17 +295,17 @@ class MedusaIngest < ActiveRecord::Base
         end
 
         if system_file
-          system_file.update_attribute('storage_root', 'medusa')
+          system_file.update_attribute("storage_root", "medusa")
         else
           notification = DatabankMailer.error("Record not found for Medusa message. #{response_hash.to_yaml}")
           notification.deliver_now
-          return false
+          false
         end
 
       else
         notification = DatabankMailer.error("File not found for Medusa message. #{response_hash.to_yaml}")
         notification.deliver_now
-        return false
+        false
       end
     end
   end
@@ -324,15 +326,13 @@ class MedusaIngest < ActiveRecord::Base
 
     notification = DatabankMailer.error(error_string)
     notification.deliver_now
-
   end
 
   def self.remove_draft_if_in_medusa
-    draft_root = Application.storage_manager.draft_root
-    medusa_root = Application.storage_manager.medusa_root
+    draft_root = StorageManager.instance.draft_root
+    medusa_root = StorageManager.instance.medusa_root
 
-    MedusaIngest.all.each do |ingest|
-
+    MedusaIngest.all.find_each do |ingest|
       next unless ingest.staging_key.present? && ingest.target_key.present?
 
       # dataset found - do things with dataset and ingest response
@@ -365,9 +365,9 @@ class MedusaIngest < ActiveRecord::Base
   end
 
   def medusa_ingest_message
-    {:operation => "ingest",
-     :staging_key => staging_key,
-     :target_key => target_key,
-     :pass_through => {class: idb_class, identifier: idb_identifier}}
+    {operation:    "ingest",
+     staging_key:  staging_key,
+     target_key:   target_key,
+     pass_through: {class: idb_class, identifier: idb_identifier}}
   end
 end

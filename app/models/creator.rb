@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # represents a creator as defined in DataCite metadata schema
-class Creator < ActiveRecord::Base
+class Creator < ApplicationRecord
   include ActiveModel::Serialization
   belongs_to :dataset
   validate :name?

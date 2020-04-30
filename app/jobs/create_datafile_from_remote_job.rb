@@ -32,7 +32,7 @@ class CreateDatafileFromRemoteJob < ProgressJob::Base
     upload_incomplete = true
 
     @datafile.binary_name = @filename
-    @datafile.storage_root = Application.storage_manager.draft_root.name
+    @datafile.storage_root = StorageManager.instance.draft_root.name
     @datafile.storage_key = File.join(@datafile.web_id, @filename)
     @datafile.binary_size = @filesize
     @datafile.save!
@@ -40,17 +40,17 @@ class CreateDatafileFromRemoteJob < ProgressJob::Base
     if IDB_CONFIG[:aws][:s3_mode]
 
       upload_key = @datafile.storage_key
-      upload_bucket = Application.storage_manager.draft_root.bucket
+      upload_bucket = StorageManager.instance.draft_root.bucket
 
-      if Application.storage_manager.draft_root.prefix
-        upload_key = "#{Application.storage_manager.draft_root.prefix}#{@datafile.storage_key}"
+      if StorageManager.instance.draft_root.prefix
+        upload_key = "#{StorageManager.instance.draft_root.prefix}#{@datafile.storage_key}"
       end
 
       client = Application.aws_client
 
       if @filesize.to_f < FIVE_MB
         web_contents = open(@remote_url) {|f| f.read}
-        Application.storage_manager.draft_root.copy_io_to(@datafile.storage_key, web_contents, nil, @filesize.to_f)
+        StorageManager.instance.draft_root.copy_io_to(@datafile.storage_key, web_contents, nil, @filesize.to_f)
         upload_incomplete = false
 
       else
@@ -190,7 +190,7 @@ class CreateDatafileFromRemoteJob < ProgressJob::Base
 
     else
 
-      filepath = "#{Application.storage_manager.draft_root.path}/#{@datafile.storage_key}"
+      filepath = "#{StorageManager.instance.draft_root.path}/#{@datafile.storage_key}"
 
       dir_name = File.dirname(filepath)
 

@@ -1,2 +1,4 @@
-class Robot < ActiveRecord::Base
+# frozen_string_literal: true
+
+class Robot < ApplicationRecord
 end

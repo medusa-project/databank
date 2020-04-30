@@ -5,7 +5,6 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
-
     # cancancan automatically adds read, create, update
     # alias_action :index, :show, :to => :read
     # alias_action :new, :to => :create

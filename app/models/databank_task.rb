@@ -10,10 +10,10 @@ class DatabankTask
     return nil unless datafile
 
     endpoint = "#{TASKS_URL}/tasks"
-    payload = {task: {web_id: datafile.web_id,
+    payload = {task: {web_id:       datafile.web_id,
                       storage_root: datafile.storage_root,
-                      storage_key: datafile.storage_key,
-                      binary_name: datafile.binary_name}}
+                      storage_key:  datafile.storage_key,
+                      binary_name:  datafile.binary_name}}
     response = RestClient.post endpoint, payload
     raise("problem creating task: #{response}") unless response.code == 201
 
@@ -22,7 +22,7 @@ class DatabankTask
     response_hash["id"]
   end
 
-  def self.get_all_remote_tasks
+  def self.all_remote_tasks
     endpoint = "#{TASKS_URL}/tasks"
     response = RestClient.get endpoint
     raise("problem getting all remote tasks: #{response}") unless response.code == 200
@@ -30,7 +30,7 @@ class DatabankTask
     JSON.parse(response)
   end
 
-  def self.get_pending_tasks
+  def self.pending_tasks
     endpoint = "#{TASKS_URL}/tasks?status=pending"
     response = RestClient.get endpoint
     JSON.parse(response)
@@ -41,17 +41,16 @@ class DatabankTask
     begin
       response = RestClient.get endpoint
       raise("problem getting remote task for task: #{task_id}") unless response.code == 200
-      return JSON.parse(response)
+
+      JSON.parse(response)
     rescue RestClient::NotFound
       raise("task not found for databank task: #{task_id}")
     end
-
-
   end
 
   def self.set_remote_task_status(task_id, new_status)
     endpoint = "#{TASKS_URL}/tasks/#{task_id}"
-    payload = {task: {id: task_id,
+    payload = {task: {id:     task_id,
                       status: new_status}}
     response = RestClient.patch endpoint, payload
     response.code == 200

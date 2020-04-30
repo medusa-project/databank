@@ -2,7 +2,7 @@ require_relative 'boot'
 
 require 'rails/all'
 
-Bundler.require(:default, Rails.env)
+Bundler.require(*Rails.groups)
 
 module Databank
 
@@ -128,13 +128,9 @@ module Databank
 
     attr_accessor :file_mode
 
-    attr_accessor :read_only_message
 
-    attr_accessor :read_only_msg_middle
 
     attr_accessor :settings
-
-    attr_accessor :storage_manager
 
     attr_accessor :ldap
 
@@ -156,16 +152,8 @@ module Databank
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    config.load_defaults 5.0
-
-    config.autoload_paths << File.join(Rails.root, 'helpers/admin')
-    config.autoload_paths << File.join(Rails.root, 'jobs')
-    config.autoload_paths << File.join(Rails.root, 'lib')
-    config.autoload_paths << File.join(Rails.root, 'lib', 'api')
-    config.autoload_once_paths << File.join(Rails.root, 'app/models')
-    config.autoload_once_paths << File.join(Rails.root, 'app/models/concerns')
+    config.load_defaults "6.0"
     config.active_job.queue_adapter = :delayed_job
-
   end
 end
 

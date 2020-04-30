@@ -172,4 +172,3 @@ module Datafile::Viewable
     return "#{preview_base}=#{preview_ref}" if microsoft?
   end
 end
-

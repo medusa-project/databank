@@ -211,7 +211,7 @@ module Dataset::Stringable
     agent_text += "================================================================================================================="
     content = "#{agent_text}\n\n#{base_content}"
 
-    Application.storage_manager.draft_root.write_string_to(draft_agreement_key, content)
+    StorageManager.instance.draft_root.write_string_to(draft_agreement_key, content)
     SystemFile.create(dataset_id: id, storage_root: "draft", storage_key: draft_agreement_key, file_type: "agreement")
   end
 

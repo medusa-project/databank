@@ -1,2 +1,4 @@
-class FeaturedResearcher < ActiveRecord::Base
+# frozen_string_literal: true
+
+class FeaturedResearcher < ApplicationRecord
 end

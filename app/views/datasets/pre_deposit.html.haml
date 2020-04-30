@@ -2,7 +2,7 @@
 
 -if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
   .alert.alert-alert
-    =Application.read_only_message.raw
+    =SystemMessage.read_only_message.raw
 
 .panel-group(id="license" role="tablist" aria-multiselectable="true")
   .panel.panel-default

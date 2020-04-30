@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'nokogiri'
-require 'open-uri'
+require "nokogiri"
+require "open-uri"
 
 class IllinoisExpertsClient
   include ActiveModel::Conversion
@@ -39,12 +39,10 @@ class IllinoisExpertsClient
       begin
         doc = Nokogiri::XML(response.body)
         doc.remove_namespaces!
-        return doc
+        doc
       rescue Nokogiri::XML::SyntaxError
-        return nil
+        nil
       end
-    else
-      return nil
     end
   end
 
@@ -66,10 +64,7 @@ class IllinoisExpertsClient
 
     case response
     when Net::HTTPSuccess, Net::HTTPCreated, Net::HTTPRedirection
-      return response.body
-    else
-      return nil
+      response.body
     end
   end
-
 end
