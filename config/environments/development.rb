@@ -1,7 +1,4 @@
 Rails.application.configure do
-
-  config.require_master_key = true
-
   # Settings specified here will take precedence over those in config/application.rb.
 
   # In the development environment your application's code is reloaded on
@@ -38,6 +35,15 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = false
 
   config.action_mailer.perform_caching = false
+
+  # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
+  # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
+  config.require_master_key = true
+
+  # Disable serving static files from the `/public` folder by default since
+  # Apache or NGINX already handles this.
+  # config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
+  config.serve_static_files = true
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
