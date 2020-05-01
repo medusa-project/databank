@@ -38,6 +38,8 @@ module Dataset::Complete
 
         next unless creator.email.include?("@illinois.edu")
 
+        next unless creator.type_of == Databank::CreatorType::PERSON
+
         netid = creator.email.split("@").first
         # check to see if netid is found, to prevent email system errors
         e_arr << "correct netid in email for #{creator.given_name} #{creator.family_name}" unless valid_netid(netid)
