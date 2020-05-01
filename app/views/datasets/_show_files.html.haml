@@ -66,13 +66,7 @@
 
                               %span.col-md-2
 
-                                -#-if datafile.is_markdown?
-                                -#  %span
-                                -#    %button(type='button' id="preview_md_btn_#{datafile.web_id}" class='btn btn-sm btn-success' onclick='preview_md("#{datafile.web_id}")')
-                                -#      %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
-                                -#      View
-
-                                -if datafile.all_txt?
+                                -if datafile.all_txt? || datafile.markdown?
                                   %span
                                     %button(type='button' id="preview_btn_#{datafile.web_id}" class='btn btn-sm btn-success' onclick='preview("#{datafile.web_id}")')
                                       %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
