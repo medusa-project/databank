@@ -7,12 +7,18 @@ class ApplicationController < ActionController::Base
 
   include CanCan::ControllerAdditions
 
+  rescue_from ActionController::InvalidCrossOriginRequest, with: :render_400
   rescue_from StandardError, with: :error_occurred
   rescue_from ActionView::MissingTemplate do |exception|
     render json: {}, status: :unprocessable_entity
   end
 
   after_action :store_location
+
+  def render_400
+    self.response_body = nil
+    render(nothing: true, status: 400)
+  end
 
   def store_location
     return unless request.get?
