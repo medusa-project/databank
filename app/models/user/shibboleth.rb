@@ -23,7 +23,7 @@ class User::Shibboleth < User::User
       user.email = auth["info"]["email"]
       user.username = (auth["info"]["email"]).split("@").first
       user.name = auth["info"]["name"]
-      user.role = user_role(auth["uid"])
+      user.role = user_role(auth)
     end
   end
 
