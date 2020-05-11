@@ -86,7 +86,7 @@ class DatafilesController < ApplicationController
             @datafile.initiate_processing_task
           rescue Exception => ex
             Rails.logger.warn("Something bad happened when trying to initiate processing task for datafile #{@datafile.web_id}")
-            Rails.logger.warn (ex.message)
+            Rails.logger.warn(ex.message)
           end
         end
       else

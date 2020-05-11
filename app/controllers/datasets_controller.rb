@@ -833,7 +833,7 @@ class DatasetsController < ApplicationController
       render json: {token: @token.identifier}
     else
       @token = nil
-      render json: {token: "token"}
+      render json: {token: "none"}
     end
 
   end
