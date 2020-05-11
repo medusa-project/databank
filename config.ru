@@ -4,7 +4,6 @@ require 'tus/server'
 require ::File.expand_path('../config/environment', __FILE__)
 
 map "/files" do
-  use CheckToken
   run Tus::Server
 end
 run Rails.application
