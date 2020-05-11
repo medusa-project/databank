@@ -47,7 +47,7 @@ mime_type = 'unknown/unknown'
 valid_system_list = ["local", "development", "production"]
 if not any(system in s for s in valid_system_list):
 
-   print(arguments)
+   print(sys.argv)
    print("SYSTEM argument must be one of local|development|production, production is default.\n")
    sys.exit("Usage: python databank_api_client_v2.py <DATASET> <TOKEN> <FILE> [<SYSTEM>]")
 

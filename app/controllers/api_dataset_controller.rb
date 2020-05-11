@@ -82,14 +82,10 @@ class ApiDatasetController < ApplicationController
   def authenticate_token
     authenticate_or_request_with_http_token do |token, options|
       identified_tokens = Token.where("identifier = ? AND dataset_key = ?", token, @dataset.key)
-      if identified_tokens.count == 1
-        return identified_tokens.first
-      elsif identified_token > 1
-        identified_tokens.destroy_all
-        return nil
-      else
-        return nil
-      end
+      return identified_tokens.first if identified_tokens.count == 1
+
+      identified_tokens.destroy_all if identified_tokens.count > 1
+      return nil
     end
   end
 
