@@ -23,7 +23,7 @@ ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
 set :deploy_to, '/home/databank'
 
 # Default value for :linked_files is []
-set :linked_files, fetch(:linked_files, []).push('config/production.key', 'nginx.conf.erb')
+set :linked_files, fetch(:linked_files, []).push('config/credentials/production.key', 'nginx.conf.erb')
 
 # role-based syntax
 # ==================
