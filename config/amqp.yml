@@ -1,9 +1,9 @@
 development:
   :ssl: false
-  :port: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:port] %>
-  :host: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:host] %>
-  :user: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:user] %>
-  :password: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:password] %>
+  :port: <%= Rails.application.credentials[:amqp][:port] %>
+  :host: <%= Rails.application.credentials[:amqp][:host] %>
+  :user: <%= Rails.application.credentials[:amqp][:user] %>
+  :password: <%= Rails.application.credentials[:amqp][:password] %>
   :verify: verify_none
   :verify_peer: false
   :fail_if_no_peer_cert: false
@@ -11,9 +11,9 @@ development:
 
 demo:
   :ssl: true
-  :host: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:host] %>
-  :user: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:user] %>
-  :password: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:password] %>
+  :host: <%= Rails.application.credentials[:amqp][:host] %>
+  :user: <%= Rails.application.credentials[:amqp][:user] %>
+  :password: <%= Rails.application.credentials[:amqp][:password] %>
   :vhost: medusa
   :verify: false
   :verify_peer: false
@@ -22,9 +22,9 @@ demo:
 
 production:
   :ssl: true
-  :host: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:host] %>
-  :user: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:user] %>
-  :password: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:password] %>
+  :host: <%= Rails.application.credentials[:amqp][:host] %>
+  :user: <%= Rails.application.credentials[:amqp][:user] %>
+  :password: <%= Rails.application.credentials[:amqp][:password] %>
   :vhost: medusa
   :verify: false
   :verify_peer: false
@@ -33,10 +33,10 @@ production:
 
 test:
   :ssl: false
-  :port: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:port] %>
-  :host: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:host] %>
-  :user: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:user] %>
-  :password: <%= Rails.application.credentials[Rails.env.to_sym][:amqp][:password] %>
+  :port: <%= Rails.application.credentials[:amqp][:port] %>
+  :host: <%= Rails.application.credentials[:amqp][:host] %>
+  :user: <%= Rails.application.credentials[:amqp][:user] %>
+  :password: <%= Rails.application.credentials[:amqp][:password] %>
   :verify: verify_none
   :verify_peer: false
   :fail_if_no_peer_cert: false

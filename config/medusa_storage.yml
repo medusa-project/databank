@@ -1,82 +1,82 @@
 development:
   :storage:
     - :name: draft
-      :type: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_type] %>
-      :path: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_path] %>
+      :type: <%= Rails.application.credentials[:storage][:draft_type] %>
+      :path: <%= Rails.application.credentials[:storage][:draft_path] %>
     - :name: medusa
-      :type: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_type] %>
-      :path: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_path] %>
+      :type: <%= Rails.application.credentials[:storage][:medusa_type] %>
+      :path: <%= Rails.application.credentials[:storage][:medusa_path] %>
 
 test:
   :storage:
     - :name: draft
-      :type: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_type] %>
-      :path: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_path] %>
+      :type: <%= Rails.application.credentials[:storage][:draft_type] %>
+      :path: <%= Rails.application.credentials[:storage][:draft_path] %>
     - :name: medusa
-      :type: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_type] %>
-      :path: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_path] %>
+      :type: <%= Rails.application.credentials[:storage][:medusa_type] %>
+      :path: <%= Rails.application.credentials[:storage][:medusa_path] %>
 
 demo:
   :storage:
     - :name: draft
       :type: s3
-#      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-#      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+#      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+#      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
       :region: us-east-2
-      :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_bucket] %>
-      :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_prefix] %>
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
     - :name: medusa
       :type: s3
-#      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-#      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+#      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+#      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
       :region: us-east-2
-      :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_bucket] %>
-      :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_prefix] %>
+      :bucket: <%= Rails.application.credentials[:storage][:medusa_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:medusa_prefix] %>
     - :name: globus_download
       :type: s3
-#      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-#      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+#      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+#      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
       :region: us-east-2
-      :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:globus_bucket] %>
-      :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:globus_download_prefix] %>
+      :bucket: <%= Rails.application.credentials[:storage][:globus_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:globus_download_prefix] %>
     - :name: globus_ingest
       :type: s3
-#      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-#      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+#      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+#      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
       :region: us-east-2
-      :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_bucket] %>
-      :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_prefix] %>
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
 
 production:
   :storage:
     - :name: draft
       :type: s3
-      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
       :region: us-east-2
-      :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_bucket] %>
-      :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_prefix] %>
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
       :copy_targets: ["globus_download"]
     - :name: medusa
       :type: s3
-      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
       :region: us-east-2
-      :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_bucket] %>
-      :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:medusa_prefix] %>
+      :bucket: <%= Rails.application.credentials[:storage][:medusa_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:medusa_prefix] %>
       :copy_targets: ["globus_download"]
     - :name: globus_download
       :type: s3
-      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
       :region: us-east-2
-      :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:globus_bucket] %>
-      :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:globus_download_prefix] %>
+      :bucket: <%= Rails.application.credentials[:storage][:globus_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:globus_download_prefix] %>
     - :name: globus_ingest
       :type: s3
-      :aws_access_key_id: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:access_key_id] %>
-      :aws_secret_access_key: <%= Rails.application.credentials[Rails.env.to_sym][:aws][:secret_access_key] %>
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
       :region: us-east-2
-      :bucket: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_bucket] %>
-      :prefix: <%= Rails.application.credentials[Rails.env.to_sym][:storage][:draft_prefix] %>
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
       :copy_targets: ["draft"]

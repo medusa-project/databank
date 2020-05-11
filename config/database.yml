@@ -16,23 +16,23 @@ test: &test
 development:
   <<: *default
   database: databank
-  username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>
-  password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
+  username: <%= Rails.application.credentials[:primary_db][:username] %>
+  password: <%= Rails.application.credentials[:primary_db][:password] %>
   host: localhost
 
 production:
   <<: *default
   database: databank
-  username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>
-  password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
-  host: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:host] %>
+  username: <%= Rails.application.credentials[:primary_db][:username] %>
+  password: <%= Rails.application.credentials[:primary_db][:password] %>
+  host: <%= Rails.application.credentials[:primary_db][:host] %>
 
 demo:
   <<: *default
   database: databank
-  username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>
-  password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
-  host: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:host] %>
+  username: <%= Rails.application.credentials[:primary_db][:username] %>
+  password: <%= Rails.application.credentials[:primary_db][:password] %>
+  host: <%= Rails.application.credentials[:primary_db][:host] %>
 
 cucumber:
   <<: *test

@@ -35,8 +35,8 @@ module Dataset::Globusable
 
     return nil unless IDB_CONFIG[:aws][:s3_mode] == true
 
-    bucket = Rails.application.credentials[Rails.env.to_sym][:storage][:draft_bucket]
-    prefix = Rails.application.credentials[Rails.env.to_sym][:storage][:draft_prefix]
+    bucket = Rails.application.credentials[:storage][:draft_bucket]
+    prefix = Rails.application.credentials[:storage][:draft_prefix]
     dir_key = "#{prefix}/#{key}/"
     client = Application.aws_client
     client.put_object(bucket: bucket, key: dir_key)
