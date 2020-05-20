@@ -37,7 +37,7 @@
 
   <%= render partial: 'metadata_restriction_alert', locals: {dataset: @dataset} %>
 
-  <% if (can? :read, @dataset) %>
+  <% if @dataset.metadata_public? || (can? :read, @dataset) %>
     <%= render partial: 'show_metadata', locals: {dataset: @dataset} %>
   <% end %>
 
