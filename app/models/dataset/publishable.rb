@@ -31,6 +31,7 @@ module Dataset::Publishable
 
     if old_publication_state == Databank::PublicationState::DRAFT && (!identifier || identifier == "")
       self.identifier = default_identifier
+      self.destroy_incomplete_uploads
     end
 
     # set publication_state
@@ -76,5 +77,12 @@ module Dataset::Publishable
       notification.deliver_now
       error_hash("Error in publishing dataset has been logged for review by the Research Data Service.")
     end
+  end
+
+  def destroy_incomplete_uploads
+    datafile_web_ids = self.datafiles.pluck(:web_id)
+    valid_web_ids = self.datafiles.pluck(:web_id)
+    invalid_web_ids = datafile_web_ids - valid_web_ids
+    self.datafiles.where(web_id: invalid_web_ids).destroy_all
   end
 end
