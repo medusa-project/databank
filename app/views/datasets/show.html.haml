@@ -1,4 +1,4 @@
-- if can? :read, @dataset
+- if @dataset.metadata_public? || (can? :read, @dataset)
   = render partial: 'landing'
 - else
   = render partial: 'welcome/welcome'
