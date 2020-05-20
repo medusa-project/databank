@@ -115,7 +115,10 @@ class Dataset < ApplicationRecord
      Databank::PublicationState::Embargo::FILE,
      Databank::PublicationState::TempSuppress::FILE,
      Databank::PublicationState::PermSuppress::FILE].include?(publication_state) &&
-        (hold_state.nil? || (hold_state == Databank::PublicationState::TempSuppress::NONE))
+        (hold_state.nil? ||
+            [Databank::PublicationState::TempSuppress::NONE,
+             Databank::PublicationState::TempSuppress::FILE,
+             Databank::PublicationState::PermSuppress::FILE].include?(hold_state))
   end
 
   def files_public?
