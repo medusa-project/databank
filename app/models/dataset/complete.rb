@@ -95,29 +95,32 @@ module Dataset::Complete
     end
 
     def valid_netid(netid)
-      return false unless netid&.respond_to?(:to_str)
-
-      netid = netid.to_str unless netid.class == String
-
-      treebase = "ou=people,dc=ad,dc=uillinois,dc=edu"
-
-      attrs = %w[uiucEduRegistryInactiveDate uiucEduUserEmailAddr]
-
-      filter = "(cn=#{netid})"
-
-      entries = Application.ldap.search(base:       treebase,
-                                        filter:     filter,
-                                        attributes: attrs)
-
-      return false unless entries.length.positive?
-
-      ldap_hash = to_ldap_hash(entries)
-
-      return false if ldap_hash.has_key?("uiuceduregistryinactivedate")
-
-      return false unless ldap_hash.has_key?("uiuceduuseremailaddr")
 
       true
+
+      # return false unless netid&.respond_to?(:to_str)
+      #
+      # netid = netid.to_str unless netid.class == String
+      #
+      # treebase = "ou=people,dc=ad,dc=uillinois,dc=edu"
+      #
+      # attrs = %w[uiucEduRegistryInactiveDate uiucEduUserEmailAddr]
+      #
+      # filter = "(cn=#{netid})"
+      #
+      # entries = Application.ldap.search(base:       treebase,
+      #                                   filter:     filter,
+      #                                   attributes: attrs)
+      #
+      # return false unless entries.length.positive?
+      #
+      # ldap_hash = to_ldap_hash(entries)
+      #
+      # return false if ldap_hash.has_key?("uiuceduregistryinactivedate")
+      #
+      # return false unless ldap_hash.has_key?("uiuceduuseremailaddr")
+      #
+      # true
     end
 
     # expects result of ldap search, an array of entries
