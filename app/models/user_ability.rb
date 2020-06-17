@@ -3,7 +3,7 @@
 class UserAbility < ApplicationRecord
   class << self
     def user_can?(model, model_id, ability, user)
-      user ||= User::Shibboleth.new # guest user (not logged in)
+      return false unless user
       UserAbility.where(resource_type: model,
                         resource_id:   model_id,
                         user_provider: user.provider,
@@ -12,6 +12,9 @@ class UserAbility < ApplicationRecord
     end
 
     def update_internal_permissions(dataset_key, form_reviewers=[], form_editors=[])
+
+      form_reviewers = scrubbed_netids(input_array = form_reviewers)
+      form_editors = scrubbed_netids(input_array = form_editors)
       dataset = Dataset.find_by(key: dataset_key)
       raise("dataset not found") unless dataset
 
@@ -45,26 +48,40 @@ class UserAbility < ApplicationRecord
     end
 
     def grant_internal(dataset, netid, ability)
+      clean_netid = netid.gsub("@illinois.edu", "")
+
       existing_record = UserAbility.find_by(resource_type: "Dataset",
                                             resource_id:   dataset.id,
                                             user_provider: "shibboleth",
-                                            user_uid:      "#{netid}@illinois.edu",
+                                            user_uid:      "#{clean_netid}@illinois.edu",
                                             ability:       ability)
       existing_record ||= UserAbility.create!(resource_type: "Dataset",
                                               resource_id:   dataset.id,
                                               user_provider: "shibboleth",
-                                              user_uid:      "#{netid}@illinois.edu",
+                                              user_uid:      "#{clean_netid}@illinois.edu",
                                               ability:       ability)
       raise "#{ability} record not created for #{netid}, #{dataset.key}" unless existing_record
     end
 
     def revoke_internal(dataset, netid, ability)
+
+      clean_netid = netid.gsub("@illinois.edu", "")
+
       existing_record = UserAbility.find_by(resource_type: "Dataset",
                                             resource_id:   dataset.id,
                                             user_provider: "shibboleth",
-                                            user_uid:      "#{netid}@illinois.edu",
+                                            user_uid:      "#{clean_netid}@illinois.edu",
                                             ability:       ability)
       existing_record&.destroy
+    end
+
+    def scrubbed_netids(input_array=[])
+      return input_array if input_array == []
+      output_array = Array.new
+      input_array.each do |netid|
+        output_array << netid.split("@")[0]
+      end
+      output_array
     end
   end
 end
