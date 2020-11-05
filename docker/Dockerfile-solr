@@ -2,7 +2,7 @@ FROM solr:5.5-slim
 
 USER root
 
-COPY ../solr/*.xml ./
+COPY ./docker/solr/*.xml ./
 
 # test env
 RUN mkdir -p server/solr/test/conf
