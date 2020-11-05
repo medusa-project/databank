@@ -13,16 +13,6 @@ services:
       context: .
       dockerfile: ./docker/Dockerfile-databank
     command: bash -c "sleep 20 && ENV=test && bin/rails db:prepare && bin/rails test"
-  mockdusa:
-    hostname: mockdusa
-    image: 721945215539.dkr.ecr.us-east-2.amazonaws.com/mockdusa:latest
-    environment:
-      REPOSITORY_ROOT: /repo
-    volumes:
-      - type: bind
-        source: ./docker/mockdusa/content
-        target: /repo
-        read_only: true
   postgres:
     image: postgres:12-alpine
     environment:
