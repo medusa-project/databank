@@ -22,8 +22,8 @@ nginx.conf.erb
 mock_medusa
 mock_bk
 /scripts
-solr
-cantaloupe
+/solr
+/cantaloupe
 bin/databank_dev
 bin/databank_prod
 bin/databank
