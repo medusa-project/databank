@@ -1,3 +1,5 @@
+:smtp:
+  :pasword: <%= Rails.application.credentials[:smtp][:password] %>
 :orcid_token: <%= Rails.application.credentials[:orcid_token] %>
 
 :recaptcha:
