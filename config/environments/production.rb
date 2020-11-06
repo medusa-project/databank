@@ -94,8 +94,12 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-      address: 'express-smtp.cites.uiuc.edu',
-      domain: 'express-smtp.cites.uiuc.edu',
+      address: 'smtp.sparkpostmail.com',
+      port: 2525,
+      domain: 'smtp.sparkpostmail.com',
+      user_name: 'SMTP_Injection',
+      password: IDB_CONFIG[:smtp][:password],
+      authentication: :login,
       openssl_verify_mode: 'none'
   }
   # Ignore bad email addresses and do not raise email delivery errors.
