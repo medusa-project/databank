@@ -96,6 +96,7 @@ Rails.application.configure do
       port: 2525,
       domain: 'smtp.sparkpostmail.com',
       user_name: 'SMTP_Injection',
+      enable_starttls_auto: true,
       password: IDB_CONFIG[:smtp][:password],
       authentication: :login,
       openssl_verify_mode: 'none'

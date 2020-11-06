@@ -100,6 +100,7 @@ Rails.application.configure do
       domain: 'smtp.sparkpostmail.com',
       user_name: 'SMTP_Injection',
       password: IDB_CONFIG[:smtp][:password],
+      enable_starttls_auto: true,
       authentication: :login,
       openssl_verify_mode: 'none'
   }
