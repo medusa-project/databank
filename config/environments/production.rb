@@ -96,12 +96,12 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
       address: 'smtp.sparkpostmail.com',
-      port: 2525,
+      port: 587,
       domain: 'smtp.sparkpostmail.com',
       user_name: 'SMTP_Injection',
       password: IDB_CONFIG[:smtp][:password],
       enable_starttls_auto: true,
-      authentication: :plain,
+      authentication: :login,
       openssl_verify_mode: 'none'
   }
   # Ignore bad email addresses and do not raise email delivery errors.
