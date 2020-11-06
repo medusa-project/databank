@@ -98,7 +98,7 @@ Rails.application.configure do
       user_name: 'SMTP_Injection',
       enable_starttls_auto: true,
       password: IDB_CONFIG[:smtp][:password],
-      authentication: :login,
+      authentication: :plain,
       openssl_verify_mode: 'none'
   }
   # Ignore bad email addresses and do not raise email delivery errors.
