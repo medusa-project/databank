@@ -97,7 +97,7 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
       address: 'smtp.sparkpostmail.com',
       port: 587,
-      domain: 'smtp.sparkpostmail.com',
+      domain: 'library.illinois.edu',
       user_name: 'SMTP_Injection',
       password: IDB_CONFIG[:smtp][:password],
       enable_starttls_auto: true,
