@@ -94,16 +94,16 @@ Rails.application.configure do
   # email stuff
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :smtp
+
   config.action_mailer.smtp_settings = {
-      address: 'smtp.sparkpostmail.com',
+      address: "smtp.sparkpostmail.com",
       port: 587,
-      domain: 'library.illinois.edu',
-      user_name: 'SMTP_Injection',
-      password: IDB_CONFIG[:smtp][:password],
       enable_starttls_auto: true,
-      authentication: :login,
-      openssl_verify_mode: 'none'
+      user_name: "SMTP_Injection",
+      password: IDB_CONFIG[:smtp][:password],
+      domain: 'library.illinois.edu '
   }
+
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false

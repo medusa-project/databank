@@ -91,15 +91,16 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
+  #email stuff
+  config.action_mailer.perform_caching = false
+  config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-      address: 'smtp.sparkpostmail.com',
+      address: "smtp.sparkpostmail.com",
       port: 587,
-      domain: 'library.illinois.edu',
-      user_name: 'SMTP_Injection',
       enable_starttls_auto: true,
+      user_name: "SMTP_Injection",
       password: IDB_CONFIG[:smtp][:password],
-      authentication: :login,
-      openssl_verify_mode: 'none'
+      domain: 'library.illinois.edu '
   }
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
