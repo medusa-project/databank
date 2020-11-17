@@ -41,7 +41,7 @@ class DatabankMailer < ActionMailer::Base
       subject_base = "Illinois Data Bank] Dataset Consultation Request"
       subject = prepend_system_code(subject_base)
     end
-    mail(from:    @params["help-email"],
+    mail(from:    "databank@library.illinois.edu",
          to:      ["databank@library.illinois.edu",
                    @params["help-email"]],
          subject: subject)

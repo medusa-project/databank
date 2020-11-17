@@ -45,8 +45,8 @@
 :reserve_doi_role: <%= Rails.application.credentials[:reserve_doi_role] %>
 :aws:
  :s3_mode: <%= Rails.application.credentials[:aws][:s3_mode] %>
-# :access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
-# :secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+ :access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+ :secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
  :region: us-east-2
 
 :storage_tmpdir: <%= Rails.application.credentials[:storage][:tmp_path] %>
