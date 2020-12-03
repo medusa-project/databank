@@ -40,6 +40,8 @@ class ApplicationController < ActionController::Base
   
   def error_occurred(exception)
 
+    return if exception.class == ActionController::InvalidCrossOriginRequest
+
     if exception.class == CanCan::AccessDenied
       if exception.action == :create
         if current_user && current_user.role == 'no_deposit'
