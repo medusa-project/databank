@@ -2,10 +2,33 @@ require 'rake'
 require 'bunny'
 require 'json'
 require 'mime/types'
+require 'aws-sdk-sqs'
 
 include Databank
 
 namespace :databank_tasks do
+
+  desc 'get and handle messages from databank-tasks-micro'
+  task :handle_incoming_messages => :environment do
+    incoming_messages = DatabankTask.fetch_incoming_messages
+    DatabankTask.handle_incoming_messages(incoming_messages: incoming_messages)
+  end
+
+  desc 'create test sqs message'
+  task :make_test_sqs_message => :environment do
+    queue_url='https://sqs.us-east-2.amazonaws.com/721945215539/tasks-to-databank-demo'
+    sqs = Aws::SQS::Client.new(region: 'us-east-2')
+    sqs.send_message(queue_url: queue_url, message_body: 'Hello world')
+  end
+  desc 'fetch test sqs message'
+  task :make_test_sqs_message => :environment do
+    queue_url='https://sqs.us-east-2.amazonaws.com/721945215539/tasks-to-databank-demo'
+    sqs = Aws::SQS::Client.new(region: 'us-east-2')
+    resp = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 10)
+    resp.messages.each do |m|
+      puts m.body
+    end
+  end
 
   desc 'remove tasks from datafiles'
   task :remove_all_tasks => :environment do

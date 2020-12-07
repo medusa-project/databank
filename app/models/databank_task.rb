@@ -87,4 +87,12 @@ class DatabankTask
 
     JSON.parse(response)
   end
+
+  def self.fetch_incoming_messages
+    raise("not yet implemented")
+  end
+
+  def self.handle_incoming_messages(incoming_messages:)
+    raise("not yet implemented")
+  end
 end
