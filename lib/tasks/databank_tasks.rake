@@ -27,6 +27,11 @@ namespace :databank_tasks do
     resp = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 10)
     resp.messages.each do |m|
       puts m.body
+      # Delete the message from the queue.
+      sqs.delete_message({
+                           queue_url: queue_url,
+                           receipt_handle: m.receipt_handle
+                         })
     end
   end
 
