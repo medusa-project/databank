@@ -21,7 +21,7 @@ namespace :databank_tasks do
     sqs.send_message(queue_url: queue_url, message_body: 'Hello world')
   end
   desc 'fetch test sqs message'
-  task :make_test_sqs_message => :environment do
+  task :fetch_test_sqs_message => :environment do
     queue_url='https://sqs.us-east-2.amazonaws.com/721945215539/tasks-to-databank-demo'
     sqs = Aws::SQS::Client.new(region: 'us-east-2')
     resp = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 10)
