@@ -21,7 +21,6 @@ namespace :databank_tasks do
   task :make_test_sqs_message => :environment do
     queue_url='https://sqs.us-east-2.amazonaws.com/721945215539/databank-to-medusa-demo.fifo'
     sqs = Aws::SQS::Client.new(region: 'us-east-2')
-    params
     sqs.send_message(queue_url: queue_url,
                      message_body: 'Hello world',
                      message_group_id: 'test',
