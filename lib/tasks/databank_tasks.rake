@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require 'rake'
 require 'bunny'
 require 'json'
 require 'mime/types'
 require 'aws-sdk-sqs'
+require 'securerandom'
 
 include Databank
 
@@ -18,7 +21,11 @@ namespace :databank_tasks do
   task :make_test_sqs_message => :environment do
     queue_url='https://sqs.us-east-2.amazonaws.com/721945215539/databank-to-medusa-demo.fifo'
     sqs = Aws::SQS::Client.new(region: 'us-east-2')
-    sqs.send_message(queue_url: queue_url, message_body: 'Hello world', message_group_id: 'test')
+    params
+    sqs.send_message(queue_url: queue_url,
+                     message_body: 'Hello world',
+                     message_group_id: 'test',
+                     message_duplication_id: SecureRandom.base64(10) )
   end
   desc 'fetch test sqs message'
   task :fetch_test_sqs_message => :environment do
