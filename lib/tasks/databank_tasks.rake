@@ -24,7 +24,7 @@ namespace :databank_tasks do
     sqs.send_message(queue_url: queue_url,
                      message_body: 'Hello world',
                      message_group_id: 'test',
-                     message_duplication_id: SecureRandom.base64(10) )
+                     message_deduplication_id: SecureRandom.base64(10) )
   end
   desc 'fetch test sqs message'
   task :fetch_test_sqs_message => :environment do
