@@ -29,8 +29,8 @@ class DatabankTask
 
     client = Aws::Lambda::Client.new(region: IDB_CONFIG[:aws][:region])
 
-    bucket_name = datafile.storage_root.bucket
-    object_key = "#{datafile.storage_root.prefix}/#{datafile.storage_key}"
+    bucket_name = datafile.storage_root_bucket
+    object_key = datafile.storage_key_with_prefix
     binary_name = datafile.binary_name
     payload_params = {bucket_name: bucket_name, object_key: object_key, binary_name: binary_name}
     payload = JSON.generate(payload_params)
@@ -45,7 +45,6 @@ class DatabankTask
     puts response_status
     response_payload = JSON.parse(response.payload.string) # , symbolize_names: true)
     puts response_payload
-
   end
 
   def self.all_remote_tasks
