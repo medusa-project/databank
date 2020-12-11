@@ -2,6 +2,8 @@
 
 require "rest-client"
 require 'aws-sdk'
+require 'base64'
+require 'json'
 
 class DatabankTask
   TASKS_URL = IDB_CONFIG[:tasks_url]
@@ -25,7 +27,7 @@ class DatabankTask
 
   def self.invoke_lambda(datafile_web_id:)
     datafile = Datafile.find_by(web_id: datafile_web_id)
-    return nil unless datafile
+    return JSON.generate({response: %Q[ERROR -- no datafile for #{datafile_web_id}]}) unless datafile
 
     client = Aws::Lambda::Client.new(region: IDB_CONFIG[:aws][:region])
 
@@ -37,10 +39,20 @@ class DatabankTask
     response = client.invoke({
                            function_name: 'databank-tasks-demo',
                            invocation_type: 'Event',
-                           log_type: 'None',
+                           log_type: 'Tail',
                            payload: payload
                          })
-   response
+
+    raise("unexpected response to attempt to invoke tasks lambda: #{response.to_yaml}") unless response.status_code
+
+    return JSON.generate({response: "SUCCESS"}) if response.status_code == 202
+
+    # the happy path is above us -- down here there is only failure and picking up the pieces
+    log_string = Base64.decode64(response.log_result)
+    error_string = "tasks lambda response for #{datafile_web_id}: #{response.function_error}\n#{log_string}"
+    notification = DatabankMailer.error(error_string)
+    notification.deliver_now
+    JSON.generate({response: %Q[ERROR -- #{error_string}]})
   end
 
   def self.all_remote_tasks
