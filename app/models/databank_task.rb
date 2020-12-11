@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rest-client"
+require 'aws-sdk'
 
 class DatabankTask
   TASKS_URL = IDB_CONFIG[:tasks_url]
@@ -20,6 +21,31 @@ class DatabankTask
     raise("task keys in response did not include id: #{response_hash.keys}") unless response_has.has_key("id")
 
     response_hash["id"]
+  end
+
+  def self.invoke_lambda(datafile_web_id)
+    datafile = Datafile.find_by(web_id: datafile_web_id)
+    return nil unless datafile
+
+    client = Aws::Lambda::Client.new(region: IDB_CONFIG[:aws][:region])
+
+    bucket_name = datafile.storage_root.bucket
+    object_key = "#{datafile.storage_root.prefix}/#{datafile.storage_key}"
+    binary_name = datafile.binary_name
+    payload_params = {bucket_name: bucket_name, object_key: object_key, binary_name: binary_name}
+    payload = JSON.generate(payload_params)
+    response = client.invoke({
+                           function_name: 'databank-tasks-demo',
+                           invocation_type: 'DryRun',
+                           log_type: 'None',
+                           payload: payload
+                         })
+
+    response_status = JSON.parse(response.StatusCode)
+    puts response_status
+    response_payload = JSON.parse(response.payload.string) # , symbolize_names: true)
+    puts response_payload
+
   end
 
   def self.all_remote_tasks
