@@ -23,7 +23,7 @@ class DatabankTask
     response_hash["id"]
   end
 
-  def self.invoke_lambda(datafile_web_id)
+  def self.invoke_lambda(datafile_web_id:)
     datafile = Datafile.find_by(web_id: datafile_web_id)
     return nil unless datafile
 
@@ -36,15 +36,11 @@ class DatabankTask
     payload = JSON.generate(payload_params)
     response = client.invoke({
                            function_name: 'databank-tasks-demo',
-                           invocation_type: 'DryRun',
+                           invocation_type: 'Event',
                            log_type: 'None',
                            payload: payload
                          })
-
-    response_status = JSON.parse(response.StatusCode)
-    puts response_status
-    response_payload = JSON.parse(response.payload.string) # , symbolize_names: true)
-    puts response_payload
+   response
   end
 
   def self.all_remote_tasks

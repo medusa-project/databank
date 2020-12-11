@@ -41,6 +41,12 @@ namespace :databank_tasks do
     end
   end
 
+  desc 'invoke demo lambda for test datafile'
+  task :invoke_test_lambda => :environment do
+    response = DatabankTask.invoke_lambda(datafile_web_id: 'q0jef')
+    puts response.to_yaml
+  end
+
   desc 'remove tasks from datafiles'
   task :remove_all_tasks => :environment do
     Datafile.all.each do |datafile|
