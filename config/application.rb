@@ -128,8 +128,6 @@ module Databank
 
     attr_accessor :file_mode
 
-
-
     attr_accessor :settings
 
     attr_accessor :ldap

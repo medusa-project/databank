@@ -5,10 +5,25 @@ require 'json'
 namespace :medusa do
   desc 'get Medusa RabbitMQ ingest response messages'
   task :get_medusa_ingest_responses => :environment do
-    while true
-      AmqpHelper::Connector[:databank].with_message(MedusaIngest.incoming_queue) do |payload|
-        exit if payload.nil?
-        MedusaIngest.on_medusa_message(payload)
+
+    if IDB_CONFIG[:rabbit_or_sqs] == "rabbit"
+      loop do
+        sqs = QueueManager.instance.sqs_client
+        queue_url = IDB_CONFIG[:queues][:databank_to_medusa_url]
+        response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
+        exit if response.nil?
+        m = response.message
+        exit if m.body.nil?
+        MedusaIngest.on_medusa_message(m.body)
+        # Delete the message from the queue.
+        sqs.delete_message({queue_url: queue_url, receipt_handle: m.receipt_handle})
+      end
+    else
+      loop do
+        AmqpHelper::Connector[:databank].with_message(MedusaIngest.incoming_queue) do |payload|
+          exit if payload.nil?
+          MedusaIngest.on_medusa_message(payload)
+        end
       end
     end
   end
@@ -127,6 +142,5 @@ namespace :medusa do
         end
       end
     end
-    
   end
 end
