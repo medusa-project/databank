@@ -48,7 +48,7 @@ namespace :databank_tasks do
   end
 
   desc "get test sqs message response from tasks lambda"
-  task read_lambda_sqs :environment do
+  task read_lambda_sqs: :environment do
     puts DatabankTasks.fetch_and_parse_incoming_sqs
   end
 
