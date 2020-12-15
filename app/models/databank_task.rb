@@ -34,7 +34,7 @@ class DatabankTask
     bucket_name = datafile.storage_root_bucket
     object_key = datafile.storage_key_with_prefix
     binary_name = datafile.binary_name
-    payload_params = {bucket_name: bucket_name, object_key: object_key, binary_name: binary_name}
+    payload_params = {bucket_name: bucket_name, object_key: object_key, binary_name: binary_name, web_id: datafile_web_id}
     payload = JSON.generate(payload_params)
     response = client.invoke({
                            function_name: 'databank-tasks-demo',
@@ -53,6 +53,29 @@ class DatabankTask
     notification = DatabankMailer.error(error_string)
     notification.deliver_now
     JSON.generate({response: %Q[ERROR -- #{error_string}]})
+  end
+
+  def self.handle_incoming_sqs
+    messages = fetch_and_parse_incoming_sqs
+    messages.each do
+      raise("not yet implemented")
+    end
+  end
+
+  def self.fetch_and_parse_incoming_sqs
+    messages = Array.new
+    sqs = QueueManager.instance.sqs_client
+    loop do
+      queue_url = IDB_CONFIG[:queues][:tasks_to_databank_url]
+      response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
+      exit if response.nil?
+      message = response.message
+      exit if message.body.nil?
+      # Delete the message from the queue.
+      sqs.delete_message({queue_url: queue_url, receipt_handle: message.receipt_handle})
+      messages << message.body
+    end
+    messages
   end
 
   def self.all_remote_tasks

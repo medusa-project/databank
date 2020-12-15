@@ -26,6 +26,11 @@ namespace :databank_tasks do
   task fetch_test_sqs_message: :environment do
     queue_url = "https://sqs.us-east-2.amazonaws.com/721945215539/databank-to-medusa-demo.fifo"
     sqs = Aws::SQS::Client.new(region: "us-east-2")
+
+    require "json"
+
+
+
     resp = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 10)
     resp.messages.each do |m|
       puts m.body
@@ -40,6 +45,11 @@ namespace :databank_tasks do
   desc "invoke demo lambda for test datafile"
   task invoke_test_lambda: :environment do
     puts DatabankTask.invoke_lambda(datafile_web_id: "q0jef")
+  end
+
+  desc "get test sqs message response from tasks lambda"
+  task read_lambda_sqs :environment do
+    puts DatabankTasks.fetch_and_parse_incoming_sqs
   end
 
   desc "remove tasks from datafiles"
