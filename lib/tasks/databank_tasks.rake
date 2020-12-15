@@ -50,7 +50,7 @@ namespace :databank_tasks do
   # example demo invocation:
   # RAILS_ENV=demo bundle exec rails databank_tasks:invoke_task_lambda[q0jef]
   desc "invoke lambda for specified datafile"
-  task :invoke_task_lambda, [:web_id] => environment do |t, args|
+  task :invoke_task_lambda, [:web_id] => :environment do |t, args|
     puts "missing web_id argument" unless args && args[:web_id]
     puts DatabankTask.invoke_lambda(datafile_web_id: args[:web_id])
   end
