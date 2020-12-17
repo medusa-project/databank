@@ -77,8 +77,14 @@ class DatabankTask
 
     datafile.update(peek_type=message[:peek_type], peek_text=message[:peek_text])
 
-    message.nested_items.each do |item|
-
+    message.nested_items.each do |raw_item|
+      item = JSON.parse(raw_item)
+      NestedItem.create(datafile_id:  datafile.id,
+                        item_name:    item["item_name"],
+                        item_path:    item["item_path"],
+                        media_type:   item["media_type"],
+                        size:         item["item_size"],
+                        is_directory: item["is_directory"] == "true")
     end
   end
 
@@ -125,7 +131,7 @@ class DatabankTask
 
     return {status: "ERROR", error: ":nested_items not an array"} unless message[:nested_items].instance_of? Array
 
-    valid_item_keys = ["web_id", "item_name", "item_path", "media_type", "item_size", "is_directory"]
+    valid_item_keys = ["item_name", "item_path", "media_type", "item_size", "is_directory"]
     message[:nested_items].each do |item|
       parsed_item = JSON.parse(item)
       return {status: "ERROR", error: ":nested_item has invalid keyset"} unless parsed_item.keys == valid_item_keys
