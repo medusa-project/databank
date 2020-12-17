@@ -39,9 +39,14 @@ Layout/SpaceAroundEqualsInParameterDefault:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
-# We do not need to support Ruby 1.9, so this is good to use.
+# Most readable form.
 Style/SymbolArray:
   Enabled: true
+  EnforcedStyle: brackets
+
+Style/WordArray:
+  Enabled: true
+  EnforcedStyle: brackets
 
 # Most readable form.
 Layout/HashAlignment:

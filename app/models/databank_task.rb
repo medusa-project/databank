@@ -8,6 +8,7 @@ require 'json'
 class DatabankTask
   TASKS_URL = IDB_CONFIG[:tasks_url]
 
+
   def self.create_remote(datafile_web_id)
     datafile = Datafile.find_by(web_id: datafile_web_id)
     return nil unless datafile
@@ -55,27 +56,117 @@ class DatabankTask
     JSON.generate({response: %Q[ERROR -- #{error_string}]})
   end
 
-  def self.handle_incoming_sqs
+  def self.handle_incoming_messages
     messages = fetch_and_parse_incoming_sqs
-    messages.each do
-      raise("not yet implemented")
+    messages.each do |raw_message|
+      parsed_message = JSON.parse(raw_message)
+      parsed_message.transform_keys!(&:to_sym)
+      handle_incoming_message(parsed_message)
     end
   end
 
-  def self.fetch_and_parse_incoming_sqs
+  def self.handle_incoming_message(message:)
+    validation_report = validation_report(message: message)
+
+    return report_err(type: "invalid", content: validation_report.to_yaml) unless validation_report[:status] == "VALID"
+
+    return report_err(type: "error reported by tasks lambda", content: message[:error]) if message[:status] == "ERROR"
+
+    datafile = Datafile.find_by(web_id: message[:web_id])
+    return report_err(type: "datafile not found", content: "for message #{message.to_yaml}") unless datafile
+
+    datafile.update(peek_type=message[:peek_type], peek_text=message[:peek_text])
+
+    message.nested_items.each do |item|
+
+    end
+  end
+
+  def self.report_err(type:, content:)
+    error_string = "SQS message error\nType: #{type}\nContent: #{content}"
+    Rails.logger.warn error_string
+    notification = DatabankMailer.error(error_string)
+    notification.deliver_now
+  end
+
+  # a valid message
+  # is a hash (parsed from a json string then keys symbolized)
+  # has a status key
+  # has a web_id key
+  # the status key value is "ERROR" or "SUCCESS"
+  # if the status key value is "ERROR", then it also has an error key
+  # if the status key value is "SUCCESS", then it also has these keys: peek_type, peek_text, nested_items
+  # if it has a nested_item key, then the value is of an array type
+  # returns at first error encountered -- report not necessarily comprehensive
+  def self.validation_report(message:)
+    return {status: "ERROR", error: "nil message"} if message.nil?
+
+    return {status: "ERROR", error: "message not Hash"} unless message.instance_of? Hash
+
+    # all messages must have web_id and status keys
+    return {status: "ERROR", error: "missing :web_id key"} unless message.has_key?(:web_id)
+
+    return {status: "ERROR", error: "missing :status key"} unless message.has_key?(:status)
+
+    # status value must be "ERROR" or "SUCCESS"
+    return {status: "ERROR", error: "invalid :status value"} unless ["ERROR", "SUCCESS"].include?(message[:status])
+
+    # messages with a status of ERROR must have an error key with String value
+    if message[:status] == "ERROR"
+      return {status: "ERROR", error: "missing :error key for ERROR"} unless message.has_key?(:error)
+    end
+
+    # at this point, we can assume message status is SUCCESS
+    return {status: "ERROR", error: "missing :peek_text for SUCCESS"} unless message.has_key?(:peek_text)
+
+    return {status: "ERROR", error: "missing :peek_type for SUCCESS"} unless message.has_key?(:peek_type)
+
+    return {status: "ERROR", error: "missing :nested_items for SUCCESS"} unless message.has_key?(:nested_items)
+
+    return {status: "ERROR", error: ":nested_items not an array"} unless message[:nested_items].instance_of? Array
+
+    valid_item_keys = ["web_id", "item_name", "item_path", "media_type", "item_size", "is_directory"]
+    message[:nested_items].each do |item|
+      parsed_item = JSON.parse(item)
+      return {status: "ERROR", error: ":nested_item has invalid keyset"} unless parsed_item.keys == valid_item_keys
+
+      return {status: "ERROR", error: "invalid#{item.to_yaml}"} unless ["true", "false"].include?(item[:is_directory])
+
+    end
+    {status: "SUCCESS"}
+  end
+
+  def self.fetch_and_parse_incoming_sqs_messages
     messages = Array.new
-    sqs = QueueManager.instance.sqs_client
     loop do
-      queue_url = IDB_CONFIG[:queues][:tasks_to_databank_url]
-      response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
-      exit if response.nil?
-      message = response.message
-      exit if message.body.nil?
-      # Delete the message from the queue.
-      sqs.delete_message({queue_url: queue_url, receipt_handle: message.receipt_handle})
-      messages << message.body
+      message = fetch_and_parse_incoming_sqs_message
+      exit if message.nil?
+      messages << message
     end
     messages
+  end
+
+  def self.fetch_and_parse_incoming_sqs_message
+    sqs = QueueManager.instance.sqs_client
+    queue_url = IDB_CONFIG[:queues][:tasks_to_databank_url]
+    response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
+    return nil if response.nil?
+
+    message = response.message
+    # Delete the message from the queue.
+    sqs.delete_message({queue_url: queue_url, receipt_handle: message.receipt_handle})
+    message
+  end
+
+  #does not delete
+  def self.peek_message
+    queue_url = IDB_CONFIG[:queues][:tasks_to_databank_url]
+    sqs = QueueManager.instance.sqs_client
+    response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
+    return "no message found" if response.nil?
+
+    message = response.message
+    message.to_s
   end
 
   def self.all_remote_tasks
