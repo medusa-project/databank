@@ -26,7 +26,7 @@ class MedusaInfo
       end
     rescue StandardError => e
       Rails.logger.warn "error getting content type manifest from medusa: #{e.message}"
-      raise e
+      {error: e.message}
     end
   end
 
