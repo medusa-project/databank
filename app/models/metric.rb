@@ -15,9 +15,14 @@ class Metric
         f.print %Q({"dataset_downloads":[)
         DatasetDownloadTally.all.each do |row|
           row_json = {doi: row.doi, date: row.download_date, tally: row.tally}.to_json
-          f.puts row_json
+          f.print "," unless row == row.first
+          if row == row.last
+            f.print row_json
+            f.puts "]}"
+          else
+            f.puts row_json
+          end
         end
-        f.puts "]}"
       end
     end
 
@@ -26,10 +31,15 @@ class Metric
       File.open(target_path, "w") do |f|
         f.print %Q({"datafile_downloads":[)
         FileDownloadTally.all.each do |row|
+          f.print "," unless row == row.first
           row_json = {doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally}.to_json
-          f.puts row_json
+          if row == row.last
+            f.print row_json
+            f.puts "]}"
+          else
+            f.puts row_json
+          end
         end
-        f.puts "]}"
       end
     end
 
