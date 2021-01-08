@@ -13,7 +13,7 @@ class Metric
       target_path = Rails.root.join("public/dataset_downloads.json")
       File.open(target_path, "w") do |f|
         f.print %Q({"dataset_downloads":[)
-        FileDownloadTally.each do |row|
+        DatasetDownloadTally.all.each do |row|
           row_json = {doi: row.doi, date: row.download_date, tally: row.tally}.to_json
           f.puts row_json
         end
@@ -25,7 +25,7 @@ class Metric
       target_path = Rails.root.join("public/datafile_downloads.json")
       File.open(target_path, "w") do |f|
         f.print %Q({"datafile_downloads":[)
-        FileDownloadTally.each do |row|
+        FileDownloadTally.all.each do |row|
           row_json = {doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally}.to_json
           f.puts row_json
         end
