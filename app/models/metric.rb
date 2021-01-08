@@ -12,16 +12,12 @@ class Metric
     def write_dataset_downloads_json
       target_path = Rails.root.join("public/dataset_downloads.json")
       File.open(target_path, "w") do |f|
-        f.print %Q({"dataset_downloads":[)
+        f.print %({"dataset_downloads":[)
         DatasetDownloadTally.all.each_with_index do |row, i|
           row_json = {doi: row.doi, date: row.download_date, tally: row.tally}.to_json
-          f.print "," unless i == 0
-          if i == (DatasetDownloadTally.count - 1)
-            f.print row_json
-            f.puts "]}"
-          else
-            f.puts row_json
-          end
+          f.print "," unless i.zero?
+          f.print row_json
+          f.puts "]}" if i == (DatasetDownloadTally.count - 1)
         end
       end
     end
@@ -29,16 +25,12 @@ class Metric
     def write_datafile_downloads_json
       target_path = Rails.root.join("public/datafile_downloads.json")
       File.open(target_path, "w") do |f|
-        f.print %Q({"datafile_downloads":[)
+        f.print %({"datafile_downloads":[)
         FileDownloadTally.all.each_with_index do |row, i|
-          f.print "," unless i == 0
           row_json = {doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally}.to_json
-          if i == (FileDownloadTally.count - 1)
-            f.print row_json
-            f.puts "]}"
-          else
-            f.puts row_json
-          end
+          f.print "," unless i.zero?
+          f.print row_json
+          f.puts "]}" if i == (FileDownloadTally.count - 1)
         end
       end
     end
