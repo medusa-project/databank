@@ -69,13 +69,13 @@ class Metric
             dataset.datafiles.each do |datafile|
               next unless datafile.archive?
 
-              content_files = datafile.content_files
-              content_files.each do |content_hash|
+              content_files = datafile.nested_items
+              content_files.each do |item|
                 report << [dataset.identifier.to_s,
                            datafile.bytestream_name.to_s,
-                           (content_hash["content_filepath"]).to_s,
-                           (content_hash["content_filename"]).to_s,
-                           (content_hash["file_format"]).to_s]
+                           item.item_path,
+                           item.item_name,
+                           item.media_type]
               end
             end
           end
