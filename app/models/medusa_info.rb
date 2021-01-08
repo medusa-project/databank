@@ -26,14 +26,14 @@ class MedusaInfo
       end
     rescue StandardError => e
       Rails.logger.warn "error getting content type manifest from medusa: #{e.message}"
-      {error: e.message}
+      {"error": e.message}
     end
   end
 
   def self.doi_filename_mimetype
     content_type_manifest = MedusaInfo.content_type_manifest
 
-    raise("Unexpected result in content_type_manifest") unless content_type_manifest && content_type_manifest["records"]
+    return Hash.new unless content_type_manifest && content_type_manifest["records"]
 
     type_records = content_type_manifest["records"]
 
