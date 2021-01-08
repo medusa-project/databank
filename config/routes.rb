@@ -2,6 +2,7 @@
 
 Rails.application.routes.draw do
 
+
   resources :review_requests do
     collection do
       get 'report'
@@ -93,6 +94,7 @@ Rails.application.routes.draw do
     resources :creators
     resources :funders
     resources :related_materials
+    resources :notes
   end
   resources :creators
 

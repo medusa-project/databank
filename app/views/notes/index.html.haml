@@ -1,0 +1,25 @@
+%h1 Notes
+- if @dataset
+  = render 'datasets/brief_record', dataset: @dataset
+
+%table
+  %thead
+    %tr
+      %th Body
+      %th Author
+      %th
+      %th
+      %th
+
+  %tbody
+    - @notes.each do |note|
+      %tr
+        %td= note.body
+        %td= note.author
+        %td= link_to 'Show', note
+        %td= link_to 'Edit', edit_note_path(note)
+        %td= link_to 'Destroy', note, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Note', new_note_path

@@ -73,6 +73,7 @@ class Dataset < ApplicationRecord
   has_many :funders, dependent: :destroy
   has_many :related_materials, dependent: :destroy
   has_many :system_files, dependent: :destroy
+  has_many :notes, dependent: :destroy
 
   accepts_nested_attributes_for :datafiles, reject_if: :all_blank, allow_destroy: true
   accepts_nested_attributes_for :creators, reject_if: :invalid_name, allow_destroy: true

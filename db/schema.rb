@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_13_144414) do
+ActiveRecord::Schema.define(version: 2021_01_08_215347) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -277,6 +277,14 @@ ActiveRecord::Schema.define(version: 2019_12_13_144414) do
     t.datetime "updated_at", null: false
     t.string "item_path"
     t.boolean "is_directory"
+  end
+
+  create_table "notes", force: :cascade do |t|
+    t.bigint "dataset_id"
+    t.string "body"
+    t.string "author"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "related_materials", id: :serial, force: :cascade do |t|
