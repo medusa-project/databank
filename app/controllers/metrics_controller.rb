@@ -1,9 +1,19 @@
-require 'csv'
-require 'tempfile'
+# frozen_string_literal: true
+
+require "csv"
+require "tempfile"
 
 class MetricsController < ApplicationController
-
   def index
+    @modified_times = Metric.modified_times
+  end
+
+  def dataset_downloads
+    render "public/dataset_downloads.json", layout: false
+  end
+
+  def file_downloads
+    render "public/datafile_downloads.json", layout: false
   end
 
   def datafiles_simple_list
@@ -12,78 +22,40 @@ class MetricsController < ApplicationController
   end
 
   def datasets_csv
-
     datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
 
     Tempfile.open("datasets_csv") do |t|
-
-      CSV.open(t, 'w') do |report|
-
-        report << ['doi', 'pub_date', 'num_files', 'num_bytes', 'total_downloads', 'num_relationships', 'subject']
+      CSV.open(t, "w") do |report|
+        report << ["doi", "pub_date", "num_files", "num_bytes", "total_downloads", "num_relationships", "subject"]
 
         datasets.each do |dataset|
-
-          report << ["#{dataset.identifier}",
-                     "#{dataset.release_date.iso8601}",
-                     "#{dataset.datafiles.count}",
-                     "#{dataset.total_filesize}",
-                     "#{dataset.total_downloads}",
-                     "#{dataset.num_external_relationships}",
-                     "#{dataset.subject}"]
-
+          report << [dataset.identifier.to_s,
+                     dataset.release_date.iso8601.to_s,
+                     dataset.datafiles.count.to_s,
+                     dataset.total_filesize.to_s,
+                     dataset.total_downloads.to_s,
+                     dataset.num_external_relationships.to_s,
+                     dataset.subject.to_s]
         end
-
       end
 
-      send_file t.path, :type => 'text/csv',
-                :disposition => 'attachment',
-                :filename => "datasets.csv"
+      send_file t.path, type:        "text/csv",
+                        disposition: "attachment",
+                        filename:    "datasets.csv"
     end
   end
 
   def datafiles_csv
-
-    doi_filename_mimetype = MedusaInfo.doi_filename_mimetype
-
-    return nil unless doi_filename_mimetype
-
-    datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
-
-    Tempfile.open("datafiles_csv") do |t|
-
-      CSV.open(t, 'w') do |report|
-
-        report << ['doi', 'pub_date', 'filename', 'file_format', 'num_bytes', 'total_downloads']
-
-        datasets.each do |dataset|
-          dataset.datafiles.each do |datafile|
-            doi_filename = "#{dataset.identifier}_#{datafile.bytestream_name }".downcase
-            report << ["#{dataset.identifier}",
-                       "#{dataset.release_date.iso8601}",
-                       "#{datafile.bytestream_name}",
-                       "#{doi_filename_mimetype[doi_filename]}",
-                       "#{datafile.bytestream_size}",
-                       "#{datafile.total_downloads}"]
-          end
-        end
-
-      end
-
-      send_file t.path, :type => 'text/csv',
-                :disposition => 'attachment',
-                :filename => "datafiles.csv"
-    end
-
+    render "public/dataset_downloads.json", layout: false
   end
 
   def funders_csv
     Tempfile.open("funders_csv") do |t|
-
       datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
 
       report = CSV.new(t)
 
-      report << ["doi","funder","grant"]
+      report << ["doi", "funder", "grant"]
 
       datasets.each do |dataset|
         dataset.funders.each do |funder|
@@ -91,55 +63,20 @@ class MetricsController < ApplicationController
         end
       end
 
-      send_file t.path, :type => 'text/csv',
-                :disposition => 'attachment',
-                :filename => "funders.csv"
+      send_file t.path, type:        "text/csv",
+                        disposition: "attachment",
+                        filename:    "funders.csv"
 
       report.close(unlink_now = false)
-
     end
   end
 
   def archived_content_csv
-
-    datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
-
-    Tempfile.open("contained_csv") do |t|
-
-      report = CSV.new(t)
-
-      report << ['doi', 'container_filename', 'content_filepath', 'content_filename', 'file_format']
-
-      datasets.each do |dataset|
-        dataset.datafiles.each do |datafile|
-          if datafile.archive?
-            content_files = datafile.content_files
-            content_files.each do |content_hash|
-
-              report << ["#{dataset.identifier}",
-                         "#{datafile.bytestream_name}",
-                         "#{content_hash['content_filepath']}",
-                         "#{content_hash['content_filename']}",
-                         "#{content_hash['file_format']}"]
-            end
-          end
-        end
-      end
-
-      send_file t.path, :type => 'text/csv',
-                :disposition => 'attachment',
-                :filename => "contained.csv"
-
-      report.close(unlink_now = false)
-
-    end
-
+    render "public/archive_file_contents.csv", layout: false
   end
 
   def related_materials_csv
-
     Tempfile.open("materials_csv") do |t|
-
       datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
 
       report = CSV.new(t)
@@ -148,31 +85,64 @@ class MetricsController < ApplicationController
 
       datasets.each do |dataset|
         dataset.related_materials.each do |material|
+          datacite_arr = []
 
-          datacite_arr = Array.new
-
-          if material.datacite_list && material.datacite_list != ''
-            datacite_arr = material.datacite_list.split(',')
+          if material.datacite_list && material.datacite_list != ""
+            datacite_arr = material.datacite_list.split(",")
             # else
             #   report << ["#{dataset.identifier}", "", "#{material.uri_type}", "#{material.uri}", "#{material.selected_type}"]
           end
 
           datacite_arr.each do |relationship|
-
-            if ['IsPreviousVersionOf', 'IsNewVersionOf'].exclude?(relationship)
-              report << ["#{dataset.identifier}", "#{relationship}", "#{material.uri_type}", "#{material.uri}", "#{material.selected_type}"]
+            if ["IsPreviousVersionOf", "IsNewVersionOf"].exclude?(relationship)
+              report << [dataset.identifier.to_s, relationship.to_s, material.uri_type.to_s, material.uri.to_s, material.selected_type.to_s]
             end
-
           end
         end
       end
 
-      send_file t.path, :type => 'text/csv',
-                :disposition => 'attachment',
-                :filename => "related_materials.csv"
+      send_file t.path, type:        "text/csv",
+                        disposition: "attachment",
+                        filename:    "related_materials.csv"
 
       report.close(unlink_now = false)
-
     end
   end
+
+  def refresh_dataset_downloads
+    Metric.write_dataset_downloads_json
+    message = "Dataset downloads json refresh initiated. Refresh in a few minutes to check for new modified timestamp."
+    respond_to do |format|
+      format.html { render :index, alert: message }
+      format.json { render json: {"message": message} }
+    end
+  end
+
+  def refresh_datafile_downloads
+    Metric.write_datafile_downloads_json
+    message = "Dataset downloads json refresh initiated. Refresh in a few minutes to check for new modified timestamp."
+    respond_to do |format|
+      format.html { render :index, alert: message }
+      format.json { render json: {"message": message} }
+    end
+  end
+
+  def refresh_datafiles_csv
+    Metric.write_datafiles_csv
+    message = "Dataset csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
+    respond_to do |format|
+      format.html { render :index, alert: message }
+      format.json { render json: {"message": message} }
+    end
+  end
+
+  def refresh_container_csv
+    Metric.write_container_contents_csv
+    message = "Container contents csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
+    respond_to do |format|
+      format.html { render :index, alert: message }
+      format.json { render json: {"message": message} }
+    end
+  end
+
 end

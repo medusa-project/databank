@@ -235,6 +235,11 @@ Rails.application.routes.draw do
 
   get "/metrics", to: 'metrics#index'
 
+  get "/metrics/refresh_dataset_downloads"
+  get "/metrics/refresh_datafile_downloads"
+  get "/metrics/refresh_datafiles_csv"
+  get "/metrics/refresh_container_csv"
+
   get "/datasets/:id/download_metrics", to: 'datasets#download_metrics', defaults: {format: 'json'}
 
   get "/datasets/:id/request_review", to: 'datasets#request_review', defaults: {format: 'html'}

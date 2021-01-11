@@ -9,8 +9,33 @@ class Metric
       Metric.write_container_contents_csv
     end
 
+    def modified_times
+
+      write_dataset_downloads_json unless File.exist?(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
+      raise("unable to create dataset downloads json") unless File.exist?(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
+
+      write_datafile_downloads_json unless File.exist?(METRICS_CONFIG[:datafile_downloads_json][:relative_path])
+      raise("unable to create datafile downloads json") unless File.exist?(METRICS_CONFIG[:datafile_downloads_json][:relative_path])
+
+      write_datafiles_csv unless File.exist?(METRICS_CONFIG[:datafiles_csv][:relative_path])
+      raise("unable to create datafiles csv") unless File.exist?(METRICS_CONFIG[:datafiles_csv][:relative_path])
+
+      write_container_contents_csv unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
+      raise("unable to create container contents csv") unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
+
+      dataset_downloads_time = File.mtime(METRICS_CONFIG[:dataset_downloads_json][:relative_path]).to_formatted_s(:long)
+      datafile_downloads_time = File.mtime(METRICS_CONFIG[:datafile_downloads_json][:relative_path]).to_formatted_s(:long)
+      datafiles_csv_time = File.mtime(METRICS_CONFIG[:datafiles_csv][:relative_path]).to_formatted_s(:long)
+      container_csv_time = File.mtime(METRICS_CONFIG[:container_contents_csv][:relative_path]).to_formatted_s(:long)
+
+      {dataset_downloads_json: dataset_downloads_time,
+       datafile_downloads_json: datafile_downloads_time,
+       datafiles_csv: datafiles_csv_time,
+       container_contents_csv: container_csv_time}
+    end
+
     def write_dataset_downloads_json
-      target_path = Rails.root.join("public/dataset_downloads.json")
+      target_path = METRICS_CONFIG[:dataset_downloads_json][:relative_path]
       File.open(target_path, "w") do |f|
         f.print %({"dataset_downloads":[)
         DatasetDownloadTally.all.each_with_index do |row, i|
@@ -23,7 +48,7 @@ class Metric
     end
 
     def write_datafile_downloads_json
-      target_path = Rails.root.join("public/datafile_downloads.json")
+      target_path = METRICS_CONFIG[:datafile_downloads_json][:relative_path]
       File.open(target_path, "w") do |f|
         f.print %({"datafile_downloads":[)
         FileDownloadTally.all.each_with_index do |row, i|
@@ -40,7 +65,7 @@ class Metric
       render(json: {error: "mimetype map not found", status: 500}) && (return nil) unless doi_filename_mimetype
 
       datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
-      target_path = Rails.root.join("public/datafiles.csv")
+      target_path = METRICS_CONFIG[:datafiles_csv][:relative_path]
       File.open(target_path, "w") do |f|
         CSV.open(f, "w") do |report|
           report << ["doi", "pub_date", "filename", "file_format", "num_bytes", "total_downloads"]
@@ -62,7 +87,7 @@ class Metric
 
     def write_container_contents_csv
       datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
-      target_path = Rails.root.join("public/archive_file_contents.csv")
+      target_path = METRICS_CONFIG[:container_contents_csv][:target_url]
       File.open(target_path, "w") do |f|
         CSV.open(f, "w") do |report|
           report << ["doi", "container_filename", "content_filepath", "content_filename", "file_format"]

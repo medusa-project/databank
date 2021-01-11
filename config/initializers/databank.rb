@@ -11,9 +11,10 @@ DEMO_PREFIXES = ["10.26123"]
 
 TEST_PREFIXES = ["10.70114"]
 
-IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, 'config', 'databank.yml'))).result)
-STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, 'config', 'medusa_storage.yml'))).result)[Rails.env]
+IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/databank.yml"))).result)
+STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/medusa_storage.yml"))).result)[Rails.env]
 GLOBUS_CONFIG = YAML.load_file(Rails.root.join('config', 'globus.yml'))[Rails.env]
+METRICS_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/metrics.yml"))).result)
 
 # Initializes a Markdown parser
 Application.markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)

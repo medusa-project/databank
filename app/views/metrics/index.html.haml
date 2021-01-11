@@ -2,6 +2,12 @@
 .metrics-border
   %h3
     %a(href="/dataset_downloads.json") Dataset downloads json
+  %p
+    Modified:
+    = @modified_times[:dataset_downloads_time]
+    %a(href="/metrics/refresh_dataset_downloads" class="btn btn-primary idb" )
+      %span.glyphicon.glyphicon-refresh
+      Refresh
   .indent
     %p
       A json string detailing downloads calculated per
@@ -10,6 +16,12 @@
 .metrics-border
   %h3
     %a(href="/datafile_downloads.json") Datafile downloads json
+  %p
+    Modified:
+    = @modified_times[:datafile_downloads_time]
+    %a(href="/metrics/refresh_datafile_downloads" class="btn btn-primary idb" )
+      %span.glyphicon.glyphicon-refresh
+      Refresh
   .indent
     %p
       A json string detailing downloads calculated per
@@ -18,6 +30,7 @@
 .metrics-border
   %h3
     %a(href="/metrics/datafiles_simple_list") Datafiles listing
+  %p Generated dynamically
   .indent
     %p A listing of datafiles with associated links to their respective datasets.
 
@@ -26,7 +39,7 @@
     %a(href="/datasets_csv" class="btn btn-primary idb" )
       %span.glyphicon.glyphicon-download
       Datasets CSV
-
+  %p Generated Dynamically
   .indent
     %p
       Button triggers a csv file download of dataset details.
@@ -62,7 +75,12 @@
     %a(href="/datafiles.csv" class="btn btn-primary idb" )
       %span.glyphicon.glyphicon-download
       Datafiles CSV
-
+  %p
+    modified:
+    = @modified_times[:datafiles_csv_time]
+    %a(href="/metrics/refresh_datafiles_csv" class="btn btn-primary idb" )
+      %span.glyphicon.glyphicon-refresh
+      Refresh
   .indent
     %p
       Button triggers a csv file download of datafile details.
@@ -95,7 +113,12 @@
     %a(href="/archive_file_contents.csv" class="btn btn-primary idb" )
       %span.glyphicon.glyphicon-download
       Container File Contents (zip) CSV
-
+  %p
+    modified:
+    = @modified_times[:container_csv_time]
+    %a(href="/metrics/refresh_container_csv" class="btn btn-primary idb" )
+      %span.glyphicon.glyphicon-refresh
+      Refresh
   .indent
     %p
       Button triggers a csv file download of contents details for files in complex container formats (.zip, .tar.gz, .7z).
@@ -125,7 +148,7 @@
     %a(href="/metrics/related_materials_csv" class="btn btn-primary idb" )
       %span.glyphicon.glyphicon-download
       Related Materials CSV
-
+  %p Generated dynamically
   .indent
     %p
       Button triggers a csv file download.
@@ -156,7 +179,7 @@
     %a(href="/metrics/funders_csv" class="btn btn-primary idb" )
       %span.glyphicon.glyphicon-download
       Funders CSV
-
+  %p Generated dynamically
   .indent
     %p
       Button triggers a csv file download.
