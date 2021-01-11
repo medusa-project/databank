@@ -87,7 +87,7 @@ class Metric
 
     def write_container_contents_csv
       datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
-      target_path = METRICS_CONFIG[:container_contents_csv][:target_url]
+      target_path = METRICS_CONFIG[:container_contents_csv][:relative_path]
       File.open(target_path, "w") do |f|
         CSV.open(f, "w") do |report|
           report << ["doi", "container_filename", "content_filepath", "content_filename", "file_format"]
