@@ -1,4 +1,4 @@
-= debug @modified_times[:dataset_downloads_time]
+= debug @modified_times[:dataset_downloads_json]
 %h2 Metrics
 .metrics-border
   %h3
@@ -20,7 +20,7 @@
     %a(href="/datafile_downloads.json") Datafile downloads json
   %p
     Modified:
-    = @modified_times[:datafile_downloads_time]
+    = @modified_times[:datafile_downloads_json]
   %p
     %a(href="/metrics/refresh_datafile_downloads" class="btn btn-primary idb" )
       %span.glyphicon.glyphicon-refresh
@@ -80,7 +80,7 @@
       Datafiles CSV
   %p
     modified:
-    = @modified_times[:datafiles_csv_time]
+    = @modified_times[:datafiles_csv]
   %p
     %a(href="/metrics/refresh_datafiles_csv" class="btn btn-primary idb" )
       %span.glyphicon.glyphicon-refresh
@@ -119,7 +119,7 @@
       Container File Contents (zip) CSV
   %p
     modified:
-    = @modified_times[:container_csv_time]
+    = @modified_times[:container_contents_csv]
     %a(href="/metrics/refresh_container_csv" class="btn btn-primary idb" )
       %span.glyphicon.glyphicon-refresh
       Refresh
