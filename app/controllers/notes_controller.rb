@@ -1,11 +1,10 @@
 class NotesController < ApplicationController
   before_action :set_note, only: [:show, :edit, :update, :destroy]
-  before_action :set_dataset, only: [:index, :show, :edit, :update, :destroy]
+  before_action :set_dataset, only: [:index, :show, :new, :edit, :update, :destroy]
 
   # GET /notes
   # GET /notes.json
   def index
-    set_dataset
     @notes = if @dataset
       @dataset.notes
     else
@@ -20,7 +19,7 @@ class NotesController < ApplicationController
 
   # GET /notes/new
   def new
-    @note = Note.new
+    @note = @dataset.notes.build
   end
 
   # GET /notes/1/edit
