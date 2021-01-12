@@ -10,6 +10,6 @@
   %b Author:
   = @note.author
 
-= link_to 'Edit', edit_note_path(@note)
+= link_to 'Edit', [:edit, @dataset, @note]
 \|
-= link_to 'Back', notes_path
+= link_to 'Back', dataset_notes_path(@dataset)

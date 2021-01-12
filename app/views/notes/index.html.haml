@@ -16,8 +16,8 @@
       %tr
         %td= note.body
         %td= note.author
-        %td= link_to 'Show', note
-        %td= link_to 'Edit', edit_note_path(note)
+        %td= link_to 'Show', [:show, @dataset, note]
+        %td= link_to 'Edit', [:edit, @dataset, note]
         %td= link_to 'Destroy', note, method: :delete, data: { confirm: 'Are you sure?' }
 
 %br
