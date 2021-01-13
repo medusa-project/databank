@@ -61,6 +61,8 @@
             -if (can? :manage, @dataset)
               .col-md-6
                 = link_to "Notes", dataset_notes_path(@dataset), class: "btn idb btn-primary", target: "_blank"
+                  %span class: "badge badge-light"
+                    =@dataset.notes.count
 
 
 
