@@ -15,7 +15,7 @@
       = f.label "Note"
       = f.text_field :body
   .form-group
-    .field'
+    .field
       = f.label "Author"
       = f.text_field :author, value: current_user.email
   = f.hidden_field :dataset_id, value: @dataset.id
