@@ -21,8 +21,8 @@
       %tr
         %td= note.body
         %td= note.author
-        %td= link_to 'Show', [:show, @dataset, note], class: "btn idb btn-primary btn-block"
-        %td= link_to 'Edit', [:edit, @dataset, note], class: "btn idb btn-success btn-block"
+        %td= link_to 'Show', "/datasets/#{@dataset.key}/notes/#{note.id}", class: "btn idb btn-primary btn-block"
+        %td= link_to 'Edit', "/datasets/#{@dataset.key}/notes/#{note.id}/edit", class: "btn idb btn-success btn-block"
         %td= link_to 'Destroy', note, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn idb btn-danger btn-block"
 
 %br
