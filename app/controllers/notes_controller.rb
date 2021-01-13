@@ -3,7 +3,7 @@
 class NotesController < ApplicationController
   load_and_authorize_resource
   before_action :set_note, only: [:show, :edit, :update, :destroy]
-  before_action :set_dataset, only: [:index, :show, :new, :edit, :update, :destroy]
+  before_action :set_dataset, only: [:index, :show, :new, :create, :edit, :update, :destroy]
 
   # GET /notes
   # GET /notes.json
