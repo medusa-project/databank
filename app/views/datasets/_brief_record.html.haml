@@ -39,6 +39,8 @@
         &nbsp;
         .label.label-danger
           suppressed by curator
+      .label.label-default
+        = pluralize(dataset.notes.count, 'note')
 
 
   -if(can? :read, dataset) && dataset.release_date
