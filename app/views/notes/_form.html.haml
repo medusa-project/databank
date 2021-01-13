@@ -1,3 +1,8 @@
+%h3
+  Note For
+  =link_to "#{@dataset.title}", dataset_path(@dataset.key)
+= @dataset.plain_text_citation
+%hr
 = form_for @note do |f|
   - if @note.errors.any?
     #error_explanation
@@ -5,14 +10,16 @@
       %ul
         - @note.errors.full_messages.each do |message|
           %li= message
-
-  .field
-    = f.label :dataset_id
-    = f.text_field :dataset_id
-  .field
-    = f.label "Note"
-    = f.text_field :body
-  .field
-    = f.hidden_field :author, value: current_user.email
+  .form-group
+    .field
+      = f.label "Note"
+      = f.text_field :body
+  .form-group
+    .field'
+      = f.label "Author"
+      = f.text_field :author, value: current_user.email
+  = f.hidden_field :dataset_id, value: @dataset.id
   .actions
     = f.submit 'Save'
+%hr
+= link_to "Back to Notes", dataset_notes_path(@dataset), class: "btn idb btn-primary"

@@ -58,8 +58,9 @@
           .row
             .col-md-6
               = @dataset.visibility
-            .col-md-6
-              = link_to "Notes", dataset_notes_path(@dataset)
+            -if (can? :manage, @dataset)
+              .col-md-6
+                = link_to "Notes", dataset_notes_path(@dataset), class: "btn idb btn-primary"
 
 
 

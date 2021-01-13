@@ -1,24 +1,29 @@
-%h1 Notes
-- if @dataset
-  = render 'datasets/brief_record', dataset: @dataset
+%h1 Notes for:
+%h3
+  Notes For
+  =link_to "#{@dataset.title}", dataset_path(@dataset.key)
+= @dataset.plain_text_citation
+%br
 
-%table
+%hr
+
+%table.table.table-striped
   %thead
     %tr
-      %th Body
-      %th Author
-      %th
-      %th
-      %th
+      %th.col-md-7 Note
+      %th.col-md-2 Author
+      %th.col-md-1
+      %th.col-md-1
+      %th.col-md-1
 
   %tbody
     - @notes.each do |note|
       %tr
         %td= note.body
         %td= note.author
-        %td= link_to 'Show', [:show, @dataset, note]
-        %td= link_to 'Edit', [:edit, @dataset, note]
-        %td= link_to 'Destroy', note, method: :delete, data: { confirm: 'Are you sure?' }
+        %td= link_to 'Show', [:show, @dataset, note], class: "btn idb btn-primary btn-block"
+        %td= link_to 'Edit', [:edit, @dataset, note], class: "btn idb btn-success btn-block"
+        %td= link_to 'Destroy', note, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn idb btn-danger btn-block"
 
 %br
 

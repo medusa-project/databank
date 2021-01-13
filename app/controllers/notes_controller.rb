@@ -1,21 +1,24 @@
+# frozen_string_literal: true
+
 class NotesController < ApplicationController
+  load_and_authorize_resource
   before_action :set_note, only: [:show, :edit, :update, :destroy]
   before_action :set_dataset, only: [:index, :show, :new, :edit, :update, :destroy]
 
   # GET /notes
   # GET /notes.json
   def index
+    authorize! :manage, @dataset
     @notes = if @dataset
-      @dataset.notes
-    else
-      Note.all
+               @dataset.notes
+             else
+               Note.all
              end
   end
 
   # GET /notes/1
   # GET /notes/1.json
-  def show
-  end
+  def show; end
 
   # GET /notes/new
   def new
@@ -23,8 +26,7 @@ class NotesController < ApplicationController
   end
 
   # GET /notes/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /notes
   # POST /notes.json
@@ -33,7 +35,7 @@ class NotesController < ApplicationController
 
     respond_to do |format|
       if @note.save
-        format.html { redirect_to @note, notice: 'Note was successfully created.' }
+        format.html { redirect_to dataset_notes_path(@dataset), notice: "Note was successfully created." }
         format.json { render :show, status: :created, location: @note }
       else
         format.html { render :new }
@@ -47,7 +49,7 @@ class NotesController < ApplicationController
   def update
     respond_to do |format|
       if @note.update(note_params)
-        format.html { redirect_to @note, notice: 'Note was successfully updated.' }
+        format.html { redirect_to dataset_notes_path(@dataset), notice: "Note was successfully updated." }
         format.json { render :show, status: :ok, location: @note }
       else
         format.html { render :edit }
@@ -61,12 +63,13 @@ class NotesController < ApplicationController
   def destroy
     @note.destroy
     respond_to do |format|
-      format.html { redirect_to notes_url, notice: 'Note was successfully destroyed.' }
+      format.html { redirect_to dataset_notes_path(@dataset), notice: "Note was successfully destroyed." }
       format.json { head :no_content }
     end
   end
 
   private
+
   # Use callbacks to share common setup or constraints between actions.
   def set_note
     @note = Note.find(params[:id])
@@ -78,11 +81,11 @@ class NotesController < ApplicationController
     if @datafile
       @dataset = Dataset.find(@note.dataset_id)
     elsif params.has_key?(:dataset_id)
-      @dataset = Dataset.find_by_key(params[:dataset_id])
+      @dataset = Dataset.find_by(key: params[:dataset_id])
     elsif params.has_key?(:note) && params[:note].has_key?(:dataset_id)
       @dataset = Dataset.find(params[:note][:dataset_id])
-    elsif params.has_key?('note') && params['note'].has_key?('dataset_id')
-      @dataset = Dataset.find(params['note']['dataset_id'])
+    elsif params.has_key?("note") && params["note"].has_key?("dataset_id")
+      @dataset = Dataset.find(params["note"]["dataset_id"])
     end
     raise ActiveRecord::RecordNotFound unless @dataset
   end
