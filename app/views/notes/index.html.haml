@@ -19,7 +19,7 @@
     - @notes.each do |note|
       %tr
         %td= note.body
-        %td= note.author
+        %td= "#{note.author}\ncreated: #{note.created_at.iso8601}\nupdated:#{note.updated_at.iso8601}"
         %td= link_to 'Show', "/datasets/#{@dataset.key}/notes/#{note.id}", class: "btn idb btn-primary btn-block"
         %td= link_to 'Edit', "/datasets/#{@dataset.key}/notes/#{note.id}/edit", class: "btn idb btn-success btn-block"
         %td= link_to 'Destroy', "/datasets/#{@dataset.key}/notes/#{note.id}", method: :delete, data: { confirm: 'Are you sure?' }, class: "btn idb btn-danger btn-block"
