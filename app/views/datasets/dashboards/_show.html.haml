@@ -60,9 +60,8 @@
               = @dataset.visibility
             -if (can? :manage, @dataset)
               .col-md-6.curator-only
-                = link_to "Notes", dataset_notes_path(@dataset), class: "btn idb btn-primary", target: "_blank"
-                %span(class="label label-dark")
-                  =@dataset.notes.count
+                = link_to "Go to Notes", dataset_notes_path(@dataset), class: "btn idb btn-primary", target: "_blank"
+                = "(There #{@dataset.notes.count == 1 ? 'is' : 'are'} currently #{pluralize(@dataset.notes.count, 'note')} for this dataset.)"
         .col-md-3
 
           - if @completion_check == 'ok' && @dataset.in_pre_publication_review
