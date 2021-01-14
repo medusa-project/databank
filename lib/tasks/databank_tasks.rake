@@ -18,13 +18,14 @@ namespace :databank_tasks do
 
   desc "create test sqs message"
   task make_test_sqs_message: :environment do
-    queue_url = "https://sqs.us-east-2.amazonaws.com/721945215539/databank-to-medusa-demo.fifo"
+    queue_url = "https://sqs.us-east-2.amazonaws.com/721945215539/databank-to-medusa-demo"
     sqs = Aws::SQS::Client.new(region: "us-east-2")
-
+    resp = sqs.send_message(queue_url: queue_url, message_body: "{'content': 'test'}")
+    puts resp
   end
   desc "fetch test sqs message"
   task fetch_test_sqs_message: :environment do
-    queue_url = "https://sqs.us-east-2.amazonaws.com/721945215539/databank-to-medusa-demo.fifo"
+    queue_url = "https://sqs.us-east-2.amazonaws.com/721945215539/databank-to-medusa-demo"
     sqs = Aws::SQS::Client.new(region: "us-east-2")
     resp = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
     resp.messages.each do |m|
