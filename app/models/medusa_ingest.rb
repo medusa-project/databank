@@ -366,9 +366,7 @@ class MedusaIngest < ApplicationRecord
     else
       sqs = QueueManager.instance.sqs_client
       sqs.send_message(queue_url:                IDB_CONFIG[:queues][:databank_to_medusa_url],
-                       message_body:             medusa_ingest_message,
-                       message_group_id:         "toMedusa",
-                       message_deduplication_id: SecureRandom.base64(10))
+                       message_body:             medusa_ingest_message)
     end
   end
 
