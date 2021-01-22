@@ -11,6 +11,21 @@ class UserAbility < ApplicationRecord
                         ability:       ability).exists?
     end
 
+    def grant_deposit_exception(user:)
+      UserAbility.create(resource_type: "Dataset",
+                         user_provider: user.provider,
+                         user_uid:      user.uid,
+                         ability:       "create")
+    end
+
+    def revoke_deposit_exception(user:)
+      UserAbility.where(resource_type: "Dataset",
+                        model_id:      nil,
+                        user_provider: user.provider,
+                        user_uid:      user.uid,
+                        ability:       "create").destroy_all
+    end
+
     def update_internal_permissions(dataset_key, form_reviewers=[], form_editors=[])
 
       form_reviewers = scrubbed_netids(input_array = form_reviewers)

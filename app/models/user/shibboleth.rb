@@ -42,6 +42,9 @@ class User::Shibboleth < User::User
     net_id = auth["info"]["email"].split("@").first
     return Databank::UserRole::ADMIN if admins.include?(net_id)
 
+    user = User::Shibboleth.find_by(provider: auth["provider"], uid: auth["uid"])
+    return Databank::UserRole::DEPOSITOR if user && user_can?("Dataset", nil, "create", user)
+
     if auth["extra"]["raw_info"]["iTrustAffiliation"].respond_to?(:split)
       affiliations = auth["extra"]["raw_info"]["iTrustAffiliation"].split(";")
       if affiliations.respond_to?(:length) && !affiliations.empty?
