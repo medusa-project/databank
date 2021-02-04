@@ -74,12 +74,16 @@ class DownloaderClient
       password = IDB_CONFIG["downloader"]["password"]
       client = Curl::Easy.new(client_url)
       client.http_auth_types = :digest
+      client.ssl_verify_peer = true
       client.username = user
       client.password = password
       client.post_body = medusa_request_json
       client.post
       client.headers = {"Content-Type": "application/json"}
       client.perform
+      # DEBUG LOGGING
+      Rails.logger.warn client.to_yaml
+      Rails.logger.warn client.body_str
       response_hash = JSON.parse(client.body_str)
       if response_hash.has_key?("download_url")
         # Rails.logger.warn "inside downloader client: #{response_hash["download_url"]}"
