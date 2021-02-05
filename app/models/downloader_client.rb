@@ -82,8 +82,6 @@ class DownloaderClient
       client.headers = {"Content-Type": "application/json"}
       client.perform
       # DEBUG LOGGING
-      Rails.logger.warn client.to_yaml
-      Rails.logger.warn client.body_str
       response_hash = JSON.parse(client.body_str)
       if response_hash.has_key?("download_url")
         # Rails.logger.warn "inside downloader client: #{response_hash["download_url"]}"
