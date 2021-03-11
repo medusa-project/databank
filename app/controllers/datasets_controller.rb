@@ -539,9 +539,11 @@ class DatasetsController < ApplicationController
           end
 
           if params.has_key?('subjects')
-            any_of do
-              params['subjects'].each do |subject|
-                with :subject_text, subject
+            unless params['subjects'].nil?
+              any_of do
+                params['subjects'].each do |subject|
+                  with :subject_text, subject
+                end
               end
             end
           end
