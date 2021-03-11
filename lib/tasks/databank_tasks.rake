@@ -41,6 +41,9 @@ namespace :databank_tasks do
 
   desc "test fargate-based archive extractor"
   task test_extractor: :environment do
+    client = Aws::ECS::Client.new(
+      region: "us-east-2",
+      )
     task = {
       cluster:               "databank-archive-extractor-demo",
       count:                 1,
