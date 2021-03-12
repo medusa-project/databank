@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_08_215347) do
+ActiveRecord::Schema.define(version: 2021_03_12_173412) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -180,6 +180,14 @@ ActiveRecord::Schema.define(version: 2021_01_08_215347) do
     t.integer "progress_current", default: 0
     t.integer "progress_max", default: 0
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
+  end
+
+  create_table "extractor_tasks", force: :cascade do |t|
+    t.string "web_id"
+    t.datetime "response_at"
+    t.string "response"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "featured_researchers", id: :serial, force: :cascade do |t|

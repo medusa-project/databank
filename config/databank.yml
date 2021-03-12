@@ -52,7 +52,7 @@
 :queues:
   :databank_to_medusa_url: <%= Rails.application.credentials[:queues][:databank_to_medusa_url] %>
   :medusa_to_databank_url: <%= Rails.application.credentials[:queues][:medusa_to_databank_url] %>
-  :tasks_to_databank_url: <%= Rails.application.credentials[:queues][:tasks_to_databank_url] %>
+  :extractor_to_databank_url: <%= Rails.application.credentials[:queues][:extractor_to_databank_url] %>
 
 :iiif:
   :draft_base: <%= Rails.application.credentials[:iiif][:draft_base] %>

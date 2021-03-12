@@ -154,7 +154,7 @@ class DatabankTask
 
   def self.fetch_and_parse_incoming_sqs_message
     sqs = QueueManager.instance.sqs_client
-    queue_url = IDB_CONFIG[:queues][:tasks_to_databank_url]
+    queue_url = IDB_CONFIG[:queues][:extractor_to_databank_url]
     response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
     return nil if response.nil?
 
@@ -166,7 +166,7 @@ class DatabankTask
 
   #does not delete
   def self.peek_message
-    queue_url = IDB_CONFIG[:queues][:tasks_to_databank_url]
+    queue_url = IDB_CONFIG[:queues][:extractor_to_databank_url]
     sqs = QueueManager.instance.sqs_client
     response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
     return "no message found" if response.nil?

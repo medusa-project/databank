@@ -3,6 +3,7 @@
 Rails.application.routes.draw do
 
 
+  resources :extractor_tasks
   resources :review_requests do
     collection do
       get 'report'

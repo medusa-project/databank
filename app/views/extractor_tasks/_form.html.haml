@@ -1,0 +1,19 @@
+= form_for @extractor_task do |f|
+  - if @extractor_task.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@extractor_task.errors.count, "error")} prohibited this extractor_task from being saved:"
+      %ul
+        - @extractor_task.errors.full_messages.each do |message|
+          %li= message
+
+  .field
+    = f.label :web_id
+    = f.text_field :web_id
+  .field
+    = f.label :response_at
+    = f.datetime_select :response_at
+  .field
+    = f.label :response
+    = f.text_field :response
+  .actions
+    = f.submit 'Save'

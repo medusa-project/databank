@@ -4,10 +4,11 @@ module Datafile::Processable
   extend ActiveSupport::Concern
 
   def initiate_processing_task
-    databank_task = DatabankTask.create_remote(web_id)
-    raise("error attempting to send datafile for processing: #{web_id}") unless databank_task
 
-    update_attribute(:task_id, databank_task)
+    return nil unless Rails.env.production? || Rails.env.demo
+
+    extractor_task = ExtractorTask.create(web_id: web_id)
+    update_attribute(:task_id, extractor_task.id) if extractor_task
   end
 
   class_methods do
