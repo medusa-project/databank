@@ -176,9 +176,10 @@ class DatabankTask
     Rails.logger.warn response.data.messages[0].to_yaml
     Rails.logger.warn response.data.messages[0].body
     message = JSON.parse(response.data.messages[0].body)
-    Rails.logger.warn "message:\n#{message}"
-    Rails.logger.warn StorageManager.instance.medusa_root.exist?(message["object_key"]).to_s
-    StorageManager.instance.medusa_root.as_string(message["object_key"])
+    Rails.logger.warn "message: #{message}"
+    key = message["object_key"]
+    Rails.logger.warn %Q[object_key: #{key}]
+    StorageManager.instance.medusa_root.as_string(key)
   end
 
   def self.all_remote_tasks
