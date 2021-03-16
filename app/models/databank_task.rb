@@ -165,11 +165,11 @@ class DatabankTask
   end
 
   #does not delete
-  def self.peek_message
+  def self.peek_response
     queue_url = IDB_CONFIG[:queues][:extractor_to_databank_url]
     sqs = QueueManager.instance.sqs_client
     response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
-    return "no message found" if response.nil?
+    return {data: "no response found"}.to_json if response.nil?
 
     response
   end
