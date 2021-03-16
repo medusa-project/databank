@@ -172,10 +172,7 @@ class DatabankTask
     return {error: "no response"}.to_json if response.nil?
 
     #Rails.logger.warn response.data.to_yaml
-    Rails.logger.warn response.data.messages.class
-    Rails.logger.warn response.data.messages.to_yaml
-    Rails.logger.warn response.data.messages[0].class
-    Rails.logger.warn response.data.messages[0].message
+    Rails.logger.warn response.data.messages[0]
 
     body = response.data.messages[0].body
     return {error: "no message object"}.to_json unless StorageManager.instance.medusa_root.exist?(body["object_key"])
