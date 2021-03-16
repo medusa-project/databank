@@ -7,11 +7,11 @@ class ContainerManager
   attr_accessor :ecs_client
 
   def initialize
-    ecs_client = cloud_client
+    self.ecs_client = cloud_client
   end
 
   def cloud_client
-    client = Aws::ECS::Client.new(region: "us-east-2")
+    Aws::ECS::Client.new(region: "us-east-2")
   end
 
 end

@@ -9,7 +9,7 @@ class QueueManager
   attr_accessor :sqs_client
 
   def initialize
-    sqs_client = if IDB_CONFIG[:aws][:queue_mode] == "local"
+    self.sqs_client = if IDB_CONFIG[:aws][:queue_mode] == "local"
                    local_client
                  else
                    cloud_client
