@@ -170,7 +170,8 @@ class DatabankTask
     sqs = QueueManager.instance.sqs_client
     response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
     return "no message found" if response.nil?
-    puts(response)
+
+    response
   end
 
   def self.all_remote_tasks
