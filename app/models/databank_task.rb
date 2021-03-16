@@ -171,7 +171,9 @@ class DatabankTask
     response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
     return {error: "no response"}.to_json if response.nil?
 
-    body = response.data.body
+    Rails.logger.warn response.data.to_yaml
+
+    body = response.data.messages[0].body
     return {error: "no message object"}.to_json unless StorageManager.instance.medusa_root.exist?(body["object_key"])
 
     StorageManager.instance.medusa_root.as_string(body["object_key"])
