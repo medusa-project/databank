@@ -169,9 +169,12 @@ class DatabankTask
     queue_url = IDB_CONFIG[:queues][:extractor_to_databank_url]
     sqs = QueueManager.instance.sqs_client
     response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
-    return {data: "no response found"}.to_json if response.nil?
+    return {error: "no response"}.to_json if response.nil?
 
-    response
+    body = response.data.body
+    return {error: "no message object"}.to_json unless StorageManager.instance.medusa_root.exist?(body["object_key"])
+
+    StorageManager.instance.medusa_root.as_string(body["object_key"])
   end
 
   def self.all_remote_tasks
