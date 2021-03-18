@@ -171,7 +171,6 @@ class DatabankTask
     response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
     return {error: "no response"}.to_json if response.nil?
 
-    #Rails.logger.warn response.data.to_yaml
     Rails.logger.warn response.data.messages[0].class
     Rails.logger.warn response.data.messages[0].to_yaml
     Rails.logger.warn response.data.messages[0].body
