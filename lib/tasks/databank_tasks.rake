@@ -70,19 +70,6 @@ namespace :databank_tasks do
     puts resp
   end
 
-  desc "invoke demo lambda for test datafile"
-  task invoke_test_lambda: :environment do
-    puts DatabankTask.invoke_lambda(datafile_web_id: "q0jef")
-  end
-
-  # example demo invocation:
-  # RAILS_ENV=demo bundle exec rails databank_tasks:invoke_task_lambda[q0jef]
-  desc "invoke lambda for specified datafile"
-  task :invoke_task_lambda, [:web_id] => :environment do |t, args|
-    puts "missing web_id argument" unless args && args[:web_id]
-    puts DatabankTask.invoke_lambda(datafile_web_id: args[:web_id])
-  end
-
   desc "fetch, parse, and handle incoming sqs messages"
   task handle_incoming_messages: :environment do
     DatabankTask.handle_incoming_messages

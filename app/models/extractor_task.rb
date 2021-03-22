@@ -32,6 +32,7 @@ class ExtractorTask < ApplicationRecord
       task_definition:       IDB_CONFIG[:extractor][:task_definition]
     }
     resp = client.run_task(task)
+    Rails.logger.warn("DEBUG Response from initiating extractor task:")
     Rails.logger.warn(resp)
   end
 

@@ -81,8 +81,8 @@ class ExtractorTasksController < ApplicationController
       @datafile = Datafile.find_by(self.web_id)
     end
 
-    # Only allow a list of trusted parameters through.
+  # Only allow a list of trusted parameters through.
     def extractor_task_params
-      params.require(:extractor_task).permit(:web_id)
+      params.require([:extractor_task, :web_id])
     end
 end
