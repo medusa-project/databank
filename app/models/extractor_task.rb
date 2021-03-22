@@ -3,11 +3,6 @@
 class ExtractorTask < ApplicationRecord
   after_create :send
 
-  def initialize(web_id:)
-    self.web_id = web_id
-    super
-  end
-
   def send
     client = ContainerManager.instance.ecs_client
     task = {

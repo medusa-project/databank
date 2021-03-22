@@ -7,7 +7,7 @@ module Datafile::Processable
 
     return nil unless Rails.env.production? || Rails.env.demo?
 
-    extractor_task = ExtractorTask.create(web_id: web_id)
+    extractor_task = ExtractorTask.create(web_id: self.web_id)
     update_attribute(:task_id, extractor_task.id) if extractor_task
   end
 
