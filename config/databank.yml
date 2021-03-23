@@ -53,7 +53,13 @@
   :databank_to_medusa_url: <%= Rails.application.credentials[:queues][:databank_to_medusa_url] %>
   :medusa_to_databank_url: <%= Rails.application.credentials[:queues][:medusa_to_databank_url] %>
   :extractor_to_databank_url: <%= Rails.application.credentials[:queues][:extractor_to_databank_url] %>
-
+:extractor:
+  :cluster: <%= Rails.application.credentials[:extractor][:cluster] %>
+  :subnets: <%= Rails.application.credentials[:extractor][:subnets] %>
+  :security_groups: <%= Rails.application.credentials[:extractor][:security_groups] %>
+  :container_name: <%= Rails.application.credentials[:extractor][:container_name] %>
+  :platform_version: <%= Rails.application.credentials[:extractor][:platform_version] %>
+  :task_definition: <%= Rails.application.credentials[:extractor][:task_definition] %>
 :iiif:
   :draft_base: <%= Rails.application.credentials[:iiif][:draft_base] %>
   :medusa_base: <%= Rails.application.credentials[:iiif][:medusa_base] %>
