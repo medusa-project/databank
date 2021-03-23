@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class ExtractorTask < ApplicationRecord
-  after_create :send
+  after_create :initiate_task
 
-  def send
+  def initiate_task
     client = ContainerManager.instance.ecs_client
     task = {
       cluster:               IDB_CONFIG[:extractor][:cluster],
