@@ -1371,6 +1371,8 @@ GEM
     nio4r (2.5.7)
     nokogiri (1.11.2-x86_64-darwin)
       racc (~> 1.4)
+    nokogiri (1.11.2-x86_64-linux)
+      racc (~> 1.4)
     nokogiri-diff (0.2.0)
       nokogiri (~> 1.5)
       tdiff (~> 0.3, >= 0.3.2)
@@ -1597,6 +1599,7 @@ GEM
 
 PLATFORMS
   x86_64-darwin-19
+  x86_64-linux
 
 DEPENDENCIES
   activerecord-session_store!
