@@ -46,6 +46,8 @@ stop.sh
 /data
 /extractions
 /config/credentials/development.key
+/config/credentials/development.yml.enc
+config/credentials/development.yml.enc
 /config/credentials/demo.key
 /config/credentials/test.key
 /config/credentials/production.key
