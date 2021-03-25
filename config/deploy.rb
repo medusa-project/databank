@@ -1,5 +1,5 @@
 # config valid only for current version of Capistrano
-lock '3.13.0'
+lock '3.16.0'
 
 set :application, 'databank'
 set :repo_url, 'https://github.com/medusa-project/databank.git'
