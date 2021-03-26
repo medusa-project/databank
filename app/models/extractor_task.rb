@@ -32,8 +32,13 @@ class ExtractorTask < ApplicationRecord
       task_definition:       IDB_CONFIG[:extractor][:task_definition]
     }
     resp = client.run_task(task)
+    Rails.logger.warn("DEBUG resp class: #{resp.class}")
     Rails.logger.warn("DEBUG Response from initiating extractor task:")
     Rails.logger.warn(resp)
+    Rails.logger.warn("attempt at determining if there are failures:")
+    failure_count = resp[:failures].count
+    Rails.logger.warn("number of failures: #{failure_count}")
+    raise("error in Extractor Task #{web_id}") unless failure_count.zero?
   end
 
   def command_string
