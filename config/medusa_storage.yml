@@ -6,6 +6,10 @@ development:
     - :name: medusa
       :type: <%= Rails.application.credentials[:storage][:medusa_type] %>
       :path: <%= Rails.application.credentials[:storage][:medusa_path] %>
+    - :name: message
+      :type: s3
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_path] %>
 
 test:
   :storage:
@@ -15,6 +19,10 @@ test:
     - :name: medusa
       :type: <%= Rails.application.credentials[:storage][:medusa_type] %>
       :path: <%= Rails.application.credentials[:storage][:medusa_path] %>
+    - :name: message
+      :type: s3
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_path] %>
 
 demo:
   :storage:
@@ -46,6 +54,11 @@ demo:
       :region: us-east-2
       :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
       :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
+    - :name: message
+      :type: s3
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: "messages/"
 
 production:
   :storage:
@@ -80,3 +93,8 @@ production:
       :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
       :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
       :copy_targets: ["draft"]
+    - :name: message
+      :type: s3
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: "messages/"

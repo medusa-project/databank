@@ -178,7 +178,8 @@ class DatabankTask
     Rails.logger.warn "message: #{message}"
     key = message["object_key"]
     Rails.logger.warn %Q[object_key: #{key}]
-    StorageManager.instance.medusa_root.as_string("/messages/+#{key}")
+    parsed_key = key.split("/").last
+    StorageManager.instance.message_root.as_string("#{parsed_key}")
   end
 
   def self.all_remote_tasks
