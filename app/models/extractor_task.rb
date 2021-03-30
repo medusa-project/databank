@@ -57,4 +57,18 @@ class ExtractorTask < ApplicationRecord
   def datafile
     Datafile.find_by(web_id: web_id)
   end
+
+  # retrieves, parses, and deletes message
+  def self.fetch_message
+    queue_url = IDB_CONFIG[:queues][:extractor_to_databank_url]
+    sqs = QueueManager.instance.sqs_client
+    response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
+    return {error: "no response"}.to_json if response.nil?
+
+    message = JSON.parse(response.data.messages[0].body)
+    key = message["object_key"]
+    parsed_key = key.split("/").last
+    StorageManager.instance.message_root.as_string("#{parsed_key}")
+  end
+
 end

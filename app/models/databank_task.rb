@@ -164,24 +164,6 @@ class DatabankTask
     message
   end
 
-  #does not delete
-  def self.peek_response
-    queue_url = IDB_CONFIG[:queues][:extractor_to_databank_url]
-    sqs = QueueManager.instance.sqs_client
-    response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
-    return {error: "no response"}.to_json if response.nil?
-
-    Rails.logger.warn response.data.messages[0].class
-    Rails.logger.warn response.data.messages[0].to_yaml
-    Rails.logger.warn response.data.messages[0].body
-    message = JSON.parse(response.data.messages[0].body)
-    Rails.logger.warn "message: #{message}"
-    key = message["object_key"]
-    Rails.logger.warn %Q[object_key: #{key}]
-    parsed_key = key.split("/").last
-    StorageManager.instance.message_root.as_string("#{parsed_key}")
-  end
-
   def self.all_remote_tasks
     endpoint = "#{TASKS_URL}/tasks"
     response = RestClient.get endpoint
