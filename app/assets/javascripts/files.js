@@ -227,7 +227,7 @@ function preview_image(iiif_root, web_id){
         console.log("using previously fetched image");
     } else {
         $('.spinner_'+web_id).show();
-        var image_url = iiif_root + "/" + web_id + "/full/full/0/default.jpg";
+        var image_url = iiif_root + "/" + web_id + "/full/max/0/default.jpg";
         $("#preview_" + web_id).addClass('fetched');
         $("#preview_" + web_id).html("<img src="+ image_url +" class='preview_body'>");
         $('.spinner_'+web_id).hide();
