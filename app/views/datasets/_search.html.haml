@@ -19,7 +19,7 @@
 
   .row
     .col-md-7.col-md-offset-5
-      =page_entries_info(@search.results, options= {html: false})
+      =raw(page_entries_info(@search.results))
 
   .row
     .col-md-5
