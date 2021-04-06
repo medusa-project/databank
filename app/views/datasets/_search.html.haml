@@ -19,7 +19,7 @@
 
   .row
     .col-md-7.col-md-offset-5
-      =raw(page_entries_info(@search.results))
+      =page_entries_info(@search.results, renderer: BootstrapPagination::Rails)
 
   .row
     .col-md-5
