@@ -3,6 +3,10 @@
 class ExtractorTask < ApplicationRecord
   after_create :initiate_task
 
+  QUEUE_URL = IDB_CONFIG[:queues][:extractor_to_databank_url]
+  SQS = QueueManager.instance.sqs_client
+  MESSAGE_ROOT = StorageManager.instance.message_root
+
   def initiate_task
     client = ContainerManager.instance.ecs_client
     task = {
@@ -53,19 +57,34 @@ class ExtractorTask < ApplicationRecord
     Datafile.find_by(web_id: web_id)
   end
 
-  # retrieves and parses message
-  def self.fetch_message
-    queue_url = IDB_CONFIG[:queues][:extractor_to_databank_url]
-    sqs = QueueManager.instance.sqs_client
-    response = sqs.receive_message(queue_url: queue_url, max_number_of_messages: 1)
-    return {error: "no response"}.to_json if response.nil?
+  # retrieves, parses, processes, and deletes a message
+  def self.handle_response
+
+    response = SQS.receive_message(queue_url: QUEUE_URL, max_number_of_messages: 1)
+    return nil if response.nil?
 
     message = JSON.parse(response.data.messages[0].body)
-    Rails.logger.warn(message.keys)
+    sqs.delete_message({queue_url: queue_url, receipt_handle: message.receipt_handle})
+    datafile = Datafile.find_by(message["web_id"])
+    raise("no Datafile found for archive extractor response message: #{message}") unless datafile
+
     key = message["object_key"]
     parsed_key = key.split("/").last
-    message_text = StorageManager.instance.message_root.as_string("#{parsed_key}")
-    Rails.logger.warn message_text
-    message_text
+    raise("extractor task message not found for #{datafile.web_id}") unless MESSAGE_ROOT.exist?(parsed_key)
+
+    message_text = MESSAGE_ROOT.as_string(parsed_key)
+    MESSAGE_ROOT.delete_content(parsed_key)
+    extractor_task = datafile.extractor_task
+    raise("no extractor_task for datafile: #{message["web_id"]}\nMSG: #{message_text}") unless extractor_task
+
+    extractor_task.record_response(message: message)
+
+    datafile.handle_extractor_message(message_text: message_text)
+  end
+
+  def record_reponse(message:)
+    self.response_at = Time.current
+    self.response = message
+    save!
   end
 end

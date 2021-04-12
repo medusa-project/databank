@@ -7,8 +7,28 @@ module Datafile::Processable
 
     return nil unless Rails.env.production? || Rails.env.demo?
 
-    extractor_task = ExtractorTask.create(web_id: self.web_id)
+    extractor_task = ExtractorTask.create(web_id: web_id)
     update_attribute(:task_id, extractor_task.id) if extractor_task
+  end
+
+  def extractor_task
+    return nil unless task_id
+
+    ExtractorTask.find_by(id: task_id)
+  end
+
+  def handle_extractor_message(message_text:)
+    if message_text["status"] == "success"
+      return handle_extractor_success(peek_type: message_text["peek_type"], peek_text: message_text["peek_text"])
+    end
+
+    raise("invalid or error response from archive extractor:\n#{message_text}")
+  end
+
+  def handle_extractor_success(peek_type:, peek_text:)
+    self.peek_text = peek_text
+    self.peek_type = peek_type
+    save!
   end
 
   class_methods do
