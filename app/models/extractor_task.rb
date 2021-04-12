@@ -61,7 +61,9 @@ class ExtractorTask < ApplicationRecord
   def self.handle_response
 
     response = SQS.receive_message(queue_url: QUEUE_URL, max_number_of_messages: 1)
-    return nil if response.nil?
+    raise("nil response to receive_message check for archive extractor") if response.nil?
+
+    raise("no body in message from archive extractor\nresponse: #{response}") if response.data.messages[0].nil?
 
     message = JSON.parse(response.data.messages[0].body)
     sqs.delete_message({queue_url: queue_url, receipt_handle: message.receipt_handle})
