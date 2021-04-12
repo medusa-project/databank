@@ -75,17 +75,6 @@ namespace :databank_tasks do
     DatabankTask.handle_incoming_messages
   end
 
-  desc "peek at first sqs message, do not delete"
-  task validate_peek: :environment do
-    raw_message = DatabankTask.peek_response
-    puts "raw_response:\n#{raw_response.to_yaml}"
-    parsed_message = JSON.parse(raw_message)
-    puts "parsed_message:\n#{parsed_message}"
-    parsed_message.transform_keys!(&:to_sym)
-    puts "parsed_message with symbolized keys:\n#{parsed_message}"
-    puts validation_report(message: parsed_message)
-  end
-
   desc "remove tasks from datafiles"
   task remove_all_tasks: :environment do
     Datafile.all.each do |datafile|

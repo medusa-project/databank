@@ -32,13 +32,8 @@ class ExtractorTask < ApplicationRecord
       task_definition:       IDB_CONFIG[:extractor][:task_definition]
     }
     resp = client.run_task(task)
-    Rails.logger.warn("DEBUG resp class: #{resp.class}")
-    Rails.logger.warn("DEBUG Response from initiating extractor task:")
-    Rails.logger.warn(resp)
-    Rails.logger.warn("attempt at determining if there are failures:")
     failure_count = resp[:failures].count
-    Rails.logger.warn("number of failures: #{failure_count}")
-    raise("error in Extractor Task #{web_id}") unless failure_count.zero?
+    raise("error in Extractor Task for #{web_id}: #{resp}") unless failure_count.zero?
   end
 
   def command_string
@@ -58,7 +53,7 @@ class ExtractorTask < ApplicationRecord
     Datafile.find_by(web_id: web_id)
   end
 
-  # retrieves, parses, and deletes message
+  # retrieves and parses message
   def self.fetch_message
     queue_url = IDB_CONFIG[:queues][:extractor_to_databank_url]
     sqs = QueueManager.instance.sqs_client
@@ -66,9 +61,11 @@ class ExtractorTask < ApplicationRecord
     return {error: "no response"}.to_json if response.nil?
 
     message = JSON.parse(response.data.messages[0].body)
+    Rails.logger.warn(message.keys)
     key = message["object_key"]
     parsed_key = key.split("/").last
-    StorageManager.instance.message_root.as_string("#{parsed_key}")
+    message_text = StorageManager.instance.message_root.as_string("#{parsed_key}")
+    Rails.logger.warn message_text
+    message_text
   end
-
 end
