@@ -61,12 +61,12 @@ class ExtractorTask < ApplicationRecord
   def self.handle_response
     response = SQS.receive_message(queue_url: QUEUE_URL, max_number_of_messages: 1)
     # TEMPORARY DEBUG LOGGING
-    Rails.logger.warn SQS.to_yaml
     Rails.logger.warn QUEUE_URL
+    Rails.logger.warn "message count: #{response.data.messages.count}"
     return nil if response.data.messages.count.zero?
 
     message = JSON.parse(response.data.messages[0].body)
-    sqs.delete_message({queue_url: queue_url, receipt_handle: message.receipt_handle})
+    SQS.delete_message({queue_url: queue_url, receipt_handle: message.receipt_handle})
     datafile = Datafile.find_by(message["web_id"])
     raise("no Datafile found for archive extractor response message: #{message}") unless datafile
 
