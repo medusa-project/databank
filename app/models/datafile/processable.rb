@@ -4,7 +4,6 @@ module Datafile::Processable
   extend ActiveSupport::Concern
 
   def initiate_processing_task
-
     return nil unless Rails.env.production? || Rails.env.demo?
 
     extractor_task = ExtractorTask.create(web_id: web_id)

@@ -66,7 +66,7 @@ class ExtractorTask < ApplicationRecord
     return nil if response.data.messages.count.zero?
 
     message = JSON.parse(response.data.messages[0].body)
-    SQS.delete_message({queue_url: queue_url, receipt_handle: message.receipt_handle})
+    SQS.delete_message({queue_url: QUEUE_URL, receipt_handle: message.receipt_handle})
     datafile = Datafile.find_by(message["web_id"])
     raise("no Datafile found for archive extractor response message: #{message}") unless datafile
 
