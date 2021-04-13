@@ -90,7 +90,7 @@ class ExtractorTask < ApplicationRecord
     datafile.handle_extractor_message(message_text: message_text)
   end
 
-  def record_reponse(message:)
+  def record_response(message:)
     self.response_at = Time.current
     self.response = message
     save!
