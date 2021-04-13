@@ -54,9 +54,6 @@ class DatafilesController < ApplicationController
     @datafile = Datafile.new(dataset_id: @dataset.id)
 
     if params.has_key?(:datafile) && params[:datafile].has_key?(:tus_url)
-
-      # Rails.logger.warn("inside tus_url detected")
-
       tus_url = params[:datafile][:tus_url]
       tus_url_arr = tus_url.split('/')
       tus_key = tus_url_arr[-1]
@@ -66,51 +63,15 @@ class DatafilesController < ApplicationController
       @datafile.storage_key = tus_key
       @datafile.binary_size = params[:datafile][:size]
       @datafile.mime_type = params[:datafile][:mime_type]
-
-      markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
-      file_parts = @datafile.binary_name.split(".")
-      initial_peek_type = Datafile.peek_type_from_mime(@datafile.mime_type, @datafile.binary_size)
-
-      if file_parts && markdown_extensions.include?(file_parts.last)
-        @datafile.peek_type = Databank::PeekType::MARKDOWN
-        @datafile.peek_text = Application.markdown.render(@datafile.all_text_peek)
-      elsif initial_peek_type
-        @datafile.peek_type = initial_peek_type
-        if initial_peek_type == Databank::PeekType::ALL_TEXT
-          @datafile.peek_text = @datafile.all_text_peek
-        elsif initial_peek_type == Databank::PeekType::PART_TEXT
-          @datafile.peek_text = @datafile.part_text_peek
-        elsif initial_peek_type == Databank::PeekType::LISTING
-          @datafile.peek_type = Databank::PeekType::NONE
-          begin
-            @datafile.initiate_processing_task
-          rescue Exception => ex
-            Rails.logger.warn("Something bad happened when trying to initiate processing task for datafile #{@datafile.web_id}")
-            Rails.logger.warn(ex.message)
-          end
-        end
-      else
-        @datafile.peek_type = Databank::PeekType::NONE
-      end
-
+      @datafile.peek_type = Databank::PeekType::NONE
+      @datafile.peek_text = nil
     end
 
-    begin
-      if @datafile.save
-        render json: to_fileupload, content_type: request.format, :layout => false
-      else
-        render json: @datafile.errors, status: :unprocessable_entity
-      end
-    rescue ActiveRecord::StatementInvalid, StandardError
-      @datafile.peek_type=Databank::PeekType::NONE
-      @datafile.peek_text= nil
-      if @datafile.save
-        render json: to_fileupload, content_type: request.format, :layout => false
-      else
-        render json: @datafile.errors, status: :unprocessable_entity
-      end
+    if @datafile.save
+      render json: to_fileupload, content_type: request.format, :layout => false
+    else
+      render json: @datafile.errors, status: :unprocessable_entity
     end
-
   end
 
   def view

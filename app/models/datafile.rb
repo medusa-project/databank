@@ -21,6 +21,7 @@ class Datafile < ApplicationRecord
   ALLOWED_DISPLAY_BYTES = ALLOWED_CHAR_NUM * 8
 
   before_create { self.web_id ||= generate_web_id }
+  after_create handle_peek
 
   before_destroy :destroy_job
   before_destroy :remove_binary
@@ -31,6 +32,32 @@ class Datafile < ApplicationRecord
 
   def as_json(_options={})
     super(only: %i[web_id binary_name binary_size medusa_id storage_root storage_key created_at updated_at])
+  end
+
+  def handle_peek
+    markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
+    file_parts = binary_name.split(".")
+    if file_parts && markdown_extensions.include?(file_parts.last)
+      self.peek_type = Databank::PeekType::MARKDOWN
+      self.peek_text = Application.markdown.render(all_text_peek)
+      save!
+      return true
+    end
+
+    initial_peek_type = Datafile.peek_type_from_mime(mime_type, binary_size)
+    return true unless initial_peek_type
+
+    case initial_peek_type
+    when Databank::PeekType::ALL_TEXT
+      peek_type = initial_peek_type
+      peek_text = all_text_peek
+    when Databank::PeekType::PART_TEXT
+      peek_type = initial_peek_type
+      peek_text = part_text_peek
+    when Databank::PeekType::LISTING
+      initiate_processing_task
+    end
+    save!
   end
 
   def file_download_tallies
@@ -379,42 +406,33 @@ class Datafile < ApplicationRecord
   end
 
   def part_text_peek
-    return nil unless current_root.exist?(storage_key)
+    return "file not found" unless current_root.exist?(storage_key)
 
-    begin
-      part_text_string = nil
-      if IDB_CONFIG[:aws][:s3_mode]
-        first_bytes = current_root.get_bytes(storage_key, 0, ALLOWED_DISPLAY_BYTES)
-        part_text_string = first_bytes.string
-      else
-        File.open(filepath) do |file|
-          part_text_string = file.read(ALLOWED_DISPLAY_BYTES)
-        end
+    part_text_string = nil
+    if IDB_CONFIG[:aws][:s3_mode]
+      first_bytes = current_root.get_bytes(storage_key, 0, ALLOWED_DISPLAY_BYTES)
+      part_text_string = first_bytes.string
+    else
+      File.open(filepath) do |file|
+        part_text_string = file.read(ALLOWED_DISPLAY_BYTES)
       end
-      part_text_string.force_encoding(Encoding::UTF_8) if part_text_string.encoding == Encoding::ASCII_8BIT
-      unless part_text_string.encoding == Encoding::UTF_8
-        part_text_string.encode("UTF-8", invalid: :replace, undef: :replace)
-      end
-      part_text_string
-    rescue Aws::S3::Errors::NotFound
-      nil
     end
+    Datafile.scrubbed_peek_string(peek_string: part_text_string)
   end
 
   def all_text_peek
-    return nil unless current_root.exist?(storage_key)
+    return "file not found" unless current_root.exist?(storage_key)
 
-    begin
-      all_text_string = current_root.as_string(storage_key)
-      all_text_string.gsub!(/[”“]/, '"')
-      all_text_string.gsub!(/[‘’]/, "'")
-      all_text_string.force_encoding(Encoding::UTF_8) if all_text_string.encoding == Encoding::ASCII_8BIT
-      return all_text_string if all_text_string.encoding == Encoding::UTF_8
+    all_text_string = current_root.as_string(storage_key)
+    Datafile.scrubbed_peek_string(peek_string: all_text_string)
 
-      all_text_string.encode("UTF-8", invalid: :replace, undef: :replace)
-    rescue Aws::S3::Errors::NotFound
-      nil
-    end
+  end
+
+  def self.scrubbed_peek_string(peek_string:)
+    peek_string.gsub!(/[”“]/, '"')
+    peek_string.gsub!(/[‘’]/, "'")
+    peek_string.encode("UTF-8", peek_string.encoding)
+    peek_string.scrub("*")
   end
 
   ##
