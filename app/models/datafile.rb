@@ -21,7 +21,7 @@ class Datafile < ApplicationRecord
   ALLOWED_DISPLAY_BYTES = ALLOWED_CHAR_NUM * 8
 
   before_create { self.web_id ||= generate_web_id }
-  after_create handle_peek
+  after_create :handle_peek
 
   before_destroy :destroy_job
   before_destroy :remove_binary
@@ -49,13 +49,15 @@ class Datafile < ApplicationRecord
 
     case initial_peek_type
     when Databank::PeekType::ALL_TEXT
-      peek_type = initial_peek_type
-      peek_text = all_text_peek
+      self.peek_type = initial_peek_type
+      self.peek_text = all_text_peek
     when Databank::PeekType::PART_TEXT
-      peek_type = initial_peek_type
-      peek_text = part_text_peek
+      self.peek_type = initial_peek_type
+      self.peek_text = part_text_peek
     when Databank::PeekType::LISTING
       initiate_processing_task
+    else
+      return true
     end
     save!
   end
