@@ -70,11 +70,14 @@ class ExtractorTask < ApplicationRecord
 
     message = JSON.parse(response.data.messages[0].body)
     SQS.delete_message({queue_url: QUEUE_URL, receipt_handle: response.data.messages[0].receipt_handle})
-    datafile = Datafile.find_by(web_id: message["web_id"])
-    raise("no Datafile found for archive extractor response message: #{message}") unless datafile
 
     key = message["object_key"]
     parsed_key = key.split("/").last
+
+    message_web_id = parsed_key.split(".").first
+    datafile = Datafile.find_by(web_id: message_web_id)
+    raise("no Datafile found for archive extractor response message: #{message}") unless datafile
+
     raise("extractor task message not found for #{datafile.web_id}") unless MESSAGE_ROOT.exist?(parsed_key)
 
     message_text = MESSAGE_ROOT.as_string(parsed_key)
