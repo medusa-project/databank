@@ -11,8 +11,9 @@ module Datafile::Processable
   end
 
   def handle_extractor_message(message_text:)
-    if message_text["status"] == "success"
-      return handle_extractor_success(peek_type: message_text["peek_type"], peek_text: message_text["peek_text"])
+    message_obj = JSON.parse(message_text)
+    if message_obj["status"] == "success"
+      return handle_extractor_success(peek_type: message_obj["peek_type"], peek_text: message_obj["peek_text"])
     end
 
     raise("invalid or error response from archive extractor:\n#{message_text}")
