@@ -34,6 +34,12 @@ class Datafile < ApplicationRecord
     super(only: %i[web_id binary_name binary_size medusa_id storage_root storage_key created_at updated_at])
   end
 
+  def extractor_task
+    return nil unless task_id
+
+    ExtractorTask.find_by(id: task_id)
+  end
+
   def handle_peek
     markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
     file_parts = binary_name.split(".")

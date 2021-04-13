@@ -61,12 +61,12 @@ class ExtractorTask < ApplicationRecord
   def self.handle_response
     response = SQS.receive_message(queue_url: QUEUE_URL, max_number_of_messages: 1)
     # TEMPORARY DEBUG LOGGING
-    Rails.logger.warn QUEUE_URL
-    Rails.logger.warn "message count: #{response.data.messages.count}"
+    # Rails.logger.warn QUEUE_URL
+    # Rails.logger.warn "message count: #{response.data.messages.count}"
     return nil if response.data.messages.count.zero?
 
-    Rails.logger.warn "message 0:"
-    Rails.logger.warn response.data.messages[0].to_yaml
+    # Rails.logger.warn "message 0:"
+    # Rails.logger.warn response.data.messages[0].to_yaml
 
     message = JSON.parse(response.data.messages[0].body)
     SQS.delete_message({queue_url: QUEUE_URL, receipt_handle: response.data.messages[0].receipt_handle})
