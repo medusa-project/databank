@@ -65,8 +65,11 @@ class ExtractorTask < ApplicationRecord
     Rails.logger.warn "message count: #{response.data.messages.count}"
     return nil if response.data.messages.count.zero?
 
+    Rails.logger.warn "message 0:"
+    Rails.logger.warn response.data.messages[0].to_yaml
+
     message = JSON.parse(response.data.messages[0].body)
-    SQS.delete_message({queue_url: QUEUE_URL, receipt_handle: message.receipt_handle})
+    SQS.delete_message({queue_url: QUEUE_URL, receipt_handle: response.data.messages[0].receipt_handle})
     datafile = Datafile.find_by(message["web_id"])
     raise("no Datafile found for archive extractor response message: #{message}") unless datafile
 
