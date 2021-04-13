@@ -85,12 +85,12 @@ class ExtractorTask < ApplicationRecord
     extractor_task = datafile.extractor_task
     raise("no extractor_task for datafile: #{message["web_id"]}\nMSG: #{message_text}") unless extractor_task
 
-    extractor_task.record_response(message: message)
+    extractor_task.record_response(message_text: message_text)
 
     datafile.handle_extractor_message(message_text: message_text)
   end
 
-  def record_response(message:)
+  def record_response(message_text:)
     self.response_at = Time.current
     self.response = message
     save!

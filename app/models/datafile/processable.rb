@@ -20,9 +20,12 @@ module Datafile::Processable
   end
 
   def handle_extractor_success(peek_type:, peek_text:)
+    # TEMPORARY DEBUG
+    Rails.logger.warn("inside handle_extractor_success--peek_type: #{peek_text}, peek_text: #{peek_text}")
     self.peek_text = peek_text
     self.peek_type = peek_type
-    save!
+    Rails.logger.warn(self.class)
+    self.save!
   end
 
   class_methods do
