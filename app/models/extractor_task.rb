@@ -92,7 +92,7 @@ class ExtractorTask < ApplicationRecord
 
   def record_response(message_text:)
     self.response_at = Time.current
-    self.response = message
+    self.response = message_text
     save!
   end
 end
