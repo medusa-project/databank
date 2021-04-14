@@ -9,7 +9,7 @@ class DatafilesController < ApplicationController
 
   before_action :set_datafile, only: [:show, :edit, :update, :destroy, :download, :record_download, :download_no_record, :download_url,
                                       :upload, :do_upload, :reset_upload, :resume_upload, :update_status, :bucket_and_key,
-                                      :view, :peek_text, :filepath, :iiif_filepath]
+                                      :view, :peek_text, :filepath, :iiif_filepath, :refresh_preview]
 
   before_action :set_dataset, only: [:index, :show, :edit, :new, :add, :create, :destroy, :upload, :do_upload]
 
@@ -42,8 +42,8 @@ class DatafilesController < ApplicationController
     @datafile = Datafile.create(dataset_id: @dataset.id)
     authorize! :update, @dataset
     respond_to do |format|
-      format.html {redirect_to "/datasets/#{@dataset.key}/datafiles/#{@datafile.web_id}/upload"}
-      format.json {render :edit, status: :created, location: "/datasets/#{@dataset.key}/datafiles/#{@datafile.webi_id}/upload"}
+      format.html { redirect_to "/datasets/#{@dataset.key}/datafiles/#{@datafile.web_id}/upload" }
+      format.json { render :edit, status: :created, location: "/datasets/#{@dataset.key}/datafiles/#{@datafile.webi_id}/upload" }
     end
   end
 
@@ -90,11 +90,11 @@ class DatafilesController < ApplicationController
     @datafile.assign_attributes(status: 'new', upload: nil) if params[:delete_upload] == 'yes'
     respond_to do |format|
       if @datafile.update(datafile_params)
-        format.html {redirect_to @datafile, notice: 'Datafile was successfully updated.'}
-        format.json {render :show, status: :ok, location: @datafile}
+        format.html { redirect_to @datafile, notice: 'Datafile was successfully updated.' }
+        format.json { render :show, status: :ok, location: @datafile }
       else
-        format.html {render :edit}
-        format.json {render json: @datafile.errors, status: :unprocessable_entity}
+        format.html { render :edit }
+        format.json { render json: @datafile.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -105,11 +105,11 @@ class DatafilesController < ApplicationController
     authorize! :update, @dataset
     respond_to do |format|
       if @datafile.destroy && @dataset.save
-        format.html {redirect_to edit_dataset_path(@dataset.key)}
-        format.json {render json: {"confirmation" => "deleted"}, status: :ok}
+        format.html { redirect_to edit_dataset_path(@dataset.key) }
+        format.json { render json: {"confirmation" => "deleted"}, status: :ok }
       else
-        format.html {redirect_to edit_dataset_path(@dataset.key)}
-        format.json {render json: @datafile.errors, status: :unprocessable_entity}
+        format.html { redirect_to edit_dataset_path(@dataset.key) }
+        format.json { render json: @datafile.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -145,7 +145,7 @@ class DatafilesController < ApplicationController
       end
 
       # Add the following chunk to the incomplete upload
-      File.open(@datafile.binary.path, "ab") {|f| f.write(upload_params[:binary].read)}
+      File.open(@datafile.binary.path, "ab") {|f| f.write(upload_params[:binary].read) }
 
       # Update the upload_file_size attribute
       @datafile.upload_file_size = @datafile.upload_file_size.nil? ? unpersisted_datafile.binary.file.size : @datafile.upload_file_size + unpersisted_datafile.binary.file.size
@@ -225,10 +225,22 @@ class DatafilesController < ApplicationController
       if @datafile.filepath
         render json: {filepath: @datafile.filepath}, status: :ok
       else
-        render json: {filepath: "",  error: "No binary object found."}, status: :not_found
+        render json: {filepath: "", error: "No binary object found."}, status: :not_found
       end
     end
 
+  end
+
+  def refresh_preview
+    respond_to do |format|
+      if @datafile.handle_peek
+        format.html { redirect_to @datafile, notice: 'Refresh successfully initiated. Archive listings take time.' }
+        format.json { render :show, status: :ok, location: @datafile }
+      else
+        format.html { redirect_to @datafile }
+        format.json { render json: {error: "unexpected error "}, status: :unprocessable_entity }
+      end
+    end
   end
 
   def peek_text

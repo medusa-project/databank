@@ -1,0 +1,62 @@
+# frozen_string_literal: true
+
+require "rake"
+require "bunny"
+require "json"
+require "mime/types"
+require "aws-sdk-sqs"
+require "aws-sdk-ecs"
+require "securerandom"
+
+include Databank
+
+namespace :extractor_tasks do
+  desc "get and handle message from Illinois Data Bank Archive Extractor"
+  task handle_incoming_message: :environment do
+    incoming_message = ExtractorTask.fetch_incoming_message
+    ExtractorTask.handle_incoming_message(incoming_message)
+  end
+
+  desc "test fargate-based archive extractor"
+  task test_extractor: :environment do
+    client = Aws::ECS::Client.new(
+      region: "us-east-2",
+      )
+    task = {
+      cluster:               "databank-archive-extractor-demo",
+      count:                 1,
+      launch_type:           "FARGATE",
+      network_configuration: {
+        awsvpc_configuration: {
+          subnets:          ["subnet-089d1cf4d18d40f2a", "subnet-075fc9512c9d8f03b"],
+          security_groups:  ["sg-073e123a16a0c1d8d"],
+          assign_public_ip: "ENABLED",
+        },
+      },
+      overrides:             {
+        container_overrides: [
+          {
+            name:    "databank-archive-extractor-demo-task",
+            command: ["ruby", "-r", "./lib/extractor.rb", "-e", "Extractor.extract 'medusa-demo-main', '156/182/DOI-10-5072-fk2idbdev-2148924_v1/dataset_files/datafile1.zip', 'datafile1.zip', 'placeholder'"],
+          },
+        ],
+      },
+      platform_version:      "1.4.0",
+      task_definition:       "databank-archive-extractor-demo-td:1",
+    }
+    resp = client.run_task(task)
+    puts resp
+  end
+
+  desc "list local queues"
+  task list_local_queues: :environment do
+    puts "Hello local queues"
+    sqs = Aws::SQS::Client.new(
+      endpoint: "http://localhost:9324/",
+      region:   "us-east-2"
+    )
+    queues = sqs.list_queues
+    puts queues.to_yaml
+    puts "Goodbye local queues"
+  end
+end

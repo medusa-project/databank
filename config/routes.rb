@@ -90,6 +90,7 @@ Rails.application.routes.draw do
         get 'bucket_and_key', to: 'datafiles#bucket_and_key', defaults: {format: 'json'}
         get 'viewtext', to: 'datafiles#peek_text', defaults: {format: 'json'}
         get 'iiif_filepath', to: 'datafiles#iiif_filepath', defaults: {format: 'json'}
+        get 'refresh_preview', to: 'datafiles#refresh_preview'
       end
     end
     resources :creators

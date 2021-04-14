@@ -57,16 +57,9 @@ class ExtractorTask < ApplicationRecord
     Datafile.find_by(web_id: web_id)
   end
 
-  # retrieves, parses, processes, and deletes a message
-  def self.handle_response
+  def self.fetch_incoming_message
     response = SQS.receive_message(queue_url: QUEUE_URL, max_number_of_messages: 1)
-    # TEMPORARY DEBUG LOGGING
-    # Rails.logger.warn QUEUE_URL
-    # Rails.logger.warn "message count: #{response.data.messages.count}"
     return nil if response.data.messages.count.zero?
-
-    # Rails.logger.warn "message 0:"
-    # Rails.logger.warn response.data.messages[0].to_yaml
 
     message = JSON.parse(response.data.messages[0].body)
     SQS.delete_message({queue_url: QUEUE_URL, receipt_handle: response.data.messages[0].receipt_handle})
@@ -75,24 +68,28 @@ class ExtractorTask < ApplicationRecord
     parsed_key = key.split("/").last
 
     message_web_id = parsed_key.split(".").first
-    datafile = Datafile.find_by(web_id: message_web_id)
-    raise("no Datafile found for archive extractor response message: #{message}") unless datafile
-
-    raise("extractor task message not found for #{datafile.web_id}") unless MESSAGE_ROOT.exist?(parsed_key)
+    raise("extractor task message not found for #{message}") unless MESSAGE_ROOT.exist?(parsed_key)
 
     message_text = MESSAGE_ROOT.as_string(parsed_key)
     MESSAGE_ROOT.delete_content(parsed_key)
-    extractor_task = datafile.extractor_task
-    raise("no extractor_task for datafile: #{message["web_id"]}\nMSG: #{message_text}") unless extractor_task
+    datafile.handle_extractor_message(message_text: message_text)
+    {message_web_id: message_web_id, message_text: message_text}
+  end
 
-    extractor_task.record_response(message_text: message_text)
+  def self.handle_incoming_message(message_web_id:, message_text:)
+    datafile = Datafile.find_by(web_id: message_web_id)
+    raise("no Datafile found for archive extractor response message: #{message}") unless datafile
 
+    ExtractorTask.record_response(datafile: datafile, message_text: message_text)
     datafile.handle_extractor_message(message_text: message_text)
   end
 
-  def record_response(message_text:)
-    self.response_at = Time.current
-    self.response = message_text
-    save!
+  def self.record_response(datafile:, message_text:)
+    extractor_task = datafile.extractor_task
+    raise("no extractor_task for datafile: #{datafile.web_id}\nMSG: #{message_text}") unless extractor_task
+
+    extractor_task.response_at = Time.current
+    extractor_task.response = message_text
+    extractor_task.save
   end
 end

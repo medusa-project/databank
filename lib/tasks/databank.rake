@@ -18,13 +18,20 @@ namespace :databank do
       if dataset
 
         if dataset.identifier && dataset.identifier != ""
-
           tally.doi = dataset.identifier
           tally.save
         else
           tally.destroy
         end
       end
+    end
+  end
+
+  desc 'fill in missing peek info for datafiles'
+  task :set_missing_peek_info => :environment do
+    datafiles = Datafile.where(peek_type: nil)
+    datafiles.each do |datafile|
+      self.handle_peek if !datafile.mime_type || datafile.mime_type == ""
     end
   end
 
