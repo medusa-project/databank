@@ -13,9 +13,9 @@
   .col-md-2
     = number_to_human_size(@datafile.bytestream_size)
   .col-md-2
-    %a.btn.btn-primary.btn-block.idb(href="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@datafile.web_id}/")
+    %a.btn.btn-success.btn-block.idb(href="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@datafile.web_id}/")
     %span(class="glyphicon glyphicon-refresh" )
-      Refresh Preview
+    Refresh Preview
   .col-md-2
     %a.btn.btn-primary.btn-block.idb(href="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@datafile.web_id}/download")
       %span(class="glyphicon glyphicon-download" )
@@ -25,5 +25,7 @@
       %span(class="glyphicon glyphicon-trash" )
       Delete
 
+-unless @datafile.extractor_task.nil?
+  =debug(@datafile.extractor_task)
 =debug(@datafile)
 

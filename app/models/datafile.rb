@@ -50,6 +50,7 @@ class Datafile < ApplicationRecord
     end
 
     initial_peek_type = Datafile.peek_type_from_mime(mime_type, binary_size)
+    Rails.logger.warn "initial_peek_type in handle_peek for #{self.web_id}, #{mime_type}, #{binary_size}"
     return true unless initial_peek_type
 
     case initial_peek_type
@@ -358,6 +359,7 @@ class Datafile < ApplicationRecord
   end
 
   def self.peek_type_from_mime(mime_type, num_bytes)
+    Rails.logger.warn "no mime_type for web_id: #{self.web_id}" unless mime_type
     return Databank::PeekType::NONE unless num_bytes && mime_type && !mime_type.empty?
 
     mime_parts = mime_type.split("/")
