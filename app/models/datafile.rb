@@ -11,7 +11,6 @@ require "rest-client"
 class Datafile < ApplicationRecord
   include ActiveModel::Serialization
   include Datafile::Viewable
-  include Datafile::Processable
   belongs_to :dataset
   has_many :nested_items, dependent: :destroy
 
@@ -441,6 +440,32 @@ class Datafile < ApplicationRecord
     peek_string.gsub!(/[‘’]/, "'")
     peek_string.encode("UTF-8", peek_string.encoding)
     peek_string.scrub("*")
+  end
+
+  def initiate_processing_task
+    return nil unless Rails.env.production? || Rails.env.demo?
+
+    extractor_task = ExtractorTask.create(web_id: web_id)
+    update_attribute(:task_id, extractor_task.id) if extractor_task
+  end
+
+  def handle_extractor_message(message_text:)
+    # TEMPORARY DEBUG LOGGING
+    Rails.logger.warn "inside handle_extractor_message for datafile #{self.web_id}"
+    message_obj = JSON.parse(message_text)
+    if message_obj["status"] == "success"
+      return handle_extractor_success(peek_type: message_obj["peek_type"], peek_text: message_obj["peek_text"])
+    end
+
+    raise("invalid or error response from archive extractor:\n#{message_text}")
+  end
+
+  def handle_extractor_success(peek_type:, peek_text:)
+    # TEMPORARY DEBUG LOGGING
+    Rails.logger.warn "inside handle_extractor_success #{peek_type}"
+    self.peek_text = peek_text
+    self.peek_type = peek_type
+    self.save!
   end
 
   ##
