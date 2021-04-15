@@ -15,11 +15,9 @@ namespace :extractor_tasks do
   task get_extractor_response: :environment do
     msg = ExtractorTask.fetch_incoming_message
 
-    # TEMPORARY DEBUG
-    puts msg
-    return unless msg
-
-    ExtractorTask.handle_incoming_message(message_web_id: msg[:message_web_id], message_text: msg[:message_text]) if msg
+    unless msg.nil?
+      ExtractorTask.handle_incoming_message(message_web_id: msg[:message_web_id], message_text: msg[:message_text])
+    end
   end
 
   desc "test fargate-based archive extractor"
