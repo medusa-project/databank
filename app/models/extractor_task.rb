@@ -72,11 +72,14 @@ class ExtractorTask < ApplicationRecord
 
     message_text = MESSAGE_ROOT.as_string(parsed_key)
     MESSAGE_ROOT.delete_content(parsed_key)
-    datafile.handle_extractor_message(message_text: message_text)
+    # TEMPORARY DEBUG LOGGING
+    Rails.logger.warn "fetch_incoming_message: {message_web_id: #{message_web_id}, message_text: #{message_text}}"
     {message_web_id: message_web_id, message_text: message_text}
   end
 
   def self.handle_incoming_message(message_web_id:, message_text:)
+    # TEMPORARY DEBUG LOGGING
+    Rails.logger.warn "inside handle_incoming_message {message_web_id: #{message_web_id}, message_text: #{message_text}}"
     datafile = Datafile.find_by(web_id: message_web_id)
     raise("no Datafile found for archive extractor response message: #{message}") unless datafile
 
@@ -86,10 +89,10 @@ class ExtractorTask < ApplicationRecord
 
   def self.record_response(datafile:, message_text:)
     extractor_task = datafile.extractor_task
-    raise("no extractor_task for datafile: #{datafile.web_id}\nMSG: #{message_text}") unless extractor_task
+    raise("no extractor_task for datafile: #{datafile.web_id}\nMSG: #{message_text}") if extractor_task.nil?
 
     extractor_task.response_at = Time.current
     extractor_task.response = message_text
-    extractor_task.save
+    extractor_task.save!
   end
 end
