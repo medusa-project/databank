@@ -42,7 +42,7 @@ class Datafile < ApplicationRecord
 
   def handle_peek
     markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
-    file_parts = binary_name.split(".")
+    file_parts = self.binary_name.split(".")
     if file_parts && markdown_extensions.include?(file_parts.last)
       self.peek_type = Databank::PeekType::MARKDOWN
       self.peek_text = Application.markdown.render(all_text_peek)
@@ -61,7 +61,7 @@ class Datafile < ApplicationRecord
       self.peek_type = initial_peek_type
       self.peek_text = part_text_peek
     when Databank::PeekType::LISTING
-      initiate_processing_task
+      self.initiate_processing_task
     else
       return true
     end
