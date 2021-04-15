@@ -12,7 +12,7 @@ include Databank
 
 namespace :extractor_tasks do
   desc "get and handle message from Illinois Data Bank Archive Extractor"
-  task handle_incoming_message: :environment do
+  task get_extractor_message: :environment do
     incoming_message = ExtractorTask.fetch_incoming_message
     ExtractorTask.handle_incoming_message(incoming_message)
   end
