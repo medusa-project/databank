@@ -57,13 +57,13 @@ namespace :sunspot do
 
 end
 
-namespace :experts do
-  desc "write doc and demo doc files"
-  task :make_experts do
-    execute_rake 'experts:generate_doc'
-    execute_rake 'experts:fetch_demo_doc'
-  end
-end
+# namespace :experts do
+#   desc "write doc and demo doc files"
+#   task :make_experts do
+#     execute_rake 'experts:generate_doc'
+#     execute_rake 'experts:fetch_demo_doc'
+#   end
+# end
 
 namespace :databank do
 

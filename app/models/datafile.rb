@@ -50,7 +50,6 @@ class Datafile < ApplicationRecord
     end
 
     initial_peek_type = Datafile.peek_type_from_mime(mime_type, binary_size)
-    Rails.logger.warn "initial_peek_type in handle_peek for #{self.web_id}, #{mime_type}, #{binary_size}"
     return true unless initial_peek_type
 
     case initial_peek_type
@@ -460,11 +459,8 @@ class Datafile < ApplicationRecord
 
   def handle_extractor_success(message_obj: message_obj)
     datafile.update(peek_type = message_obj[:peek_type], peek_text = message_obj[:peek_text])
-    nested_items.destroy_all
-    # TEMPORARY DEBUG LOGGING
-    Rails.logger.warn "about to handle nested items"
-    Rails.logger.warn message[:nested_items].count
-    message[:nested_items].each do |raw_item|
+    self.nested_items.destroy_all
+    message_obj[:nested_items].each do |raw_item|
       Rails.logger.warn "inside nested_items each"
       item = JSON.parse(raw_item)
       NestedItem.create(datafile_id:  datafile.id,
