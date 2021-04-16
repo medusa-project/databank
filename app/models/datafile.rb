@@ -459,7 +459,7 @@ class Datafile < ApplicationRecord
 
   def handle_extractor_success(message_obj: message_obj)
     Rails.logger.warn "inside handle_extractor_success"
-    datafile.update(peek_type = message_obj[:peek_type], peek_text = message_obj[:peek_text])
+    self.update(peek_type: message_obj[:peek_type], peek_text: message_obj[:peek_text])
     self.nested_items.destroy_all
     # TEMPORARY DEBUG LOGGING
     Rails.logger.warn "keys: #{message_obj.keys}"
