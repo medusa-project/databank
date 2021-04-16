@@ -462,9 +462,10 @@ class Datafile < ApplicationRecord
     self.update(peek_type: message_obj["peek_type"], peek_text: message_obj["peek_text"])
     self.nested_items.destroy_all
     message_obj["nested_items"].each do |raw_item|
-      Rails.logger.warn "inside nested_items each"
       item = JSON.parse(raw_item)
-      NestedItem.create(datafile_id:  self.id,
+      # TEMPORARY DEBUG
+      Rails.logger.warn "item: #{item}"
+      NestedItem.create!(datafile_id:  self.id,
                         item_name:    item["item_name"],
                         item_path:    item["item_path"],
                         media_type:   item["media_type"],
