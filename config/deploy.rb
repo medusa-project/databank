@@ -46,8 +46,6 @@ set :assets_roles, [:web, :app]
 # set this to the number of versions to keep
 set :keep_assets, 2
 
-
-
 namespace :sunspot do
 
   desc "Reindex sunspot indexes"
@@ -56,14 +54,6 @@ namespace :sunspot do
   end
 
 end
-
-# namespace :experts do
-#   desc "write doc and demo doc files"
-#   task :make_experts do
-#     execute_rake 'experts:generate_doc'
-#     execute_rake 'experts:fetch_demo_doc'
-#   end
-# end
 
 namespace :databank do
 
