@@ -452,22 +452,24 @@ class Datafile < ApplicationRecord
   end
 
   def handle_extractor_message(message_text:)
-    # TEMPORARY DEBUG LOGGING
-    Rails.logger.warn "inside handle_extractor_message for datafile #{self.web_id}"
     message_obj = JSON.parse(message_text)
-    if message_obj["status"] == "success"
-      return handle_extractor_success(peek_type: message_obj["peek_type"], peek_text: message_obj["peek_text"])
-    end
+    return handle_extractor_success(message_obj: message_obj) if message_obj["status"] == "success"
 
     raise("invalid or error response from archive extractor:\n#{message_text}")
   end
 
-  def handle_extractor_success(peek_type:, peek_text:)
-    # TEMPORARY DEBUG LOGGING
-    Rails.logger.warn "inside handle_extractor_success #{peek_type}"
-    self.peek_text = peek_text
-    self.peek_type = peek_type
-    self.save!
+  def handle_extractor_success(message_obj: message_obj)
+    datafile.update(peek_type = message_obj[:peek_type], peek_text = message_obj[:peek_text])
+    nested_items.destroy_all
+    message[:nested_items].each do |raw_item|
+      item = JSON.parse(raw_item)
+      NestedItem.create(datafile_id:  datafile.id,
+                        item_name:    item["item_name"],
+                        item_path:    item["item_path"],
+                        media_type:   item["media_type"],
+                        size:         item["item_size"],
+                        is_directory: item["is_directory"] == "true")
+    end
   end
 
   ##

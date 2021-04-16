@@ -3,6 +3,10 @@ class NestedItemsController < ApplicationController
 
   def index
     @nested_items = NestedItem.all
+    if params.has_key?(:id)
+      datafile = Datafile.find_by(web_id: params[:id])
+      @nested_items = NestedItem.where(datafile_id: datafile.id) unless datafile.nil?
+    end
   end
 
   def show

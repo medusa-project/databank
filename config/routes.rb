@@ -188,6 +188,9 @@ Rails.application.routes.draw do
   # iiif_filepath
   get '/datafiles/:id/iiif_filepath', to: "datafiles#iiif_filepath", defaults: {format: 'json'}
 
+  # datafile nexted_items
+  get '/datafiles/:id/nested_items', to: "nested_items#index"
+
   # create from box file select widget
   post "/datafiles/create_from_url", to: 'datafiles#create_from_url'
 
