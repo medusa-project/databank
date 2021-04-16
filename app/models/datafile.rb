@@ -464,7 +464,7 @@ class Datafile < ApplicationRecord
     message_obj["nested_items"].each do |raw_item|
       Rails.logger.warn "inside nested_items each"
       item = JSON.parse(raw_item)
-      NestedItem.create(datafile_id:  datafile.id,
+      NestedItem.create(datafile_id:  self.id,
                         item_name:    item["item_name"],
                         item_path:    item["item_path"],
                         media_type:   item["media_type"],
