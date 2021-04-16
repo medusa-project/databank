@@ -77,16 +77,17 @@ namespace :deploy do
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
-      # Here we can do anything such as:
-      # within release_path do
-      #   execute :rake, 'cache:clear'
-      # end
+      within release_path do
+        execute :rake, "databank:rails_cache:clear"
+        execute :rake, "sunspot:reindex"
+      end
     end
   end
 
   task :restart do
     on roles(:app) do
-      execute "RAILS_ENV=production ~/shared/bin/databank restart"
+      execute "~/svc_hooks/shutdown"
+      execute "~/svc_hooks/boot"
     end
   end
 
