@@ -461,7 +461,11 @@ class Datafile < ApplicationRecord
   def handle_extractor_success(message_obj: message_obj)
     datafile.update(peek_type = message_obj[:peek_type], peek_text = message_obj[:peek_text])
     nested_items.destroy_all
+    # TEMPORARY DEBUG LOGGING
+    Rails.logger.warn "about to handle nested items"
+    Rails.logger.warn message[:nested_items].count
     message[:nested_items].each do |raw_item|
+      Rails.logger.warn "inside nested_items each"
       item = JSON.parse(raw_item)
       NestedItem.create(datafile_id:  datafile.id,
                         item_name:    item["item_name"],
