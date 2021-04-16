@@ -461,6 +461,10 @@ class Datafile < ApplicationRecord
     Rails.logger.warn "inside handle_extractor_success"
     self.update(peek_type: message_obj["peek_type"], peek_text: message_obj["peek_text"])
     self.nested_items.destroy_all
+
+    # TEMPORARY DEBUG
+    Rails.logger.warn message_obj.keys
+    Rails.logger.warn message_obj["nested_itmes"]
     message_obj["nested_items"].each do |raw_item|
       item = JSON.parse(raw_item)
       # TEMPORARY DEBUG
