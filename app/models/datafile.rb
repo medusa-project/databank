@@ -458,22 +458,16 @@ class Datafile < ApplicationRecord
   end
 
   def handle_extractor_success(message_obj: message_obj)
-    # TEMPORARY DEBUG
-    Rails.logger.warn "inside handle_extractor_success"
     self.update(peek_type: message_obj["peek_type"], peek_text: message_obj["peek_text"])
     self.nested_items.destroy_all
-    Rails.logger.warn message_obj.keys
-    Rails.logger.warn "nested item class:"
     message_obj["nested_items"].class
     message_obj["nested_items"].each do |item|
-      Rails.logger.warn item.class
       NestedItem.create!(datafile_id:  self.id,
                         item_name:    item["item_name"],
                         item_path:    item["item_path"],
                         media_type:   item["media_type"],
                         size:         item["item_size"],
                         is_directory: item["is_directory"] == "true")
-      Rails.logger.warn "after nested item should have been created"
     end
   end
 
