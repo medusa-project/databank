@@ -463,15 +463,11 @@ class Datafile < ApplicationRecord
     self.update(peek_type: message_obj["peek_type"], peek_text: message_obj["peek_text"])
     self.nested_items.destroy_all
     Rails.logger.warn message_obj.keys
-    Rails.logger.warn message_obj["nested_items"].class
-    Rails.logger.warn message_obj["nested_items"].to_yaml
     nested_items_obj = JSON.parse(message_obj["nested_items"])
     Rails.logger.warn nested_items_obj.class
     Rails.logger.warn nested_items
-    nested_items_obj.each do |raw_item|
-      item = JSON.parse(raw_item)
-      Rails.logger.warn "item: #{item}"
-      Rails.logger.warn item.keys
+    nested_items_obj.each do |item|
+      Rails.logger.warn item.class
       NestedItem.create!(datafile_id:  self.id,
                         item_name:    item["item_name"],
                         item_path:    item["item_path"],
