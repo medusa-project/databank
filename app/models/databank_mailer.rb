@@ -17,7 +17,8 @@ class DatabankMailer < ActionMailer::Base
       @dataset.creators.each do |creator|
         to_array << creator.email
       end
-      mail(to: to_array, cc: "databank@library.illinois.edu", subject: subject)
+      to_array << "databank@library.illinois.edu"
+      mail(to: to_array, subject: subject)
     else
       Rails.logger.warn "Confirmation email not sent: #{dataset_key}."
     end
