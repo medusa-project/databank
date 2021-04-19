@@ -41,6 +41,9 @@ class Datafile < ApplicationRecord
 
   def handle_peek
     markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
+
+    raise("no binary_name for web_id: #{self.web_id}") unless self.binary_name
+
     file_parts = self.binary_name.split(".")
     if file_parts && markdown_extensions.include?(file_parts.last)
       self.peek_type = Databank::PeekType::MARKDOWN
