@@ -140,8 +140,6 @@ class CreateDatafileFromRemoteJob < ProgressJob::Base
 
               parts.push(parts_hash)
 
-              Rails.logger.warn("Another part bites the dust: #{part_number}")
-
               partio.close if partio&.closed?
 
               aws_complete_upload(client, upload_bucket, upload_key, parts, upload_id)

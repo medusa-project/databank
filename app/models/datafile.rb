@@ -371,6 +371,7 @@ class Datafile < ApplicationRecord
 
     text_subtypes = %w[csv xml x-sh x-javascript json r rb]
     supported_image_subtypes = %w[jp2 jpeg dicom gif png bmp]
+    zip_archive_subtypes = %w[x-zip-compressed zip]
     nonzip_archive_subtypes = %w[x-7z-compressed x-tar]
     pdf_subtypes = %w[pdf x-pdf]
     microsoft_subtypes = ["msword",
@@ -407,7 +408,7 @@ class Datafile < ApplicationRecord
       Databank::PeekType::MICROSOFT
     elsif pdf_subtypes.include?(subtype)
       Databank::PeekType::PDF
-    elsif subtype == "zip"
+    elsif zip_archive_subtypes.include?(subtype)
       Databank::PeekType::LISTING
     elsif nonzip_archive_subtypes.include?(subtype)
       Databank::PeekType::LISTING
