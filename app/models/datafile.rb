@@ -41,8 +41,7 @@ class Datafile < ApplicationRecord
 
   def handle_peek
     markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
-
-    raise("no binary_name for web_id: #{self.web_id}") unless self.binary_name
+    raise StandardError.new("no binary_name for datafile id: #{self.id}") unless self.binary_name
 
     file_parts = self.binary_name.split(".")
     if file_parts && markdown_extensions.include?(file_parts.last)
@@ -68,6 +67,9 @@ class Datafile < ApplicationRecord
       return true
     end
     save!
+  rescue StandardError => error
+    Rails.logger.warn "problem in handling peek for datafile id: #{self.id}"
+    Rails.logger.warn error.message
   end
 
   def file_download_tallies
