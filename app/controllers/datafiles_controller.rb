@@ -39,7 +39,9 @@ class DatafilesController < ApplicationController
   end
 
   def add
-    @datafile = Datafile.create(dataset_id: @dataset.id)
+    @datafile = Datafile.new(dataset_id: @dataset.id, binary_name: "placeholder")
+    @datafile.web_id = @datafile.generate_web_id
+    @datafile.save
     authorize! :update, @dataset
     respond_to do |format|
       format.html { redirect_to "/datasets/#{@dataset.key}/datafiles/#{@datafile.web_id}/upload" }
@@ -52,6 +54,7 @@ class DatafilesController < ApplicationController
   def create
     authorize! :update, @dataset
     @datafile = Datafile.new(dataset_id: @dataset.id)
+    @datafile.web_id ||= @datafile.generate_web_id
 
     if params.has_key?(:datafile) && params[:datafile].has_key?(:tus_url)
       tus_url = params[:datafile][:tus_url]
@@ -119,6 +122,7 @@ class DatafilesController < ApplicationController
 
   def do_upload
     unpersisted_datafile = Datafile.new(upload_params)
+    unpersisted_datafile.web_id ||= @datafile.generate_web_id
     unpersisted_datafile.dataset_id = @dataset.id
 
     # If no file has been uploaded or the uploaded file has a different filename,
@@ -325,6 +329,7 @@ class DatafilesController < ApplicationController
   def create_from_url_unknown_size
 
     @datafile = Datafile.new
+
     @dataset = Dataset.find_by_key(params[:dataset_key])
     if @dataset
       @datafile.dataset_id = @dataset.id

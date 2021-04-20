@@ -945,19 +945,22 @@ class DatasetsController < ApplicationController
         @dataset.complete_datafiles.each do |datafile|
           if datafile.bytestream_name && ((datafile.bytestream_name).downcase == "license.txt")
             has_license_file = true
-            temporary_datafile = Datafile.create(dataset_id: proposed_dataset.id)
+            temporary_datafile = Datafile.new(dataset_id: proposed_dataset.id)
+            temporary_datafile.web_id =
             temporary_datafile.storage_root = 'draft'
             temporary_datafile.storage_key = 'license.txt'
             temporary_datafile.binary_name = 'license.txt'
+            temporary_datafile.save
             proposed_dataset.datafiles.push(temporary_datafile)
           end
         end
 
         unless has_license_file
-          temporary_datafile = Datafile.create(dataset_id: proposed_dataset.id)
+          temporary_datafile = Datafile.new(dataset_id: proposed_dataset.id)
           temporary_datafile.storage_root = 'draft'
           temporary_datafile.storage_key = 'placeholder.txt'
           temporary_datafile.binary_name = 'placeholder.txt'
+          temporary_datafile.save
           proposed_dataset.datafiles.push(temporary_datafile)
         end
 
