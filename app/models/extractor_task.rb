@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ExtractorTask < ApplicationRecord
-  after_create :initiate_task
 
   QUEUE_URL = IDB_CONFIG[:queues][:extractor_to_databank_url]
   SQS = QueueManager.instance.sqs_client
@@ -38,6 +37,11 @@ class ExtractorTask < ApplicationRecord
     resp = client.run_task(task)
     failure_count = resp[:failures].count
     raise("error in Extractor Task for #{web_id}: #{resp}") unless failure_count.zero?
+  end
+
+  def self.cluster_info
+    client = ContainerManager.instance.ecs_client
+
   end
 
   def command_string
