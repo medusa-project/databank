@@ -64,7 +64,7 @@ class User::Shibboleth < User::User
         Databank::UserRole::NO_DEPOSIT
       end
     else
-      raise("missing iTrustAffiliation")
+      raise StandardError.new("missing iTrustAffiliation")
     end
   rescue StandardError => e
     Rails.logger.warn("error determining user role #{e.message} for #{auth.to_yaml}")

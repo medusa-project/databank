@@ -34,7 +34,7 @@ namespace :recovery do
 
           identifier = serialization_json['idb_dataset']['dataset']['identifier']
         else
-          raise("no identifier found")
+          raise StandardError.new("no identifier found")
         end
 
         Dataset.restore_db_from_serialization(serialization, event.id)

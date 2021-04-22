@@ -3,6 +3,8 @@
 Rails.application.routes.draw do
 
 
+  resources :extractor_errors
+  resources :extractor_responses
   resources :extractor_tasks
   resources :review_requests do
     collection do

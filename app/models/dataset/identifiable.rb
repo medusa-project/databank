@@ -32,9 +32,9 @@ module Dataset::Identifiable
     info = doi_infohash
     return Databank::DoiState::UNREGISTERED if info == {}
 
-    raise("missing data element doi_state #{key}") unless info.has_key?(:data)
-    raise("missing attribute element doi_state #{key}, info: #{info}") unless info[:data].has_key?(:attributes)
-    raise("missing state element doi_state #{key}, info: #{info}") unless info[:data][:attributes].has_key?(:state)
+    raise StandardError.new("missing data element doi_state #{key}") unless info.has_key?(:data)
+    raise StandardError.new("missing attribute element doi_state #{key}, info: #{info}") unless info[:data].has_key?(:attributes)
+    raise StandardError.new("missing state element doi_state #{key}, info: #{info}") unless info[:data][:attributes].has_key?(:state)
 
     info[:data][:attributes][:state]
   end
@@ -208,7 +208,7 @@ module Dataset::Identifiable
   end
 
   def datacite_json_body(event)
-    raise("identifier required for DataCite JSON body generation, key: #{key}") unless identifier_present?
+    raise StandardError.new("identifier required for DataCite JSON body generation, key: #{key}") unless identifier_present?
 
     json_body = %({"data": {"id": "#{identifier}", "type": "dois", "attributes": {)
     json_body += %("event": "#{event}", ) if event.present?
@@ -358,7 +358,7 @@ module Dataset::Identifiable
     raise "cannot generate DataCite metadata w/o identifier, dataset: #{key}" unless identifier_present?
 
     contact = Creator.find_by(dataset_id: id, is_contact: true)
-    raise("cannot generate DataCite metadata xml without contact, dataset: #{key}") unless contact
+    raise StandardError.new("cannot generate DataCite metadata xml without contact, dataset: #{key}") unless contact
 
     doc = Nokogiri::XML::Document.parse(datacite_xml_root_string)
     resource_node = doc.first_element_child
@@ -598,23 +598,23 @@ module Dataset::Identifiable
   def doi_infohash
     response = doi_info_from_datacite
 
-    raise("no response to doi info call") unless response
+    raise StandardError.new("no response to doi info call") unless response
 
     case response
 
     when Net::HTTPUnauthorized
-      raise("credentials could not be verified")
+      raise StandardError.new("credentials could not be verified")
     when Net::HTTPUnprocessableEntity
-      raise("bad get_doi request for dataset: #{key}")
+      raise StandardError.new("bad get_doi request for dataset: #{key}")
     when Net::HTTPNotFound
       {}
     when Net::HTTPSuccess, Net::HTTPRedirection
       response_body = response.body
-      raise("response not valid JSON: #{response_body}") unless json?(response_body)
+      raise StandardError.new("response not valid JSON: #{response_body}") unless json?(response_body)
 
       JSON.parse(response_body, symbolize_names: true)
     else
-      raise("unexpected response from DataCite for #{doi}: #{response.body}")
+      raise StandardError.new("unexpected response from DataCite for #{doi}: #{response.body}")
     end
   end
 
@@ -683,7 +683,7 @@ module Dataset::Identifiable
   end
 
   def doi_info_from_datacite
-    raise("cannot get information from DataCite without identifier for #{key}") unless identifier_present?
+    raise StandardError.new("cannot get information from DataCite without identifier for #{key}") unless identifier_present?
 
     url = URI("#{URI_BASE}/#{identifier.downcase}")
     http = Net::HTTP.new(url.host, url.port)

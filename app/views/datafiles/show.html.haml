@@ -28,6 +28,7 @@
       Delete
 
 -unless @datafile.extractor_task.nil?
-  =debug(@datafile.extractor_task)
+  %p Archive Extractor Task:
+  =render "extractor_tasks/brief_record", extractor_task:@datafile.extractor_task
 =debug(@datafile)
 

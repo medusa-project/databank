@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_22_175952) do
+ActiveRecord::Schema.define(version: 2021_04_22_212530) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -182,12 +182,31 @@ ActiveRecord::Schema.define(version: 2021_04_22_175952) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
+  create_table "extractor_errors", force: :cascade do |t|
+    t.integer "extractor_response_id"
+    t.string "error_type"
+    t.string "report"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "extractor_responses", force: :cascade do |t|
+    t.integer "extractor_task_id"
+    t.string "web_id"
+    t.string "status"
+    t.string "peek_type"
+    t.string "peek_text"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "extractor_tasks", force: :cascade do |t|
     t.string "web_id"
     t.datetime "response_at"
     t.string "raw_response"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "sent_at"
   end
 
   create_table "featured_researchers", id: :serial, force: :cascade do |t|

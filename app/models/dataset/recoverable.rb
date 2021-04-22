@@ -21,9 +21,9 @@ module Dataset::Recoverable
     def get_serialzation_json_from_medusa(identifier)
       # assumes identifier in the format stored in a dataset object
       # rough test: starts with 10.
-      raise("missing identifier") unless identifier
+      raise StandardError.new("missing identifier") unless identifier
 
-      raise("invalid identifier") unless identifier.start_with?("10.")
+      raise StandardError.new("invalid identifier") unless identifier.start_with?("10.")
 
       dirname = "#{IDB_CONFIG['medusa']['medusa_path_root']}/DOI-#{identifier.parameterize}"
 
@@ -58,9 +58,9 @@ module Dataset::Recoverable
     def get_changelog_from_medusa(identifier)
       # assumes identifier in the format stored in a dataset object
       # rough test: starts with 10.
-      raise("missing identifier") unless identifier
+      raise StandardError.new("missing identifier") unless identifier
 
-      raise("invalid identifier") unless identifier.start_with?("10.")
+      raise StandardError.new("invalid identifier") unless identifier.start_with?("10.")
 
       dirname = "#{IDB_CONFIG['medusa']['medusa_path_root']}/DOI-#{identifier.parameterize}"
 

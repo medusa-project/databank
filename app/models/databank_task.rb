@@ -19,9 +19,9 @@ class DatabankTask
                       storage_key:  datafile.storage_key,
                       binary_name:  datafile.binary_name}}
     response = RestClient.post endpoint, payload
-    raise("problem creating task: #{response}") unless response.code == 201
+    raise StandardError.new("problem creating task: #{response}") unless response.code == 201
 
-    raise("task keys in response did not include id: #{response_hash.keys}") unless response_has.has_key("id")
+    raise StandardError.new("task keys in response did not include id: #{response_hash.keys}") unless response_has.has_key("id")
 
     response_hash["id"]
   end
@@ -44,7 +44,7 @@ class DatabankTask
                            payload: payload
                          })
 
-    raise("unexpected response to attempt to invoke tasks lambda: #{response.to_yaml}") unless response.status_code
+    raise StandardError.new("unexpected response to attempt to invoke tasks lambda: #{response.to_yaml}") unless response.status_code
 
     return JSON.generate({response: "SUCCESS"}) if response.status_code == 202
 
@@ -167,7 +167,7 @@ class DatabankTask
   def self.all_remote_tasks
     endpoint = "#{TASKS_URL}/tasks"
     response = RestClient.get endpoint
-    raise("problem getting all remote tasks: #{response}") unless response.code == 200
+    raise StandardError.new("problem getting all remote tasks: #{response}") unless response.code == 200
 
     JSON.parse(response)
   end
@@ -182,11 +182,11 @@ class DatabankTask
     endpoint = "#{TASKS_URL}/tasks/#{task_id}"
     begin
       response = RestClient.get endpoint
-      raise("problem getting remote task for task: #{task_id}") unless response.code == 200
+      raise StandardError.new("problem getting remote task for task: #{task_id}") unless response.code == 200
 
       JSON.parse(response)
     rescue RestClient::NotFound
-      raise("task not found for databank task: #{task_id}")
+      raise StandardError.new("task not found for databank task: #{task_id}")
     end
   end
 
@@ -201,7 +201,7 @@ class DatabankTask
   def self.get_remote_items(task_id)
     endpoint = "#{TASKS_URL}/tasks/#{task_id}/nested_items"
     response = RestClient.get endpoint
-    raise("Problem getting tasks for task #{task_id}.") unless response.code == 200
+    raise StandardError.new("Problem getting tasks for task #{task_id}.") unless response.code == 200
 
     JSON.parse(response)
   end
@@ -209,7 +209,7 @@ class DatabankTask
   def self.problems(task_id)
     endpoint = "#{TASKS_URL}/tasks/#{task_id}/problems"
     response = RestClient.get endpoint
-    raise("problem getting problems for task: #{task_id}") unless response.code == 200
+    raise StandardError.new("problem getting problems for task: #{task_id}") unless response.code == 200
 
     JSON.parse(response)
   end
@@ -217,7 +217,7 @@ class DatabankTask
   def self.problem_comments(task_id, problem_id)
     endpoint = "#{TASKS_URL}/tasks/#{task_id}/problems/#{problem_id}/comments"
     response = RestClient.get endpoint
-    raise("problem getting problem comments for task #{task_id} problem #{problem_id}") unless response.code == 200
+    raise StandardError.new("problem getting problem comments for task #{task_id} problem #{problem_id}") unless response.code == 200
 
     JSON.parse(response)
   end
@@ -225,16 +225,16 @@ class DatabankTask
   def self.nested_items(task_id)
     endpoint = "#{TASKS_URL}/tasks/#{task_id}/nested_items"
     response = RestClient.get endpoint
-    raise("problem getting nested items for task #{task_id}") unless response.code == 200
+    raise StandardError.new("problem getting nested items for task #{task_id}") unless response.code == 200
 
     JSON.parse(response)
   end
 
   def self.fetch_incoming_messages
-    raise("not yet implemented")
+    raise StandardError.new("not yet implemented")
   end
 
   def self.handle_incoming_messages(incoming_messages:)
-    raise("not yet implemented")
+    raise StandardError.new("not yet implemented")
   end
 end

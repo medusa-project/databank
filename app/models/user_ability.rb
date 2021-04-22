@@ -31,7 +31,7 @@ class UserAbility < ApplicationRecord
       form_reviewers = scrubbed_netids(input_array = form_reviewers)
       form_editors = scrubbed_netids(input_array = form_editors)
       dataset = Dataset.find_by(key: dataset_key)
-      raise("dataset not found") unless dataset
+      raise StandardError.new("dataset not found") unless dataset
 
       current_reviewers = dataset.internal_reviewer_netids || []
       current_editors = dataset.internal_editor_netids || []

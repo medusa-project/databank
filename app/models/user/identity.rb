@@ -4,7 +4,7 @@
 
 class User::Identity < User::User
   def self.from_omniauth(auth)
-    raise("missing or invalid auth") unless auth && auth[:uid] && auth["info"]["email"]
+    raise StandardError.new("missing or invalid auth") unless auth && auth[:uid] && auth["info"]["email"]
 
     if auth && auth[:uid] && auth["info"]["email"]
       email = auth["info"]["email"].strip

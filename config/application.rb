@@ -86,6 +86,7 @@ module Databank
     PDF = 'pdf'
     LISTING = 'listing'
     MARKDOWN = 'markdown'
+    BLOCKED = 'blocked'
     NONE = 'none'
   end
 
@@ -120,6 +121,11 @@ module Databank
     DRAFT = 'draft'
     REGISTERED = 'registered'
     FINDABLE = 'findable'
+  end
+
+  class ExtractionStatus
+    ERROR = 'error'
+    SUCCESS = 'success'
   end
 
   class Application < Rails::Application

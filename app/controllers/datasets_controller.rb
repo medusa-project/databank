@@ -1286,7 +1286,7 @@ class DatasetsController < ApplicationController
       elsif StorageManager.instance.medusa_root.exist?(@dataset.medusa_agreement_key)
         @agreement_text = StorageManager.instance.medusa_root.as_string(@dataset.medusa_agreement_key)
       else
-        raise("Deposit agreement not found for dataset #{@dataset.key}.")
+        raise StandardError.new("Deposit agreement not found for dataset #{@dataset.key}.")
       end
     else
       @agreement_text = File.read(Rails.root.join("public", "deposit_agreement.txt"))

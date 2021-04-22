@@ -1,0 +1,29 @@
+%h1 Listing extractor_responses
+
+%table
+  %thead
+    %tr
+      %th Extractor task
+      %th Web
+      %th Status
+      %th Peek type
+      %th Peek text
+      %th
+      %th
+      %th
+
+  %tbody
+    - @extractor_responses.each do |extractor_response|
+      %tr
+        %td= extractor_response.extractor_task_id
+        %td= extractor_response.web_id
+        %td= extractor_response.status
+        %td= extractor_response.peek_type
+        %td= extractor_response.peek_text
+        %td= link_to 'Show', extractor_response
+        %td= link_to 'Edit', edit_extractor_response_path(extractor_response)
+        %td= link_to 'Destroy', extractor_response, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Extractor response', new_extractor_response_path

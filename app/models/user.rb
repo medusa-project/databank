@@ -42,7 +42,7 @@ module User
         if invitee
           invitee.group
         else
-          raise("no invitation found for identity: #{email}")
+          raise StandardError.new("no invitation found for identity: #{email}")
         end
       end
     end

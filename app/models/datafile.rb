@@ -127,7 +127,7 @@ class Datafile < ApplicationRecord
     if base
       File.join(base, storage_key)
     else
-      raise("no filesystem path found for datafile: #{self.web_id}")
+      raise StandardError.new("no filesystem path found for datafile: #{self.web_id}")
     end
   end
 
@@ -176,7 +176,7 @@ class Datafile < ApplicationRecord
     elsif storage_root == "medusa"
       File.join(IDB_CONFIG[:iiif][:medusa_base], storage_key)
     else
-      raise("invalid storage_root found for datafile: #{self.web_id}")
+      raise StandardError.new("invalid storage_root found for datafile: #{self.web_id}")
     end
   end
 
@@ -452,30 +452,11 @@ class Datafile < ApplicationRecord
   def initiate_processing_task
     return nil unless Rails.env.production? || Rails.env.demo?
 
-    extractor_task = ExtractorTask.create(web_id: web_id)
+    extractor_task = ExtractorTask.create(web_id: web_id, )
     update_attribute(:task_id, extractor_task.id) if extractor_task
   end
 
-  def handle_extractor_message(message_text:)
-    message_obj = JSON.parse(message_text)
-    return handle_extractor_success(message_obj: message_obj) if message_obj["status"] == "success"
 
-    raise("invalid or error response from archive extractor:\n#{message_text}")
-  end
-
-  def handle_extractor_success(message_obj: message_obj)
-    self.update(peek_type: message_obj["peek_type"], peek_text: message_obj["peek_text"])
-    self.nested_items.destroy_all
-    message_obj["nested_items"].class
-    message_obj["nested_items"].each do |item|
-      NestedItem.create!(datafile_id:  self.id,
-                        item_name:    item["item_name"],
-                        item_path:    item["item_path"],
-                        media_type:   item["media_type"],
-                        size:         item["item_size"],
-                        is_directory: item["is_directory"] == "true")
-    end
-  end
 
   ##
   # Generates a guaranteed-unique web ID, of which there are
