@@ -1,8 +1,4 @@
-Brief Record Partial Placeholder
--datafile = extractor_task.datafile
-%p Datafile:
-=link_to datafile.bytestream_name, "/datafiles/#{datafile.web_id}"
-%p Extractor Task has response?
-= extractor_task.response_at
-=link_to 'Extractor Task', extractor_task
-=link_to
+=link_to "Extractor Task", extractor_task
+response time:
+= extractor_task.response_at || "no response"
+%hr
