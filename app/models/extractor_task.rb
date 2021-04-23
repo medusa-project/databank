@@ -68,7 +68,7 @@ class ExtractorTask < ApplicationRecord
     unsent = ExtractorTask.where(sent_at: nil)
     return nil unless unsent.count.positive?
 
-    current_task_count = current_tasks.count
+    current_task_count = ExtractorTask.current_tasks.count
     return nil unless current_task_count < MAX_TASK_COUNT
 
     task_capacity = MAX_TASK_COUNT - current_task_count
@@ -76,7 +76,7 @@ class ExtractorTask < ApplicationRecord
     to_send.map(&:initiate_task)
   end
 
-  def current_tasks
+  def self.current_tasks
     task_list = ECS_CLIENT.list_tasks(cluster: CLUSTER)
     raise StandardError.new("unexpected task_list: #{task_list.to_yaml.to_s}") unless task_list.task_arns
 
