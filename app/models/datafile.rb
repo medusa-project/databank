@@ -452,11 +452,9 @@ class Datafile < ApplicationRecord
   def initiate_processing_task
     return nil unless Rails.env.production? || Rails.env.demo?
 
-    extractor_task = ExtractorTask.create(web_id: web_id, )
+    extractor_task = ExtractorTask.create(web_id: web_id)
     update_attribute(:task_id, extractor_task.id) if extractor_task
   end
-
-
 
   ##
   # Generates a guaranteed-unique web ID, of which there are

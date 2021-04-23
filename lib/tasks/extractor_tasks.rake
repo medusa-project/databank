@@ -61,7 +61,7 @@ namespace :extractor_tasks do
     extractor_tasks = ExtractorTask.where(sent_at: nil).where.not(response_at: nil)
     extractor_tasks.each do |extractor_task|
       extractor_task.sent_at = Time.current
-      print("extractor task #{extractor_task.id.to_s} updated: #{extractor_task.save.to_s}")
+      puts "extractor task #{extractor_task.id.to_s} updated: #{extractor_task.save.to_s}"
     end
   end
 
