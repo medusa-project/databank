@@ -186,8 +186,6 @@ gem "bootsnap", require: false
 
 gem "simple_form"
 
-gem "detect_language"
-
 # Use Capistrano for deployment
 gem "capistrano-bundler"
 gem "capistrano-passenger"

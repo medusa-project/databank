@@ -2,9 +2,6 @@
   :password: <%= Rails.application.credentials[:smtp][:password] %>
 :orcid_token: <%= Rails.application.credentials[:orcid_token] %>
 
-:language:
-  :key: <%= Rails.application.credentials[:language][:key] %>
-
 :recaptcha:
   :site_key: <%= Rails.application.credentials[:recaptcha][:site_key] %>
   :secret_key: <%= Rails.application.credentials[:recaptcha][:secret_key] %>
