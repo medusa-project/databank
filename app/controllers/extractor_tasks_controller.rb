@@ -79,7 +79,7 @@ class ExtractorTasksController < ApplicationController
 
     def set_datafile
       set_extractor_task unless @extractor_task
-      @datafile = Datafile.find_by(@extractor_task.web_id)
+      @datafile = Datafile.find_by(web_id: @extractor_task.web_id)
     end
 
   # Only allow a list of trusted parameters through.
