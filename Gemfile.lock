@@ -1584,7 +1584,6 @@ GEM
     websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    whatlanguage (1.0.6)
     will_paginate (3.3.0)
     will_paginate-bootstrap (1.0.2)
       will_paginate (>= 3.0.3)
@@ -1692,7 +1691,6 @@ DEPENDENCIES
   uglifier
   uuid
   valid_email
-  whatlanguage
   will_paginate
   will_paginate-bootstrap
   zeroclipboard-rails
