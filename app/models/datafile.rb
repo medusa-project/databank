@@ -446,7 +446,8 @@ class Datafile < ApplicationRecord
   def self.scrubbed_peek_string(peek_string:)
     peek_string.encode("UTF-8", peek_string.encoding)
     peek_string.scrub("*")
-    peek_string.tr("\u0000", "")
+    peek_string.gsub(/\000/, "")
+    peek_string.gsub(/\u0000/, "")
   end
 
   def initiate_processing_task
