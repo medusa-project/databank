@@ -7,6 +7,7 @@ require "mime/types"
 require "minitar"
 require "zlib"
 require "rest-client"
+require "whatlanguage"
 
 class Datafile < ApplicationRecord
   include ActiveModel::Serialization
@@ -18,7 +19,6 @@ class Datafile < ApplicationRecord
 
   ALLOWED_CHAR_NUM = 1024 * 8
   ALLOWED_DISPLAY_BYTES = ALLOWED_CHAR_NUM * 8
-
   before_create { self.web_id ||= generate_web_id }
   after_create :handle_peek
 
@@ -423,31 +423,32 @@ class Datafile < ApplicationRecord
   def part_text_peek
     return "file not found" unless current_root.exist?(storage_key)
 
-    part_text_string = nil
     if IDB_CONFIG[:aws][:s3_mode]
       first_bytes = current_root.get_bytes(storage_key, 0, ALLOWED_DISPLAY_BYTES)
-      part_text_string = first_bytes.string
-    else
-      File.open(filepath) do |file|
-        part_text_string = file.read(ALLOWED_DISPLAY_BYTES)
-      end
+      return Datafile.scrubbed_peek_string(peek_bytes: first_bytes)
     end
-    Datafile.scrubbed_peek_string(peek_string: part_text_string)
+
+    File.open(filepath) do |file|
+      return  file.read(ALLOWED_DISPLAY_BYTES)
+    end
   end
 
   def all_text_peek
     return "file not found" unless current_root.exist?(storage_key)
 
-    all_text_string = current_root.as_string(storage_key)
-    Datafile.scrubbed_peek_string(peek_string: all_text_string)
+    if IDB_CONFIG[:aws][:s3_mode]
+      all_bytes = current.get_bytes(storage_key, 0, binary_size)
+      return Datafile.scrubbed_peek_string(peek_bytes: all_bytes)
+    end
 
+    File.open(filepath) do |file|
+      return  file.read
+    end
   end
 
-  def self.scrubbed_peek_string(peek_string:)
-    peek_string.encode("UTF-8", peek_string.encoding)
-    peek_string.scrub("*")
-    peek_string.gsub(/\000/, "")
-    peek_string.gsub(/\u0000/, "")
+  def self.scrubbed_peek_string(peek_bytes:)
+    # TODO scrub string
+    peek_bytes.string
   end
 
   def initiate_processing_task

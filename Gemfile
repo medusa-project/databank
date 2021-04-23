@@ -186,6 +186,9 @@ gem "bootsnap", require: false
 
 gem "simple_form"
 
+# Use whatlanguage to detect languages - also use in encoding validation
+gem 'whatlanguage'
+
 # Use Capistrano for deployment
 gem "capistrano-bundler"
 gem "capistrano-passenger"
