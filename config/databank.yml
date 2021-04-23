@@ -2,7 +2,7 @@
   :password: <%= Rails.application.credentials[:smtp][:password] %>
 :orcid_token: <%= Rails.application.credentials[:orcid_token] %>
 
-:langauge:
+:language:
   :key: <%= Rails.application.credentials[:language][:key] %>
 
 :recaptcha:
