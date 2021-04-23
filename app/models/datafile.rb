@@ -69,8 +69,6 @@ class Datafile < ApplicationRecord
   rescue StandardError => error
     Rails.logger.warn "problem in handling peek for datafile id: #{self.id}"
     Rails.logger.warn error.message
-    # TEMPORARY DEBUG
-    Rails.logger.warn error.backtrace.join "\n"
   end
 
   def file_download_tallies
@@ -424,7 +422,7 @@ class Datafile < ApplicationRecord
 
     if IDB_CONFIG[:aws][:s3_mode]
       first_bytes = current_root.get_bytes(storage_key, 0, ALLOWED_DISPLAY_BYTES)
-      return Datafile.scrubbed_peek_string(peek_bytes: first_bytes)
+      return Datafile.peek_string(peek_bytes: first_bytes)
     end
 
     File.open(filepath) do |file|
@@ -437,7 +435,7 @@ class Datafile < ApplicationRecord
 
     if IDB_CONFIG[:aws][:s3_mode]
       all_bytes = current_root.get_bytes(storage_key, 0, binary_size)
-      return Datafile.scrubbed_peek_string(peek_bytes: all_bytes)
+      return Datafile.peek_string(peek_bytes: all_bytes)
     end
 
     File.open(filepath) do |file|
@@ -445,8 +443,7 @@ class Datafile < ApplicationRecord
     end
   end
 
-  def self.scrubbed_peek_string(peek_bytes:)
-    # TODO scrub string
+  def self.peek_string(peek_bytes:)
     peek_bytes.string
   end
 
