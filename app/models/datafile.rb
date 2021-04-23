@@ -7,7 +7,6 @@ require "mime/types"
 require "minitar"
 require "zlib"
 require "rest-client"
-require "whatlanguage"
 
 class Datafile < ApplicationRecord
   include ActiveModel::Serialization
