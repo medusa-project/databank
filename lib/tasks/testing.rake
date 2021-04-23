@@ -4,6 +4,12 @@ require 'json'
 
 namespace :testing do
 
+  desc 'detect language test'
+  task :detect_language => :environment do
+    puts "detecting language"
+    DetectLanguage.simple_detect("Buenos dias señor")
+  end
+
   desc 'send a RabbitMQ message'
   task :send_msg => :environment do
     puts "sending message"
