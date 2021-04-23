@@ -437,7 +437,7 @@ class Datafile < ApplicationRecord
     return "file not found" unless current_root.exist?(storage_key)
 
     if IDB_CONFIG[:aws][:s3_mode]
-      all_bytes = current.get_bytes(storage_key, 0, binary_size)
+      all_bytes = current_root.get_bytes(storage_key, 0, binary_size)
       return Datafile.scrubbed_peek_string(peek_bytes: all_bytes)
     end
 
