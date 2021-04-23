@@ -58,7 +58,7 @@ namespace :extractor_tasks do
 
   desc "backfill sent_at datetime for existing records for new column"
   task backfill_sent: :environment do
-    extractor_tasks = ExtractorTask.where(sent_at: nil).where.not(response_at: nil?)
+    extractor_tasks = ExtractorTask.where(sent_at: nil).where.not(response_at: nil)
     extractor_tasks.each do |extractor_task|
       extractor_task.sent_at = Time.current
       print("extractor task #{extractor_task.id.to_s} updated: #{extractor_task.save.valid?.to_s}")
