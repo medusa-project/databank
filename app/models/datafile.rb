@@ -70,6 +70,8 @@ class Datafile < ApplicationRecord
   rescue StandardError => error
     Rails.logger.warn "problem in handling peek for datafile id: #{self.id}"
     Rails.logger.warn error.message
+    # TEMPORARY DEBUG
+    Rails.logger.warn error.backtrace.join "\n"
   end
 
   def file_download_tallies
