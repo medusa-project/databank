@@ -1,7 +1,7 @@
 Brief Record Partial Placeholder
-=extractor_task.datafile
+-datafile = extractor_task.datafile
 %p Datafile:
-=link_to datafile.bytestream_name, "/datasets/#{@dataset.key}/datafiles/#{datafile.web_id}"
+=link_to datafile.bytestream_name, "/datafiles/#{datafile.web_id}"
 %p Extractor Task has response?
 = extractor_task.response_at
 =link_to 'Extractor Task', extractor_task
