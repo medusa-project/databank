@@ -369,11 +369,17 @@ class Datafile < ApplicationRecord
 
     return Databank::PeekType::MARKDOWN if mime_parts[0] == "markdown"
 
-    text_subtypes = %w[csv xml x-sh x-javascript json r rb]
-    supported_image_subtypes = %w[jp2 jpeg dicom gif png bmp]
-    zip_archive_subtypes = %w[x-zip-compressed zip]
-    nonzip_archive_subtypes = %w[x-7z-compressed x-tar]
-    pdf_subtypes = %w[pdf x-pdf]
+    text_subtypes = ["csv", "xml", "x-sh", "x-javascript", "json", "r", "rb"]
+    supported_image_subtypes = ["jp2", "jpeg", "dicom", "gif", "png", "bmp"]
+    listing_subtypes = ["x-zip-compressed",
+                        "zip",
+                        "x-7z-compressed",
+                        "x-rar-compressed",
+                        "x-tar",
+                        "x-xz",
+                        "x-gzip",
+                        "gzip"]
+    pdf_subtypes = ["pdf", "x-pdf"]
     microsoft_subtypes = ["msword",
                           "vnd.openxmlformats-officedocument.wordprocessingml.document",
                           "vnd.openxmlformats-officedocument.wordprocessingml.template",
@@ -408,9 +414,7 @@ class Datafile < ApplicationRecord
       Databank::PeekType::MICROSOFT
     elsif pdf_subtypes.include?(subtype)
       Databank::PeekType::PDF
-    elsif zip_archive_subtypes.include?(subtype)
-      Databank::PeekType::LISTING
-    elsif nonzip_archive_subtypes.include?(subtype)
+    elsif listing_subtypes.include?(subtype)
       Databank::PeekType::LISTING
     else
       Databank::PeekType::NONE
