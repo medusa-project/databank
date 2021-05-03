@@ -1,1 +1,4 @@
-%h1 share dataset
+-if(can? :edit, @dataset)
+  %h1 share dataset interface
+-else
+  %h2 unauthorized notice, redirect link
