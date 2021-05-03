@@ -6,7 +6,7 @@
   .idb-dashboard.panel.panel-warning
     .panel-body
       .row
-        .col-md-9
+        .col-md-8
           -if (can? :manage, @dataset)
             .curator-only
               .label.label-default
@@ -63,7 +63,7 @@
               .col-md-6.curator-only
                 = link_to "Go to Notes", dataset_notes_path(@dataset), class: "btn idb btn-primary", target: "_blank"
                 = "(There #{@dataset.notes.count == 1 ? 'is' : 'are'} currently #{pluralize(@dataset.notes.count, 'note')} for this dataset.)"
-        .col-md-3
+        .col-md-4
 
           - if @completion_check == 'ok' && @dataset.in_pre_publication_review
             %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
@@ -91,6 +91,10 @@
           = link_to(edit_dataset_path(@dataset), :class => "btn idb btn-success btn-block") do
             %span(class="glyphicon glyphicon-edit")
             Edit
+          -unless @dataset.metadata_public?
+            = link_to(share_dataset_path(@dataset), class: "btn idb btn-block btn-share") do
+              %span(class="glyphicon glyphicon-link")
+              Generate private sharing link
           -if @dataset.publication_state == Databank::PublicationState::DRAFT
             %button(type="button" class="btn btn-info btn-block" name="cancel" onclick='window.location = "/datasets?q=depositors=%5B%5D=#{current_user.name}&context=exit_draft"' )
               %span(class="glyphicon glyphicon-pushpin" )

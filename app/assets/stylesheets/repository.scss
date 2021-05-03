@@ -427,6 +427,37 @@ fieldset[disabled] .btn-warning.active {
   border-color: #F47F24;
 }
 
+
+.btn-share {
+  background-color: #912691;
+  border-color: #912691;
+}
+
+.btn-share:hover,
+.btn-share:focus,
+.btn-share:active,
+.btn-share.active {
+  background-color: #7d217d;
+  border-color: #691b69;
+}
+
+.btn-share.disabled:hover,
+.btn-share.disabled:focus,
+.btn-share.disabled:active,
+.btn-share.disabled.active,
+.btn-share[disabled]:hover,
+.btn-share[disabled]:focus,
+.btn-share[disabled]:active,
+.btn-share[disabled].active,
+fieldset[disabled] .btn-share:hover,
+fieldset[disabled] .btn-share:focus,
+fieldset[disabled] .btn-share:active,
+fieldset[disabled] .btn-share.active {
+  background-color: #912691;
+  border-color: #912691;
+}
+
+
 .btn-current-sort{
   color: #333;
   background-color: #e6e6e6;

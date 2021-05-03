@@ -37,7 +37,8 @@ class DatasetsController < ApplicationController
                                      :confirm_review,
                                      :send_publication_notice,
                                      :open_in_globus,
-                                     :import_from_globus]
+                                     :import_from_globus,
+                                     :share]
 
   @@num_box_ingest_deamons = 10
 
@@ -46,6 +47,9 @@ class DatasetsController < ApplicationController
 
   # enable zipline
   include Zipline
+
+  def share
+  end
 
   def import_from_globus
     begin
