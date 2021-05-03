@@ -35,11 +35,13 @@
       &nbsp;
       .label.label-default
         = pluralize(dataset.notes.count, 'note')
+  - is_draft = (dataset.publication_state == Databank::PublicationState::DRAFT)
+  - has_identifier = (dataset.identifier && dataset.identifier != '')
+  -if((can? :read, dataset) && is_draft && has_identifier)
+    .label.label-danger
+      pre-publication review
+    &nbsp;
   -if(can? :read, dataset) && dataset.release_date
-    -if dataset.publication_state == Databank::PublicationState::DRAFT && dataset.identifier && dataset.identifier != ''
-      .label.label-danger
-        pre-publication review
-      &nbsp;
     .label.label-info
       -if dataset.release_date > Date.current()
         planned publication date:
