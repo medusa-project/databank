@@ -1,14 +1,7 @@
 .record
 
   -if(can? :manage, dataset)
-
     .curator-only
-
-      -if dataset.publication_state == Databank::PublicationState::DRAFT && dataset.identifier && dataset.identifier != ''
-        .label.label-danger
-          pre-publication review
-        &nbsp;
-
       .label.label-default
         ="updated: #{dataset.updated_at.to_date.iso8601}"
       &nbsp;
@@ -42,9 +35,11 @@
       &nbsp;
       .label.label-default
         = pluralize(dataset.notes.count, 'note')
-
-
   -if(can? :read, dataset) && dataset.release_date
+    -if dataset.publication_state == Databank::PublicationState::DRAFT && dataset.identifier && dataset.identifier != ''
+      .label.label-danger
+        pre-publication review
+      &nbsp;
     .label.label-info
       -if dataset.release_date > Date.current()
         planned publication date:
