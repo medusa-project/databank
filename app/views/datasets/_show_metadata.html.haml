@@ -28,8 +28,10 @@
                 %li
                   %a(id="datasetForm:plainTextCitationLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_plaintext_citation"')
                     Plain Text
-      - if dataset.publication_state != Databank::PublicationState::DRAFT
+      - if dataset.identifier && dataset.identifier != ""
         Persistent link for this dataset:
+        - if dataset.publication_state == Databank::PublicationState::DRAFT
+          %p WARNING: This link will not resolve until the dataset is published.
         .row
           .col-md-6
             .input-group.clipboard-control
