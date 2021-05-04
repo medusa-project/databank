@@ -98,11 +98,11 @@
           -if @dataset.publication_state == Databank::PublicationState::DRAFT
             %button(type="button" class="btn btn-info btn-block" name="cancel" onclick='window.location = "/datasets?q=depositors=%5B%5D=#{current_user.name}&context=exit_draft"' )
               %span(class="glyphicon glyphicon-pushpin" )
-              Exit this Saved Dataset
+              Exit this saved dataset
           -else
             %button(type="button" class="btn btn-info btn-block" name="cancel" onclick='window.location = "/datasets?q=depositors=%5B%5D==#{current_user.name}&context=exit_doi"' )
               %span(class="glyphicon glyphicon-pushpin" )
-              Exit this Saved Dataset
+              Exit this saved dataset
           - if @dataset.publication_state == Databank::PublicationState::DRAFT
             = link_to(dataset_path(@dataset.key), method: :delete, data: {confirm: 'Are you sure? This removes all files and metadata.'}, class: "btn idb btn-danger btn-block") do
               %span(class="glyphicon glyphicon-trash" )

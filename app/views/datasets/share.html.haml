@@ -1,4 +1,23 @@
 -if(can? :edit, @dataset)
-  %h1 share dataset interface
+  %h1 Private Sharing Link for:
+  = render 'brief_record', dataset:@dataset
+  %hr
+  %ul
+    %li
+      %p Anybody with this link can access to your private dataset so be careful who you share it with.
+    %li
+      %p This link can be used at the journal office during the review process or for sharing with collaborators to access the data files while the dataset is not public.
+    %li
+      %p This link will expire after 12 months since the date it is first generated or upon publication.
+  %hr
+  %p
+    Private sharing link:
+    %a(href="@dataset.sharing_link")
+      =@dataset.sharing_link
 -else
-  %h2 unauthorized notice, redirect link
+  %p
+    You are not authorized to access this resource.
+    Log in or
+    %a(href="/help#contact")
+      contact the Research Data Service
+    for assistance.

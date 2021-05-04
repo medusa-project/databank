@@ -11,6 +11,8 @@
           =dataset.plain_text_citation
 
       .citation-suggestion
+        %span(class="citation-standards")
+          If you use this dataset, please cite it.
         %span(class="citation-download")
           %span(class="dropdown")
             %button(type="button" id="downloadCitation" class="btn btn-default dropdown-toggle" data-toggle="dropdown")
@@ -30,20 +32,14 @@
               %li
                 %a(id="datasetForm:plainTextCitationLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_plaintext_citation"')
                   Plain Text
-        %span(class="citation-standards")
-          If you use this dataset, please cite it.
-
       - if dataset.publication_state != Databank::PublicationState::DRAFT
-        %div(id="copy-persistent-link")
-          %button(class='copy-btn btn btn-default' data-clipboard-target='doi_link_text' data-clipboard-text="#{dataset.persistent_url}" title='Click me to copy to clipboard.')
-            %span(class="glyphicon glyphicon-copy")
-            Copy persistent link to clipboard...
-          &nbsp;&nbsp;Persistent link for this item:
-          %a(href="#{dataset.persistent_url}")
-            =dataset.persistent_url
-          %input(type="hidden" value="#{dataset.persistent_url}" name="doi_link_text" id="doi_link_text")
-
-
+        .input-group.clipboard-control
+          %p
+            Persistent link for this dataset:
+            %input(type="text" id="persistent-link" class="form-control" value="#{@dataset.persistent_link}" )
+            %span(class="input-group-btn" )
+              %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#persistent-link')
+                %span(class="glyphicon glyphicon-copy")
     .metadata-block
       %table(class="table borderless")
         %thead

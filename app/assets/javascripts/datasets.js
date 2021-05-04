@@ -127,20 +127,10 @@ ready = function () {
         title: "<em>unavailable</em>--Either does not work at all, or is so unreliable as to be inadvisable. </td> </tr> </table> </table>"
     });
 
-    // $(".upload-consistent").tooltip({
-    //     html: "true",
-    //     title: "<table class='upload-key'><tr class='highlight-background'> <td> <span class='fas upload-guide fa-circle'></span></td> <td> consistent </td><td> Reliable performance for a variety of connection speeds and configurations. </td> </tr> <tr> <td> <span class='fas upload-guide fa-adjust'></span> <td>inconsistent</td> </td> <td> Depends for reliability on connection strength and speed. Works well on campus, but home and coffee-shop environments vary. </td> </tr> <tr> <td> <span class='far upload-guide fa-circle'></span> <td>unavailable</td> </td> <td> Either does not work at all, or is so unreliable as to be inadvisable. </td> </tr> </table> </table>"
-    // });
-
-    // $(".upload-inconsistent").tooltip({
-    //     html: "true",
-    //     title: "<table class='upload-key'><tr> <td> <span class='fas upload-guide fas-circle'></span></td> <td> consistent </td><td> Reliable performance for a variety of connection speeds and configurations. </td> </tr> <tr class='highlight-background'> <td> <span class='fas upload-guide fa-adjust'></span> <td>inconsistent</td> </td> <td> Depends for reliability on connection strength and speed. Works well on campus, but home and coffee-shop environments vary. </td> </tr> <tr> <td> <span class='far upload-guide fa-circle'></span> <td>unavailable</td> </td> <td> Either does not work at all, or is so unreliable as to be inadvisable. </td> </tr> </table> </table>"
-    // });
-    //
-    // $(".upload-unavailable").tooltip({
-    //     html: "true",
-    //     title: "<table class='upload-key'><tr> <td> <span class='fas upload-guide fa-circle'></span></td> <td> consistent </td><td> Reliable performance for a variety of connection speeds and configurations. </td> </tr> <tr> <td> <span class='fas upload-guide fa-adjust'></span> <td>inconsistent</td> </td> <td> Depends for reliability on connection strength and speed. Works well on campus, but home and coffee-shop environments vary. </td> </tr> <tr class='highlight-background'> <td> <span class='far upload-guide fa-circle'></span> <td>unavailable</td> </td> <td> Either does not work at all, or is so unreliable as to be inadvisable. </td> </tr> </table> </table>"
-    // });
+    $(".clipboard-btn").tooltip({
+        html: "false",
+        title: "copy to clipboard"
+    });
 
     var numChecked = $('input.checkFile:checked').length;
 
@@ -302,7 +292,7 @@ ready = function () {
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    var clip = new ZeroClipboard($(".copy-btn"));
+    var clip = new Clipboard('.clipboard-btn');
 
     $("#login-prompt").modal('show');
     //alert("pre-validity check");

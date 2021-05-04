@@ -41,8 +41,8 @@ gem "jquery-datatables-rails"
 gem "jquery-rails"
 gem "jquery-ui-rails"
 
-# Use zeroclipboard-rails to copy text to clipboards
-gem "zeroclipboard-rails"
+# Use clipboard-rails to access clipboard.js Javascript library
+gem 'clipboard-rails', '~> 1.7', '>= 1.7.1'
 
 # Use filemagic to detect file types
 gem "ruby-filemagic"

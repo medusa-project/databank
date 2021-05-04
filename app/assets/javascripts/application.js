@@ -17,6 +17,6 @@
 //= require jquery-ui/widgets/datepicker
 //= require jquery-ui/widgets/sortable
 //= require jquery-ui/effects/effect-highlight
-//= require zeroclipboard
+//= require clipboard
 //= require bootstrap-sprockets
 //= require_tree .

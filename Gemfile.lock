@@ -1201,6 +1201,7 @@ GEM
       capybara (>= 2.4, < 4.0)
       mail
     childprocess (3.0.0)
+    clipboard-rails (1.7.1)
     cliver (0.3.2)
     coffee-rails (5.0.0)
       coffee-script (>= 2.2.0)
@@ -1590,8 +1591,6 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.4.2)
-    zeroclipboard-rails (0.1.2)
-      railties (>= 3.1)
     zip_tricks (5.5.0)
     zipline (1.3.0)
       actionpack (>= 3.2.1, < 7.0)
@@ -1624,6 +1623,7 @@ DEPENDENCIES
   capistrano-rbenv
   capybara
   capybara-email
+  clipboard-rails (~> 1.7, >= 1.7.1)
   coffee-rails
   connection_pool
   cucumber-rails
@@ -1693,7 +1693,6 @@ DEPENDENCIES
   valid_email
   will_paginate
   will_paginate-bootstrap
-  zeroclipboard-rails
   zipline
 
 RUBY VERSION
