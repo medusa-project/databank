@@ -17,11 +17,11 @@ demo:
     hostname: aws-rabbitmq-sunspot-demo.library.illinois.edu
     port: 8983
     log_level: WARNING
-    path: /solr/databank
+    path: /sunspot/databank
 
 production:
   solr:
     hostname: sunspot-prod.library.illinois.edu
     port: 8983
     log_level: WARNING
-    path: /solr/databank
+    path: /sunspot/databank
