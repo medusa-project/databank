@@ -10,6 +10,7 @@ USER root
 COPY *.* ./
 
 # test env
+RUN mkdir -p server/solr/test/conf
 RUN cp _rest_managed.json server/solr/test/conf/
 RUN cp admin-extra.html server/solr/test/conf/
 RUN cp currency.xml server/solr/test/conf/
@@ -22,9 +23,8 @@ RUN cp solrconfig.xml server/solr/test/conf/
 RUN cp spellings.txt server/solr/test/conf/
 RUN cp synonyms.txt server/solr/test/conf/
 
-# dev env
+# development env
 RUN mkdir -p server/solr/development/conf
-
 RUN cp _rest_managed.json server/solr/development/conf/
 RUN cp admin-extra.html server/solr/development/conf/
 RUN cp currency.xml server/solr/development/conf/
@@ -38,6 +38,7 @@ RUN cp spellings.txt server/solr/development/conf/
 RUN cp synonyms.txt server/solr/development/conf/
 
 # demo env
+RUN mkdir -p server/solr/demo/conf
 RUN cp _rest_managed.json server/solr/demo/conf/
 RUN cp admin-extra.html server/solr/demo/conf/
 RUN cp currency.xml server/solr/demo/conf/
@@ -51,6 +52,7 @@ RUN cp spellings.txt server/solr/demo/conf/
 RUN cp synonyms.txt server/solr/demo/conf/
 
 # production env
+RUN mkdir -p server/solr/production/conf
 RUN cp _rest_managed.json server/solr/production/conf/
 RUN cp admin-extra.html server/solr/production/conf/
 RUN cp currency.xml server/solr/production/conf/

@@ -14,14 +14,14 @@ test:
 
 demo:
   solr:
-    hostname: aws-rabbitmq-sunspot-demo.library.illinois.edu
+    hostname: aws-rabbitmq-solr-demo.library.illinois.edu
     port: 8983
     log_level: WARNING
-    path: /sunspot/databank
+    path: /solr/databank
 
 production:
   solr:
-    hostname: sunspot-prod.library.illinois.edu
+    hostname: solr-prod.library.illinois.edu
     port: 8983
     log_level: WARNING
-    path: /sunspot/databank
+    path: /solr/databank
