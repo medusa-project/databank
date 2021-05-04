@@ -115,7 +115,7 @@
             .panel-body
               -for row in @search.facet(:subject_text).rows
                 .facet
-                  -if params.has_key?('subjects') && params['subjects'].include?(row.value)
+                  -if params.has_key?('subjects') && !params['subjects'].nil? && params['subjects'].include?(row.value)
                     %input(type="checkbox" class="checkFacet checkFacetGroup subject_facet" name="subjects[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
                       - if row.value =='None'
                         Uncategorized
