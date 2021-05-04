@@ -103,9 +103,11 @@ class Dataset < ApplicationRecord
   end
 
   def current_share_code
-    share_code.destroy if share_code && share_code.created_at < 1.year.ago
+    self.share_code.destroy if self.share_code && self.share_code.created_at < 1.year.ago
 
-    share_code.code
+    return nil unless self.share_code
+
+    self.share_code.code
   end
 
   def storage_key_dirpart
