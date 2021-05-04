@@ -10,7 +10,7 @@ class ShareCode < ApplicationRecord
   def generate_code
     proposed_code = nil
     loop do
-      proposed_code = SecureRandom.urlsafe_base64(64, false)
+      proposed_code = SecureRandom.urlsafe_base64(32, false)
       break unless self.class.find_by(code: proposed_code)
     end
     proposed_code

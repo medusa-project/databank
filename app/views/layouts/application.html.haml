@@ -36,11 +36,6 @@
     = render partial: 'shared/library_header'
     = render partial: 'shared/header_navbar'
     #main-content{"aria-label" => "Accessibility Note: Research Data Service staff at databank@library.illinois.edu are happy to assist with data deposit or access."}
-      -if Time.now < Date::strptime('2019-02-19',"%Y-%m-%d")
-        .alert.alert-alert
-          Illinois Data Bank Not Accepting Deposits or Changes Feb 16-18:
-          %small
-            To leverage emerging technologies, the Illinois Data Bank is moving to the cloud. As part of the transition, from 2/16 through 2/18, the Illinois Data Bank will not be able to accept new datasets or any changes. Full functionality should return by 2/19, though very brief service interruptions may be experienced.
       - flash.each do |key, value|
         %div{class: "alert alert-#{key}"}
           = sanitize(value)
