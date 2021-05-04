@@ -37,6 +37,8 @@ class DatabankMailer < ActionMailer::Base
 
   def contact_help(params)
     subject = prepend_system_code("Illinois Data Bank] Help Request")
+    raise("invalid email request from: #{params["help-email"]}") unless valid_email?(address: params["help-email"])
+
     @params = params
     if @params["help-topic"] == "Dataset Consultation"
       subject_base = "Illinois Data Bank] Dataset Consultation Request"
@@ -46,6 +48,11 @@ class DatabankMailer < ActionMailer::Base
          to:      ["databank@library.illinois.edu",
                    @params["help-email"]],
          subject: subject)
+  end
+
+  def valid_email?(address:)
+    pattern = URI::MailTo::EMAIL_REGEXP
+    pattern.match?(address)
   end
 
   def dataset_incomplete_1m(dataset_key)
