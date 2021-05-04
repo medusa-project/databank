@@ -9,37 +9,34 @@
           Citation:
         .citation-example
           =dataset.plain_text_citation
-
-      .citation-suggestion
-        %span(class="citation-standards")
-          If you use this dataset, please cite it.
-        %span(class="citation-download")
-          %span(class="dropdown")
-            %button(type="button" id="downloadCitation" class="btn btn-default dropdown-toggle" data-toggle="dropdown")
-              %span(class="glyphicon glyphicon-list")
-              Export Citation
-              %span(class="caret")
-            %ul(class="dropdown-menu pull-right text-left" role="menu")
-              %li
-                %a(id="datasetForm:endNoteLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_endNote_XML"')
-                  EndNote XML
-              %li
-                %a(id="datasetForm:risLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_RIS"')
-                  RIS Format
-              %li
-                %a(id="datasetForm:BibTeXLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_BibTeX"')
-                  BibTeX Format
-              %li
-                %a(id="datasetForm:plainTextCitationLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_plaintext_citation"')
-                  Plain Text
+          %span(class="citation-download")
+            %span(class="dropdown")
+              %button(type="button" id="downloadCitation" class="btn btn-default dropdown-toggle" data-toggle="dropdown")
+                %span(class="glyphicon glyphicon-list")
+                Export Citation
+                %span(class="caret")
+              %ul(class="dropdown-menu pull-right text-left" role="menu")
+                %li
+                  %a(id="datasetForm:endNoteLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_endNote_XML"')
+                    EndNote XML
+                %li
+                  %a(id="datasetForm:risLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_RIS"')
+                    RIS Format
+                %li
+                  %a(id="datasetForm:BibTeXLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_BibTeX"')
+                    BibTeX Format
+                %li
+                  %a(id="datasetForm:plainTextCitationLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_plaintext_citation"')
+                    Plain Text
       - if dataset.publication_state != Databank::PublicationState::DRAFT
-        .input-group.clipboard-control
-          %p
-            Persistent link for this dataset:
-            %input(type="text" id="persistent-link" class="form-control" value="#{@dataset.persistent_link}" )
-            %span(class="input-group-btn" )
-              %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#persistent-link')
-                %span(class="glyphicon glyphicon-copy")
+        Persistent link for this dataset:
+        .row
+          .col-md-6
+            .input-group.clipboard-control
+              %input(type="text" id="persistent-url" class="form-control" value="#{@dataset.persistent_url}" )
+              %span(class="input-group-btn" )
+                %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#persistent-url')
+                  %span(class="glyphicon glyphicon-copy")
     .metadata-block
       %table(class="table borderless")
         %thead

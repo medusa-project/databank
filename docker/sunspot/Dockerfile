@@ -1,7 +1,8 @@
 # invocation
 # docker build -t sunspot .
-# docker run --name sunspot -p 8984:8984 -d sunspot
-# ENV=test curl "http://localhost:8984/solr/admin/cores?action=CREATE&name=$ENV&instanceDir=$ENV"
+# docker run --name sunspot -p 8984:8983 -d sunspot
+# ENV=test
+# curl "http://localhost:8984/solr/admin/cores?action=CREATE&name=$ENV&instanceDir=$ENV"
 
 FROM solr:6
 

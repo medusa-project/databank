@@ -99,10 +99,6 @@ class Dataset < ApplicationRecord
     "https://example.org/sharing_link"
   end
 
-  def persistent_link
-    "https://example.org/persisten_link"
-  end
-
   def storage_key_dirpart
     raise "Not valid for datasets without identifiers." unless identifier && identifier != ""
 
