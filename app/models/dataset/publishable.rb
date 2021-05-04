@@ -17,6 +17,9 @@ module Dataset::Publishable
   end
 
   def publish(user)
+
+    self.destroy_incomplete_uploads
+
     completion_check_result = Dataset.completion_check(self, user)
 
     return error_hash(completion_check_result) unless completion_check_result == "ok"
@@ -31,28 +34,24 @@ module Dataset::Publishable
 
     if old_publication_state == Databank::PublicationState::DRAFT && (!identifier || identifier == "")
       self.identifier = default_identifier
-      self.destroy_incomplete_uploads
     end
 
-    # set publication_state
-    self.publication_state = if embargo && Databank::PublicationState::EMBARGO_ARRAY.include?(embargo)
-                               embargo
+    self.publication_state = if self.embargo && Databank::PublicationState::EMBARGO_ARRAY.include?(self.embargo)
+                               self.embargo
                              else
                                Databank::PublicationState::RELEASED
                              end
 
     if old_publication_state == Databank::PublicationState::DRAFT &&
-        publication_state == Databank::PublicationState::RELEASED &&
-        !is_import
+      self.publication_state == Databank::PublicationState::RELEASED && !is_import
       self.release_date = Date.current
     end
-
-    save!
 
     unless Databank::PublicationState::PUB_ARRAY.include?(publication_state)
       return {status: "error", error_text: "problem publishing dataset: #{key}"}
     end
 
+    save!
     datacite_attempt = if metadata_public?
                          publish_doi
                        else

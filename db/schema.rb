@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_22_212530) do
+ActiveRecord::Schema.define(version: 2021_05_04_133709) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -364,6 +364,13 @@ ActiveRecord::Schema.define(version: 2021_04_22_212530) do
     t.datetime "updated_at", null: false
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
+  end
+
+  create_table "share_codes", force: :cascade do |t|
+    t.string "code"
+    t.integer "dataset_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "system_files", id: :serial, force: :cascade do |t|

@@ -37,6 +37,15 @@
               %span(class="input-group-btn" )
                 %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#persistent-url')
                   %span(class="glyphicon glyphicon-copy")
+      - unless dataset.share_code.nil?
+        Private Sharing Link:
+        .row
+          .col-md-6
+            .input-group.clipboard-control
+              %input(type="text" id="sharing-link" class="form-control" value="#{@dataset.sharing_link}" )
+              %span(class="input-group-btn" )
+                %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#sharing-link')
+                  %span(class="glyphicon glyphicon-copy")
     .metadata-block
       %table(class="table borderless")
         %thead

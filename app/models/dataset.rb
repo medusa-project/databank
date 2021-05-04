@@ -96,22 +96,16 @@ class Dataset < ApplicationRecord
     key
   end
 
-  def create_share_code
-    share_code&.destroy
-
-    ShareCode.create(dataset_id: id)
-  end
-
   def sharing_link
     return "N/A no current sharing link" unless current_share_code
 
-    "#{IDB_CONFIG[:root_url_text]}/datasets/#{key}?code=#{current_share_code}}"
+    "#{IDB_CONFIG[:root_url_text]}/datasets/#{key}?code=#{current_share_code}"
   end
 
   def current_share_code
     share_code.destroy if share_code && share_code.created_at < 1.year.ago
 
-    share_code
+    share_code.code
   end
 
   def storage_key_dirpart

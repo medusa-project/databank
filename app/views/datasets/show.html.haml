@@ -1,4 +1,7 @@
-- if @dataset.publication_state != Databank::PublicationState::DRAFT  || (can? :read, @dataset)
+=debug params
+=debug @dataset.share_code
+=debug @shared_by_link
+- if (@dataset.publication_state != Databank::PublicationState::DRAFT) || (can? :read, @dataset) || @shared_by_link
   = render partial: 'landing'
 - else
   = render partial: 'welcome/welcome'
