@@ -1,5 +1,4 @@
 -if(can? :edit, @dataset)
-  %h1 Private Sharing Link for:
   = render 'brief_record', dataset:@dataset
   %hr
   %ul
@@ -11,9 +10,14 @@
       %p This link will expire after 12 months since the date it is first generated or upon publication.
   %hr
   %p
-    Private sharing link:
-    %a(href="@dataset.sharing_link")
-      =@dataset.sharing_link
+    Private Sharing Link:
+    .row
+      .col-md-6
+        .input-group.clipboard-control
+          %input(type="text" id="sharing-link" class="form-control" value="#{@dataset.sharing_link}" )
+          %span(class="input-group-btn" )
+            %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#sharing-link')
+              %span(class="glyphicon glyphicon-copy")
 -else
   %p
     You are not authorized to access this resource.
