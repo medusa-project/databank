@@ -136,9 +136,8 @@
     -->
   <!-- <jmx agentId="myAgent" /> -->
   <!-- If you want to start a new MBeanServer, specify the serviceUrl -->
-  <!--
-  <jmx serviceUrl="service:jmx:rmi:///jndi/rmi://localhost:9999/solr"/>
-  -->
+  <!-- <jmx serviceUrl="service:jmx:rmi:///jndi/rmi://localhost:9999/solr"/>
+    -->
 
   <!-- The default high-performance update handler -->
   <updateHandler class="solr.DirectUpdateHandler2">
@@ -174,11 +173,10 @@
          If the updateLog is enabled, then it's highly recommended to
          have some sort of hard autoCommit to limit the log size.
       -->
-    <autoCommit>
-      <maxDocs>${solr.autoCommit.maxDocs:5000}</maxDocs>
-      <maxTime>${solr.autoCommit.maxTime:60000}</maxTime>
-      <openSearcher>false</openSearcher>
-    </autoCommit>
+     <autoCommit> 
+       <maxTime>${solr.autoCommit.maxTime:15000}</maxTime> 
+       <openSearcher>false</openSearcher> 
+     </autoCommit>
 
     <!-- softAutoCommit is like autoCommit except it causes a
          'soft' commit which only ensures that changes are visible
@@ -186,7 +184,7 @@
          faster and more near-realtime friendly than a hard commit.
       -->
      <autoSoftCommit> 
-       <maxTime>${solr.autoSoftCommit.maxTime:60000}</maxTime> 
+       <maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime> 
      </autoSoftCommit>
 
   </updateHandler>
@@ -543,13 +541,13 @@
       <!-- change field to textSpell and use copyField in schema.xml
       to spellcheck multiple fields -->
       <str name="field">textSpell</str>
-      <str name="buildOnCommit">false</str>
+      <str name="buildOnOptimize">true</str>
     </lst>
 
     <lst name="spellchecker">
       <str name="name">example</str>
       <str name="field">title_text</str>
-      <str name="buildOnCommit">false</str>
+      <str name="buildOnOptimize">true</str>
       <str name="classname">solr.DirectSolrSpellChecker</str>
       <!-- the spellcheck distance measure used, the default is the internal levenshtein -->
       <str name="distanceMeasure">internal</str>

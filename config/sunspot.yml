@@ -1,27 +1,27 @@
 development:
   solr:
     hostname: localhost
-    port: 8984
+    port: 8983
     log_level: WARNING
     path: /solr/development
 
 test:
   solr:
     hostname: localhost
-    port: 8984
+    port: 8983
     log_level: WARNING
     path: /solr/test
 
 demo:
   solr:
-    hostname: aws-rabbitmq-solr-demo.library.illinois.edu
+    hostname: aws-rabbitmq-sunspot-demo.library.illinois.edu
     port: 8983
     log_level: WARNING
     path: /solr/databank
 
 production:
   solr:
-    hostname: solr-prod.library.illinois.edu
+    hostname: sunspot-prod.library.illinois.edu
     port: 8983
     log_level: WARNING
     path: /solr/databank

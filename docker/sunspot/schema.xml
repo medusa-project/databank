@@ -61,12 +61,10 @@
     <!-- *** This fieldType is used by Sunspot! *** -->
     <fieldType name="text" class="solr.TextField" omitNorms="false">
       <analyzer>
-	<charFilter class="solr.MappingCharFilterFactory" mapping="mapping.txt"/>
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StandardFilterFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.PorterStemFilterFactory"/>
-	<filter class="solr.ASCIIFoldingFilterFactory" preserveOriginal="true"/>
       </analyzer>
     </fieldType>
     <!-- *** This fieldType is used by Sunspot! *** -->
@@ -256,8 +254,8 @@
     <dynamicField name="*_llms" stored="true" type="location" multiValued="true" indexed="true"/>
     <field name="textSpell" stored="false" type="textSpell" multiValued="true" indexed="true"/>
     
-    <!-- required by Solr 4 -->
-    <field name="_version_" type="string" indexed="true" stored="true" multiValued="false" />
+    <!-- required by Solr 5 -->
+    <field name="_version_" type="tlong" indexed="true" stored="true" multiValued="false" />
   </fields>
   
   <!-- Field to use to determine and enforce document uniqueness.

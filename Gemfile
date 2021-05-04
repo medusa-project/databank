@@ -115,7 +115,7 @@ gem "equivalent-xml"
 gem "nokogiri"
 gem "nokogiri-diff"
 
-# use solr for searching
+# use sunspot for searching
 gem "progress_bar"
 gem "sunspot_rails"
 gem "sunspot_solr"

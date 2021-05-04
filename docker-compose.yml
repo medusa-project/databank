@@ -1,5 +1,5 @@
 #
-# Example invocation: docker-compose up --exit-code-from ideals
+# Example invocation: docker-compose up --exit-code-from rails
 #
 version: '3'
 services:
@@ -25,9 +25,4 @@ services:
       context: .
       dockerfile: ./docker/Dockerfile-rabbitmq
     hostname: rabbitmq
-  solr:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile-solr
-    hostname: solr
-    command: ENV=test && curl "http://localhost:8983/solr/admin/cores?action=CREATE&name=$ENV&instanceDir=$ENV"
+
