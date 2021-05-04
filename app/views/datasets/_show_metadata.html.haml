@@ -37,15 +37,7 @@
               %span(class="input-group-btn" )
                 %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#persistent-url')
                   %span(class="glyphicon glyphicon-copy")
-      - unless dataset.share_code.nil?
-        Private Sharing Link:
-        .row
-          .col-md-12
-            .input-group.clipboard-control
-              %input(type="text" id="sharing-link" class="form-control" value="#{@dataset.sharing_link}" )
-              %span(class="input-group-btn" )
-                %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#sharing-link')
-                  %span(class="glyphicon glyphicon-copy")
+
     .metadata-block
       %table(class="table borderless")
         %thead
@@ -54,7 +46,6 @@
             %th.col-lg-10.col-md-9.col-sm-8
         %tbody>
         -if dataset.related_materials.count > 0
-
           -dataset.related_materials.each do |material|
             -if material.uri && (material.relationship_arr.include?(Databank::Relationship::PREVIOUS_VERSION_OF) || material.relationship_arr.include?(Databank::Relationship::NEW_VERSION_OF) )
               -# handled above

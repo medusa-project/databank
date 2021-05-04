@@ -63,6 +63,17 @@
               .col-md-6.curator-only
                 = link_to "Go to Notes", dataset_notes_path(@dataset), class: "btn idb btn-primary", target: "_blank"
                 = "(There #{@dataset.notes.count == 1 ? 'is' : 'are'} currently #{pluralize(@dataset.notes.count, 'note')} for this dataset.)"
+          - unless @dataset.share_code.nil?
+            .panel.panel-default
+              .panel-body
+                Private Sharing Link:
+                .row
+                  .col-md-12
+                    .input-group.clipboard-control
+                      %input(type="text" id="sharing-link" class="form-control" value="#{@dataset.sharing_link}" )
+                      %span(class="input-group-btn" )
+                        %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#sharing-link')
+                          %span(class="glyphicon glyphicon-copy")
         .col-md-4
 
           - if @completion_check == 'ok' && @dataset.in_pre_publication_review
