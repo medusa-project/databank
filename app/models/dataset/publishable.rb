@@ -59,6 +59,7 @@ module Dataset::Publishable
                        end
 
     if datacite_attempt[:status] == "ok"
+      self.share_code.destroy if self.publication_state == Databank::PublicationState::RELEASED
       MedusaIngest.send_dataset_to_medusa(self)
 
       if IDB_CONFIG[:local_mode] && IDB_CONFIG[:local_mode] == true

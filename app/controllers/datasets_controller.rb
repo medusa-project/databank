@@ -51,6 +51,19 @@ class DatasetsController < ApplicationController
 
   def share
     @dataset.create_share_code(id: @dataset.id) unless @dataset.current_share_code
+    share_notice = %Q{Anybody with this link can access to your private dataset so be careful who you share it with.\n
+This link can be used at the journal office during the review process or for sharing with collaborators to access the
+data files while the dataset is not public.\nThis link will expire after 12 months since the date it is first
+generated or upon publication. #{@dataset.sharing_link}}
+    respond_to do |format|
+      if @dataset.current_share_code
+        format.html { redirect_to dataset_path(@dataset), notice: share_notice }
+        format.json { render json: {private_share_link: "#{@dataset.sharing_link}"}, status: :ok }
+      else
+        format.html { redirect_to dataset_path(@dataset), notice: "Error generating share link." }
+        format.json { render json: {private_share_link: nil}, status: :unprocessable_entity }
+      end
+    end
   end
 
   def import_from_globus
