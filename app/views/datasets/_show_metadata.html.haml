@@ -30,8 +30,6 @@
                     Plain Text
       - if dataset.identifier && dataset.identifier != ""
         Persistent link for this dataset:
-        - if dataset.publication_state == Databank::PublicationState::DRAFT
-          %p WARNING: This link will not resolve until the dataset is published.
         .row
           .col-md-6
             .input-group.clipboard-control
@@ -39,6 +37,10 @@
               %span(class="input-group-btn" )
                 %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#persistent-url')
                   %span(class="glyphicon glyphicon-copy")
+          .col-md-6
+            - if dataset.publication_state == Databank::PublicationState::DRAFT
+              %span(class="glyphicon glyphicon-exclamation-sign" )
+              This link will not resolve until the dataset is published.
 
     .metadata-block
       %table(class="table borderless")
