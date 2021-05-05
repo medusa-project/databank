@@ -378,7 +378,9 @@ class Datafile < ApplicationRecord
                         "x-tar",
                         "x-xz",
                         "x-gzip",
-                        "gzip"]
+                        "gzip",
+                        "x-rar",
+                        "x-gtar"]
     pdf_subtypes = ["pdf", "x-pdf"]
     microsoft_subtypes = ["msword",
                           "vnd.openxmlformats-officedocument.wordprocessingml.document",
