@@ -51,11 +51,11 @@ class DatasetsController < ApplicationController
 
   def share
     @dataset.create_share_code(id: @dataset.id) unless @dataset.current_share_code
-    share_notice = %Q(<ul><li>Anybody with this link can access to your private dataset
+    share_notice = %Q(<h3>About this Private Sharing Link<span class="glyphicon glyphicon-info"></span></h3><indent><ul><li>Anybody with this link can access to your private dataset
 so be careful who you share it with.</li>
 <li>This link can be used at the journal office during the review process or for sharing with
 collaborators to access the data files while the dataset is not public.</li>
-<li>This link will expire 12 months after the date first generated or upon publication.</li>)
+<li>This link will expire 12 months after the date first generated or upon publication.</li></indent>)
     respond_to do |format|
       if @dataset.current_share_code
         format.html { redirect_to dataset_path(@dataset), alert: share_notice }
