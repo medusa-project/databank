@@ -10,7 +10,7 @@
 
           =render partial: 'file_restriction_alert', locals: {dataset: dataset}
 
-          -if can? :view_files, dataset
+          -if((can? :view_files, dataset) || @shared_by_link)
             %form(role="form" id="select-files-form")
               .form-group(id="select-files-form-group")
                 %table(id="show-files-table" class="table table-striped")
