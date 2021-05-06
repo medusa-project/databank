@@ -59,6 +59,10 @@
                 .label.label-danger
                   pre-publication review
                 &nbsp;
+              -if @dataset.share_code
+                .label.label-success
+                  has sharing link
+                &nbsp;
             -if (can? :manage, @dataset)
               .col-md-6.curator-only
                 = link_to "Go to Notes", dataset_notes_path(@dataset), class: "btn idb btn-primary", target: "_blank"

@@ -41,6 +41,10 @@
     .label.label-danger
       pre-publication review
     &nbsp;
+  -if dataset.share_code
+    .label.label-success
+      has sharing link
+    &nbsp;
   -if(can? :read, dataset) && dataset.release_date
     .label.label-info
       -if dataset.release_date > Date.current()
