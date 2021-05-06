@@ -1,6 +1,7 @@
 = render 'brief_record', dataset:@dataset
 -if @dataset.fileset_preserved?
-  %p To view in Medusa:
+  %p
+    To view in Medusa:
     %a(href="#{IDB_CONFIG['medusa']['datasets_url_base']}#{@dataset.medusa_dataset_dir}")
       ="#{IDB_CONFIG['medusa']['datasets_url_base']}#{@dataset.medusa_dataset_dir}"
 -else
@@ -14,6 +15,6 @@
       %h4.panel-title
         %a(role="button" data-toggle="collapse" data-parent="#medusa" href="#medusaPanel" aria-expanded="false" aria-controls="medusaPanel" class="accordion-toggle collapsed")
           %span.metadata-label Medusa Ingest Details
-    .panel-collapse.collapse(id="medusaPanel" role="tabpanel" aria-labelledby="medusaHeading")
+    .panel-collapse.collapse.in(id="medusaPanel" role="tabpanel" aria-labelledby="medusaHeading")
       .panel-body
         =render partial: "show_medusa"
