@@ -41,9 +41,10 @@ class DatasetsController < ApplicationController
                                      :import_from_globus,
                                      :share,
                                      :remove_sharing_link,
-                                     :curator_access_controls,
+                                     :suppression_controls,
                                      :review_requests,
-                                     :permissions]
+                                     :permissions,
+                                     :medusa_details]
 
   @@num_box_ingest_deamons = 10
 
@@ -687,6 +688,10 @@ collaborators to access the data files while the dataset is not public.</li>
   end
 
   def review_requests
+    authorize! :manage, @dataset
+  end
+
+  def medusa_details
     authorize! :manage, @dataset
   end
 

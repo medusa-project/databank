@@ -23,6 +23,8 @@
     <%= link_to("Review Requests", "/datasets#{@dataset.key}/review_requests") %>
     &nbsp;|&nbsp;
     <%= link_to("Suppression Controls", "/datasets#{@dataset.key}/suppression_controls")%>
+    &nbsp;|&nbsp;
+    <%= link_to("Medusa Details", "/datasets#{@dataset.key}/medusa_details")%>
   </div>
 <% end %>
 
@@ -166,40 +168,6 @@
   </div>-->
 
 <% end %>
-
-<% if (can? :manage, @dataset) %>
-  <div class="curator-only">
-
-    <% if @dataset.fileset_preserved? %>
-      <p> To view in Medusa:
-        <a href="<%= IDB_CONFIG['medusa']['datasets_url_base']%><%= @dataset.medusa_dataset_dir %>"><%= IDB_CONFIG['medusa']['datasets_url_base']%><%= @dataset.medusa_dataset_dir %></a>
-      </p>
-    <% else%>
-      <p>
-        This is not yet in Medusa, but when it is, it will be in Medusa's <a href="<%= IDB_CONFIG['medusa']['file_group_url'] %>">Illinois Data Bank file group</a>.
-      </p>
-    <% end %>
-
-    <div class="panel-group" id="medusa" role="tablist" aria-multiselectable="true">
-      <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="medusaHeading">
-          <h4 class="panel-title">
-            <a role="button" data-toggle="collapse" data-parent="#medusa" href="#medusaPanel" aria-expanded="false" aria-controls="medusaPanel" class="accordion-toggle collapsed">
-              <span class="metadata-label">Medusa Ingest Details</span>
-            </a>
-          </h4>
-        </div>
-        <div class="panel-collapse collapse" id="medusaPanel" role="tabpanel" aria-labelledby="medusaHeading">
-          <div class="panel-body">
-            <%= render partial: "show_medusa" %>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<% end %>
-
 
 <% if (@dataset.title) && (@dataset.title.downcase.include? 'unicorn') && ((can? :update, @dataset) && [Databank::PublicationState::RELEASED, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state)) %>
   <div class="pull-right">
