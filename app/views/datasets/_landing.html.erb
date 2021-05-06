@@ -18,13 +18,13 @@
 <% if (can? :manage, @dataset) %>
   <div class="curator-only">
     <h3>Curator Control Links</h3>
-    <%= link_to("Permissions", "/datasets#{@dataset.key}/permissions") %>
+    <%= link_to("Permissions", "/datasets/#{@dataset.key}/permissions") %>
     &nbsp;|&nbsp;
-    <%= link_to("Review Requests", "/datasets#{@dataset.key}/review_requests") %>
+    <%= link_to("Review Requests", "/datasets/#{@dataset.key}/review_requests") %>
     &nbsp;|&nbsp;
-    <%= link_to("Suppression Controls", "/datasets#{@dataset.key}/suppression_controls")%>
+    <%= link_to("Suppression Controls", "/datasets/#{@dataset.key}/suppression_controls")%>
     &nbsp;|&nbsp;
-    <%= link_to("Medusa Details", "/datasets#{@dataset.key}/medusa_details")%>
+    <%= link_to("Medusa Details", "/datasets/#{@dataset.key}/medusa_details")%>
   </div>
 <% end %>
 
