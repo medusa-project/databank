@@ -17,9 +17,9 @@
 <% end %>
 <% if (can? :manage, @dataset) %>
   <hr/>
-  <%= link_to("Permissions", dataset_permissions_path(@dataset)) %>>
-  <%= link_to("Review Requests", dataset_review_requests_path(@dataset)) %>
-  <%= link_to("Curator Access Controls", dataset_curator_access_controls_path(@dataset))%>
+  <%= link_to("Permissions", "/datasets#{@dataset.key}/permissions") %>>
+  <%= link_to("Review Requests", "/datasets#{@dataset.key}/review_requests") %>
+  <%= link_to("Curator Access Controls", "/datasets#{@dataset.key}/curator_access_controls")%>
 <% end %>
 
 <div id="main-show-div">
