@@ -647,15 +647,7 @@ collaborators to access the data files while the dataset is not public.</li>
                             else
                               "https://doi.test.datacite.org/"
                             end
-    if params.has_key?(:selected_files)
-      zip_and_download_selected
-    elsif params.has_key?(:suppression_action)
-
-    end
-
     @completion_check = Dataset.completion_check(@dataset, current_user)
-    @review_request = ReviewRequest.new(dataset_key: @dataset.key, requested_at: Time.zone.now)
-
     set_file_mode
   end
 
@@ -689,6 +681,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def review_requests
     authorize! :manage, @dataset
+    @review_request = ReviewRequest.new(dataset_key: @dataset.key, requested_at: Time.zone.now)
   end
 
   def medusa_details
