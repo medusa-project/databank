@@ -40,7 +40,10 @@ class DatasetsController < ApplicationController
                                      :open_in_globus,
                                      :import_from_globus,
                                      :share,
-                                     :remove_sharing_link]
+                                     :remove_sharing_link,
+                                     :curator_access_controls,
+                                     :review_requests,
+                                     :permissions]
 
   @@num_box_ingest_deamons = 10
 
@@ -646,28 +649,45 @@ collaborators to access the data files while the dataset is not public.</li>
     if params.has_key?(:selected_files)
       zip_and_download_selected
     elsif params.has_key?(:suppression_action)
-      case params[:suppression_action]
-      when "temporarily_suppress_files"
-        temporarily_suppress_files
-      when "temporarily_suppress_metadata"
-        temporarily_suppress_metadata
-      when "permanently_suppress_files"
-        permanently_suppress_files
-      when "permanently_suppress_metadata"
-        permanently_suppress_metadata
-      when "unsuppress"
-        unsuppress
-      when "suppress_changelog"
-        suppress_changelog
-      when "unsuppress_changelog"
-        unsuppress_changelog
-      end
+
     end
 
     @completion_check = Dataset.completion_check(@dataset, current_user)
     @review_request = ReviewRequest.new(dataset_key: @dataset.key, requested_at: Time.zone.now)
 
     set_file_mode
+  end
+
+  def suppression_action
+    authorize! :manage, @dataset
+    case params[:suppression_action]
+    when "temporarily_suppress_files"
+      temporarily_suppress_files
+    when "temporarily_suppress_metadata"
+      temporarily_suppress_metadata
+    when "permanently_suppress_files"
+      permanently_suppress_files
+    when "permanently_suppress_metadata"
+      permanently_suppress_metadata
+    when "unsuppress"
+      unsuppress
+    when "suppress_changelog"
+      suppress_changelog
+    when "unsuppress_changelog"
+      unsuppress_changelog
+    end
+  end
+
+  def permissions
+    authorize! :manage, @dataset
+  end
+
+  def curator_access_controls
+    authorize! :manage, @dataset
+  end
+
+  def review_requests
+    authorize! :manage, @dataset
   end
 
   def update_permissions

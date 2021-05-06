@@ -16,11 +16,10 @@
   <%= render partial: 'incomplete_deposit_modal' %>
 <% end %>
 <% if (can? :manage, @dataset) %>
-  <%= render partial: 'permissions' %>
-  <%= render partial: 'review_requests' %>
-<% end %>
-<% if ((can? :manage, @dataset) && (@dataset.publication_state != Databank::PublicationState::DRAFT)) %>
-  <%= render partial: 'curator_access_controls' %>
+  <hr/>
+  <%= link_to("Permissions", dataset_permissions_path(@dataset)) %>>
+  <%= link_to("Review Requests", dataset_review_requests_path(@dataset)) %>
+  <%= link_to("Curator Access Controls", dataset_curator_access_controls_path(@dataset))%>
 <% end %>
 
 <div id="main-show-div">
