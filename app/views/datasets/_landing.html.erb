@@ -16,10 +16,13 @@
   <%= render partial: 'incomplete_deposit_modal' %>
 <% end %>
 <% if (can? :manage, @dataset) %>
-  <hr/>
-  <%= link_to("Permissions", "/datasets#{@dataset.key}/permissions") %>>
-  <%= link_to("Review Requests", "/datasets#{@dataset.key}/review_requests") %>
-  <%= link_to("Curator Access Controls", "/datasets#{@dataset.key}/curator_access_controls")%>
+  <div class="curator-only">
+    <h3>Curator Control Links</h3>
+    <%= link_to("Permissions", "/datasets#{@dataset.key}/permissions") %>
+    &nbsp;|&nbsp;
+    <%= link_to("Review Requests", "/datasets#{@dataset.key}/review_requests") %>
+    &nbsp;|&nbsp;
+    <%= link_to("Suppression Controls", "/datasets#{@dataset.key}/suppression_controls")%>
 <% end %>
 
 <div id="main-show-div">

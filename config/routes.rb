@@ -128,7 +128,7 @@ Rails.application.routes.draw do
   get '/datasets/:id/download_plaintext_citation', to: 'datasets#download_plaintext_citation'
   get '/datasets/:id/download_box_file/:box_file_id', to: 'datasets#download_box_file'
   get '/datasets/:id/permissions', to: 'datasets#permissions'
-  get '/datasets/:id/curator_access_controls', to: 'datasets#curator_access_controls'
+  get '/datasets/:id/curator_access_controls', to: 'datasets#suppression_controls'
   get '/datasets/:id/review_requests', to: 'datasets#review_requests'
   post '/datasets/:id/update_permissions', to: 'dataset#update_permissions'
   get '/datasets/:id/remove_sharing_link', to: 'datasets#remove_sharing_link'

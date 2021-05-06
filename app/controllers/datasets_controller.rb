@@ -682,7 +682,7 @@ collaborators to access the data files while the dataset is not public.</li>
     authorize! :manage, @dataset
   end
 
-  def curator_access_controls
+  def suppression_controls
     authorize! :manage, @dataset
   end
 
