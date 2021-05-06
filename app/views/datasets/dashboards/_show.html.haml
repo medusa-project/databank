@@ -68,14 +68,19 @@
               .panel-body
                 Private Sharing Link:
                 .row
-                  .col-md-12
+                  .col-md-11
                     .input-group.clipboard-control
                       %input(type="text" id="sharing-link" class="form-control" value="#{@dataset.sharing_link}" )
                       %span(class="input-group-btn" )
                         %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#sharing-link')
                           %span(class="glyphicon glyphicon-copy")
+                  -if(can? :edit, @dataset)
+                    .col-md-1
+                      -msg = "Are you sure? This permanently removes this sharing link. Another can be generated after."
+                      = link_to("/datasets/#{@dataset.key}/remove_sharing_link", method: :delete, data: {confirm: msg},
+                      class: "btn idb btn-danger remove-share-btn") do
+                        %span(class="glyphicon glyphicon-trash")
         .col-md-4
-
           - if @completion_check == 'ok' && @dataset.in_pre_publication_review
             %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
               Continue

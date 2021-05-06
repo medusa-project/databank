@@ -132,6 +132,11 @@ ready = function () {
         title: "copy to clipboard"
     });
 
+    $(".remove-share-btn").tooltip({
+        html: "false",
+        title: "remove sharing link"
+    });
+
     var numChecked = $('input.checkFile:checked').length;
 
     $(".checkFileSelectedCount").html('(' + numChecked + ')');

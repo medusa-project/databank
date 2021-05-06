@@ -39,7 +39,8 @@ class DatasetsController < ApplicationController
                                      :send_publication_notice,
                                      :open_in_globus,
                                      :import_from_globus,
-                                     :share]
+                                     :share,
+                                     :remove_sharing_link]
 
   @@num_box_ingest_deamons = 10
 
@@ -1046,6 +1047,19 @@ collaborators to access the data files while the dataset is not public.</li>
   def pre_deposit
     @dataset = Dataset.new
     set_file_mode
+  end
+
+  def remove_sharing_link
+    @dataset.share_code&.destroy
+    respond_to do |format|
+      if @dataset.current_share_code.nil?
+        format.html { redirect_to dataset_path(@dataset.key), notice: "Private Sharing Link has been removed." }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), notice: %(Unexpected Error) }
+        format.json { render json: {error: "Unexpected Error"}, status: :unprocessable_entity }
+      end
+    end
   end
 
   def suppress_changelog
