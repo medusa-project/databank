@@ -128,10 +128,11 @@ Rails.application.routes.draw do
   get '/datasets/:id/download_plaintext_citation', to: 'datasets#download_plaintext_citation'
   get '/datasets/:id/download_box_file/:box_file_id', to: 'datasets#download_box_file'
   get '/datasets/:id/permissions', to: 'datasets#permissions'
-  get '/datasets/:id/curator_access_controls', to: 'datasets#suppression_controls'
+  get '/datasets/:id/suppression_controls', to: 'datasets#suppression_controls'
   get '/datasets/:id/review_requests', to: 'datasets#review_requests'
   post '/datasets/:id/update_permissions', to: 'dataset#update_permissions'
   get '/datasets/:id/remove_sharing_link', to: 'datasets#remove_sharing_link'
+  get '/datasets/:id/medusa_details', to: 'datasets#medusa_details'
   post '/datasets/:id/suppression_action', to: 'datasets#suppression_action'
   post '/datasets/:id/send_to_medusa', to: 'datasets#send_to_medusa', defaults: {format: 'json'}
 
