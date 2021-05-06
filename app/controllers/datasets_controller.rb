@@ -1073,7 +1073,8 @@ collaborators to access the data files while the dataset is not public.</li>
         format.html { redirect_to dataset_path(@dataset.key), notice: "Private Sharing Link has been removed." }
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
-        format.html { redirect_to dataset_path(@dataset.key), notice: @dataset.current_share_code }
+        Rails.logger.warn ("Error removing sharing link for #{@dataset.key}")
+        format.html { redirect_to dataset_path(@dataset.key), notice: "Unexpected Error" }
         format.json { render json: {error: "Unexpected Error"}, status: :unprocessable_entity }
       end
     end
