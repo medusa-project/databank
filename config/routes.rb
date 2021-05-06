@@ -131,7 +131,7 @@ Rails.application.routes.draw do
   get '/datasets/:id/suppression_controls', to: 'datasets#suppression_controls'
   get '/datasets/:id/review_requests', to: 'datasets#review_requests'
   post '/datasets/:id/update_permissions', to: 'dataset#update_permissions'
-  get '/datasets/:id/remove_sharing_link', to: 'datasets#remove_sharing_link'
+  match '/datasets/:id/remove_sharing_link', to: 'datasets#remove_sharing_link', via: [:get, :post, :delete]
   get '/datasets/:id/medusa_details', to: 'datasets#medusa_details'
   post '/datasets/:id/suppression_action', to: 'datasets#suppression_action'
   post '/datasets/:id/send_to_medusa', to: 'datasets#send_to_medusa', defaults: {format: 'json'}
