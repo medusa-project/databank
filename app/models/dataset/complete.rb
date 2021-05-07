@@ -21,6 +21,7 @@ module Dataset::Complete
       e_arr += Dataset.duplicate_datafile_error(dataset) || []
       e_arr += Dataset.embargo_errors(dataset) || []
       e_arr += Dataset.import_date_errors(dataset) || []
+      e_arr << "500 or fewer datafiles" if dataset.datafiles.count > 500
       return "ok" if e_arr.empty?
 
       validation_error_message = "Required elements for a complete dataset missing: "
