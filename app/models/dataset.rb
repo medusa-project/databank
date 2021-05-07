@@ -127,6 +127,7 @@ class Dataset < ApplicationRecord
   end
 
   def metadata_public?
+    is_test == false &&
     [Databank::PublicationState::RELEASED,
      Databank::PublicationState::Embargo::FILE,
      Databank::PublicationState::TempSuppress::FILE,
