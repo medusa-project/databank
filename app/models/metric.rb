@@ -64,7 +64,7 @@ class Metric
       doi_filename_mimetype = MedusaInfo.doi_filename_mimetype
       render(json: {error: "mimetype map not found", status: 500}) && (return nil) unless doi_filename_mimetype
 
-      datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
+      datasets = Dataset.select(&:metadata_public?)
       target_path = METRICS_CONFIG[:datafiles_csv][:relative_path]
       File.open(target_path, "w") do |f|
         CSV.open(f, "w") do |report|

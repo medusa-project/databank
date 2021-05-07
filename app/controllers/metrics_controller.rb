@@ -17,12 +17,12 @@ class MetricsController < ApplicationController
   end
 
   def datafiles_simple_list
-    datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT).pluck(:id)
+    datasets = Dataset.select(&:metadata_public?).pluck(:id)
     @datafiles = Datafile.where(dataset_id: datasets)
   end
 
   def datasets_csv
-    datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
+    datasets = Dataset.select(&:metadata_public?)
 
     Tempfile.open("datasets_csv") do |t|
       CSV.open(t, "w") do |report|
@@ -46,12 +46,12 @@ class MetricsController < ApplicationController
   end
 
   def datafiles_csv
-    render "public/dataset_downloads.json", layout: false
+    render METRICS_CONFIG[:datafiles_csv][:relative_path], layout: false
   end
 
   def funders_csv
     Tempfile.open("funders_csv") do |t|
-      datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
+      datasets = Dataset.select(&:metadata_public?)
 
       report = CSV.new(t)
 
@@ -77,7 +77,7 @@ class MetricsController < ApplicationController
 
   def related_materials_csv
     Tempfile.open("materials_csv") do |t|
-      datasets = Dataset.where.not(publication_state: Databank::PublicationState::DRAFT)
+      datasets = Dataset.select(&:metadata_public?)
 
       report = CSV.new(t)
 

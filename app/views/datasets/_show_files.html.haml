@@ -47,7 +47,7 @@
                                   Select all
 
                                   ="(#{dataset.complete_datafiles.count})"
-                    -if dataset.complete_datafiles.count > 0
+                    -if dataset.complete_datafiles.count > 0 && dataset.complete_datafiles.count <= 500
                       - dataset.complete_datafiles.each do |datafile|
                         %tr.row
                           %td
@@ -99,24 +99,17 @@
                                     %button(type='button' class='btn btn-sm btn-success' onclick='preview_image("#{IDB_CONFIG[:iiif_root]}","#{datafile.web_id}")')
                                       %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
                                       View
-
-
                               %span.col-md-2
                                 %a(href="/datafiles/#{datafile.web_id}/download" class="btn btn-primary btn-sm idb" download )
                                   %span.glyphicon.glyphicon-download
                                   File
-
                             .row
                               .indent
-                                -#-if datafile.is_markdown?
-                                -#  .markdown_preview(id="preview_#{datafile.web_id}")
-                                -#    =raw(datafile.peek_text)
-                                -#-else
                                 .preview(id="preview_#{datafile.web_id}")
-
-
                             .row.loading.text-center
                               %i(class="far fa-spinner fa-spin fa-4x view-load-spinner spinner_#{datafile.web_id}" )
-            -#%a(href="#" data-toggle="modal" data-target="#globusModal" tabindex="-1" )
-            -#  %span(class="far fa-question-circle")
-            -#    what's this?
+                    -elsif dataset.complete_datafiles.count > 500
+                      %jumbotron
+                        Error displaying files, please
+                        =link_to("contact", "/help/contact_us")
+                        the Research Data Service
