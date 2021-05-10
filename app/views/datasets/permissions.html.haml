@@ -9,7 +9,7 @@
       .panel-body
         %strong Groups allowed to review this dataset, even when in a draft, held, or embargoed state:
         %hr
-        =form_tag("/datasets/#{@dataset.key}/update_permissions") do
+        =form_tag("/datasets/#{@dataset.key}/update_permissions", method: :post) do
           %input(type="hidden" name="permission_action" value="update_permission" )
           .row
             .col-md-1

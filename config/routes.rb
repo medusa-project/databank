@@ -130,7 +130,7 @@ Rails.application.routes.draw do
   get '/datasets/:id/permissions', to: 'datasets#permissions'
   get '/datasets/:id/suppression_controls', to: 'datasets#suppression_controls'
   get '/datasets/:id/review_requests', to: 'datasets#review_requests'
-  post '/datasets/:id/update_permissions', to: 'dataset#update_permissions'
+  post '/datasets/:id/update_permissions', controller: :datasets, action: :update_permissions
   delete '/datasets/:id/remove_sharing_link', to: 'datasets#remove_sharing_link'
   get '/datasets/:id/medusa_details', to: 'datasets#medusa_details'
   post '/datasets/:id/suppression_action', to: 'datasets#suppression_action'

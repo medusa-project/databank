@@ -703,8 +703,15 @@ collaborators to access the data files while the dataset is not public.</li>
     editor_netids = params[:internal_editor] || []
     UserAbility.update_internal_permissions(@dataset.key, reviewer_netids, editor_netids)
 
-    @dataset.save!
-    redirect_to "/datasets/#{@dataset.key}"
+    respond_to do |format|
+      if @dataset.save
+        format.html { redirect_to dataset_path(@dataset.key), notice: "Permissions updated." }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), alert: "Error attempting to update permissions." }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
   def cancel_box_upload
