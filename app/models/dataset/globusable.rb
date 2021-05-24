@@ -63,9 +63,17 @@ module Dataset::Globusable
       next if existing_datafile
 
       obj_size = StorageManager.instance.draft_root.size(storage_key)
+
+      mime_guesses_set = MIME::Types.type_for(name_part.downcase)
+      mime_guess = if mime_guesses_set && !mime_guesses_set.length.positive?
+                     mime_guesses_set[0].content_type
+                   else
+                     "application/octet-stream"
+                   end
       Datafile.create(dataset_id:   id,
                       binary_name:  name_part,
                       binary_size:  obj_size,
+                      mime_type:    mime_guess,
                       storage_root: "draft",
                       storage_key:  storage_key)
     end
