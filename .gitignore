@@ -51,3 +51,4 @@ stop.sh
 /config/credentials/test.key
 /config/credentials/production.key
 node_modules
+.java-version

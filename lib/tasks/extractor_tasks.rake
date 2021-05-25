@@ -76,4 +76,15 @@ namespace :extractor_tasks do
     puts queues.to_yaml
     puts "Goodbye local queues"
   end
+
+  desc "test local-docker-based archive extractor"
+  task test_local_extractor: :environment do
+    unsent = ExtractorTask.where(sent_at: nil).select(:web_id).distinct
+    unsent.each do |extractor_task|
+      datafile = Datafile.where(web_id: extractor_task.web_id).first
+      command = "Extractor.extract '#{datafile.storage_root_bucket}', '#{datafile.storage_key_with_prefix}', '#{datafile.binary_name}', '#{datafile.web_id}', '#{datafile.mime_type}'"
+      resp =  `docker run --network databank-archive-extractor-docker_default databank/archive-extractor:latest ruby -r ./lib/extractor.rb -e "#{command}"`
+      puts resp
+    end
+  end
 end
