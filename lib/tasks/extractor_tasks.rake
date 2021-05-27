@@ -80,11 +80,15 @@ namespace :extractor_tasks do
   desc "test local-docker-based archive extractor"
   task test_local_extractor: :environment do
     unsent = ExtractorTask.where(sent_at: nil).select(:web_id).distinct
+    puts "Extracting #{unsent.count} local archives"
     unsent.each do |extractor_task|
       datafile = Datafile.where(web_id: extractor_task.web_id).first
+      puts "Extracting file with web_id: #{datafile.web_id}"
       command = "Extractor.extract '#{datafile.storage_root_bucket}', '#{datafile.storage_key_with_prefix}', '#{datafile.binary_name}', '#{datafile.web_id}', '#{datafile.mime_type}'"
       resp =  `docker run --network databank-archive-extractor-docker_default databank/archive-extractor:latest ruby -r ./lib/extractor.rb -e "#{command}"`
       puts resp
+      Rake::Task["extractor_tasks:get_extractor_response"].execute
     end
+    Rake::Task["extractor_tasks:backfill_sent"].execute
   end
 end
