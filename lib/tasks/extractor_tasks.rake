@@ -79,7 +79,7 @@ namespace :extractor_tasks do
 
   desc "test local-docker-based archive extractor"
   task test_local_extractor: :environment do
-    network = "databank-archive-extractor-docker_default"
+    network = "databank_default"
     docker_container = "docker.pkg.github.com/medusa-project/databank-archive-extractor/archive-extractor:latest"
     unsent = ExtractorTask.where(sent_at: nil).select(:web_id).distinct
 
