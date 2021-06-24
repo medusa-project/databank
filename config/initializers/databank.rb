@@ -44,6 +44,21 @@ if IDB_CONFIG[:aws][:s3_mode] == true
   #                                                   secret_access_key: IDB_CONFIG[:aws][:secret_access_key],
   #                                                   region:            IDB_CONFIG[:aws][:region],
   #                                                   )
+elsif IDB_CONFIG[:aws][:s3_mode] == "local"
+  Aws.config.update({region: IDB_CONFIG[:aws][:region]})
+
+  Application.aws_signer = Aws::S3::Presigner.new
+
+  Application.aws_client = Aws::S3::Client.new
+
+  Tus::Server.opts[:storage] = Tus::Storage::S3.new(
+      endpoint:          'http://localhost:9000',
+      access_key_id:     'minioadmin',
+      secret_access_key: 'minioadmin',
+      force_path_style:  true,
+      prefix:            'uploads',
+      bucket:            STORAGE_CONFIG[:storage][0][:bucket], # required
+      region:            IDB_CONFIG[:aws][:region])
 
 else
   Tus::Server.opts[:storage] = Tus::Storage::Filesystem.new(STORAGE_CONFIG[:storage][0][:path] )

@@ -23,6 +23,7 @@ mock_medusa
 mock_bk
 /scripts
 /solr
+/storage
 /cantaloupe
 bin/databank_dev
 bin/databank_prod
@@ -51,3 +52,4 @@ stop.sh
 /config/credentials/test.key
 /config/credentials/production.key
 node_modules
+.java-version

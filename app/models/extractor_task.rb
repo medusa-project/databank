@@ -129,11 +129,11 @@ class ExtractorTask < ApplicationRecord
     raise StandardError.new(extractor_response.to_yaml.to_s) unless success_response
 
     datafile.update(peek_type: extractor_response.peek_type, peek_text: extractor_response.peek_text)
-    handle_extracted_nested_items(datafile: datafile, nested_items: message["nested_items"])
+    ExtractorTask.handle_extracted_nested_items(datafile: datafile, nested_items: message["nested_items"])
   end
 
-  def handle_extracted_nested_items(datafile, nested_items:)
-    return nil unless nested_items.respond_to?(each) && nested_items.count.positive?
+  def self.handle_extracted_nested_items(datafile:, nested_items:)
+    return nil unless nested_items.respond_to?(:each) && nested_items.count.positive?
 
     datafile.nested_items.destroy_all
     nested_items.each do |item|

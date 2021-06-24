@@ -76,4 +76,28 @@ namespace :extractor_tasks do
     puts queues.to_yaml
     puts "Goodbye local queues"
   end
+
+  desc "test local-docker-based archive extractor"
+  task test_local_extractor: :environment do
+    begin
+      network = "databank_default"
+      docker_container = "docker.pkg.github.com/medusa-project/databank-archive-extractor/archive-extractor:latest"
+      unsent = ExtractorTask.where(sent_at: nil).select(:web_id).distinct
+
+      puts "Extracting #{unsent.count} local archives"
+      unsent.each do |extractor_task|
+        datafile = Datafile.where(web_id: extractor_task.web_id).first
+        puts "Extracting file with web_id: #{extractor_task.web_id}"
+        command = "Extractor.extract '#{datafile.storage_root_bucket}', '#{datafile.storage_key_with_prefix}', '#{datafile.binary_name}', '#{datafile.web_id}', '#{datafile.mime_type}'"
+        resp =  `docker run --network #{network} #{docker_container} ruby -r ./lib/extractor.rb -e "#{command}"`
+        puts resp
+        Rake::Task["extractor_tasks:get_extractor_response"].execute
+      end
+    rescue StandardError => ex
+      puts "Error testing extractor #{ex.message}"
+    ensure
+      Rake::Task["extractor_tasks:backfill_sent"].execute
+    end
+
+   end
 end
