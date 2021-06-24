@@ -39,13 +39,9 @@ namespace :fix do
   desc 'update datacite metadata store'
   task :update_datacite => :environment do
     datasets = Dataset.select(&:metadata_public?)
-    datasets.each do |dataset|
-      dataset.update_doi
-    end
-
+    datasets.each(&:update_doi)
   end
-
-
+  
   desc 'remove draft files if medusa ingest successful'
   task :remove_draft_if_in_medusa => :environment do
     MedusaIngest.remove_draft_if_in_medusa
@@ -83,10 +79,7 @@ namespace :fix do
 
   desc 'fix storage root for preserved files'
   task :fix_storage_root => :environment do
-    Datafile.where(storage_root: 'draft').each do |datafile|
-      # in_medusa returns a true/false, but also updates datafile records as appropriate
-      datafile.in_medusa
-    end
+    Datafile.where(storage_root: 'draft').each(&:in_medusa)
   end
 
   desc 'fix missing version'
@@ -136,9 +129,7 @@ namespace :fix do
 
     datasets_to_destroy = Dataset.where(key: ['IDBDEV-1772206'])
 
-    datasets_to_destroy.each do |doomed|
-      doomed.destroy!
-    end
+    datasets_to_destroy.each(&:destroy!)
 
   end
 
@@ -293,9 +284,7 @@ namespace :fix do
     embargoed = Dataset.where(publication_state: Databank::PublicationState::Embargo::METADATA)
 
     [test, held, suppressed, embargoed].each do |recordset|
-      recordset.each do |dataset|
-        dataset.hide_doi
-      end
+      recordset.each(&:hide_doi)
     end
 
   end
@@ -304,9 +293,7 @@ namespace :fix do
   task :redact_dev => :environment do
 
     if Rails.env.development?
-      Dataset.where.not(publication_state: Databank::PublicationState::DRAFT).each do |dataset|
-        dataset.hide_doi
-      end
+      Dataset.where.not(publication_state: Databank::PublicationState::DRAFT).each(&:hide_doi)
     end
 
   end
