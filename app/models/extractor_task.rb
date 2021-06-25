@@ -56,9 +56,9 @@ class ExtractorTask < ApplicationRecord
                datafile.binary_name,
                "', '",
                datafile.web_id,
-               "'",
+               "', '",
                datafile.mime_type,
-               ","]
+               "'"]
     str_arr.join
   end
 
