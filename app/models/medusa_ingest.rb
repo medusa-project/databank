@@ -361,12 +361,14 @@ class MedusaIngest < ApplicationRecord
   end
 
   def send_medusa_ingest_message
-    if IDB_CONFIG[:rabbit_or_sqs] == "rabbit"
-      AmqpHelper::Connector[:databank].send_message(MedusaIngest.outgoing_queue, medusa_ingest_message)
-    else
-      sqs = QueueManager.instance.sqs_client
-      sqs.send_message(queue_url:                IDB_CONFIG[:queues][:databank_to_medusa_url],
-                       message_body:             medusa_ingest_message)
+    if Rails.env.production? || Rails.env.demo?
+      if IDB_CONFIG[:rabbit_or_sqs] == "rabbit"
+        AmqpHelper::Connector[:databank].send_message(MedusaIngest.outgoing_queue, medusa_ingest_message)
+      else
+        sqs = QueueManager.instance.sqs_client
+        sqs.send_message(queue_url:                IDB_CONFIG[:queues][:databank_to_medusa_url],
+                         message_body:             medusa_ingest_message.to_json)
+      end
     end
   end
 
