@@ -5,7 +5,7 @@ require "open_uri_redirections"
 
 # defines and sends email
 class DatabankMailer < ActionMailer::Base
-  default from: "databank@library.illinois.edu"
+  default from: IDB_CONFIG[:admin][:contact_email]
 
   def confirm_deposit(dataset_key)
     @dataset = Dataset.find_by(key: dataset_key)
@@ -17,7 +17,7 @@ class DatabankMailer < ActionMailer::Base
       @dataset.creators.each do |creator|
         to_array << creator.email
       end
-      to_array << "databank@library.illinois.edu"
+      to_array << IDB_CONFIG[:admin][:contact_email]
       mail(to: to_array, subject: subject)
     else
       Rails.logger.warn "Confirmation email not sent: #{dataset_key}."
@@ -29,7 +29,7 @@ class DatabankMailer < ActionMailer::Base
     if @dataset
       subject_base = "Illinois Data Bank] Dataset updated (#{@dataset.identifier})"
       subject = prepend_system_code(subject_base)
-      mail(to: "databank@library.illinois.edu", subject: subject)
+      mail(to: IDB_CONFIG[:admin][:contact_email], subject: subject)
     else
       Rails.logger.warn "Update confirmation email not sent: #{dataset_key}."
     end
@@ -44,8 +44,8 @@ class DatabankMailer < ActionMailer::Base
       subject_base = "Illinois Data Bank] Dataset Consultation Request"
       subject = prepend_system_code(subject_base)
     end
-    mail(from:    "databank@library.illinois.edu",
-         to:      ["databank@library.illinois.edu",
+    mail(from:    IDB_CONFIG[:admin][:contact_email],
+         to:      [IDB_CONFIG[:admin][:contact_email],
                    @params["help-email"]],
          subject: subject)
   end
@@ -61,7 +61,7 @@ class DatabankMailer < ActionMailer::Base
     @dataset = Dataset.find_by(key: dataset_key)
     if @dataset
       mail(to:      dataset.depositor_email,
-           cc:      "databank@library.illinois.edu",
+           cc:      IDB_CONFIG[:admin][:contact_email],
            subject: subject)
     else
       Rails.logger.warn "Dataset incomplete 1m email not sent: #{dataset_key}."
@@ -74,7 +74,7 @@ class DatabankMailer < ActionMailer::Base
     @dataset = Dataset.find_by(key: dataset_key)
     if @dataset
       mail(to:      @dataset.depositor_email,
-           cc:      "databank@library.illinois.edu",
+           cc:      IDB_CONFIG[:admin][:contact_email],
            subject: subject)
     else
       Rails.logger.warn "Embargo 1m email not sent: #{dataset_key}."
@@ -87,7 +87,7 @@ class DatabankMailer < ActionMailer::Base
     @dataset = Dataset.find_by(key: dataset_key)
     if @dataset
       mail(to:      @dataset.depositor_email,
-           cc:      "databank@library.illinois.edu",
+           cc:      IDB_CONFIG[:admin][:contact_email],
            subject: subject)
     else
       Rails.logger.warn "Embargo 1w email not sent: #{dataset_key}."
@@ -112,7 +112,7 @@ class DatabankMailer < ActionMailer::Base
     @err = err
     @dataset = Dataset.find_by(key: dataset_key)
     if @dataset
-      mail(to: "databank@library.illinois.edu", subject: subject)
+      mail(to: IDB_CONFIG[:admin][:contact_email], subject: subject)
     else
       Rails.logger.warn "Confirmation email not sent email not sent \
 because dataset not found for key: #{dataset_key}."
