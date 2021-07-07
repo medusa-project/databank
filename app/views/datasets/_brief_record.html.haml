@@ -45,12 +45,14 @@
     .label.label-success
       has sharing link
     &nbsp;
-  -if(can? :read, dataset) && dataset.release_date
+  -if(can? :read, dataset) && dataset.release_date && dataset.metadata_public?
     .label.label-info
       -if dataset.release_date > Date.current()
         planned publication date:
-      -else
+      -elsif dataset.publication_state == Databank::PublicationState::RELEASED
         published:
+      -else
+        release date:
       =dataset.release_date.iso8601
     &nbsp;
 
