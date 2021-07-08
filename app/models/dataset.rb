@@ -143,6 +143,22 @@ class Dataset < ApplicationRecord
         (hold_state.nil? || (hold_state == Databank::PublicationState::TempSuppress::NONE))
   end
 
+  # to work around persistent system bug that shows embargoed content
+  def ensure_embargo
+    return true if publication_state == Databank::PublicationState::DRAFT
+
+    return true if publication_state == embargo
+
+    return true if embargo.nil?
+
+    return true if embargo == Databank::PublicationState::Embargo::NONE
+
+    return true if release_date <= Time.current
+
+    publication_state == embargo
+    save
+  end
+
   def publication_year
     if release_date
       release_date.year || Time.now.in_time_zone.year

@@ -638,8 +638,6 @@ collaborators to access the data files while the dataset is not public.</li>
     send_data @report, filename: "report.txt" if params.has_key?("download") && params["download"] == "now"
   end
 
-  # GET /datasets/1
-  # GET /datasets/1.json
   def show
     @shared_by_link = (params.has_key?("code") && (params["code"] == @dataset.current_share_code))
     @datacite_fabrica_url = if Rails.env.aws_production?
@@ -648,6 +646,8 @@ collaborators to access the data files while the dataset is not public.</li>
                               "https://doi.test.datacite.org/"
                             end
     @completion_check = Dataset.completion_check(@dataset, current_user)
+    @dataset.ensure_embargo
+
     set_file_mode
   end
 
