@@ -179,7 +179,7 @@ class Datafile < ApplicationRecord
   def copy_to_tmpfs
     raise StandardError.new "file at #{tmpfs_key} already exists" if tmpfs_root.exist?(tmpfs_key)
 
-    current_root.with_input_io do |input_io|
+    with_input_io do |input_io|
       tmpfs_root.copy_io_to(tmpfs_key, input_io)
     end
   end
