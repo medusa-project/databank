@@ -40,9 +40,9 @@ class Datafile < ApplicationRecord
 
   def handle_peek
     markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
-    raise StandardError.new("no binary_name for datafile id: #{self.id}") unless self.binary_name
+    raise StandardError.new("no binary_name for datafile id: #{id}") unless binary_name
 
-    file_parts = self.binary_name.split(".")
+    file_parts = binary_name.split(".")
     if file_parts && markdown_extensions.include?(file_parts.last)
       self.peek_type = Databank::PeekType::MARKDOWN
       self.peek_text = Application.markdown.render(all_text_peek)
@@ -61,13 +61,13 @@ class Datafile < ApplicationRecord
       self.peek_type = initial_peek_type
       self.peek_text = part_text_peek
     when Databank::PeekType::LISTING
-      self.initiate_processing_task
+      initiate_processing_task
     else
       return true
     end
     save!
   rescue StandardError => error
-    Rails.logger.warn "problem in handling peek for datafile id: #{self.id}"
+    Rails.logger.warn "problem in handling peek for datafile id: #{id}"
     Rails.logger.warn error.message
   end
 
@@ -166,6 +166,24 @@ class Datafile < ApplicationRecord
 
   def name
     binary_name
+  end
+
+  def tmpfs_key
+    File.join(dataset.key, name)
+  end
+
+  def copy_to_tmpfs
+    raise StandardError.new "file at #{tmpfs_key} already exists" if StorageManager.tmpfs_root.exist?(tmpfs_key)
+
+    current_root.with_input_io do |input_io|
+      StorageManager.tmpfs_root.copy_io_to(tmpfs_key, input_io)
+    end
+  end
+
+  def remove_from_tmpfs
+    return true unless StorageManager.tmpfs_root.exist?(tmpfs_key)
+
+    StorageManager.tmpfs_root.delete_content(tmpfs_key)
   end
 
   # medusa mounts are different on iiif server
