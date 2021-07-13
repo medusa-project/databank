@@ -101,7 +101,7 @@ class Datafile < ApplicationRecord
   end
 
   def tmpfs_root
-    StorageManger.instance.tmpfs_root
+    StorageManager.instance.tmpfs_root
   end
 
   def storage_root_bucket
