@@ -100,6 +100,10 @@ class Datafile < ApplicationRecord
     StorageManager.instance.root_set.at(storage_root)
   end
 
+  def tmpfs_root
+    StorageManger.instance.tmpfs_root
+  end
+
   def storage_root_bucket
     current_root.bucket if IDB_CONFIG[:aws][:s3_mode]
   end
@@ -173,17 +177,17 @@ class Datafile < ApplicationRecord
   end
 
   def copy_to_tmpfs
-    raise StandardError.new "file at #{tmpfs_key} already exists" if StorageManager.tmpfs_root.exist?(tmpfs_key)
+    raise StandardError.new "file at #{tmpfs_key} already exists" if tmpfs_root.exist?(tmpfs_key)
 
     current_root.with_input_io do |input_io|
-      StorageManager.instance.tmpfs_root.copy_io_to(tmpfs_key, input_io)
+      tmpfs_root.copy_io_to(tmpfs_key, input_io)
     end
   end
 
   def remove_from_tmpfs
-    return true unless StorageManager.tmpfs_root.exist?(tmpfs_key)
+    return true unless tmpfs_root.exist?(tmpfs_key)
 
-    StorageManager.instance.tmpfs_root.delete_content(tmpfs_key)
+    tmpfs_root.delete_content(tmpfs_key)
   end
 
   # medusa mounts are different on iiif server
