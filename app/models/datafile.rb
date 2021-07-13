@@ -188,13 +188,15 @@ class Datafile < ApplicationRecord
     return true unless tmpfs_root.exist?(tmpfs_key)
 
     tmpfs_root.delete_content(tmpfs_key)
+    tmpfs_root.delete_tree(dataset.key) if Dir.empty?(File.join(tmpfs_root.real_path, dataset.key))
   end
 
   # medusa mounts are different on iiif server
   def iiif_bytestream_path
-    if storage_root == "draft"
+    case storage_root
+    when "draft"
       File.join(IDB_CONFIG[:iiif][:draft_base], storage_key)
-    elsif storage_root == "medusa"
+    when "medusa"
       File.join(IDB_CONFIG[:iiif][:medusa_base], storage_key)
     else
       raise StandardError.new("invalid storage_root found for datafile: #{self.web_id}")
