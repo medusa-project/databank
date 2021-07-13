@@ -180,7 +180,7 @@ class Datafile < ApplicationRecord
     raise StandardError.new "file at #{tmpfs_key} already exists" if tmpfs_root.exist?(tmpfs_key)
 
     with_input_io do |input_io|
-      tmpfs_root.copy_io_to(tmpfs_key, input_io, nil, nil, nil)
+      tmpfs_root.copy_io_to(tmpfs_key, input_io, nil, size)
     end
   end
 
