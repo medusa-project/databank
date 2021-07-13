@@ -176,14 +176,14 @@ class Datafile < ApplicationRecord
     raise StandardError.new "file at #{tmpfs_key} already exists" if StorageManager.tmpfs_root.exist?(tmpfs_key)
 
     current_root.with_input_io do |input_io|
-      StorageManager.tmpfs_root.copy_io_to(tmpfs_key, input_io)
+      StorageManager.instance.tmpfs_root.copy_io_to(tmpfs_key, input_io)
     end
   end
 
   def remove_from_tmpfs
     return true unless StorageManager.tmpfs_root.exist?(tmpfs_key)
 
-    StorageManager.tmpfs_root.delete_content(tmpfs_key)
+    StorageManager.instance.tmpfs_root.delete_content(tmpfs_key)
   end
 
   # medusa mounts are different on iiif server
