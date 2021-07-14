@@ -654,7 +654,7 @@ collaborators to access the data files while the dataset is not public.</li>
   def suppression_action
     authorize! :manage, @dataset
 
-    redirect_to action: params[:suppression_action], method: :post
+    redirect_to action: params[:suppression_action]
   end
 
   def permissions
