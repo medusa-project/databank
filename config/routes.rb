@@ -134,6 +134,13 @@ Rails.application.routes.draw do
   delete '/datasets/:id/remove_sharing_link', to: 'datasets#remove_sharing_link'
   get '/datasets/:id/medusa_details', to: 'datasets#medusa_details'
   post '/datasets/:id/suppression_action', to: 'datasets#suppression_action'
+  post '/datasets/:id/temporarily_suppress_metadata', to: 'datasets#temporarily_suppress_metadata'
+  post '/datasets/:id/temporarily_suppress_files', to: 'datasets#temporarily_suppress_files'
+  post '/datasets/:id/unsuppress_changelog', to: 'datasets#unsuppress_changelog'
+  post '/datasets/:id/suppress_changelog', to: 'datasets#suppress_changelog'
+  post '/datasets/:id/unsuppress', to: 'datasets#unsuppress'
+  post '/datasets/:id/permanently_suppress_files', to: 'datasets#permanently_suppress_files'
+  post '/datasets/:id/permanently_suppress_metadata', to: 'datasets#permanently_suppress_metadata'
   post '/datasets/:id/send_to_medusa', to: 'datasets#send_to_medusa', defaults: {format: 'json'}
 
   post 'api/dataset/:dataset_key/upload', to: 'api_dataset#upload', defaults: {format: 'json'}
