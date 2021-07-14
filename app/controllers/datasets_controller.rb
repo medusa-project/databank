@@ -44,11 +44,7 @@ class DatasetsController < ApplicationController
                                      :suppression_controls,
                                      :review_requests,
                                      :permissions,
-                                     :medusa_details,
-                                     :temporarily_suppress_metadata,
-                                     :temporarily_suppress_files,
-                                     :permanently_suppress_files,
-                                     :permanently_suppress_metadata]
+                                     :medusa_details]
 
   @@num_box_ingest_deamons = 10
 
@@ -657,22 +653,8 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def suppression_action
     authorize! :manage, @dataset
-    case params[:suppression_action]
-    when "temporarily_suppress_files"
-      temporarily_suppress_files
-    when "temporarily_suppress_metadata"
-      temporarily_suppress_metadata
-    when "permanently_suppress_files"
-      permanently_suppress_files
-    when "permanently_suppress_metadata"
-      permanently_suppress_metadata
-    when "unsuppress"
-      unsuppress
-    when "suppress_changelog"
-      suppress_changelog
-    when "unsuppress_changelog"
-      unsuppress_changelog
-    end
+
+    redirect_to action: params[:suppression_action]
   end
 
   def permissions
