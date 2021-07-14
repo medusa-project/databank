@@ -44,7 +44,15 @@ class DatasetsController < ApplicationController
                                      :suppression_controls,
                                      :review_requests,
                                      :permissions,
-                                     :medusa_details]
+                                     :medusa_details,
+                                     :temporarily_suppress_metadata,
+                                     :temporarily_suppress_files,
+                                     :unsuppress_changelog,
+                                     :suppress_changelog,
+                                     :unsuppress,
+                                     :permanently_suppress_files,
+                                     :permanently_suppress_metadata
+  ]
 
   @@num_box_ingest_deamons = 10
 
