@@ -45,7 +45,7 @@ class DatabankMailer < ActionMailer::Base
       subject = prepend_system_code(subject_base)
     end
     mail(from:    IDB_CONFIG[:admin][:contact_email],
-         to:      ["databank@library.illinois.edu", "zulauf@illinois.edu", @params["help-email"]],
+         to:      [IDB_CONFIG[:admin][:contact_email], "imker@illinois.edu", @params["help-email"]],
          subject: subject)
   end
 
