@@ -18,6 +18,7 @@ class DatabankMailer < ActionMailer::Base
         to_array << creator.email
       end
       to_array << IDB_CONFIG[:admin][:contact_email]
+      to_array << IDB_CONFIG[:admin][:temp_contact_email]
       mail(to: to_array, subject: subject)
     else
       Rails.logger.warn "Confirmation email not sent: #{dataset_key}."
@@ -29,7 +30,7 @@ class DatabankMailer < ActionMailer::Base
     if @dataset
       subject_base = "Illinois Data Bank] Dataset updated (#{@dataset.identifier})"
       subject = prepend_system_code(subject_base)
-      mail(to: IDB_CONFIG[:admin][:contact_email], subject: subject)
+      mail(to: [IDB_CONFIG[:admin][:contact_email], IDB_CONFIG[:admin][:temp_contact_email]], subject: subject)
     else
       Rails.logger.warn "Update confirmation email not sent: #{dataset_key}."
     end
@@ -62,7 +63,7 @@ class DatabankMailer < ActionMailer::Base
     @dataset = Dataset.find_by(key: dataset_key)
     if @dataset
       mail(to:      dataset.depositor_email,
-           cc:      IDB_CONFIG[:admin][:contact_email],
+           cc:      [IDB_CONFIG[:admin][:contact_email], IDB_CONFIG[:admin][:temp_contact_email]],
            subject: subject)
     else
       Rails.logger.warn "Dataset incomplete 1m email not sent: #{dataset_key}."
@@ -75,7 +76,7 @@ class DatabankMailer < ActionMailer::Base
     @dataset = Dataset.find_by(key: dataset_key)
     if @dataset
       mail(to:      @dataset.depositor_email,
-           cc:      IDB_CONFIG[:admin][:contact_email],
+           cc:      [IDB_CONFIG[:admin][:contact_email], IDB_CONFIG[:admin][:temp_contact_email]],
            subject: subject)
     else
       Rails.logger.warn "Embargo 1m email not sent: #{dataset_key}."
@@ -88,7 +89,7 @@ class DatabankMailer < ActionMailer::Base
     @dataset = Dataset.find_by(key: dataset_key)
     if @dataset
       mail(to:      @dataset.depositor_email,
-           cc:      IDB_CONFIG[:admin][:contact_email],
+           cc:      [IDB_CONFIG[:admin][:contact_email], IDB_CONFIG[:admin][:temp_contact_email]],
            subject: subject)
     else
       Rails.logger.warn "Embargo 1w email not sent: #{dataset_key}."
@@ -113,7 +114,7 @@ class DatabankMailer < ActionMailer::Base
     @err = err
     @dataset = Dataset.find_by(key: dataset_key)
     if @dataset
-      mail(to: IDB_CONFIG[:admin][:contact_email], subject: subject)
+      mail(to: [IDB_CONFIG[:admin][:contact_email], IDB_CONFIG[:admin][:temp_contact_email]], subject: subject)
     else
       Rails.logger.warn "Confirmation email not sent email not sent \
 because dataset not found for key: #{dataset_key}."
