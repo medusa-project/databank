@@ -46,6 +46,7 @@ class DatabankMailer < ActionMailer::Base
     end
     mail(from:    IDB_CONFIG[:admin][:contact_email],
          to:      [IDB_CONFIG[:admin][:contact_email],
+                   "uofi.rds.gmail.com",
                    @params["help-email"]],
          subject: subject)
   end
