@@ -19,6 +19,7 @@
   :materials_report_list: <%= Rails.application.credentials[:admin][:materials_report_list] %>
   :localpass: <%= Rails.application.credentials[:admin][:localpass] %>
   :contact_email: <%= Rails.application.credentials[:admin][:contact_email] %>
+  :temp_contact_email: <%= Rails.application.credentials[:admin][:temp_contact_email] %>
 
 :datacite:
   :endpoint: <%= Rails.application.credentials[:datacite][:endpoint] %>
