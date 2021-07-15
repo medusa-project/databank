@@ -45,7 +45,7 @@ class DatabankMailer < ActionMailer::Base
       subject = prepend_system_code(subject_base)
     end
     mail(from:    IDB_CONFIG[:admin][:contact_email],
-         to:      ["uofi.rds.gmail.com", @params["help-email"]],
+         to:      ["uofi.rds@gmail.com", @params["help-email"]],
          subject: subject)
   end
 
