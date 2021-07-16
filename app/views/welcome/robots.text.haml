@@ -1,14 +1,14 @@
-= "User-Agent: Amazonbot"               # Amazon's user agent
+= "User-agent: Amazonbot"               # Amazon's user agent
 = "Disallow: /do-not-crawl/"            # disallow this directory
-
+%br
 - if Rails.env == "production"
-  = "User-Agent: *\n"
+  = "User-agent: *"
   = "Disallow: /datafiles"
   = "Disallow: */download"
   = "Disallow: */preview"
   = "Disallow: */view"
 - else
-  = "User-Agent: *\n"
-  = "Noindex: /\n"
+  = "User-agent: *"
+  = "noindex: /"
 
 = "\nSitemap: #{root_url}sitemap.xml"
