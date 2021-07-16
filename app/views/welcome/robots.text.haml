@@ -1,5 +1,5 @@
 = "User-agent: Amazonbot"               # Amazon's user agent
-= "Disallow: /do-not-crawl/\n"            # disallow this directory
+= "Disallow: /\n"            # disallow all
 
 - if Rails.env == "production"
   = "User-agent: *"
