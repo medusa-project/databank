@@ -1,0 +1,7 @@
+%h1 Editing note
+
+= render 'form'
+
+= link_to 'Show', "/datasets/#{@dataset.key}/notes/#{@note.id}"
+\|
+= link_to 'Back to Notes for this dataset', dataset_notes_path(@dataset)

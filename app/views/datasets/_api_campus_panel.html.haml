@@ -1,0 +1,37 @@
+.panel-group(id="campus" role="tablist" aria-multiselectable="true")
+  .panel.panel-default
+    .panel-heading(role="tab" id="campusHeading")
+      %h4(class="panel-title")
+        %a( role="button" data-toggle="collapse" data-parent="#campus" href="#campusPanel" aria-expanded="false" aria-controls="campusPanel" class="accordion-toggle collapsed" )
+          %span( class="metadata-label" ) Notes on using our Python script on campus systems. (click to expand)
+    .panel-collapse.collapse(id="campusPanel" role="tabpanel" aria-labelledby="campusHeading" )
+      .panel-body
+
+        %h4
+          %strong Institute for Genomic Biology
+
+        .indent
+
+          %p
+            The
+            %em IllinoisDataBank
+            module on biocluster2, available to any user of the system, ensures a python environment with the modules needed to upload files using our custom Python script, as further described in the above section.
+
+          %pre
+            %code
+              module load IllinoisDataBank
+
+        %h4
+          %strong AWS
+        .indent
+          %p The default Linux system in AWS already has Python along with the 'requests' and 'urllib3' modules installed, so only the 'docopts' module would need to be installed, as in the instructions in the section above.
+
+        %h4
+          %strong Virtual Hosting Group at Technology Services
+        .indent
+          %p Since the OS installation and component parts are handled by the tenant, tenant owners have full administrative rights to follow the instructions in the section above.
+
+        %p
+          For more help,
+          =succeed(".") do
+            %a(href="/contact") Contact Us

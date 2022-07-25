@@ -1,0 +1,49 @@
+.modal.fade.modal-lg(id="orcid_creator_search" role="dialog" )
+  .modal-content
+    .modal-header
+      %a(href="#" class="close" data-dismiss="modal")
+        &times;
+      %h3 Indexable for ORCID&reg; iD
+
+    .modal-body
+
+      .form
+        %input(type="hidden" id="creator-index" name="creator-index" value="unset" )
+        %input(type="hidden" id="selected-id" name="selected-id" value = "")
+        %input(type="hidden" id="selected-given-name" name="selected-given-name" value="" )
+        %input(type="hidden" id="selected-family-name" name="selected-family-name" value="" )
+        .row
+          .col-md-4
+            .form-group
+              %label(for="family-name")
+                Family Name
+              %input(type="text" class="form-control" name="creator-family" id="creator-family" )
+          .col-md-4
+            .form-group
+              %label(for="given-name")
+                Given Name
+              %input(type="text" class="form-control" name="creator-given" id="creator-given" )
+          .col-md-4
+            %br
+            %button(type="button" class="btn btn-primary" onclick="search_creator_orcid()" )
+              %span(class="glyphicon glyphicon-search" )
+              Search
+        .loading.text-center
+          %i(class="far fa-spinner fa-spin fa-4x orcid-search-spinner" )
+        .container-fluid
+          .results(id="orcid-search-results")
+
+
+    .modal-footer
+      .control-group
+        .controls
+          %button(type="button" class="btn btn-danger" data-dismiss="modal")
+            %span(class="glyphicon glyphicon-remove" )
+            Cancel
+          %button(type='button' id='orcid-import-btn' class='btn btn-success' data-dismiss="modal" onclick='set_creator_orcid_from_search_modal()' disabled)
+            %span(class="glyphicon glyphicon-transfer" )
+            Import Selection
+
+
+
+

@@ -1,0 +1,25 @@
+.modal.fade(id="licenseChangeModal")
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %button(class="close" data-dismiss="modal")
+          &times;
+        %h2 License Change Warning
+      .modal-body
+        %p
+          =precede "If you must change the original license terms you originally selected for this dataset, it's important to note that any change you make to the license terms is NOT retroactive. When a licensor changes the license of a work it simply means that whomever comes across the work in the future will be bound by the new terms and not the older ones. It does not mean, however, that the older licenses are invalidated." do
+            %sup 1
+        %hr
+        %p
+          %sup 1
+          %a(href="https://blog.creativecommons.org/2008/10/27/on-verifying-the-commons/" )  https://blog.creativecommons.org/2008/10/27/on-verifying-the-commons/
+        %hr
+        .container-fluid
+          .row
+            .col-md-6
+              %small
+                %em The material presented here is for informational purposes only and not for the purpose of providing legal advice.
+            .pull-right
+              %button(onclick='window.open("/help#license")' type="button" class="btn btn-success" data-dismiss="modal" id="help-button")
+                %span(class="glyphicon glyphicon-question-sign")
+                Learn more about licensing research data

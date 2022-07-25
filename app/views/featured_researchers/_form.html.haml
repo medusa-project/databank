@@ -1,0 +1,54 @@
+= form_for @featured_researcher do |f|
+  - if @featured_researcher.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@featured_researcher.errors.count, "error")} prohibited this featured researcher record from being saved:"
+      %ul
+        - @featured_researcher.errors.full_messages.each do |msg|
+          %li= msg
+
+  =f.hidden_field :is_active, value: @featured_researcher.is_active | false
+
+  .form-group.row
+    .field
+      = f.label :photo_url, "Photo URL", class: "control-label"
+      = f.text_field :photo_url, class: "form-control"
+
+  -if @featured_researcher.photo_url && @featured_researcher.photo_url != ""
+    .row
+      .col-md-5
+        .photo-preview
+          %img(src="#{@featured_researcher.photo_url}" class="img-responsive" alt="featured researcher photo" )
+
+  .form-group.row
+    .field
+      = f.label :name, "Name Line", class: "control-label"
+      = f.text_field :name, class: "form-control"
+
+  .form-group.row
+    .field
+      = f.label :bio, "Biography", class: "control-label"
+      = f.text_area :bio, class: "form-control"
+
+  .form-group.row
+    .field
+      = f.label :dataset_url, "Dataset URL", class: "control-label"
+      = f.text_field :dataset_url, class: "form-control"
+
+  .form-group.row
+    .field
+      = f.label :article_url, "Article URL", class: "control-label"
+      = f.text_field :article_url, class: "form-control"
+
+  .form-group.row
+    .field
+      = f.label :question, "Testimonial Prompt", class: "control-label"
+      = f.text_field :question, class: "form-control"
+
+  .form-group.row
+    .field
+      = f.label :testimonial, "Testimonial", class: "control-label"
+      = f.text_area :testimonial, class: "form-control"
+
+  .row
+    .col-md-2.col-md-offset-10
+      = f.submit 'Save and Preview', class: "btn btn-primary btn-block"

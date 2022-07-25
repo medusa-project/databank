@@ -1,0 +1,7 @@
+-if current_user&.provider == 'identity' && current_user.role == Databank::UserRole::NETWORK_REVIEWER
+  =render partial: 'data_curation_network/heading'
+-if params.has_key?('report') && params['report']=='generate'
+  =render partial: "citation_report"
+-else
+  =render partial: "search"
+  -#=will_paginate(@search.hits)

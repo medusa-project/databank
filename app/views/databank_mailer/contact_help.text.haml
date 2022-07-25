@@ -1,0 +1,8 @@
+Name: #{@params['help-name']}
+Email: #{@params['help-email']}
+Topic: #{@params['help-topic']}
+- if @params.has_key?('help-dataset')
+  Dataset: #{@params['help-dataset']}
+\-----------------------------------
+= @params['help-message']
+\-----------------------------------

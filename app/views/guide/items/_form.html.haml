@@ -1,0 +1,14 @@
+= form_for @guide_item do |f|
+  - if @guide_item.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@guide_item.errors.count, "error")} prohibited this guide_item from being saved:"
+      %ul
+        - @guide_item.errors.full_messages.each do |message|
+          %li= message
+
+  .form-group.row
+    .col-md-12
+      .field
+        = f.label :section_id, class: "control-label"
+        = f.collection_select :section_id, Guide::Section.all, :id, :label, prompt: true, class: "form-control", required: true
+  =render partial: 'guide/items/shared_form', locals: {f: f}

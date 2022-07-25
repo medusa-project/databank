@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Extractor task:
+  = @extractor_response.extractor_task_id
+%p
+  %b Web:
+  = @extractor_response.web_id
+%p
+  %b Status:
+  = @extractor_response.status
+%p
+  %b Peek type:
+  = @extractor_response.peek_type
+%p
+  %b Peek text:
+  = @extractor_response.peek_text
+
+= link_to 'Edit', edit_extractor_response_path(@extractor_response)
+\|
+= link_to 'Back', extractor_responses_path

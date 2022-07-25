@@ -1,0 +1,19 @@
+%p#notice= notice
+%h1 Definitions
+%table#definitions-table.table
+  %thead
+    %tr
+      %th Term
+      %th Meaning
+      %th{:colspan => "3"}
+  %tbody
+    - @definitions.each do |definition|
+      - if (can? :manage, definition)
+        %tr
+          %td= definition.term
+          %td= definition.meaning
+          %td= link_to 'View', definition_path(definition.term)
+          %td= link_to 'Edit', edit_definition_path(definition.term)
+          %td= link_to 'Delete', definition_path(definition.term), method: :delete, data: {confirm: 'Are you sure?'}
+%br/
+= link_to 'New Definition', new_definition_path

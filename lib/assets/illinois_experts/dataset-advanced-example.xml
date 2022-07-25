@@ -1,0 +1,148 @@
+<v1:datasets xmlns:v1="v1.dataset.pure.atira.dk" xmlns:v3="v3.commons.pure.atira.dk">
+    <!-- Advanced example (most functionalities used) -->
+
+    <v1:dataset id="dataset1" type="dataset">
+        <v1:title>DataSet Title</v1:title>
+
+        <!-- Any translated titles will overwrite the general title above  -->
+        <v1:translatedTitles>
+            <v1:title lang="de">DatSet Title - DE</v1:title>
+        </v1:translatedTitles>
+
+        <v1:description>DataSet Desecription</v1:description>
+
+         <!--this type is not present in a standard Pure, only used as example on how to add an additional type -->
+        <v1:additionalDescriptions>
+            <v1:description type="datasetdescription" lang="de">DataSet Desecription - Deutsch</v1:description>
+
+            <v1:description type="additionaldescription">Additional description</v1:description>
+        </v1:additionalDescriptions>
+
+        <v1:geoLocation>
+            <!-- This title is used for all submission local -->
+            <v1:geographicalCoverage>The data covers the south eastern part of the Willow Forest also known as "The Bend"</v1:geographicalCoverage>
+
+            <!-- Translated/Localized title will overwrite to above general title -->
+            <v1:translatedGeographicalCoverage>
+                <v1:title lang="de">Die Daten decken den südöstlichen Teil des Willow Forest auch als "The Bend" bekannt</v1:title>
+            </v1:translatedGeographicalCoverage>
+
+            <!-- You can specify either a point or a polygon both have to be specified in google maps format  -->
+            <v1:geoLoc>
+                <v1:point>-83.48036611, -9.66796875</v1:point>
+            </v1:geoLoc>
+        </v1:geoLocation>
+
+        <!-- Legal/Ethical constraints on the dataset. The type is a classification from /dk/atira/pure/dataset/legalcondition . -->
+        <v1:constraints>
+            <v1:constraint>
+                <v1:type>dataprotection</v1:type>
+                <v1:description>This data must not be stored unencrypted</v1:description>
+            </v1:constraint>
+            <v1:constraint>
+                <v1:type>ethicalapproval</v1:type>
+                <v1:description>This data must not be used in connection with any military application</v1:description>
+            </v1:constraint>
+        </v1:constraints>
+
+        <v1:persons>
+            <!-- If a person is internal no origin needs to be set -->
+            <!-- A person is made the contact person if the attribute contactPerson is set to true. Note: only ONE person is to be set as contact person. -->
+            <v1:person id="personAssoc1" contactPerson="true">
+                <v1:person lookupId="person1"/>
+                <v1:organisations>
+                    <v1:organisation lookupId="organisation1" />
+                </v1:organisations>
+                <v1:role>datacollector</v1:role>
+                <v1:associationStartDate>2002-02-02</v1:associationStartDate>
+            </v1:person>
+            <v1:person id="extPersonAssoc2">
+                <!-- If the person is an external person make sure to state that in the origin attribute -->
+                <v1:person lookupId="extPerson1" origin="external">
+                    <v1:firstName>Tim</v1:firstName>
+                    <v1:lastName>Cook</v1:lastName>
+                    <v1:country>dk</v1:country>
+                </v1:person>
+                <v1:organisations>
+                    <v1:organisation lookupId="extOrganisation">
+                        <v1:name>External Organisation - One</v1:name>
+                        <v1:type>unknown</v1:type>
+                    </v1:organisation>
+                </v1:organisations>
+                <v1:role>datacollector</v1:role>
+                <v1:associationStartDate>2002-02-02</v1:associationStartDate>
+            </v1:person>
+        </v1:persons>
+
+        <!-- If content is embargoed you can specify a period for which the dataset is embargoed (specified in months)  -->
+        <v1:openAccess>embargoed</v1:openAccess>
+        <v1:embargoPeriod>3</v1:embargoPeriod>
+
+        <!-- Information about the data if its physical -->
+        <v1:physicalDatas>
+            <v1:physicalData id="phy1">
+                <v1:title>Physical Data Title</v1:title>
+                <v1:storageLocation>Room 4.25.1</v1:storageLocation>
+                <v1:media>USB</v1:media>
+                <v1:type>interactiveresource</v1:type>
+            </v1:physicalData>
+        </v1:physicalDatas>
+
+        <v1:DOI>10.1002/0470841559.ch1</v1:DOI>
+
+        <v1:temporalCoverage>
+            <v1:from>
+                <v3:year>2013</v3:year>
+            </v1:from>
+            <v1:to>
+                <v3:year>2014</v3:year>
+            </v1:to>
+        </v1:temporalCoverage>
+        <v1:productionDate>
+            <v1:from>
+                <v3:year>2015</v3:year>
+            </v1:from>
+            <v1:to>
+                <v3:year>2016</v3:year>
+            </v1:to>
+        </v1:productionDate>
+        <v1:availableDate>
+            <v3:year>2013</v3:year>
+        </v1:availableDate>
+
+        <v1:managingOrganisation lookupId="organisation1"/>
+
+        <v1:organisations>
+            <!-- Here you can add any additional organisations, if the organisation is external the origin attribute must reflect that just as with person organisations -->
+            <v1:organisation lookupId="extOrganisation2" origin="external">
+                <v1:name>External Organisation - Two</v1:name>
+                <v1:type>unknown</v1:type>
+            </v1:organisation>
+            <v1:organisation lookupId="organisation2" />
+        </v1:organisations>
+
+        <!-- A publisher is required to create a dataset, however, if a default publisher has been configured for datasets you need not state one here as we will use that if none are provided. -->
+        <v1:publisher lookupId="publisher1" />
+
+        <v1:links>
+            <v1:link id="link1">
+                <v1:url>https://www.ieee.org/</v1:url>
+            </v1:link>
+
+            <v1:link id="link2">
+                <v1:url>http://home.cern/</v1:url>
+            </v1:link>
+        </v1:links>
+
+        <v1:visibility>Public</v1:visibility>
+
+        <v1:keywords>
+            <!-- Keyword group on dataset with logical name keywordContainers must exist -->
+            <v1:keyword>Java</v1:keyword>
+            <v1:keyword lang="en">Programming</v1:keyword>
+            <v1:keyword lang="de">Programmierung</v1:keyword>
+            <!-- Keyword group on dataset with logical name ASJCSubjectAreas that is related to classification scheme /dk/atira/pure/subjectarea/asjc must exist -->
+            <v1:keyword logicalName="ASJCSubjectAreas" key="1700/1701" />
+        </v1:keywords>
+    </v1:dataset>
+</v1:datasets>

@@ -1,0 +1,39 @@
+%br
+%form(action="/datasets" id="searchForm" accept-charset="UTF-8" method="get" )
+
+  .hide-when-printing
+    %button(type="button" class="btn btn-info" onclick="backToSearch()" )
+      %span(class="glyphicon glyphicon-triangle-left" )
+      Go back to search
+    %a(href="javascript:window.print()" class="btn btn-success idb" )
+      Print
+      %span(class="glyphicon glyphicon-print")
+    %button(type="button" class="btn btn-primary" onclick="downloadCitationReport()" )
+      Download
+      %span.glyphicon.glyphicon-download
+
+
+    -if params.has_key?('q') && params['q'].length > 0
+      %input(type="hidden" class="form-control q" name="q" aria-label="search input box" value="#{params['q']}" )
+
+    -if params.has_key?('license_codes')
+      -params['license_codes'].each do |license_code|
+        %input(type="hidden" name="license_codes[]" value="#{license_code}" )
+
+    -if params.has_key?('depositors')
+      -params['depositors'].each do |depositor|
+        %input(type="hidden" name="depositors[]" value="#{depositor}" )
+
+    -if params.has_key?('funder_codes')
+      -params['funder_codes'].each do |funder_code|
+        %input(type="hidden" name="funder_codes[]" value="#{funder_code}" )
+
+    -if params.has_key?('visibility_codes')
+      -params['visibility_codes'].each do |visibility_code|
+        %input(type="hidden" name="visibility_codes[]" value="#{visibility_code}" )
+
+    -if params.has_key?('sort_by')
+      %input(type="hidden" name="sort_by" value="#{params['sort_by']}" )
+%br
+
+=simple_format(@report)

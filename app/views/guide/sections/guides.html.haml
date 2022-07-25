@@ -1,0 +1,47 @@
+-if (can? :manage, Guide::Section)
+  .row
+    .col-md-offset-9.col-md-3
+      .curator-only
+        =link_to("Manage Sections", "/guide/sections", class: "btn btn-primary btn-block idb")
+.row(id="help-layout")
+  %nav(class="col-xs-3 col-md-2 bs-docs-sidebar")
+    %ul(class="nav nav-stacked fixed" id="sidebar")
+      -@guide_sections.each do |section|
+        %li
+          %a(href="##{section.anchor}")
+            =section.label
+            -if section.guide_items.count.positive?
+              ="+"
+
+          -if section.guide_items.count.positive? && (section.public || (can? :manage, section) || section.has_public_children?)
+            %ul(class="nav nav-stacked")
+              -section.ordered_children.each do |item|
+                -if ((can? :manage, item) || item.public || item.has_public_children?)
+                  %li
+                    %a(href="##{item.anchor}" )
+                      &nbsp;&nbsp
+                      =item.label
+                      -if item.guide_subitems.count.positive?
+                        ="+"
+                    -if item.guide_subitems.count.positive? && ( (can? :manage, item) || item.public  || item.has_public_children?)
+                      %ul(class="nav nav-stacked")
+                        -item.ordered_children.each do |subitem|
+                          -if (can? :manage, subitem) || subitem.public
+                            %li
+                              %a(href="##{subitem.anchor}" )
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                =subitem.label
+
+    .help-bottom-spacer
+  .col-xs-9.col-md-10(id="help-body")
+    -@guide_sections.each do |section|
+      =render partial: "guide/items/element", locals: {item: section}
+      -if section.guide_items.count.positive? && (section.public || (can? :manage, section) || section.has_public_children?)
+        -section.ordered_children.each do |item|
+          -if (can? :manage, item) || item.public || item.has_public_children?
+            =render partial: "guide/items/element", locals: {item: item}
+            -if item.guide_subitems.count.positive?
+              -item.ordered_children.each do |subitem|
+                -if (can? :manage, subitem) || subitem.public
+                  =render partial: "guide/items/element", locals: {item: subitem}
+    .help-bottom-spacer

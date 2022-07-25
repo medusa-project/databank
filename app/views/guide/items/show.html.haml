@@ -1,0 +1,14 @@
+%p#notice= notice
+
+=render partial: 'guide/items/preview', locals: {item: @guide_item}
+
+.row
+  .col-md-3.col-md-offset-9
+    =link_to "Edit", edit_guide_item_path(id: @guide_item.id), class: "btn btn-success btn-block idb"
+%hr
+%h2
+="Subitems for Item: #{@guide_item.label}"
+=render partial: "guide/items/shared_index", locals: {items: @guide_item.guide_subitems.order(:ordinal), guide_level: "subitems", parent_id: @guide_item.id}
+.row
+  .col-md-offset-9.col-md-3
+    = link_to "Add Subitem to this Item", "/guide/subitems/new?guide_subitem_item_id=#{@guide_item.id}", class: "btn btn-success btn-block idb"

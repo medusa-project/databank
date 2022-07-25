@@ -1,0 +1,24 @@
+= render 'brief_record', medusa_ingest:@medusa_ingest
+
+= simple_form_for(@medusa_ingest) do |f|
+  = f.error_notification
+  .form-inputs
+    = f.input :idb_class
+    = f.input :idb_identifier
+    = f.input :request_status
+    = f.input :staging_path
+    = f.input :target_key
+    = f.input :staging_key
+    = f.input :medusa_dataset_dir
+    = f.input :medusa_path
+    = f.input :medusa_uuid
+    = f.input :response_time
+    = f.input :error_text
+
+  .form-actions
+    .pull-right
+      = f.button :submit
+      = link_to(medusa_ingest_path(@medusa_ingest), method: :delete, data: {confirm: 'Are you sure?'}, class: "btn idb btn-danger btn-block") do
+        %span(class="glyphicon glyphicon-trash" )
+        Delete
+

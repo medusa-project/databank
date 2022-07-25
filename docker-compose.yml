@@ -1,0 +1,28 @@
+#
+# Example invocation: docker-compose up --exit-code-from rails
+#
+version: '3'
+services:
+  cantaloupe:
+    hostname: cantaloupe
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-cantaloupe
+  databank:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-databank
+    command: bash -c "sleep 20 && ENV=test && bin/rails db:prepare && bin/rails test"
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_DB: databank
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    hostname: postgres
+  rabbitmq:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-rabbitmq
+    hostname: rabbitmq
+

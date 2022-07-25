@@ -1,0 +1,19 @@
+.welcome-div
+  = render partial: 'welcome'
+  - if current_user && current_user.role == 'admin'
+    .curator-only.row
+      .col-md-3
+        %a(href="/researcher_spotlights" class="btn btn-success idb") Manage Researcher Spotlight
+      .col-md-3
+        %a(href="/help_transition_admin" class="btn btn-success idb") Manage Help Transition
+    = render partial: 'role_switch_form'
+
+    .panel-group(id="service-msg" role="tablist" aria-multiselectable="true")
+      .panel.panel-default
+        .panel-heading(role="tab" id="serviceMsgHeading")
+          %h4(class="panel-title")
+            %a( role="button" data-toggle="collapse" data-parent="#service-msg" href="#serviceMsgPanel" aria-expanded="false" aria-controls="funderPanel" class="accordion-toggle collapsed" )
+              %span( class="metadata-label" ) Service Message Form
+        .panel-collapse.collapse(id="serviceMsgPanel" role="tabpanel" aria-labelledby="serviceMsgHeading" )
+          .panel-body
+            = render partial: 'service_message_form'

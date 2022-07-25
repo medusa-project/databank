@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Datafile:
+  = @nested_item.datafile_id
+%p
+  %b Parent:
+  = @nested_item.parent_id
+%p
+  %b Item name:
+  = @nested_item.item_name
+%p
+  %b Media type:
+  = @nested_item.media_type
+%p
+  %b Size:
+  = @nested_item.size
+
+= link_to 'Edit', edit_nested_item_path(@nested_item)
+\|
+= link_to 'Back', nested_items_path

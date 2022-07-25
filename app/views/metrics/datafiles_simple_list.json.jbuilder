@@ -1,0 +1,1 @@
+json.array! @datafiles, partial: 'metrics/datafile', as: :datafile

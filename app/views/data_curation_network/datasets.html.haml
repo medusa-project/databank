@@ -1,0 +1,27 @@
+.container-fluid
+
+  =render partial: 'heading'
+
+  -if current_user && [Databank::UserRole::NETWORK_REVIEWER, Databank::UserRole::ADMIN].include?(current_user.role)
+
+    %h3  Draft datasets curated with the Data Curation Network
+    -if @drafts && @drafts.count > 0
+      .indent
+        -@drafts.each do |dataset|
+          = render 'datasets/brief_record', dataset:dataset
+    -else
+      .jumbotron
+        No no draft datasets were found in Illinois Data Bank that are being curated with the Data Curation Network.
+
+    %h3 Published datasets curated with the Data Curation Network
+
+    -if @nondrafts && @nondrafts.count > 0
+      .indent
+        -@nondrafts.each do |dataset|
+          = render 'datasets/brief_record', dataset:dataset
+    -else
+      .jumbotron
+        No published datasets were found in Illinois Data Bank that have been curated with the Data Curation Network.
+  -else
+    .jumbotron
+      This page is for use by the Data Curation Network Portal for Illinois Data Bank. If you are an Data Curation Network curator or Illinois Data Bank administrator, log in to list Data Curation Network datasets in Illinois Data Bank.

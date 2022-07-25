@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:commons="v3.commons.pure.atira.dk"
+           xmlns="v1.dataset.pure.atira.dk"
+           attributeFormDefault="unqualified" elementFormDefault="qualified"
+           targetNamespace="v1.dataset.pure.atira.dk">
+
+    <xs:import schemaLocation="commons.xsd" namespace="v3.commons.pure.atira.dk" />
+
+    <xs:element name="datasets">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="dataset" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="dataset" type="datasetType"/>
+
+    <xs:complexType name="datasetType">
+        <xs:all>
+            <xs:element name="title" type="commons:string_256" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The title of the dataset</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="translatedTitles" type="translatedTitles" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Translated titles of the dataset, use if title in different in another language</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="description" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The description of the dataset, this will add a description of the type /dk/atira/pure/dataset/descriptions/datasetdescription</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ids" type="commons:ids" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>type attribute must be a token from the classification scheme /dk/atira/pure/dataset/datasetsources/dataset</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="additionalDescriptions" type="descriptions" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Additional descriptions of the dataset, use if description is different in another language, or if description is of another type than /dk/atira/pure/dataset/descriptions/datasetdescription</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="temporalCoverage" type="temporalCoverage" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The temporal coverage of the dataset</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="productionDate" type="productionDate" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The production date of the dataset</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="geoLocation" type="geoLocation" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The geographical location of the data</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="persons" type="persons" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The internal persons related to the dataset</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="organisations" type="organisations" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The internal organisations related to the dataset</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="managingOrganisation" type="organisation" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The managing organisation of the dataset, this must always be an internal organisation</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DOI" type="commons:string_1024" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The DOI for the dataset.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="physicalDatas" type="physicalDatas" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The details of the physical data.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="availableDate" type="commons:compoundDate" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The date on which the dataset was published.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="publisher" type="publisher" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The publisher of the dataset.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="openAccess" type="commons:classification" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>token from the classification scheme /dk/atira/pure/core/openaccesspermission</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="embargoPeriod" type="xs:integer" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The embargo period for the dataset if access option is embargoed, value is in number of months</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="constraints" type="constraints" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The legal and ethical constraints on the use of the dataset</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="keywords" type="keywords" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Keywords of the dataset</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="links" type="links" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The links for the dataset.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documents" type="documents" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Documents are only imported (not synchronized). In addition, the file size must adhere to the configured max value in pure. Any file exceeding this limit will be added as a link.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="relatedProjects" type="relatedProjects" minOccurs="0" />
+            <xs:element name="relatedEquipments" type="relatedEquipments" minOccurs="0" />
+            <xs:element name="relatedStudentThesis" type="relatedStudentThesis" minOccurs="0" />
+            <xs:element name="relatedPublications" type="relatedPublications" minOccurs="0" />
+            <xs:element name="relatedActivities" type="relatedActivities" minOccurs="0" />
+            <xs:element name="relatedDatasets" type="relatedDatasets" minOccurs="0" />
+            <xs:element name="visibility" type="commons:visibility" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The visibility of the dataset</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="workflow" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Used to set the workflow state of the dataset (Workflow states: entryInProgress, forValidation, validated)
+                        NOTE workflow is disabled by default, therefore it must be enabled in Pure if values are present in this tag
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+        </xs:all>
+        <xs:attribute type="commons:string_400" name="id" use="required">
+            <xs:annotation>
+                <xs:documentation>The external ID of the dataset, this must be an unique value</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="commons:classification" name="type" use="optional" default="dataset">
+            <xs:annotation>
+                <xs:documentation>The type classification. Should be a token from the scheme /dk/atira/pure/dataset/datasettypes/dataset</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:boolean" name="managedInPure" use="optional">
+            <xs:annotation>
+                <xs:documentation>Determines whether the dataset is managed in Pure, if set to to true the dataset will be fully editable and deletable in Pure</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="translatedTitles">
+        <xs:sequence>
+            <xs:element name="title" type="commons:localized_text_256_lang" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Translated title of the dataset, can be specified in multi languages if your Pure is multilingual</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="translatedGeographicalCoverage">
+        <xs:sequence>
+            <xs:element name="title" type="commons:localized_text_256_lang" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Translated geographical coverage of the dataset, can be specified in multi languages if your Pure is multilingual</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="organisations">
+        <xs:sequence>
+            <xs:element name="organisation" type="organisation" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="persons">
+        <xs:sequence>
+            <xs:element name="person" type="datasetPerson" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="datasetPerson">
+        <xs:all>
+            <xs:element name="person" type="person">
+                <xs:annotation>
+                    <xs:documentation>The source id of the person</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="organisations" type="organisations" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The internal organisations related to the dataset through the internal person</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="role" type="commons:classification" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>token from the classification scheme /dk/atira/pure/dataset/roles/dataset</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="associationStartDate" type="commons:date" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The date when the person association to the dataset started</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="associationEndDate" type="commons:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The date when the person association to the dataset ended</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+        <xs:attribute type="commons:string_400" name="id" use="required">
+            <xs:annotation>
+                <xs:documentation>ID of the developer, this must be unique for each internal person</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute type="xs:boolean" name="contactPerson" use="optional">
+            <xs:annotation>
+                <xs:documentation>Indicates whether this person is the contact person for the dataset. Only ONE person can be the contact person and it has to be an INTERNAL person. Setting this attribute on multiple persons will result in errors.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="descriptions">
+        <xs:sequence>
+            <xs:element name="description" type="description" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="description">
+        <xs:simpleContent>
+            <xs:extension base="commons:localized_text_lang">
+                <xs:attribute name="type" type="commons:classification" use="required">
+                    <xs:annotation>
+                        <xs:documentation>token from the classification scheme /dk/atira/pure/dataset/descriptions</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="keywords">
+        <xs:sequence>
+            <xs:element name="keyword" type="commons:keyword" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="physicalDatas">
+        <xs:sequence>
+            <xs:element name="physicalData" type="physicalData" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>The list of physical data</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="physicalData">
+        <xs:all>
+            <xs:element name="title" type="commons:string_256" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The title/description of the physical data</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="storageLocation" type="commons:string_256" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The storage location of the physical data</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="accessDescription" type="commons:string_256" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The access description of the physical data</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="media" type="commons:string_256" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The media of the physical data</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="type" type="commons:classification">
+                <xs:annotation>
+                    <xs:documentation>token from the classification scheme /dk/atira/pure/dataset/documents</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+        <xs:attribute type="commons:string_400" name="id" use="required">
+            <xs:annotation>
+                <xs:documentation>ID of the physical data, this must be unique for each physical data</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="publisher">
+        <xs:all>
+            <xs:element name="name" type="commons:string_1024" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The name of the publisher</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="type" type="commons:classification" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>token from the classification scheme /dk/atira/pure/publisher/publishertypes</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+        <xs:attributeGroup ref="commons:lookupId"/>
+    </xs:complexType>
+
+    <xs:complexType name="temporalCoverage">
+        <xs:all>
+            <xs:element name="from" type="commons:compoundDate" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The from date</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="to" type="commons:compoundDate" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The to date</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="productionDate">
+        <xs:all>
+            <xs:element name="from" type="commons:compoundDate" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>The from date</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="to" type="commons:compoundDate" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The to date</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="constraints">
+        <xs:sequence>
+            <xs:element name="constraint" type="constraint" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="constraint">
+        <xs:all>
+            <xs:element name="type" type="commons:classification">
+                <xs:annotation>
+                    <xs:documentation>token from the classification scheme /dk/atira/pure/dataset/legalcondition</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="description" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The description of the legal context</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="relatedDatasets">
+        <xs:sequence>
+            <xs:element name="relatedDatasetId" type="commons:string_400" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="relatedProjects">
+        <xs:sequence>
+            <xs:element name="relatedProjectId" type="commons:string_400" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="relatedEquipments">
+        <xs:sequence>
+            <xs:element name="relatedEquipmentId" type="commons:string_400" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="relatedStudentThesis">
+        <xs:sequence>
+            <xs:element name="relatedStudentThesisId" type="commons:string_400" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="relatedPublications">
+        <xs:sequence>
+            <xs:element name="relatedPublicationId" type="commons:string_400" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="relatedActivities">
+        <xs:sequence>
+            <xs:element name="relatedActivityId" type="commons:string_400" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="organisation">
+        <xs:annotation>
+            <xs:documentation>
+                Can be both an internal and external organisation, use origin to enforce either internal or external
+                If the organisation is an internal organisation in Pure, then the lookupId attribute must be used.
+                If the organisation is an external organisation and id is given matching will be done on the id, if not found mathching will be done on name, if still not found then an external organisation with the specified id and organisation will be created.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="name" type="commons:string_1024" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Name of an external organisation</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="country" type="commons:classification" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The country of the external organisation. token from /dk/atira/pure/core/countries</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="type" type="commons:classification" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The type of the external organisation (will default if nothing is written)</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+        <xs:attributeGroup ref="commons:originId"/>
+    </xs:complexType>
+
+    <xs:complexType name="person">
+        <xs:annotation>
+            <xs:documentation>
+                Can be woth an internal and external person, use origin to enforce either internal or external
+                If the person is an internal person in Pure, then the lookupId attribute must be used.
+                If the person is an external person and id is given matching will be done on the id, if not found mathching will be done on name, if still not found then an external person with the specified id and name will be created.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="firstName" type="commons:string_1024" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>First name of the person, will only be used on external persons</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="lastName" type="commons:string_1024" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Last name of the person, will only be used on external persons</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="country" type="commons:classification" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>token from the classification scheme /dk/atira/pure/core/countries</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+        <xs:attributeGroup ref="commons:originId"/>
+    </xs:complexType>
+
+    <xs:complexType name="documents">
+        <xs:sequence>
+            <xs:element name="datasetdocuments" type="datasetdocument" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="datasetdocument">
+        <xs:all>
+            <xs:element name="type" type="commons:classification" minOccurs="0" default="other">
+                <xs:annotation>
+                    <xs:documentation>
+                        For projects use a token from classification scheme /dk/atira/pure/core/document/types. Default is other.
+                        For awards the type is always other
+                        For applications use a token from classification scheme /dk/atira/pure/application/document/versiontypes, default is currentversion
+                        NOTE! documents on applications are only available with Award Management modules
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="fileLocation" type="commons:string_1024" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        Location where Pure can read the file from. Must be prefixed with protocol either
+                        http or https. Https is only supported if the remote server uses a trusted
+                        certificate. If the remote server uses a self-signed certificate,
+                        the JVM running Pure will need an updated keystore.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="mimeType" type="commons:string_256" minOccurs="0"/>
+            <xs:element name="fileName" type="commons:string_256" minOccurs="0"/>
+            <xs:element name="title" type="commons:string_1024" minOccurs="0"/>
+            <xs:element name="embargoDate" type="commons:date" minOccurs="0"/>
+            <xs:element name="license" type="commons:classification" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        token from the classification scheme /dk/atira/pure/dataset/documentlicenses
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="visibility" type="commons:visibility" minOccurs="0"/>
+        </xs:all>
+        <xs:attribute type="commons:string_400" name="id" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="geoLocation">
+        <xs:all>
+            <xs:element name="geographicalCoverage" type="commons:string_256" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>A description of the geographical coverage</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="translatedGeographicalCoverage" type="translatedGeographicalCoverage" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Translated geographical coverage of the dataset, use if geographical coverage is different in another language</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="geoLoc" type="geoLoc" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The geographical description of the dataset (either a point or a polygon)</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="geoLoc">
+        <xs:choice>
+            <xs:element name="point" type="commons:string_512">
+                <xs:annotation>
+                    <xs:documentation>A geospatial point. Google maps format</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="polygon" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>A geospatial polygon. Google maps format</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="links">
+        <xs:sequence>
+            <xs:element name="link" type="link" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="link">
+        <xs:all>
+            <xs:element name="url" type="xs:string" />
+            <xs:element name="type" type="commons:classification" minOccurs="0" />
+            <xs:element name="description" type="commons:localized_string" minOccurs="0" />
+        </xs:all>
+        <xs:attribute type="commons:string_400" name="id" use="required" />
+    </xs:complexType>
+</xs:schema>

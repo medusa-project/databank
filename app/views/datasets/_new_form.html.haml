@@ -1,0 +1,7 @@
+= form_for(@dataset, :html => {"data-toggle" => "validator", :multipart => true, :role => "form", :enctype => "multipart/form-data", :class => "input-append dataset-form" }) do |f|
+  =f.hidden_field :have_permission
+  =f.hidden_field :removed_private
+  =f.hidden_field :agree
+  =f.hidden_field :publisher, value: "University of Illinois at Urbana-Champaign"
+  =f.hidden_field :depositor_email, class: "form-control", id: "depositor_email", :required => true
+  =f.hidden_field :depositor_name, class: "form-control", id: "depositor_name"

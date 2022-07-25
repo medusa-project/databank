@@ -1,0 +1,1 @@
+json.array! @featured_researchers, partial: 'featured_researchers/featured_researcher', as: :featured_researcher

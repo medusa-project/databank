@@ -1,0 +1,6 @@
+%h2
+  Peek Preview for
+  = link_to "Extractor Task #{@extractor_task.id}", @extractor_task
+
+%pre
+  =@extractor_task.extractor_response.peek_text

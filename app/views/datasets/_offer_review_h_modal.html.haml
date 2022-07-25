@@ -1,0 +1,77 @@
+.modal.fade(id= "offer_review_h" tabindex="-1" role="dialog" aria-labelledby="agreement-label" aria-hidden="true")
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-body
+
+        %button(type="button" class="close" data-dismiss="modal" )
+          %span(class="glyphicon glyphicon-remove" )
+
+        .container-fluid
+          %h3 Choose when you'd like curators to review your dataset!
+          %br
+
+          =form_tag "/datasets/#{@dataset.key}" do
+            .row
+              .col-md-6
+
+                %strong
+                  Review then publish
+                  %em (recommended)
+
+              .col-md-6
+                %strong
+                  Publish then review
+                  %em (may require republishing)
+
+            %br
+
+            .row
+              .col-md-6
+                %ul
+                  %li
+                    %p
+                      DOI reserved now and works in
+                      %strong 2-5 days
+                    %li
+                      %p
+                        Find and fix errors
+                        %strong before
+                        publication
+                    %li
+                      %p
+                        Publish
+                        %strong high-quality
+                        data
+
+              .col-md-6
+                %ul
+                  %li
+                    %p
+                      DOI works
+                      %strong today
+                  %li
+                    %p
+                      Find and fix errors
+                      %strong after
+                      publication
+                      %br
+                      (requires publishing under a different DOI)
+
+                  %li
+                    %p
+                      Publish data that may
+                      %strong prompt questions
+
+
+            %br
+            .row
+
+              .col-md-3.col-md-offset-3
+                %button(type="button" id="review-then-publish-btn" class="btn btn-primary btn-block")
+                  Review then publish
+                  %span(class="glyphicon glyphicon-triangle-right" )
+
+              .col-md-3.col-md-offset-3
+                %button(type="button" id="publish-then-review-btn" class="btn btn-primary btn-block")
+                  Publish then review
+                  %span(class="glyphicon glyphicon-triangle-right" )

@@ -1,0 +1,166 @@
+.panel.panel-default
+  .splash-metadata.panel-body
+
+    %span(class="dataset-title")
+      = (!dataset.title || dataset.title.empty?) ? "[Title not provided]" : dataset.title
+    .citation-block
+      .citation
+        .metadata-label
+          Citation:
+        .citation-example
+          =dataset.plain_text_citation
+          %span(class="citation-download")
+            %span(class="dropdown")
+              %button(type="button" id="downloadCitation" class="btn btn-default dropdown-toggle" data-toggle="dropdown")
+                %span(class="glyphicon glyphicon-list")
+                Export Citation
+                %span(class="caret")
+              %ul(class="dropdown-menu pull-right text-left" role="menu")
+                %li
+                  %a(id="datasetForm:endNoteLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_endNote_XML"')
+                    EndNote XML
+                %li
+                  %a(id="datasetForm:risLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_RIS"')
+                    RIS Format
+                %li
+                  %a(id="datasetForm:BibTeXLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_BibTeX"')
+                    BibTeX Format
+                %li
+                  %a(id="datasetForm:plainTextCitationLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_plaintext_citation"')
+                    Plain Text
+      - if dataset.identifier && dataset.identifier != ""
+        Persistent link for this dataset:
+        .row
+          .col-md-6
+            .input-group.clipboard-control
+              %input(type="text" id="persistent-url" class="form-control" value="#{dataset.persistent_url}" )
+              %span(class="input-group-btn" )
+                %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#persistent-url')
+                  %span(class="glyphicon glyphicon-copy")
+          .col-md-6
+            - if dataset.publication_state == Databank::PublicationState::DRAFT
+              %span(class="glyphicon glyphicon-exclamation-sign" )
+              This link will not resolve until the dataset is published.
+
+    .metadata-block
+      %table(class="table borderless")
+        %thead
+          %tr.row
+            %th.col-lg-2.col-md-3.col-sm-4
+            %th.col-lg-10.col-md-9.col-sm-8
+        %tbody>
+        -if dataset.related_materials.count > 0
+          -dataset.related_materials.each do |material|
+            -if material.uri && (material.relationship_arr.include?(Databank::Relationship::PREVIOUS_VERSION_OF) || material.relationship_arr.include?(Databank::Relationship::NEW_VERSION_OF) )
+              -# handled above
+            -else
+              %tr.row
+                %td
+                  %span.metadata-label
+                    Related
+                    - if material.material_type && material.material_type != ""
+                      = "#{material.material_type}"
+                    -else
+                      Material
+                %td
+                  -if material.link && material.link != ''
+                    %a(href="#{material.link}")
+                      -if material.citation && material.citation != ''
+                        = material.citation
+                      -else
+                        = material.link
+                  -elsif material.citation && material.citation != ''
+                    = material.citation
+                  -else
+                    [Details not provided.]
+
+
+        -if dataset.description && dataset.description != ''
+          %tr.row
+            %td
+              %span.metadata-label
+                Dataset Description
+            %td
+              = simple_format(dataset.description)
+
+        -if dataset.subject && dataset.subject != ''
+          %tr.row
+            %td
+              %span.metadata-label
+                Subject
+            %td
+              %a(href="#{IDB_CONFIG[:root_url_text]}/datasets?sort_by=sort_updated_desc&q=&subjects%5B%5D=#{CGI.escape(dataset.subject)}" )
+                = dataset.subject
+
+
+        -if dataset.keywords && !dataset.keywords.empty?
+          %tr.row
+            %td
+              %span.metadata-label Keywords
+            %td
+              = dataset.keywords
+        %tr.row
+          %td
+            %span.metadata-label License
+          %td
+            = dataset.license_name
+        - if [Databank::PublicationState::Embargo::METADATA, Databank::PublicationState::Embargo::FILE].include?(dataset.publication_state) || (dataset.publication_state == Databank::PublicationState::DRAFT && dataset.release_date && dataset.release_date > Date.current())
+          %tr.row
+            %td
+              %span(class="metadata-label")
+                Release Date
+            %td
+              = dataset.release_date
+
+        - dataset.funders.each do |funder|
+          %tr.row
+            %td
+              %span.metadata-label
+                Funder
+            %td
+              = funder.name
+              -if funder.grant && funder.grant != ""
+                ="-"
+                %span.metadata-label
+                  Grant:
+                = funder.grant
+        %tr.row
+          %td
+            %span.metadata-label
+              Corresponding Creator
+          %td
+            -if (!dataset.corresponding_creator_name || dataset.corresponding_creator_name.empty?)
+              ="[corresponding creator name not provided]"
+            -else
+              = dataset.corresponding_creator_name
+
+        -if dataset.contributor_list && dataset.contributor_list != ''
+          %tr.row
+            %td
+              %span.metadata-label
+                Additional Contact(s)
+            %td
+              =dataset.contributor_list
+
+        -if can? :manage, dataset
+          %tr.row.curator-only
+            %td
+              %span.metadata-label Depositor:
+            %td
+              = dataset.depositor_name
+          %tr.row.curator-only
+            %td
+              %span.metadata-label Corresponding Creator Email
+            %td
+              = (!dataset.corresponding_creator_email || dataset.corresponding_creator_email.empty?) ? "[corresponding creator email not provided]" : dataset.corresponding_creator_email
+          %tr.row.curator-only
+            %td
+              %span.metadata-label Depositor Email:
+            %td
+              = dataset.depositor_email
+        -if dataset.total_downloads > 0
+          %tr.row
+            %td
+              %span.metadata-label Downloaded
+            %td
+              = pluralize(dataset.total_downloads, 'time')

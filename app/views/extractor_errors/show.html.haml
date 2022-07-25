@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Extractor response:
+  = @extractor_error.extractor_response_id
+%p
+  %b Error type:
+  = @extractor_error.error_type
+%p
+  %b Report:
+  = @extractor_error.report
+
+= link_to 'Edit', edit_extractor_error_path(@extractor_error)
+\|
+= link_to 'Back', extractor_errors_path

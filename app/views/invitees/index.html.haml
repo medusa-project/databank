@@ -1,0 +1,38 @@
+.container-fluid
+
+  -if can? :manage, Invitee
+
+    -if @invitees && @invitees.count > 0
+      %h3 Invitees
+      .pull-right
+        = link_to 'Add new Invitee', new_invitee_path, class: "btn btn-primary idb"
+      %table.table.table-stripped
+        %thead
+          %tr.row
+            %th.col-md-3
+              %strong Email
+            %th.col-md-3
+              %strong Role
+            %th.col-md-2
+              %strong Expires
+            %th.col-md-4(colspan="2" )
+              %strong Actions
+        %tbody
+          -@invitees.each do |invitee|
+            %tr.row
+              %td.col-md-3
+                =link_to invitee.email, invitee
+              %td.col-md-3
+                =invitee.role
+              %td.col-md-2
+                -if invitee.expires_at
+                  =invitee.expires_at.strftime('%Y-%m-%d')
+                -else
+                  does not expire
+              %td.col-md-2
+                =link_to 'Edit', edit_invitee_path(invitee), class: "btn btn-block btn-success idb"
+              %td.col-md-2
+                =link_to 'Delete', invitee, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-block btn-danger idb"
+  -else
+    .jumbotron
+      This page is for managing access to Illinois Data Bank without a NetID. If you are an administrator, log in to manage accounts.

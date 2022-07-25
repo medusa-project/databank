@@ -1,0 +1,65 @@
+!!!
+%html
+  %head
+    = analytics_init if GoogleAnalytics.valid_tracker?
+    = javascript_include_tag :modernizr
+    %meta{:charset => "utf-8"}/
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    / Mobile viewport optimization h5bp.com/ad
+    %meta{:content => "True", :name => "HandheldFriendly"}/
+    %meta{:content => "width=device-width,initial-scale=1.0", :name => "viewport"}/
+    / Internet Explorer use the highest version available
+    %meta{:content => "IE=edge", "http-equiv" => "X-UA-Compatible"}/
+    / Mobile IE allows us to activate ClearType technology for smoothing fonts for easy reading
+    /[if IEMobile]
+      <meta http-equiv="cleartype" content="on">
+    %title Illinois Data Bank
+    = favicon_link_tag 'favicon.ico'
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
+    = javascript_include_tag 'application', 'data-turbolinks-track' => true
+    = csrf_meta_tags
+    / Le HTML5 shim, for IE6-8 support of HTML5 elements
+    /[if lt IE 9]
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    / support import from box
+    %script{:src => "https://app.box.com/js/static/select.js", :type => "text/javascript"}
+    - if @dataset && @dataset.publication_state && @dataset.publication_state != Databank::PublicationState::DRAFT
+      %meta{:content => "#{@dataset.title}", :name => "citation_title"}/
+      %meta{:content => "#{@dataset.creator_list}", :name => "citation_author"}/
+      %meta{:content => "#{@dataset.publisher}", :name => "citation_publisher"}/
+      %meta{:content => "#{@dataset.publication_year}", :name => "citation_publication_date"}/
+      %meta{:content => "#{@dataset.identifier}", :name => "citation_doi"}/
+      %meta{:content => "en", :name => "citation_language"}/
+  %body
+    #page-top.idb-anchor
+    = render partial: 'shared/mini_navbar'
+    = render partial: 'shared/library_header'
+    = render partial: 'shared/header_navbar'
+    #main-content{"aria-label" => "Accessibility Note: Research Data Service staff at databank@library.illinois.edu are happy to assist with data deposit or access."}
+      - flash.each do |key, value|
+        %div{class: "alert alert-#{key}"}
+          = sanitize(value)
+      %div{id: "message"}
+      - if current_page?(root_path) || ( request.original_fullpath.include?('featured_researchers') && request.original_fullpath.include?('preview')  )
+        #welcome-image.hidden-xs
+          #welcome-overlay
+            %p The Illinois Data Bank is a public access repository for publishing research data from the University of Illinois at Urbana-Champaign
+      .container-fluid
+        = yield
+    = render partial: "shared/library_footer"
+    - if @dataset
+      = javascript_tag do
+        window.dataset_key = "#{j @dataset.key}";
+        window.dataset_id = "#{j @dataset.id.to_s}";
+    - if @datafile
+      = javascript_tag do
+        window.datafile_web_id = "#{j @datafile.web_id}";
+    =javascript_tag do
+      window.rails_env = "#{Rails.env}";
+
+    - if current_user && current_user.role
+      = javascript_tag do
+        window.user_role = "#{j current_user.role}";
+    - else
+      = javascript_tag do
+        window.user_role = "#{j 'guest'}";

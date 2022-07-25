@@ -1,0 +1,24 @@
+%p#notice= notice
+
+%p
+  %b As text:
+  = @ingest_response.as_text
+%p
+  %b Status:
+  = @ingest_response.status
+%p
+  %b Response time:
+  = @ingest_response.response_time
+%p
+  %b Staging key:
+  = @ingest_response.staging_key
+%p
+  %b Medusa key:
+  = @ingest_response.medusa_key
+%p
+  %b Uuid:
+  = @ingest_response.uuid
+
+= link_to 'Edit', edit_ingest_response_path(@ingest_response)
+\|
+= link_to 'Back', ingest_responses_path

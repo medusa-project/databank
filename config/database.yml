@@ -1,0 +1,38 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # http://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test: &test
+  <<: *default
+  database: databank_test
+  host: localhost
+
+development:
+  <<: *default
+  database: databank
+  username: <%= Rails.application.credentials[:primary_db][:username] %>
+  password: <%= Rails.application.credentials[:primary_db][:password] %>
+  host: localhost
+
+production:
+  <<: *default
+  database: databank
+  username: <%= Rails.application.credentials[:primary_db][:username] %>
+  password: <%= Rails.application.credentials[:primary_db][:password] %>
+  host: <%= Rails.application.credentials[:primary_db][:host] %>
+
+demo:
+  <<: *default
+  database: databank
+  username: <%= Rails.application.credentials[:primary_db][:username] %>
+  password: <%= Rails.application.credentials[:primary_db][:password] %>
+  host: <%= Rails.application.credentials[:primary_db][:host] %>
+
+cucumber:
+  <<: *test

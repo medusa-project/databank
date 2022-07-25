@@ -1,0 +1,8 @@
+%p#notice= notice
+
+=render partial: 'guide/items/preview', locals: {item: @guide_subitem}
+
+.row
+  .col-md-3.col-md-offset-9
+    =link_to "Edit", edit_guide_subitem_path(id: @guide_subitem.id), class: "btn btn-success btn-block idb"
+%hr

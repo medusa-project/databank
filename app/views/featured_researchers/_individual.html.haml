@@ -1,0 +1,66 @@
+.row
+  .col-md-2
+    -if featured_researcher.photo_url && featured_researcher.photo_url != ""
+      .photo-preview
+        %img(src="#{featured_researcher.photo_url}" class="img-responsive featured-img" alt="featured researcher photo" )
+    -else
+      .no-image-available
+        No photo available.
+
+  .col-md-6
+    %h4
+      %strong
+        =link_to featured_researcher.name, featured_researcher_path(featured_researcher)
+    = featured_researcher.bio.html_safe
+
+    .featured-comment
+
+      .more-elbow
+        %strong
+          = featured_researcher.question
+      .elbow
+        = featured_researcher.testimonial.html_safe
+
+  .col-md-2
+    -if featured_researcher.dataset_url && featured_researcher.dataset_url != ''
+      %button(type="button" class="btn btn-primary btn-block" onclick="window.open('#{featured_researcher.dataset_url}')" )
+        %span(class="glyphicon glyphicon-tasks" )
+        &nbsp;
+        dataset
+    -if featured_researcher.article_url && featured_researcher.article_url != ''
+      %button(type="button" class="btn btn-primary btn-block" onclick="window.open('#{featured_researcher.article_url}')" )
+        %span(class="glyphicon glyphicon-file" )
+        &nbsp;
+        article
+  .col-md-2
+    -if(can? :manage, featured_researcher)
+      .curator-only
+        -if featured_researcher.is_active
+          .label.label-default
+            Published
+        -else
+          .label.label-default
+            Not Published
+
+
+        = form_for featured_researcher do |f|
+
+          =f.hidden_field :name, value: featured_researcher.name
+          =f.hidden_field :question, value: featured_researcher.question
+          =f.hidden_field :dataset_url, value: featured_researcher.dataset_url
+          =f.hidden_field :article_url, value: featured_researcher.article_url
+          =f.hidden_field :bio, value: featured_researcher.bio
+          =f.hidden_field :testimonial, value: featured_researcher.testimonial
+          =f.hidden_field :photo_url, value: featured_researcher.photo_url
+
+
+          -if featured_researcher.is_active
+            =f.hidden_field :is_active, value: false
+            = f.submit 'Unpublish', class: "btn btn-warning btn-block elbow"
+          -else
+            =f.hidden_field :is_active, value: true
+            = f.submit 'Publish', class: "btn btn-warning btn-block elbow"
+
+        %a(href="/featured_researchers/#{featured_researcher.id}/preview" class="btn btn-primary btn-block idb elbow") Preview
+        %a(href="/featured_researchers/#{featured_researcher.id}/edit" class="btn btn-success btn-block idb" ) Edit
+        =link_to '<button class="btn btn-danger btn-block idb elbow ">Delete</button>'.html_safe, featured_researcher, :method => :delete, :data => { :confirm => 'Are you sure?' }

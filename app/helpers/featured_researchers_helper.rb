@@ -1,0 +1,2 @@
+module FeaturedResearchersHelper
+end

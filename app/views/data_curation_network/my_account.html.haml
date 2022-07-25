@@ -1,0 +1,44 @@
+=render partial: 'heading'
+
+-if @identity
+  =form_for @identity, url: "/data_curation_network/identity/#{@identity.id}/update" do |f|
+    .form-group.required.row
+      .col-md-2.col-md-offset-3
+        %label.control-label{for: :name}
+          Name
+      .col-md-4
+        =f.text_field :name, class: 'form-control'
+
+    .form-group.required.row
+      .col-md-2.col-md-offset-3
+        %label.control-label{for: :email}
+          Email
+      .col-md-4
+        %strong
+          =@identity.email
+
+    .form-group.row
+      .col-md-2.col-md-offset-3
+        %label.control-label{for: :password}
+          New Password
+      .col-md-4
+        =password_field_tag :password, class: 'form-control'
+
+    .form-group.row
+      .col-md-2.col-md-offset-3
+        %label.control-label{for: :password_confirmation}
+          New Password Confirmation
+      .col-md-4
+        =password_field_tag :password_confirmation, class: 'form-control'
+    .row
+      .col-md-4.col-md-offset-5
+        .pull-right
+          =recaptcha_tags
+    .row
+      .col-md-2.col-md-offset-7
+        %button(type="submit" class="btn btn-primary btn-block")
+          Save Changes
+
+-else
+  .jumbotron
+    Unable to confirm credentials. Contact the research data service for any needed assistance.

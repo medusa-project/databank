@@ -1,0 +1,47 @@
+.hide-when-printing
+  / Static navbar
+  %div{"aria-hidden" => "true"}
+    %nav.navbar.navbar-mini
+      #minibar
+        %ul.nav.navbar-nav
+          %li.minibar-brand
+            %a{:href => "/"} Illinois Data Bank
+          %li
+            %a{:href => "/datasets/new"}
+              %span.glyphicon.glyphicon-plus
+              Deposit Dataset
+          %li
+            %a{:href => "/datasets"}
+              %span.glyphicon.glyphicon-search
+              Find Data
+          %li
+            %a{:href => "/policies"}
+              %span.glyphicon.glyphicon-info-sign
+              Policies
+          -unless Application.help_transition_state == Databank::HelpTransitionState::GUIDE
+            %li
+              %a{:href => "/help"}
+                %span.glyphicon.glyphicon-question-sign
+                Help
+          -unless Application.help_transition_state == Databank::HelpTransitionState::HELP
+            %li
+              %a{:href => "/guides"}
+                %span.glyphicon.glyphicon-question-sign
+                Guides
+          %li
+            %a{:href => "/contact"}
+              %span.glyphicon.glyphicon-envelope
+              Contact Us
+        %ul.nav.navbar-nav.navbar-right
+          - if current_user
+            %li
+              %a(href="/datasets?q=#{CGI.escape('&editor')}#{current_user.username}")
+                =current_user.name
+            %li
+              %a{href: "/logout"}
+                Log out
+          - else
+            %li
+              %a{href: "/login"}
+                Log in with NetID
+    / /.nav-collapse

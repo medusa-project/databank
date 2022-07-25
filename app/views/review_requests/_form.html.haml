@@ -1,0 +1,16 @@
+= form_for @review_request do |f|
+  - if @review_request.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@review_request.errors.count, "error")} prohibited this review_request from being saved:"
+      %ul
+        - @review_request.errors.full_messages.each do |message|
+          %li= message
+
+  .field
+    = f.label :dataset_key
+    = f.text_field :dataset_key
+  .field
+    = f.label :requested_at
+    = f.datetime_select :requested_at
+  .actions
+    = f.submit 'Save', class: "btn btn-primary"

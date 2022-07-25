@@ -1,0 +1,130 @@
+{
+  "resource": {
+    "-xmlns": "http://datacite.org/schema/kernel-3",
+    "-xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "-xsi:schemaLocation": "http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd",
+    "identifier": {
+      "-identifierType": "DOI",
+      "#text": "10.5072/example-full"
+    },
+    "creators": {
+      "creator": {
+        "creatorName": "Miller, Elizabeth",
+        "nameIdentifier": {
+          "-schemeURI": "http://orcid.org/",
+          "-nameIdentifierScheme": "ORCID",
+          "#text": "0000-0001-5000-0007"
+        },
+        "affiliation": "DataCite"
+      }
+    },
+    "titles": {
+      "title": [
+        {
+          "-xml:lang": "en-us",
+          "#text": "Full DataCite XML Example"
+        },
+        {
+          "-xml:lang": "en-us",
+          "-titleType": "Subtitle",
+          "#text": "Demonstration of DataCite Properties."
+        }
+      ]
+    },
+    "publisher": "DataCite",
+    "publicationYear": "2014",
+    "subjects": {
+      "subject": {
+        "-xml:lang": "en-us",
+        "-schemeURI": "http://dewey.info/",
+        "-subjectScheme": "dewey",
+        "#text": "000 computer science"
+      }
+    },
+    "contributors": {
+      "contributor": {
+        "-contributorType": "ProjectLeader",
+        "contributorName": "Starr, Joan",
+        "nameIdentifier": {
+          "-schemeURI": "http://orcid.org/",
+          "-nameIdentifierScheme": "ORCID",
+          "#text": "0000-0002-7285-027X"
+        },
+        "affiliation": "California Digital Library"
+      }
+    },
+    "dates": {
+      "date": {
+        "-dateType": "Updated",
+        "#text": "2014-10-17"
+      }
+    },
+    "language": "en-us",
+    "resourceType": {
+      "-resourceTypeGeneral": "Software",
+      "#text": "XML"
+    },
+    "alternateIdentifiers": {
+      "alternateIdentifier": {
+        "-alternateIdentifierType": "URL",
+        "#text": "http://schema.datacite.org/schema/meta/kernel-3.1/example/datacite-example-full-v3.1.xml"
+      }
+    },
+    "relatedIdentifiers": {
+      "relatedIdentifier": [
+        {
+          "-relatedIdentifierType": "URL",
+          "-relationType": "HasMetadata",
+          "-relatedMetadataScheme": "citeproc+json",
+          "-schemeURI": "https://github.com/citation-style-language/schema/raw/master/csl-data.json",
+          "#text": "http://data.datacite.org/application/citeproc+json/10.5072/example-full"
+        },
+        {
+          "-relatedIdentifierType": "arXiv",
+          "-relationType": "IsReviewedBy",
+          "#text": "arXiv:0706.0001"
+        }
+      ]
+    },
+    "sizes": {
+      "size": "3KB"
+    },
+    "formats": {
+      "format": "application/xml"
+    },
+    "version": "3.1",
+    "rightsList": {
+      "rights": {
+        "-rightsURI": "http://creativecommons.org/publicdomain/zero/1.0/",
+        "#text": "CC0 1.0 Universal"
+      }
+    },
+    "descriptions": {
+      "description": {
+        "-xml:lang": "en-us",
+        "-descriptionType": "Abstract",
+        "#text": "
+        XML
+        example
+        of
+        all
+        DataCite
+        Metadata
+        Schema
+        v3
+        .
+        1
+        properties
+        .
+        "
+      }
+    },
+    "geoLocations": {
+      "geoLocation": {
+        "geoLocationPoint": "31.233 -67.302",
+        "geoLocationBox": "41.090 -71.032  42.893 -68.211",
+        "geoLocationPlace": "Atlantic Ocean"
+      }
+    }
+  }
+}

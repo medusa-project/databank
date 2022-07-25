@@ -1,0 +1,53 @@
+.bs-callout.bs-callout-info.idb-help(id="grouping")
+  %br
+  %hr
+  %h2 File Grouping
+  %hr
+  %p
+    Uploading lots and lots of files in a single dataset can make it more difficult to curate, upload/download, understand, and reuse your data. A long list of files may overwhelm potential users and long lists of files can also cause technical issues such as slow or failed page loading. Grouping files together may make your dataset easier to deposit and use.
+  %h3
+    File grouping strategies to consider:
+  %ul
+    %li
+      %p
+        Organize your files into logical groups
+        %br
+        %small
+          %em (i.e. by time, location, project - whatever would be most helpful to someone reusing your data)
+    %li
+      %p
+        Bundle each group into a zip or tar file
+        %br
+        %small
+          %em (try to keep each group under 10 GB before you compress it so it's easier to download)
+    %li
+      %p
+        Add a note to your data description about the groupings you chose and why
+
+  =render partial: "grouping_infographic"
+
+  %h3
+    Other categories to consider include:
+  %ul.dashed
+    %li topical (e.g. by species, treatment, etc)
+    %li temporal (e.g. by year, month, season, etc)
+    %li spatial (e.g. by county, state, country, etc)
+    %li file type (e.g. by CSV, by TXT, code, etc)
+    %li publication supporting (e.g. by figure, table, etc)
+    %li workflow (e.g. by inputs, outputs, etc)
+
+  %p
+    We're happy to consult with you on grouping strategies for your dataset, just
+    =succeed("!") do
+      %a(href="/contact") Contact Us
+    Or take a look at these good examples in the Illinois Data Bank:
+
+  %p
+    Willson, James; Roddur, Mrinmoy Saha; Baqiao, Liu; Zaharias, Paul; Warnow, Tandy (2021): Data from: "Inferring Species Trees from Gene-Family with Duplication and Loss using Multi-Copy Gene-Family Tree Decomposition". University of Illinois at Urbana-Champaign.
+    %a(href="https://doi.org/10.13012/B2IDB-4050038_V1" ) https://doi.org/10.13012/B2IDB-4050038_V1
+  %p
+    Schroeder, Nathan (2020): Burton Endo electron micrograph library. University of Illinois at Urbana-Champaign.
+    %a(href="https://doi.org/10.13012/B2IDB-2692533_V1" ) https://doi.org/10.13012/B2IDB-2692533_V1
+  %p
+    Donovan, Brian; Work, Dan (2016): New York City Taxi Trip Data (2010-2013). University of Illinois at Urbana-Champaign.
+    %a(href="https://doi.org/10.13012/J8PN93H8" ) https://doi.org/10.13012/J8PN93H8

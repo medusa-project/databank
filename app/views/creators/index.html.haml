@@ -1,0 +1,20 @@
+%p#notice= notice
+%h1 Creators Listing for Curator Use
+%table.table.table-striped
+  %thead
+    %tr
+      %th Name
+      %th ORCID iD
+      %th Dataset
+  %tbody
+    - @creators.each do |creator|
+      - if (can? :manage, creator)
+        %tr
+          %td= "#{creator.family_name}, #{creator.given_name}"
+          %td
+            - if creator.identifier && creator.identifier != ''
+              = link_to("http://orcid.org/#{creator.identifier}", "http://orcid.org/#{creator.identifier}")
+            - else
+              [Not Provided]
+          %td= link_to("#{(Dataset.find(creator.dataset_id)).plain_text_citation}", "#{request.base_url}#{dataset_path(Dataset.find(creator.dataset_id))}")
+%br/

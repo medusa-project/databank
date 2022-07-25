@@ -1,0 +1,8 @@
+%table.table.table-striped
+
+  -@dataset.display_changelog.each do |change|
+    %tr.row
+      %td
+        ="#{change.action}: #{change.audited_changes}"
+      %td
+        ="#{change.created_at.iso8601.to_s}"

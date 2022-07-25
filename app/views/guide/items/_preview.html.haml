@@ -1,0 +1,13 @@
+.bs-callout.bs-callout-info.idb-help(id="#{item.anchor}")
+  %br
+  %hr
+  -if item.class.name == "Guide::Section" && item.guide_items.count.positive?
+    %h2
+      =item.heading
+  -else
+    %h3
+      =item.heading
+  %hr
+  -if item.body.present? && item.body != ""
+    .indent
+      = item.body.html_safe

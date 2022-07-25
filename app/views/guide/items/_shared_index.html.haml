@@ -1,0 +1,35 @@
+=form_tag "/guide/#{guide_level}/reorder" do
+  %table.table.table-bordered
+    %thead
+      %tr.row
+        %th.col-md-3 Anchor
+        %th.col-md-3 Label
+        %th.col-md-2
+          Ordinal
+          -if defined?(parent_id)
+            %input(type="hidden" name="parent_id" value= "#{parent_id}")
+        %th.col-md-1 Public?
+        %th.col-md-1
+        %th.col-md-1
+        %th.col-md-1
+
+    %tbody
+      - items.each do |item|
+        %tr.row
+          %td.col-md-3= item.anchor
+          %td.col-md-4= item.label
+          %td.col-md-2
+            %input(type="number" name="ordinal_#{item.id}" value="#{item.ordinal}")
+          %td.col-md-1
+            -if item.public
+              public
+            -else
+              draft
+          %td.col-md-1= link_to 'Show', item, class: "btn btn-primary btn-block idb"
+          %td.col-md-1= link_to 'Edit', "/guide/#{guide_level}/#{item.id}/edit", class: "btn btn-success btn-block idb"
+          %td.col-md-1= link_to 'Destroy', item, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger btn-block idb"
+
+  %br
+  .row
+    .col-md-offset-9.col-md-3
+      = submit_tag 'Update', class: "btn btn-primary btn-block idb"

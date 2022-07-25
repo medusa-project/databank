@@ -1,0 +1,15 @@
+.container-fluid
+  %h1 Researcher Spotlights
+  %hr
+
+  -if @featured_researchers
+
+    - @featured_researchers.each do |featured_researcher|
+      = render 'individual', featured_researcher:featured_researcher
+      %hr
+
+-if(can? :manage, FeaturedResearcher)
+  .container-fluid
+    .row
+      .col-md-3.col-md-offset-9.curator-only
+        = link_to 'New Featured researcher', new_featured_researcher_path, class: "btn btn-primary btn-block idb"

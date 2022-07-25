@@ -1,0 +1,40 @@
+-# expected local variable: medusa_ingest
+.row
+  .col-md-8
+    %a(href="#{IDB_CONFIG[:root_url_text]}/medusa_ingests/#{medusa_ingest.id}")
+      ="Ingest ##{medusa_ingest.id}"
+    .label.label-primary
+      ="status: #{medusa_ingest.request_status || "pending"}"
+    &nbsp;
+    .label.label-default
+      ="request_date: #{medusa_ingest.created_at.to_date.iso8601}"
+    &nbsp;
+    -if medusa_ingest.response_time
+      .label.label-default
+        ="response_date: #{medusa_ingest.response_time.to_date.iso8601}"
+  .col-md-4
+    = link_to 'Details', medusa_ingest, class: "btn btn-primary idb"
+    = link_to 'Edit', edit_medusa_ingest_path(medusa_ingest), class: "btn btn-success idb"
+    = link_to 'Destroy', medusa_ingest, method: :delete, data: {confirm: 'Are you sure?'}, class: "btn btn-danger idb"
+-if medusa_ingest.target_key.present? && medusa_ingest.staging_key.present?
+  .row
+    .col-md-8
+      ="staging key: #{medusa_ingest.staging_key}"
+    .col-md-4
+      -if medusa_ingest.draft_obj_exist?
+        .label.label-info
+          draft object exists
+      -else
+        .label.label-default
+          draft object does not exist
+  .row
+    .col-md-8
+      ="target key: #{medusa_ingest.target_key}"
+    .col-md-4
+      -if medusa_ingest.medusa_obj_exist?
+        .label.label-info
+          medusa object exists
+      -else
+        .label.label-default
+          medusa object does not exist
+%hr

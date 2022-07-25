@@ -1,0 +1,61 @@
+= render partial: 'datasets/help/orcid_help_modal'
+= render partial: 'datasets/help/primary_contact_help_modal'
+%label(class="control-label")
+  Additional Contacts
+%br
+%input(type="hidden" name="contributor_index_max" id="contributor_index_max" value="#{@dataset.contributors.count.to_i}" )
+
+%table(id="contributor_table" class="table" )
+  %thead
+    %tr(class="row" )
+      %th
+      %th(class="col-md-2")
+        .form-heading-required
+          Family Name(s)
+      %th(class="col-md-2")
+        .form-heading-required
+          Given Name(s)
+      %th(class="col-md-2")
+        ORCiD®
+        %a(href="#" data-toggle="modal" data-target="#orcidHelpModal" tabindex="-1" )
+          =image_tag 'iD_icon_16x16.png'
+          %span(class="idb-help-prompt" )
+            what's this?
+      %th(class="col-md-1")
+      %th(class="col-md-3")
+        .form-heading-required
+          Email
+
+      %th(class="col-md-1")
+
+  %tbody
+
+  - @dataset.contributors.each_with_index do |contributor, i|
+
+    = f.fields_for :contributors, contributor do |cf|
+      %tr(class="item row" id="contributor_index_#{i}" )
+        %td
+          %span(style='display:inline;' class='glyphicon glyphicon-resize-vertical')
+        %td(class="col-md-2")
+          = cf.hidden_field :_destroy, value: false
+          = cf.hidden_field :row_position # value set via AJAX
+          = cf.hidden_field :type_of, value: Databank::CreatorType::PERSON
+
+          = cf.text_field :family_name, class: "form-control dataset contributor", placeholder: "[e.g.: Smith]", onchange: "generate_contributor_preview()"
+        %td(class="col-md-2")
+          = cf.text_field :given_name, class: "form-control dataset contributor", placeholder: "[e.g.: Jean W.]", onchange: "generate_contributor_preview()"
+        %td(class="col-md-2")
+          = cf.text_field :identifier, class: "form-control dataset", "data-mask" => "9999-9999-9999-999*", placeholder: "[xxxx-xxxx-xxxx-xxxx]"
+          = cf.hidden_field :identifier_scheme, value: "ORCID"
+        %td(class="col-md-1" )
+
+          %button(type="button" class="btn btn-primary btn-block orcid-search-btn" onclick="showContributorOrcidSearchModal('#{i}')" )
+            %span(class="glyphicon glyphicon-search" )
+            Look Up &nbsp;
+            =image_tag 'iD_icon_16x16.png'
+        %td(class="col-md-3")
+          = cf.email_field :email, class: "form-control dataset contributor-email", placeholder: "[e.g.: netid@illinois.edu]", onchange: "handle_contributor_email_change(this)"
+        %td(class="col-md-1")
+-# Add/Remove contributor buttons inserted via ajax
+%table(id="deleted_contributor_table")
+  %tbody

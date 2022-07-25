@@ -1,0 +1,22 @@
+= form_tag '/auth/identity/callback' do
+
+  .form-group.row
+    .col-md-2.col-md-offset-3
+      %label.control-label{for: :auth_key}
+        Email
+    .col-md-4
+      =email_field_tag :auth_key, nil, class: 'form-control'
+
+  .form-group.row
+    .col-md-2.col-md-offset-3
+      %label.control-label{for: :password}
+      Password
+    .col-md-4
+      =password_field_tag :password, nil, class: 'form-control'
+      %br
+      =link_to "(forgot password)", new_password_reset_path
+
+  .row
+    .col-md-2.col-md-offset-7.actions
+      %button(type="submit" id="login" class="btn btn-primary btn-block")
+        Log In

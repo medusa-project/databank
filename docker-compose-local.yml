@@ -1,0 +1,38 @@
+#
+# invocation:
+# 1. docker build -t sunspot docker/sunspot/.
+# 2. docker run --name sunspot -p 8984:8983 -d sunspot
+# 3. ENV=development
+# 4. curl "http://localhost:8984/solr/admin/cores?action=CREATE&name=$ENV&instanceDir=$ENV"
+# 5. docker build -t sqs-mock docker/sqs-mock/.
+# 6. docker-compose -f docker-compose-local.yml up -d
+
+ version: "3.7"
+
+ services:
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./storage/minio:/data
+    command: server /data --console-address ":9001"
+
+  createbuckets:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set minio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb minio/databank-local-main;
+      /usr/bin/mc policy set public minio/databank-local-main;
+      /usr/bin/mc mb minio/medusa-local-main;
+      /usr/bin/mc policy set public minio/medusa-local-main;
+      exit 0;"
+
+  sqs-mock:
+    image: sqs-mock
+    ports:
+      - "9324:9324"

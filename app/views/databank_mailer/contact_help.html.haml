@@ -1,0 +1,18 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body
+    Name: #{@params['help-name']}
+    %br/
+    Email: #{@params['help-email']}
+    %br/
+    Topic: #{@params['help-topic']}
+    %br/
+    - if @params.has_key?('help-dataset')
+      Dataset:
+      %a{:href => "#{@params['help-dataset']}"}= @params['help-dataset']
+    %hr/
+    %blockquote
+      = @params['help-message']
+    %hr/

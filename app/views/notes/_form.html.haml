@@ -1,0 +1,23 @@
+%h3
+  Note For
+  =link_to "#{@dataset.title}", dataset_path(@dataset.key)
+= @dataset.plain_text_citation
+%hr
+= form_for [@dataset, @note] do |f|
+  - if @note.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@note.errors.count, "error")} prohibited this note from being saved:"
+      %ul
+        - @note.errors.full_messages.each do |message|
+          %li= message
+  .form-group
+    .field
+      = f.label "Note", :class => "control-label"
+      = f.text_area :body, :rows => 3, :class => "form-control"
+  .form-group
+    .field
+      = f.label "Author", :class => "control-label"
+      = f.text_field :author, value: current_user.email, :class => "form-control"
+  = f.hidden_field :dataset_id, value: @dataset.id
+  .actions
+    = f.submit 'Save'

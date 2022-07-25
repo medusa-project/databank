@@ -1,0 +1,24 @@
+/ Modal
+#incomplete.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "agreement-label", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %button(type="button" class="close pull-right" data-dismiss="modal" )
+          &times;
+      .modal-body.container-fluid
+        .completion-warning
+          %p.ds-paragraph
+            %span.glyphicon.glyphicon-alert
+            = @completion_check
+      .modal-footer.container-fluid
+        %button.btn.btn-success.idb{"onclick"=>%Q(window.location="/datasets/#{@dataset.key}/edit"), 'type'=>'button', 'data-dismiss'=>"modal", 'id' =>"login-button"  }
+          %span(class="glyphicon glyphicon-edit")
+          Edit
+
+        %button.btn.btn-primary.idb{"onclick"=>'window.open("/help")', 'type'=>"button", 'data-dismiss'=>"modal", 'id'=>"help-button"}
+          %span(class="glyphicon glyphicon-question-sign")
+          Get Help
+
+        %button.btn.btn-danger.idb{"onclick"=>%Q(window.location="/datasets/#{@dataset.key}"), 'type'=>'button', 'data-dismiss'=>"modal", 'id'=>"help-button"}
+          %span(class="glyphicon glyphicon-remove")
+          Cancel

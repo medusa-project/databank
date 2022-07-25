@@ -1,0 +1,7 @@
+-Guide::Section.all do |section|
+  %h2
+    ="Items for Section: #{section.label}"
+  -locals_hash = {items: section.guide_items.order(:ordinal), guide_level: "items", parent_id: section.id}
+  =render partial: "guide/items/shared_index", locals: locals_hash
+-Guide::Item.where(section_id: nil).each do |item|
+  =render partial: 'guide/items/element', locals: {item: item}

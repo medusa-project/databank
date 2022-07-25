@@ -1,0 +1,47 @@
+.container-fluid
+
+  =render partial: 'heading'
+
+  -if current_user && current_user.role == Databank::UserRole::NETWORK_REVIEWER
+    .row
+      .col-md-3.col-md-offset-3
+        .text-center
+          .dcn-account
+            .fas.fa-user.fa-8x
+          %a(href="/data_curation_network/my_account") My Account
+      .col-md-3
+        .text-center
+          .dcn-datasets
+            .fas.fa-server.fa-8x
+          %a(href="/data_curation_network/datasets") Datasets
+
+
+  -elsif current_user && current_user.role == Databank::UserRole::ADMIN
+    .row
+      .col-md-3.col-md-offset-3
+        .text-center
+          .dcn-accounts
+            .fas.fa-users.fa-8x
+          %a(href="/data_curation_network/accounts") Accounts
+      .col-md-3
+        .text-center
+          .dcn-datasets
+            .fas.fa-server.fa-8x
+          %a(href="/data_curation_network/datasets") Datasets
+
+
+    .jumbotron
+      =succeed ',' do
+        =current_user.name
+      you are logged in as an admin. If you want to try out your Data Curation Network persona, log out first.
+
+  -elsif current_user
+    .jumbotron
+      =succeed '.' do
+        To find out more, check out the
+        %a(href="https://datacurationnetwork.org/") Data Curation Network site
+
+  -else
+    =render partial: 'identities/login'
+
+

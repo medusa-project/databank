@@ -1,0 +1,160 @@
+.bs-callout.bs-callout-info.idb-help(id="api")
+  %br
+  %h1
+    %strong Command Line tools
+
+  %h2 Overview
+
+  .indent
+    %p
+      %strong
+        These tools can be used to upload files an existing draft dataset in the Illinois Data Bank.
+    %h4 What do we mean by a draft dataset?
+    .indent
+      %p
+        A dataset is in a draft state in the Illinois Data Bank after the deposit agreement has been accepted and before the dataset is published or scheduled for publication.  Before uploading a file using any of these options,
+        %a(href="/datasets/new" target="_blank" ) create
+        or
+        %a(href="/datasets" target="_blank" ) find
+        your draft dataset, and navigate to the edit form for that dataset.
+
+    %h4 How do I get started?
+    .indent
+      %p
+        At the bottom of the Files section of any draft dataset is a matrix of upload options buttons.
+        %br
+        Click the
+        %em Get token for command line tools
+        button to display required elements for use in command line tools.
+
+    %h4 Notes:
+    %ul
+      %li
+        %p Anyone can use a token to upload a file to this dataset, so keep it secure.
+      %li
+        %p A distinct token is required for each dataset.
+  %hr
+
+  %h2 OPTIONS: Python, cURL, or custom script
+
+  = render partial: 'datasets/zipping_panel'
+  = render partial: 'datasets/grouping_panel'
+  -# does not use the api python or curl panel partials because it uses placeholders for dataset-specific information
+  .panel-group(id="python" role="tablist" aria-multiselectable="true")
+  .panel.panel-default
+    .panel-heading(role="tab" id="pythonHeading")
+      %h4(class="panel-title")
+        %a( role="button" data-toggle="collapse" data-parent="#python" href="#pythonPanel" aria-expanded="false" aria-controls="pythonPanel" class="accordion-toggle collapsed" )
+          %span( class="metadata-label" ) Use our sample Python file upload script. (click to expand)
+    .panel-collapse.collapse(id="pythonPanel" role="tabpanel" aria-labelledby="pythonHeading" )
+      .panel-body
+
+        %p
+          Download our sample python client
+          %a(href="#{IDB_CONFIG[:root_url_text]}/databank_api_client_v2.py" target="_blank" ) databank_api_client_v2.py
+
+        %p
+          Requires recent version of
+          =succeed(",") do
+            %a(href="https://www.python.org/" ) python 2 or 3
+          %em works on files up to 2 TB.
+        %p Required Modules
+        %pre
+          %code pip install tuspy
+        %pre
+          %code pip install requests
+        %pre
+          %code pip install urllib3[secure]"
+
+        %p
+          A version of the following template command, pre-populated with your dataset identifier and token, comes up in response to clicking on the
+          %em Get token for command line tools
+          button when editing a draft dataset. The only part that would need to change from that example would be the name of your file at the end where that example has
+          %em myfile.csv and this template has [FILE_TO_UPLOAD].
+        .command-to-copy
+          %pre
+            %code
+              ="python databank_api_client_v2.py [DATASET_IDENTIFIER] [TOKEN] [SYSTEM] [FILE_TO_UPLOAD] "
+
+
+        %p Arguments:
+        %p
+          .indent
+            %strong DATASET_IDENTIFIER:
+            a code that uniquely and persistently identifies a dataset within the Illinois Data Bank, obtained on screen opened by
+            %em Get Token for Command Line Tools
+            button on edit screen for draft dataset
+            %br
+            %strong TOKEN:
+            authentication token, obtained on screen opened by
+            %em Get Token for Command Line Tools
+            button on edit screen for draft dataset
+            %br
+            %strong SYSTEM:
+            optional system indicator (local | development | production), default is production
+            %br
+            %strong FILE_TO_UPLOAD:
+            name of your datafile to be uploaded
+          %br
+          %p Options: -h --help
+
+        %hr
+        %p
+          This python script and accompanying documentation can be found on GitHub
+          %br
+          at
+          =succeed(".") do
+            %a(href="https://github.com/medusa-project/databank-client" target="_blank" ) https://github.com/medusa-project/databank-client
+
+        %p
+          For more help,
+          =succeed(".") do
+            %a(href="/contact") Contact Us
+  .panel-group(id="cURL" role="tablist" aria-multiselectable="true")
+  .panel.panel-default
+    .panel-heading(role="tab" id="cURLHeading")
+      %h4(class="panel-title")
+        %a( role="button" data-toggle="collapse" data-parent="#cURL" href="#cURLPanel" aria-expanded="false" aria-controls="cURLPanel" class="accordion-toggle collapsed" )
+          %span( class="metadata-label" ) Execute a cURL command. (click to expand)
+    .panel-collapse.collapse(id="cURLPanel" role="tabpanel" aria-labelledby="cURLHeading" )
+      .panel-body
+        %p
+          Requires
+          =succeed(",") do
+            %a(href="https://curl.haxx.se/" target="_blank" ) cURL
+          %em works on files up to 4 GB.
+
+        %p
+          A version of the following example command, pre-populated with your dataset identifier and token, comes up in response to clicking on the
+          %em Get token for command line tools
+          button when editing a draft dataset. The only part that would need to change from that example is the name of your file in the "binary = @my_datafile.csv" section. The at symbol (@) is required just before the file name.
+
+        .curl-to-copy
+          %pre
+            %code
+              = %Q[curl -F "binary=@my_datafile.csv" -H "Authorization: Token token=[TOKEN]" -H "Transfer-Encoding: chunked" -X POST #{IDB_CONFIG[:root_url_text]}/api/dataset/[DATASET_IDENTIFIER]/datafile -o output.txt]
+              -if IDB_CONFIG[:root_url_text].include?("dev")
+                = %Q[-k]
+
+        %p
+          The basic endpoint URL pattern is
+          = %Q[#{IDB_CONFIG[:root_url_text]}/api/dataset/[DATASET_IDENTIFIER]/datafile]
+        %p The request method is POST.
+        %p The authorization token must be sent in a header.
+        %p A header setting the Transfer-Encoding to chunked is recommended.
+        %p The file must be sent in a form in an element named binary.  In cURL, that can be done with the -F option and an element like "binary=@my_datafile.csv".
+        %p The -o option must be used to send response output to a file to see the progress meter.
+        %p Even after the cURL progress meter reaches 100%, additional processing is done, which may take as long as it took to reach 100%.
+        -if IDB_CONFIG[:root_url_text].include?("dev") or IDB_CONFIG[:root_url_text].include?("demo")
+          %p For the development/demonstration server only, -k at at the end of the cURL command makes it tolerate the self-signed certificate.
+        -else
+        %p After upload is complete, refresh the dataset page to see the new datafile listing.
+
+        %p
+          For more help,
+          =succeed(".") do
+            %a(href="/contact") Contact Us
+
+  = render partial: 'datasets/api_campus_panel'
+  = render partial: 'datasets/api_curl_panel'
+  = render partial: 'datasets/api_custom_panel'

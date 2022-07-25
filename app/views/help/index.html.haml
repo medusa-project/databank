@@ -1,0 +1,94 @@
+.row(id="help-layout")
+  %nav(class="col-xs-3 bs-docs-sidebar")
+    %ul(class="nav nav-stacked fixed" id="sidebar")
+      %li
+        %a(href="#top")
+          %strong Select a Help Topic
+      %li
+        %a(href="#contact" ) Contact Us
+      %li
+        %a(href="#supplemental") Journal Supplemental Materials
+      %li
+        %a(href="#start" ) Getting Started
+        %ul(class="nav nav-stacked")
+          %li
+            %a(href="#login" ) Log In
+          %li
+            %a(href="#describe" ) Describe
+          %li
+            %a(href="#upload" ) Upload
+          %li
+            %a(href="#review" ) Review
+          %li
+            %a(href="#publish" ) Publish
+      %li
+        %a(href="#curation_procedures" ) Curation Procedures
+      %li
+        %a(href="#doi" ) What is a DOI?
+      %li
+        %a(href="#metrics" ) Metrics
+      %li
+        %a(href="#metadata" ) Metadata
+      %li
+        %a(href="#file_naming" ) File Naming
+      %li
+        %a(href="#grouping" ) File Grouping
+      %li
+        %a(href="#dataset_documentation" ) Dataset Documentation
+      %li
+        %a(href="#when_to_publish" ) When to Publish
+      %li
+        %a(href="#embargo") Delaying Publication (Embargoing)
+      %li
+        %a(href="#license") Licensing
+      %li
+        %a(href="#versioning") Changing, Updating, or Adding Files
+      %li
+        %a(href="#accessibility") Accessibility
+      %li
+        %a(href="#api" ) Command Line Tools
+      %li
+        %a(href="#globus" ) Using Globus
+      %li
+        %a(href="#developers" ) For Developers
+    .help-bottom-spacer
+
+
+  .col-xs-9(id="help-body")
+    %h1 How can we help you?
+    = render partial: 'contact', locals: {dataset: @dataset}
+    = render partial: 'supplemental_material'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'start'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'curation_procedures'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'doi'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'metrics'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'metadata'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'file_naming'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'grouping'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'dataset_documentation'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'when_to_publish'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'embargo'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'license'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'versioning'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'accessibility'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'command_line_tools'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'globus'
+    %a(href="#top" class="pull-right" ) Go to Top
+    = render partial: 'developers'
+    %a(href="#top" class="pull-right" ) Go to Top
+    .help-bottom-spacer

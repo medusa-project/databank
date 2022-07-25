@@ -1,0 +1,19 @@
+.modal.fade(id="licenseModal")
+  .modal-dialog.modal-xl
+    .modal-content
+      .modal-header
+        %button(class="close" data-dismiss="modal")
+          &times;
+        %h2 Choosing a License
+      .modal-body
+        %p As someone who is a creator or is acting on behalf of a creator of the dataset you are depositing, you have the ability to grant copyright permissions to others accessing your dataset inasmuch as copyright applies to your dataset. Based on emerging research data licensing practices, dedicating a dataset to the public domain (CC0) or requiring attribution (CC BY) are most appropriate for sharing research data. Other terms, if more appropriate for your dataset, may be specified using the 'Other License' option.
+        =render partial: 'help/license_infographic'
+        .container-fluid
+          .row
+            .col-md-8
+              %small
+                %em The material presented here is for informational purposes only and not for the purpose of providing legal advice.
+            .pull-right
+              %button(onclick='window.open("/help#license")' type="button" class="btn btn-success" data-dismiss="modal" id="help-button")
+                %span(class="glyphicon glyphicon-question-sign")
+                Learn more about licensing research data

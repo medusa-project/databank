@@ -1,0 +1,201 @@
+%h2 Metrics
+.metrics-border
+  %h3
+    %a(href="/dataset_downloads.json") Dataset downloads json
+  %p
+    Modified:
+    = @modified_times[:dataset_downloads_json]
+    %a(href="/metrics/refresh_dataset_downloads" class="btn btn-success btn-sm idb" )
+      %span.glyphicon.glyphicon-refresh
+      Refresh
+  .indent
+    %p
+      A json string detailing downloads calculated per
+      %strong dataset
+      per day.
+.metrics-border
+  %h3
+    %a(href="/datafile_downloads.json") Datafile downloads json
+  %p
+    Modified:
+    = @modified_times[:datafile_downloads_json]
+    %a(href="/metrics/refresh_datafile_downloads" class="btn btn-success btn-sm idb" )
+      %span.glyphicon.glyphicon-refresh
+      Refresh
+  .indent
+    %p
+      A json string detailing downloads calculated per
+      %strong datafile
+      per day.
+.metrics-border
+  %h3
+    %a(href="/metrics/datafiles_simple_list") Datafiles listing
+  %p Generated dynamically
+  .indent
+    %p A listing of datafiles with associated links to their respective datasets.
+
+.metrics-border
+  %h3
+    %a(href="/metrics/datasets_csv" class="btn btn-primary idb" )
+      %span.glyphicon.glyphicon-download
+      Datasets CSV
+  %p Generated Dynamically
+  .indent
+    %p
+      Button triggers a csv file download of dataset details.
+      %em (datasets)
+
+    %strong Column Headings
+    %ul
+      %li
+        %strong doi:
+        DOI that identifies this dataset
+      %li
+        %strong pub_date:
+        Date the files in this dataset were first available for download
+      %li
+        %strong num_files:
+        Total number of datafiles in this dataset
+      %li
+        %strong num_bytes:
+        Combined total size for all files in this dataset, in bytes
+      %li
+        %strong total_downloads:
+        Number of downloads for this dataset, calculated as described in our metrics help section:
+        %a(href="https://databank.illinois.edu/help#metrics") https://databank.illinois.edu/help#metrics
+      %li
+        %strong num_relationships:
+        Number of related materials, excluding other versions of this dataset
+      %li
+        %strong subject:
+        Subject Area of this dataset
+
+.metrics-border
+  %h3
+    %a(href="/datafiles.csv" class="btn btn-primary idb" )
+      %span.glyphicon.glyphicon-download
+      Datafiles CSV
+  %p
+    modified:
+    = @modified_times[:datafiles_csv]
+    %a(href="/metrics/refresh_datafiles_csv" class="btn btn-success btn-sm idb" )
+      %span.glyphicon.glyphicon-refresh
+      Refresh
+  .indent
+    %p
+      Button triggers a csv file download of datafile details.
+      %em (data files)
+
+    %strong Column Headings
+    %ul
+      %li
+        %strong doi:
+        DOI that identifies the dataset this file is part of
+      %li
+        %strong pub_date:
+        Date this file was first made available for download
+      %li
+        %strong filename:
+        Name of the file, with extension
+      %li
+        %strong file_format:
+        Mime type (file format from the left column in the Medusa “statistics” view)
+      %li
+        %strong num_bytes:
+        Size of this files, in bytes
+      %li
+        %strong total_downloads:
+        Number of downloads for this file, calculated as described in our metrics help section:
+        %a(href="https://databank.illinois.edu/help#metrics") https://databank.illinois.edu/help#metrics
+
+.metrics-border
+  %h3
+    %a(href="/archive_file_contents.csv" class="btn btn-primary idb" )
+      %span.glyphicon.glyphicon-download
+      Container File Contents (zip) CSV
+  %p
+    modified:
+    = @modified_times[:container_contents_csv]
+    %a(href="/metrics/refresh_container_csv" class="btn btn-success btn-sm idb" )
+      %span.glyphicon.glyphicon-refresh
+      Refresh
+  .indent
+    %p
+      Button triggers a csv file download of contents details for files in complex container formats (.zip, .tar.gz, .7z).
+
+    %strong Column Headings
+    %ul
+      %li
+        %strong doi:
+        DOI that identifies the dataset this file is part of
+      %li
+        %strong container_filename:
+        Filename of the container file
+      %li
+        %strong content_filepath:
+        Full path of the file, in the context of the container file
+      %li
+        %strong content_filename:
+        Filename of content file within the archive file
+        %br
+        %em Duplicate filenames from different branches may be present.
+      %li
+        %strong file_format:
+        Mime type of the content file
+
+.metrics-border
+  %h3
+    %a(href="/metrics/related_materials_csv" class="btn btn-primary idb" )
+      %span.glyphicon.glyphicon-download
+      Related Materials CSV
+  %p Generated dynamically
+  .indent
+    %p
+      Button triggers a csv file download.
+      %em (related materials)
+
+    %strong Column Headings
+
+    %ul
+      %li
+        %strong doi:
+        The DOI that identifies THIS dataset in Illinois Data Bank
+      %li
+        %strong datacite_relationship:
+        The relationship registered with DataCite
+      %li
+        %strong material_id_type:
+        The related material identifier type (e.g., DOI, URL)
+      %li
+        %strong material_id:
+        The related material identifier
+      %li
+        %strong material_type:
+        Type of related material (e.g., article, thesis)
+
+
+.metrics-border
+  %h3
+    %a(href="/metrics/funders_csv" class="btn btn-primary idb" )
+      %span.glyphicon.glyphicon-download
+      Funders CSV
+  %p Generated dynamically
+  .indent
+    %p
+      Button triggers a csv file download.
+      %em (funder and grant info)
+
+    %strong Column Headings
+
+    %ul
+      %li
+        %strong doi:
+        The DOI that identifies THIS dataset in Illinois Data Bank
+      %li
+        %strong funder:
+        The funder name
+      %li
+        %strong grant:
+        The grant identifier
+
+

@@ -1,0 +1,7 @@
+= simple_form_for(@definition) do |f|
+  = f.error_notification
+  .form-inputs
+    = f.input :term
+    = f.input :meaning
+  .form-actions
+    = f.button :submit

@@ -1,0 +1,28 @@
+= form_for @ingest_response do |f|
+  - if @ingest_response.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@ingest_response.errors.count, "error")} prohibited this ingest_response from being saved:"
+      %ul
+        - @ingest_response.errors.full_messages.each do |message|
+          %li= message
+
+  .field
+    = f.label :as_text
+    = f.text_area :as_text
+  .field
+    = f.label :status
+    = f.text_field :status
+  .field
+    = f.label :response_time
+    = f.datetime_select :response_time
+  .field
+    = f.label :staging_key
+    = f.text_field :staging_key
+  .field
+    = f.label :medusa_key
+    = f.text_field :medusa_key
+  .field
+    = f.label :uuid
+    = f.text_field :uuid
+  .actions
+    = f.submit 'Save'

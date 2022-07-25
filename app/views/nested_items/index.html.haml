@@ -1,0 +1,29 @@
+%h1 Listing nested_items
+
+%table
+  %thead
+    %tr
+      %th Datafile
+      %th Parent
+      %th Item name
+      %th Media type
+      %th Size
+      %th
+      %th
+      %th
+
+  %tbody
+    - @nested_items.each do |nested_item|
+      %tr
+        %td= nested_item.datafile_id
+        %td= nested_item.parent_id
+        %td= nested_item.item_name
+        %td= nested_item.media_type
+        %td= nested_item.size
+        %td= link_to 'Show', nested_item
+        %td= link_to 'Edit', edit_nested_item_path(nested_item)
+        %td= link_to 'Destroy', nested_item, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Nested item', new_nested_item_path

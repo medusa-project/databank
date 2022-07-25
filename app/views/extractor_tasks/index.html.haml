@@ -1,0 +1,23 @@
+%h1 Listing extractor_tasks
+
+%table
+  %thead
+    %tr
+      %th Web
+      %th Response at
+      %th
+      %th
+      %th
+
+  %tbody
+    - @extractor_tasks.each do |extractor_task|
+      %tr
+        %td= extractor_task.web_id
+        %td= extractor_task.response_at
+        %td= link_to 'Show', extractor_task
+        %td= link_to 'Edit', edit_extractor_task_path(extractor_task)
+        %td= link_to 'Destroy', extractor_task, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Extractor task', new_extractor_task_path

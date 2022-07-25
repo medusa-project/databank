@@ -1,0 +1,131 @@
+-if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
+  .alert.alert-alert
+    =SystemMessage.read_only_message.raw
+
+- if (can? :update, @dataset) && (Databank::Application.file_mode == Databank::FileMode::WRITE_READ)
+  .idb-dashboard.panel.panel-warning
+    .panel-body
+      .row
+        .col-md-8
+          -if (can? :manage, @dataset)
+            .curator-only
+              .label.label-default
+                ="updated: #{@dataset.updated_at.to_date.iso8601}"
+              &nbsp;
+              -if @dataset.ingest_datetime
+                .label.label-default
+                  ="ingested: #{@dataset.ingest_datetime.to_date.iso8601}"
+              -else
+                .label.label-default
+                  ="ingested: N/A"
+              &nbsp;
+              -if @dataset.release_datetime
+                .label.label-default
+                  ="released: #{@dataset.release_datetime.to_date.iso8601}"
+              -else
+                .label.label-default
+                  ="released: N/A"
+              &nbsp;
+              = " | "
+              -if Databank::PublicationState::PUB_ARRAY.include? @dataset.publication_state
+                %button(id="resendPubnoteBtn" type="btn" class="btn btn-primary" onclick="sendPublicationNotice()" )
+                  Send Publication Notice
+            %br
+
+          - if @completion_check == 'ok'
+            - if ((can? :manage, @dataset) && (@dataset.publication_state != Databank::PublicationState::DRAFT) && (@dataset.publication_state != Databank::PublicationState::Embargo::METADATA) && (@dataset.embargo == Databank::PublicationState::Embargo::METADATA))
+              %span(class="glyphicon glyphicon-alert" )
+              Embargo placeholders have not yet replaced DataCite metadata. Confirm to complete changes.
+              %br
+            -elsif (@dataset.publication_state == Databank::PublicationState::Embargo::METADATA) && (@dataset.embargo != Databank::PublicationState::Embargo::METADATA)
+              .datacite-changes-warning
+                %span(class="glyphicon glyphicon-alert" )
+                This dataset record has not yet been published.  Confirm to complete changes.
+                %br
+          -elsif @completion_check && @completion_check.length > 0
+            .completion-warning
+              %span(class="glyphicon glyphicon-alert" )
+              = @completion_check
+              - if @dataset.publication_state == Databank::PublicationState::DRAFT || (can? :manage, @dataset)
+                Edit to complete dataset.
+                %br
+          %span(class="glyphicon glyphicon-eye-open" )
+
+          .row
+            .col-md-6
+              = @dataset.visibility
+              -if @dataset.in_pre_publication_review
+                &nbsp;
+                .label.label-danger
+                  pre-publication review
+                &nbsp;
+              -if @dataset.share_code
+                .label.label-success
+                  has sharing link
+                &nbsp;
+            -if (can? :manage, @dataset)
+              .col-md-6.curator-only
+                = link_to "Go to Notes", dataset_notes_path(@dataset), class: "btn idb btn-primary", target: "_blank"
+                = "(There #{@dataset.notes.count == 1 ? 'is' : 'are'} currently #{pluralize(@dataset.notes.count, 'note')} for this dataset.)"
+          - unless @dataset.share_code.nil?
+            .panel.panel-default
+              .panel-body
+                Private Sharing Link:
+                .row
+                  .col-md-11
+                    .input-group.clipboard-control
+                      %input(type="text" id="sharing-link" class="form-control" value="#{@dataset.sharing_link}" )
+                      %span(class="input-group-btn" )
+                        %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#sharing-link')
+                          %span(class="glyphicon glyphicon-copy")
+                  -if(can? :edit, @dataset)
+                    .col-md-1
+                      -msg = "Are you sure? This permanently removes this sharing link. Another can be generated after."
+                      = link_to("/datasets/#{@dataset.key}/remove_sharing_link", method: :delete, data: {confirm: msg},
+                      class: "btn idb btn-danger remove-share-btn") do
+                        %span(class="glyphicon glyphicon-trash")
+        .col-md-4
+          - if @completion_check == 'ok' && @dataset.in_pre_publication_review
+            %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
+              Continue
+              %span(class="glyphicon glyphicon-triangle-right" )
+
+          - elsif @completion_check == 'ok'
+            -# confirm button conditional complex, so broken into three statements
+            -if ((can? :manage, @dataset) && (@dataset.publication_state != Databank::PublicationState::DRAFT) && (@dataset.publication_state != Databank::PublicationState::Embargo::METADATA) && (@dataset.embargo == Databank::PublicationState::Embargo::METADATA))
+              =render partial: 'datasets/offer_review_btn'
+              -#=render partial: 'datasets/confirm_btn'
+
+            -elsif (@dataset.publication_state == Databank::PublicationState::DRAFT)
+              =render partial: 'datasets/offer_review_btn'
+              -#=render partial: 'datasets/confirm_btn'
+
+            -elsif @dataset.publication_state == Databank::PublicationState::Embargo::METADATA && @dataset.embargo != Databank::PublicationState::Embargo::METADATA
+              =render partial: 'datasets/offer_review_btn'
+              -#=render partial: 'datasets/confirm_btn'
+
+          -else
+            %button(type="button" id="show-confirm-modal-link" class="btn btn-default btn-block" data-toggle="modal" data-target="#incomplete")
+              Confirm
+              %span(class="glyphicon glyphicon-triangle-right" )
+          = link_to(edit_dataset_path(@dataset), :class => "btn idb btn-success btn-block") do
+            %span(class="glyphicon glyphicon-edit")
+            Edit
+          -unless @dataset.metadata_public?
+            = link_to(share_dataset_path(@dataset), class: "btn idb btn-block btn-share") do
+              %span(class="glyphicon glyphicon-link")
+              Generate private sharing link
+          -if @dataset.publication_state == Databank::PublicationState::DRAFT
+            %button(type="button" class="btn btn-info btn-block" name="cancel" onclick='window.location = "/datasets?q=editor=%5B%5D=#{current_user.name}&context=exit_draft"' )
+              %span(class="glyphicon glyphicon-pushpin" )
+              Exit this saved dataset
+          -else
+            %button(type="button" class="btn btn-info btn-block" name="cancel" onclick='window.location = "/datasets?q=editor=%5B%5D==#{current_user.name}&context=exit_doi"' )
+              %span(class="glyphicon glyphicon-pushpin" )
+              Exit this saved dataset
+          - if @dataset.publication_state == Databank::PublicationState::DRAFT
+            = link_to(dataset_path(@dataset.key), method: :delete, data: {confirm: 'Are you sure? This removes all files and metadata.'}, class: "btn idb btn-danger btn-block") do
+              %span(class="glyphicon glyphicon-trash" )
+              Delete
+
+
