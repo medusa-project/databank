@@ -88,7 +88,7 @@ module Dataset::Complete
 
     end
 
-    completion_check_message = Dataset.completion_check(proposed_dataset, current_user)
+    completion_check_message = Dataset.completion_check(proposed_dataset)
     proposed_dataset.destroy
     completion_check_message
 
@@ -96,7 +96,7 @@ module Dataset::Complete
 
   class_methods do
     # making completion_check a class method with passed-in dataset, so it can be used by controller before save
-    def completion_check(dataset, _current_user)
+    def completion_check(dataset)
       e_arr = []
       e_arr << "title" if dataset.title.blank?
       e_arr << "at least one creator" if dataset.creators.count < 1

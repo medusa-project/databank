@@ -659,7 +659,7 @@ collaborators to access the data files while the dataset is not public.</li>
                             else
                               "https://doi.test.datacite.org/"
                             end
-    @completion_check = Dataset.completion_check(@dataset, current_user)
+    @completion_check = Dataset.completion_check(@dataset)
     @dataset.ensure_embargo
     set_file_mode
   end
@@ -818,7 +818,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.creators.build unless @dataset.creators.count.positive?
     @dataset.funders.build unless @dataset.funders.count.positive?
     @dataset.related_materials.build unless @dataset.related_materials.count.positive?
-    @completion_check = Dataset.completion_check(@dataset, current_user)
+    @completion_check = Dataset.completion_check(@dataset)
     @dataset.org_creators = @dataset.org_creators || false
     # set_license(@dataset)
     @publish_modal_msg = Dataset.publish_modal_msg(@dataset)
@@ -903,7 +903,7 @@ collaborators to access the data files while the dataset is not public.</li>
           if Databank::PublicationState::DRAFT == @dataset.publication_state
             raise "invalid publication state for update-and-publish"
             # only update complete datasets
-          elsif Dataset.completion_check(@dataset, current_user) == "ok"
+          elsif Dataset.completion_check(@dataset) == "ok"
             # set publication_state
             @dataset.publication_state = if @dataset.embargo && [Databank::PublicationState::Embargo::FILE,
                                                                  Databank::PublicationState::Embargo::METADATA].include?(@dataset.embargo)
@@ -928,7 +928,7 @@ collaborators to access the data files while the dataset is not public.</li>
               format.json { render json: @dataset.errors, status: :unprocessable_entity }
             end
           else # this else means completion_check was not ok within publish context
-            Rails.logger.warn Dataset.completion_check(@dataset, current_user)
+            Rails.logger.warn Dataset.completion_check(@dataset)
             raise "Error: Cannot update published dataset with incomplete information."
           end
         elsif params.has_key?("context") && params["context"] == "continue_edit"

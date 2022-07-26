@@ -20,7 +20,7 @@ module Dataset::Publishable
 
     self.destroy_incomplete_uploads
 
-    completion_check_result = Dataset.completion_check(self, user)
+    completion_check_result = Dataset.completion_check(self)
 
     return error_hash(completion_check_result) unless completion_check_result == "ok"
 
