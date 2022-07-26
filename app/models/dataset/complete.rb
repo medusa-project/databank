@@ -5,6 +5,95 @@ require "net-ldap"
 module Dataset::Complete
   extend ActiveSupport::Concern
 
+  def valid_change2published(params:)
+    unless params.has_key?(:dataset) && (params[:dataset]).has_key?(:identifier) && params[:dataset][:identifer] != ""
+      return "invalid params: #{params}"
+    end
+
+    proposed_dataset = Dataset.create
+    proposed_dataset.title = params[:dataset][:title] if params[:dataset].has_key?(:title)
+    proposed_dataset.license = params[:dataset][:license] if params[:dataset].has_key?(:license)
+
+    has_license_file = false
+
+    if complete_datafiles.count.positive?
+
+      proposed_dataset.datafiles = []
+
+      complete_datafiles.each do |datafile|
+        next unless datafile.bytestream_name && (datafile.bytestream_name.downcase == "license.txt")
+
+        has_license_file = true
+        temporary_datafile = Datafile.new(dataset_id: proposed_dataset.id)
+        temporary_datafile.web_id = "#{datafile.web_id}_tmp"
+        temporary_datafile.storage_root = datafile.storage_root
+        temporary_datafile.storage_key = datafile.storage_key
+        temporary_datafile.binary_name = datafile.binary_name
+        temporary_datafile.save
+        proposed_dataset.datafiles.push(temporary_datafile)
+      end
+
+      unless has_license_file
+        temporary_datafile = Datafile.new(dataset_id: proposed_dataset.id)
+        temporary_datafile.storage_root = "draft"
+        temporary_datafile.storage_key = "placeholder.txt"
+        temporary_datafile.binary_name = "placeholder.txt"
+        temporary_datafile.save
+        proposed_dataset.datafiles.push(temporary_datafile)
+      end
+
+    end
+
+    proposed_dataset.embargo = params[:dataset][:embargo] if params[:dataset].has_key?(:embargo)
+
+    proposed_dataset.release_date = params[:dataset][:release_date] if params[:dataset].has_key?(:release_date)
+
+    proposed_dataset.license = params[:dataset][:license] if params[:dataset].has_key?(:license)
+
+    if (params[:dataset]).has_key?(:creators_attributes)
+
+      # Rails.logger.warn params[:dataset][:creators_attributes]
+
+      proposed_dataset.creators = []
+
+      params[:dataset][:creators_attributes].each do |creator_params|
+        creator_p = creator_params[1]
+        temporary_creator = nil
+        if creator_p.has_key?(:type_of)
+
+          if creator_p[:type_of] == Databank::CreatorType::PERSON.to_s &&
+            creator_p.has_key?(:family_name) && creator_p.has_key?(:given_name) &&
+            creator_p[:family_name] != "" && creator_p[:given_name] != ""
+            temporary_creator = Creator.create(dataset_id: proposed_dataset.id,
+                                               type_of: Databank::CreatorType::PERSON,
+                                               family_name: creator_p[:family_name],
+                                               given_name: creator_p[:given_name])
+
+          elsif creator_p[:type_of] == Databank::CreatorType::INSTITUTION.to_s &&
+            creator_p.has_key?(:institution_name) && creator_p[:institution_name] != ""
+            temporary_creator = Creator.create(dataset_id: proposed_dataset.id,
+                                               type_of: Databank::CreatorType::INSTITUTION,
+                                               institution_name: creator_p[:institution_name])
+          else
+            return "invalid creator record: #{creator.to_yaml}"
+          end
+        end
+
+        temporary_creator.email = creator_p[:email] if creator_p.has_key?(:email)
+        temporary_creator.is_contact = creator_p[:is_contact] if creator_p.has_key?(:is_contact)
+
+        temporary_creator.save
+        proposed_dataset.creators.push(temporary_creator)
+      end
+
+    end
+
+    completion_check_message = Dataset.completion_check(proposed_dataset, current_user)
+    proposed_dataset.destroy
+    completion_check_message
+
+  end
+
   class_methods do
     # making completion_check a class method with passed-in dataset, so it can be used by controller before save
     def completion_check(dataset, _current_user)
@@ -69,7 +158,7 @@ module Dataset::Complete
       dataset.datafiles.each do |datafile|
         datafiles_arr << datafile.bytestream_name
       end
-      first_dup = datafiles_arr.find {|e| datafiles_arr.count(e) > 1 }
+      first_dup = datafiles_arr.find { |e| datafiles_arr.count(e) > 1 }
       ["no duplicate filenames (#{first_dup})"] if first_dup
     end
 
@@ -77,12 +166,12 @@ module Dataset::Complete
       embargo_states = [Databank::PublicationState::Embargo::FILE, Databank::PublicationState::Embargo::METADATA]
 
       if dataset.embargo && embargo_states.include?(dataset.embargo) &&
-          (!dataset.release_date || dataset.release_date <= Date.current)
+        (!dataset.release_date || dataset.release_date <= Date.current)
         return ["a future release date for delayed publication (embargo) selection"]
       end
 
       if (!dataset.embargo || embargo_states.exclude?(dataset.embargo)) &&
-          (dataset.release_date && dataset.release_date > Date.current)
+        (dataset.release_date && dataset.release_date > Date.current)
         return ["a delayed publication (embargo) selection for a future release date"]
       end
 
