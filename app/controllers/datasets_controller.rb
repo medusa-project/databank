@@ -963,10 +963,10 @@ collaborators to access the data files while the dataset is not public.</li>
 
           has_license_file = true
           temporary_datafile = Datafile.new(dataset_id: proposed_dataset.id)
-          temporary_datafile.web_id =
-            temporary_datafile.storage_root = "draft"
-          temporary_datafile.storage_key = "license.txt"
-          temporary_datafile.binary_name = "license.txt"
+          temporary_datafile.web_id = "#{datafile.web_id}_tmp"
+          temporary_datafile.storage_root = datafile.storage_root
+          temporary_datafile.storage_key = datafile.storage_key
+          temporary_datafile.binary_name = datafile.binary_name
           temporary_datafile.save
           proposed_dataset.datafiles.push(temporary_datafile)
         end
