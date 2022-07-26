@@ -29,6 +29,7 @@ module Dataset::Complete
         temporary_datafile.storage_root = datafile.storage_root
         temporary_datafile.storage_key = datafile.storage_key
         temporary_datafile.binary_name = datafile.binary_name
+        temporary_datafile.job_status = datafile.job_status
         temporary_datafile.save
         proposed_dataset.datafiles.push(temporary_datafile)
       end
@@ -40,6 +41,7 @@ module Dataset::Complete
         temporary_datafile.storage_root = sample_file.storage_root
         temporary_datafile.storage_key = sample_file.storage_key
         temporary_datafile.binary_name = sample_file.binary_name
+        temporary_datafile.job_status = sample_file.job_status
         temporary_datafile.save
         proposed_dataset.datafiles.push(temporary_datafile)
       end
@@ -90,6 +92,7 @@ module Dataset::Complete
 
     end
 
+    proposed_dataset.save!
     completion_check_message = Dataset.completion_check(proposed_dataset)
     proposed_dataset.destroy
     completion_check_message
