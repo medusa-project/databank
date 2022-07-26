@@ -34,10 +34,12 @@ module Dataset::Complete
       end
 
       unless has_license_file
+        sample_file = complete_datafiles.first
         temporary_datafile = Datafile.new(dataset_id: proposed_dataset.id)
-        temporary_datafile.storage_root = "draft"
-        temporary_datafile.storage_key = "placeholder.txt"
-        temporary_datafile.binary_name = "placeholder.txt"
+        temporary_datafile.web_id = "#{sample_file.web_id}_tmp"
+        temporary_datafile.storage_root = sample_file.storage_root
+        temporary_datafile.storage_key = sample_file.storage_key
+        temporary_datafile.binary_name = sample_file.datafile.binary_name
         temporary_datafile.save
         proposed_dataset.datafiles.push(temporary_datafile)
       end
