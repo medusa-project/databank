@@ -947,7 +947,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def validate_change2published
     authorize! :update, @dataset
-    completion_check_message = @dataset.valid_change2published(params: params)
+    completion_check_message = @dataset.valid_change2published(new_params: params)
     respond_to do |format|
       format.html { render :edit, alert: completion_check_message }
       format.json { render json: {"message": completion_check_message} }

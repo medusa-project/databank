@@ -5,85 +5,33 @@ require "net-ldap"
 module Dataset::Complete
   extend ActiveSupport::Concern
 
-  def valid_change2published(params:)
+  def valid_change2published(new_params:)
+    dataset = self
+    params = new_params
     unless params.has_key?(:dataset) && (params[:dataset]).has_key?(:identifier) && params[:dataset][:identifer] != ""
       return "invalid params: #{params}"
     end
 
-    proposed_dataset = Dataset.create
-    proposed_dataset.title = params[:dataset][:title] if params[:dataset].has_key?(:title)
-    proposed_dataset.license = params[:dataset][:license] if params[:dataset].has_key?(:license)
+    e_arr = []
+    e_arr << "title" unless Dataset.key_not_empty?(params: params, key: :title)
+    e_arr << "at least one creator" unless params[:dataset][:creators_attributes].length.positive?
+    e_arr << "license" unless Dataset.key_not_empty?(params: params, key: :license)
+    e_arr << "at least one file" unless dataset.complete_datafiles.count.positive?
+    has_primary_contact = Dataset.has_primary_contact?(creator_params: params[:dataset][:creator_attributes])
+    e_arr << "select primary contact from author list" unless has_primary_contact
+    new_identifier = params[:dataset][:identifier]
+    identifier_changed = new_identifier != dataset.identifier
+    e_arr << "a unique DOI" if identifier_changed && Dataset.where(identifier: new_identifier).count.positive?
+    e_arr += Dataset.update_embargo_errors(params: params) || []
+    e_arr << "500 or fewer datafiles" if dataset.datafiles.count > 500
+    return "ok" if e_arr.empty?
 
-    has_license_file = false
-
-    if complete_datafiles.count.positive?
-
-      proposed_dataset.datafiles = []
-
-      complete_datafiles.each do |datafile|
-        next unless datafile.bytestream_name && (datafile.bytestream_name.downcase == "license.txt")
-
-        has_license_file = true
-        temporary_datafile = datafile.temp_placeholder(temp_dataset_id: proposed_dataset.id)
-        proposed_dataset.datafiles.push(temporary_datafile)
-      end
-
-      unless has_license_file
-        sample_file = complete_datafiles.first
-        temporary_datafile = sample_file.temp_placeholder(temp_dataset_id: proposed_dataset.id)
-        proposed_dataset.datafiles.push(temporary_datafile)
-      end
-
+    validation_error_message = "Required elements for a complete dataset missing: "
+    e_arr.each_with_index do |m, i|
+      validation_error_message += ", " if i.positive?
+      validation_error_message += m
     end
-
-    proposed_dataset.embargo = params[:dataset][:embargo] if params[:dataset].has_key?(:embargo)
-
-    proposed_dataset.release_date = params[:dataset][:release_date] if params[:dataset].has_key?(:release_date)
-
-    proposed_dataset.license = params[:dataset][:license] if params[:dataset].has_key?(:license)
-
-    if (params[:dataset]).has_key?(:creators_attributes)
-
-      # Rails.logger.warn params[:dataset][:creators_attributes]
-
-      proposed_dataset.creators = []
-
-      params[:dataset][:creators_attributes].each do |creator_params|
-        creator_p = creator_params[1]
-        temporary_creator = nil
-        if creator_p.has_key?(:type_of)
-
-          if creator_p[:type_of] == Databank::CreatorType::PERSON.to_s &&
-            creator_p.has_key?(:family_name) && creator_p.has_key?(:given_name) &&
-            creator_p[:family_name] != "" && creator_p[:given_name] != ""
-            temporary_creator = Creator.create(dataset_id: proposed_dataset.id,
-                                               type_of: Databank::CreatorType::PERSON,
-                                               family_name: creator_p[:family_name],
-                                               given_name: creator_p[:given_name])
-
-          elsif creator_p[:type_of] == Databank::CreatorType::INSTITUTION.to_s &&
-            creator_p.has_key?(:institution_name) && creator_p[:institution_name] != ""
-            temporary_creator = Creator.create(dataset_id: proposed_dataset.id,
-                                               type_of: Databank::CreatorType::INSTITUTION,
-                                               institution_name: creator_p[:institution_name])
-          else
-            return "invalid creator record: #{creator.to_yaml}"
-          end
-        end
-
-        temporary_creator.email = creator_p[:email] if creator_p.has_key?(:email)
-        temporary_creator.is_contact = creator_p[:is_contact] if creator_p.has_key?(:is_contact)
-
-        temporary_creator.save
-        proposed_dataset.creators.push(temporary_creator)
-      end
-
-    end
-
-    proposed_dataset.save!
-    completion_check_message = Dataset.completion_check(proposed_dataset)
-    proposed_dataset.destroy
-    completion_check_message
+    validation_error_message += "."
 
   end
 
@@ -171,6 +119,23 @@ module Dataset::Complete
       nil
     end
 
+    def update_embargo_errors(params:)
+      embargo_states = [Databank::PublicationState::Embargo::FILE, Databank::PublicationState::Embargo::METADATA]
+      dataset_embargo = params[:dataset][:embargo]
+      dataset_release_date = params[:dataset][:release_date]
+      if dataset_embargo && embargo_states.include?(dataset_embargo) &&
+        (!dataset_release_date || dataset_release_date <= Date.current)
+        return ["a future release date for delayed publication (embargo) selection"]
+      end
+
+      if (!dataset_embargo || embargo_states.exclude?(dataset_embargo)) &&
+        (dataset_release_date && dataset_release_date > Date.current)
+        return ["a delayed publication (embargo) selection for a future release date"]
+      end
+
+      nil
+    end
+
     def import_date_errors(dataset)
       return ["a release date for imported dataset"] if dataset.is_import && dataset.release_date.nil?
 
@@ -215,6 +180,17 @@ module Dataset::Complete
         end
       end
       ldap_hash
+    end
+
+    def has_primary_contact?(creator_params:)
+      creator_params.each do |creator|
+        return true if creator.has_key?(:is_contact)
+      end
+      false
+    end
+
+    def key_not_empty?(params:, key:)
+      params.has_key?(:dataset) && params[:dataset].has_key?(key) && params[:dataset][key] != ""
     end
   end
 end
