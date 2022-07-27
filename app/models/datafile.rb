@@ -378,7 +378,8 @@ class Datafile < ApplicationRecord
                     web_id:       "#{self.web_id}_tmp",
                     storage_root: self.storage_root,
                     storage_key:  self.storage_key,
-                    binary_name:  self.binary_name)
+                    binary_name:  self.binary_name,
+                    binary_size:  self.binary_size)
   end
 
   def download_link
