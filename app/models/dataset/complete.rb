@@ -127,7 +127,7 @@ module Dataset::Complete
     def update_embargo_errors(params:)
       embargo_states = [Databank::PublicationState::Embargo::FILE, Databank::PublicationState::Embargo::METADATA]
       dataset_embargo = params[:dataset][:embargo]
-      dataset_release_date = params[:dataset][:release_date]
+      dataset_release_date = DateTime.parse(params[:dataset][:release_date])
       if dataset_embargo && embargo_states.include?(dataset_embargo) &&
         (!dataset_release_date || dataset_release_date <= Date.current)
         return ["a future release date for delayed publication (embargo) selection"]
