@@ -24,25 +24,13 @@ module Dataset::Complete
         next unless datafile.bytestream_name && (datafile.bytestream_name.downcase == "license.txt")
 
         has_license_file = true
-        temporary_datafile = Datafile.new(dataset_id: proposed_dataset.id)
-        temporary_datafile.web_id = "#{datafile.web_id}_tmp"
-        temporary_datafile.storage_root = datafile.storage_root
-        temporary_datafile.storage_key = datafile.storage_key
-        temporary_datafile.binary_name = datafile.binary_name
-        temporary_datafile.job_status = datafile.job_status
-        temporary_datafile.save
+        temporary_datafile = datafile.temp_placeholder(temp_dataset_id: proposed_dataset.id)
         proposed_dataset.datafiles.push(temporary_datafile)
       end
 
       unless has_license_file
         sample_file = complete_datafiles.first
-        temporary_datafile = Datafile.new(dataset_id: proposed_dataset.id)
-        temporary_datafile.web_id = "#{sample_file.web_id}_tmp"
-        temporary_datafile.storage_root = sample_file.storage_root
-        temporary_datafile.storage_key = sample_file.storage_key
-        temporary_datafile.binary_name = sample_file.binary_name
-        temporary_datafile.job_status = sample_file.job_status
-        temporary_datafile.save
+        temporary_datafile = sample_file.temp_placeholder(temp_dataset_id: proposed_dataset.id)
         proposed_dataset.datafiles.push(temporary_datafile)
       end
 

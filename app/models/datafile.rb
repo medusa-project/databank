@@ -229,8 +229,8 @@ class Datafile < ApplicationRecord
   # if bytestream is found the same in draft and medusa roots, the draft bytestream is deleted
   def in_medusa
 
-    Rails.logger.warn("dataset not found for datafile #{self.web_id} :in_medusa") unless self.dataset
-    return false unless self.dataset
+    Rails.logger.warn("dataset not found for datafile #{self.web_id} :in_medusa") unless dataset
+    return false unless dataset
 
     unless dataset.identifier && dataset.identifier != ""
       Rails.logger.warn("dataset not found for datafile #{self.web_id} :in_medusa")
@@ -239,7 +239,7 @@ class Datafile < ApplicationRecord
 
     datafile_in_medusa = StorageManager.instance.medusa_root.exist?(target_key)
     if datafile_in_medusa
-      if self.storage_root && self.storage_key && self.storage_root == "draft" && self.storage_key != ""
+      if storage_root && storage_key && storage_root == "draft" && storage_key != ""
 
         # If the binary object also exists in draft system, delete duplicate.
         #  Can't do full equivalence check (S3 etag is not always MD5), so check sizes.
@@ -269,7 +269,7 @@ class Datafile < ApplicationRecord
       if datafile_in_medusa
         self.storage_root = "medusa"
         self.storage_key = target_key
-        self.save!
+        save!
       end
     end
     datafile_in_medusa
@@ -371,6 +371,14 @@ class Datafile < ApplicationRecord
 
   def destroy_job
     job&.destroy
+  end
+
+  def temp_placeholder(temp_dataset_id:)
+    Datafile.create(dataset_id:   temp_dataset_id,
+                    web_id:       "#{self.web_id}_tmp",
+                    storage_root: self.storage_root,
+                    storage_key:  self.storage_key,
+                    binary_name:  self.binary_name)
   end
 
   def download_link
@@ -481,7 +489,7 @@ class Datafile < ApplicationRecord
   def initiate_processing_task
     return nil unless Rails.env.production? || Rails.env.demo? || Rails.env.development?
 
-    extractor_task = ExtractorTask.create(web_id: web_id)
+    extractor_task = ExtractorTask.create(web_id:)
     update_attribute(:task_id, extractor_task.id) if extractor_task
   end
 
