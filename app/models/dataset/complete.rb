@@ -32,7 +32,7 @@ module Dataset::Complete
       validation_error_message += m
     end
     validation_error_message += "."
-
+    validation_error_message
   end
 
   class_methods do
@@ -60,6 +60,7 @@ module Dataset::Complete
         validation_error_message += m
       end
       validation_error_message += "."
+      validation_error_message
     end
 
     def creator_email_errors(dataset)
