@@ -14,7 +14,7 @@ module Dataset::Complete
 
     e_arr = []
     e_arr << "title" unless Dataset.key_not_empty?(params: params, key: :title)
-    e_arr << "at least one creator" unless params[:dataset][:creators_attributes].to_h.size.positive?
+    e_arr << "at least one creator" unless params[:dataset][:creators_attributes].to_unsafe_hash.size.positive?
     e_arr << "license" unless Dataset.key_not_empty?(params: params, key: :license)
     e_arr << "at least one file" unless dataset.complete_datafiles.count.positive?
     has_primary_contact = Dataset.has_primary_contact?(creator_params: params[:dataset][:creator_attributes])
