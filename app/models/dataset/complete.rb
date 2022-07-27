@@ -189,7 +189,7 @@ module Dataset::Complete
 
     def has_primary_contact?(creator_params:)
       creator_params.each do |creator|
-        return true if creator.has_key?(:is_contact)
+        return true if creator[1].has_key?(:is_contact)
       end
       false
     end
