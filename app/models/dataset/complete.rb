@@ -14,11 +14,15 @@ module Dataset::Complete
 
     e_arr = []
     e_arr << "title" unless Dataset.key_not_empty?(params: params, key: :title)
-    e_arr << "at least one creator" unless params[:dataset][:creators_attributes].to_unsafe_hash.size.positive?
+    has_creators_params = Dataset.key_not_empty?(params: params, key: :creators_attributes)
+    if has_creators_params && params[:dataset][:creators_attributes].to_unsafe_hash.size.positive?
+      has_primary_contact = Dataset.has_primary_contact?(creator_params: params[:dataset][:creators_attributes])
+      e_arr << "select primary contact from author list" unless has_primary_contact
+    else
+      e_arr << "at least one creator"
+    end
     e_arr << "license" unless Dataset.key_not_empty?(params: params, key: :license)
     e_arr << "at least one file" unless dataset.complete_datafiles.count.positive?
-    has_primary_contact = Dataset.has_primary_contact?(creator_params: params[:dataset][:creator_attributes])
-    e_arr << "select primary contact from author list" unless has_primary_contact
     new_identifier = params[:dataset][:identifier]
     identifier_changed = new_identifier != dataset.identifier
     e_arr << "a unique DOI" if identifier_changed && Dataset.where(identifier: new_identifier).count.positive?
