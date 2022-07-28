@@ -9,7 +9,7 @@ class FileDownloadTally < ApplicationRecord
 
     return false if dataset.is_test
 
-    return false unless created_at > dataset.dataset.release_datetime
+    return false unless created_at > dataset.release_datetime
 
     true
   end
