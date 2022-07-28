@@ -4,7 +4,11 @@ class FileDownloadTally < ApplicationRecord
   def should_be_public?
 
     datafile = Datafile.find_by(web_id: file_web_id)
+    return false unless datafile
+
     dataset = datafile.dataset
+    return false unless dataset
+
     return false unless dataset.metadata_public?
 
     return false if dataset.is_test

@@ -5,6 +5,9 @@ class DatasetDownloadTally < ApplicationRecord
     return false if doi.empty?
 
     dataset = Dataset.find_by(key: dataset_key)
+
+    return false unless dataset
+
     return false unless dataset.metadata_public?
 
     return false if dataset.is_test
