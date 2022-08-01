@@ -71,9 +71,10 @@
           - if params['context']=='pickup'
             Please contact me to arrange custom transfer of dataset files. My preferred method is:
 
-    .row
-      .pull-right
-        =recaptcha_tags
+    - unless current_user
+      .row
+        .pull-right
+          =recaptcha_tags
     .row
       .col-md-8.col-md-offset-2
         %em A copy of this email will be sent to you automatically.

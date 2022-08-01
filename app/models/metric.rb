@@ -23,6 +23,8 @@ class Metric
       write_container_contents_csv unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
       raise StandardError.new("unable to create container contents csv") unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
 
+      sleep(1)
+
       dataset_downloads_time = File.mtime(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
       datafile_downloads_time = File.mtime(METRICS_CONFIG[:datafile_downloads_json][:relative_path])
       datafiles_csv_time = File.mtime(METRICS_CONFIG[:datafiles_csv][:relative_path])
