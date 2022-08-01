@@ -25,10 +25,11 @@ class WelcomeController < ApplicationController
     #   end
     #   redirect_to "/contact", notice: "Your email has been sent to the Research Data Service Team. "
     else
-      query_string = "help-name=#{params['help-name']}"
-      +"&help-email=#{params['help-email']}"
-      +"&help-topic=#{params['help-topic']}"
-      +"&help-message=#{params['help-message']}"
+      query_array=["help-name=#{params['help-name']}",
+                  "help-email=#{params['help-email']}",
+                  "help-topic=#{params['help-topic']}",
+                  "help-message=#{params['help-message']}"]
+      query_string = query_array.join("&")
       redirect_to "/contact?#{query_string}"
     end
   end
