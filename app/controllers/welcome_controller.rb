@@ -13,17 +13,17 @@ class WelcomeController < ApplicationController
   def contact_mail
     if params.has_key?("nobots")
       # ignore the spam
-    # elsif verify_recaptcha(message: "MESSAGE NOT SENT: reCAPTCHA verification required")
-    #   begin
-    #     help_request = DatabankMailer.contact_help(params)
-    #     help_request.deliver_now
-    #   rescue Net::SMTPSyntaxError => e
-    #     if e.message != "501 5.5.2 RCPT TO syntax error" # these are consistently spam
-    #       Rails.logger.warn(e.message)
-    #       Rails.logger.warn("could not deliver contact mail #{params}")
-    #     end
-    #   end
-    #   redirect_to "/contact", notice: "Your email has been sent to the Research Data Service Team. "
+    elsif verify_recaptcha(message: "MESSAGE NOT SENT: reCAPTCHA verification required")
+      begin
+        help_request = DatabankMailer.contact_help(params)
+        help_request.deliver_now
+      rescue Net::SMTPSyntaxError => e
+        if e.message != "501 5.5.2 RCPT TO syntax error" # these are consistently spam
+          Rails.logger.warn(e.message)
+          Rails.logger.warn("could not deliver contact mail #{params}")
+        end
+      end
+      redirect_to "/contact", notice: "Your email has been sent to the Research Data Service Team. "
     else
       query_array=["help-name=#{params['help-name']}",
                   "help-email=#{params['help-email']}",
