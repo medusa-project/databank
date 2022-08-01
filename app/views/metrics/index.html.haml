@@ -1,10 +1,16 @@
+-modified_times = @modified_times || {dataset_downloads_json:  "not found",
+       datafile_downloads_json: "not found",
+       datafiles_csv:           "not found",
+       container_contents_csv:  "not found"}
+
 %h2 Metrics
 .metrics-border
   %h3
-    %a(href="/dataset_downloads.json") Dataset downloads json
+    -link = '<a href="/dataset_downloads.json" >Dataset downloads json</a>'.html_safe
+    -modified_times[:dataset_downloads_json] == "not found" ? link : "refresh before download"
   %p
     Modified:
-    = @modified_times[:dataset_downloads_json]
+    = modified_times[:dataset_downloads_json]
     %a(href="/metrics/refresh_dataset_downloads" class="btn btn-success btn-sm idb" )
       %span.glyphicon.glyphicon-refresh
       Refresh
@@ -15,10 +21,11 @@
       per day.
 .metrics-border
   %h3
-    %a(href="/datafile_downloads.json") Datafile downloads json
+    -link = '<a href="/datafile_downloads.json">Datafile downloads json</a>'.html_safe
+    -modified_times[:datafile_downloads_json] == "not found" ? link : "refresh before download"
   %p
     Modified:
-    = @modified_times[:datafile_downloads_json]
+    = modified_times[:datafile_downloads_json]
     %a(href="/metrics/refresh_datafile_downloads" class="btn btn-success btn-sm idb" )
       %span.glyphicon.glyphicon-refresh
       Refresh
@@ -72,12 +79,15 @@
 
 .metrics-border
   %h3
-    %a(href="/datafiles.csv" class="btn btn-primary idb" )
-      %span.glyphicon.glyphicon-download
-      Datafiles CSV
+    -if modified_times[:datafiles_csv] == "not found"
+      %a(href="/datafiles.csv" class="btn btn-primary idb" )
+        %span.glyphicon.glyphicon-download
+        Datafiles CSV
+    -else
+      refresh before download
   %p
     modified:
-    = @modified_times[:datafiles_csv]
+    = modified_times[:datafiles_csv]
     %a(href="/metrics/refresh_datafiles_csv" class="btn btn-success btn-sm idb" )
       %span.glyphicon.glyphicon-refresh
       Refresh
@@ -110,12 +120,15 @@
 
 .metrics-border
   %h3
-    %a(href="/archive_file_contents.csv" class="btn btn-primary idb" )
-      %span.glyphicon.glyphicon-download
-      Container File Contents (zip) CSV
+    -if modified_times[:container_contents_csv] == "not found"
+      %a(href="/archive_file_contents.csv" class="btn btn-primary idb" )
+        %span.glyphicon.glyphicon-download
+        Container File Contents (zip) CSV
+    -else
+      refresh before download
   %p
     modified:
-    = @modified_times[:container_contents_csv]
+    = modified_times[:container_contents_csv]
     %a(href="/metrics/refresh_container_csv" class="btn btn-success btn-sm idb" )
       %span.glyphicon.glyphicon-refresh
       Refresh
