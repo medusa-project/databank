@@ -1,46 +1,48 @@
 class WelcomeController < ApplicationController
   def index
     active_featured_researchers = FeaturedResearcher.where(is_active: true)
-    if active_featured_researchers.count > 0
+    if active_featured_researchers.count.positive?
       @featured_researcher = active_featured_researchers.order(Arel.sql("RANDOM()")).first
     end
   end
 
   def contact
-    @dataset = Dataset.find_by_key(params['key']) if params.has_key?('key')
+    @dataset = Dataset.find_by(key: params["key"]) if params.has_key?("key")
   end
 
   def contact_mail
     if params.has_key?("nobots")
       # ignore the spam
-    elsif verify_recaptcha(message: 'MESSAGE NOT SENT: reCAPTCHA verification required', error_callback: :quarantine)
+    elsif verify_recaptcha(message: "MESSAGE NOT SENT: reCAPTCHA verification required", error_callback: :quarantine)
       begin
         help_request = DatabankMailer.contact_help(params)
         help_request.deliver_now
       rescue Net::SMTPSyntaxError => e
-        Rails.logger.warn(e.message)
-        Rails.logger.warn("could not deliver contact mail #{params}")
+        if e.message != "501 5.5.2 RCPT TO syntax error" # these are consistently spam
+          Rails.logger.warn(e.message)
+          Rails.logger.warn("could not deliver contact mail #{params}")
+        end
       end
-      redirect_to '/contact', notice: "Your email has been sent to the Research Data Service Team. "
+      redirect_to "/contact", notice: "Your email has been sent to the Research Data Service Team. "
     else
-      redirect_to '/contact'
+      redirect_to "/contact"
     end
   end
 
   def check_token
-    if params.has_key?('token')
+    if params.has_key?("token")
 
-      identified_tokens = Token.where(identifier: params['token'])
+      identified_tokens = Token.where(identifier: params["token"])
 
-      if identified_tokens.count > 0
-        render :json => {'isValid': true, 'token': params['token']}
+      if identified_tokens.count.positive?
+        render json: {'isValid': true, 'token': params["token"]}
       else
-        render :json => {'isValid': false, 'error': 'current token not found'}
+        render json: {'isValid': false, 'error': "current token not found"}
       end
 
 
     else
-      render :json => {'isValid': false, 'error': 'no token provided'}
+      render json: {'isValid': false, 'error': "no token provided"}
     end
   end
 
@@ -48,8 +50,8 @@ class WelcomeController < ApplicationController
 
   def update_read_only_message
     respond_to do |format|
-      if params.has_key?('msg_middle') &&
-          SystemMessage.update_read_only_message(params['msg_middle'])
+      if params.has_key?("msg_middle") &&
+          SystemMessage.update_read_only_message(params["msg_middle"])
         format.html {redirect_to "/", notice: "Message was successfully updated."}
         format.json {render :index, status: :ok}
       elsif SystemMessage.remove_read_only_message
@@ -70,11 +72,11 @@ class WelcomeController < ApplicationController
   end
 
   def update_help_transition
-    if params.has_key?('state') && params['state'] != Application.help_transition_state
-      File.open(IDB_CONFIG[:help_transition_filepath], 'w') { |file| file.write(params['state']) }
-      Application.help_transition_state = params['state']
+    if params.has_key?("state") && params["state"] != Application.help_transition_state
+      File.open(IDB_CONFIG[:help_transition_filepath], "w") { |file| file.write(params["state"]) }
+      Application.help_transition_state = params["state"]
     end
-    redirect_to action: 'help_transition_admin'
+    redirect_to action: "help_transition_admin"
   end
 
   def robots
