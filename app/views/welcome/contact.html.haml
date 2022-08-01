@@ -1,6 +1,6 @@
 - case params['context']
   - when 'sensitive'
-    %p(class="idb-callout" )
+    %p.idb-callout
       In order to deposit data in the Illinois Data Bank,
       %strong you must remove any private, confidential, or other legally protected information
       from the dataset. Please get in touch with the IDB curation staff using this form so we can assist you with your dataset.
@@ -15,7 +15,9 @@
     .form-group
       %label(for="help-name" class="control-label col-md-2" ) Name
       .col-md-10
-        -if current_user
+        -if params.has_key?('help-name')
+          %input(type="text" name="help-name" id="help-name" class="form-control help" value="#{params['help-name']}" )
+        -elsif current_user
           %input(type="text" name="help-name" id="help-name" class="form-control help" value="#{current_user.name}" )
         -else
           %input(type="text" name="help-name" id="help-name" class="form-control help" placeholder="[Your Name]")
@@ -23,7 +25,9 @@
     .form-group.required
       %label(for="name" class="control-label col-md-2" ) Email
       .col-md-10
-        -if current_user
+        -if params.has_key?('help-email')
+          %input(type="email" name="help-email" id="help-email" class="form-control help" value="#{params['help-email']}" required )
+        -elsif current_user
           %input(type="email" name="help-email" id="help-email" class="form-control help" value="#{current_user.email}" required )
         -else
           %input(type="text" name="help-email" id="help-email" class="form-control help" placeholder="[Your Email Address]" required )
@@ -68,7 +72,9 @@
       %label(for="help-message" class="control-label col-md-2" ) Message
       .col-md-10
         %textarea(rows="6" name="help-message" id="help-message" class="form-control help")
-          - if params['context']=='pickup'
+          - if params.has_key?('help-message')
+            = params['help-message']
+          - elsif params['context']=='pickup'
             Please contact me to arrange custom transfer of dataset files. My preferred method is:
 
     -# - unless current_user
