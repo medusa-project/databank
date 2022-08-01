@@ -25,7 +25,7 @@ class WelcomeController < ApplicationController
     #   end
     #   redirect_to "/contact", notice: "Your email has been sent to the Research Data Service Team. "
     else
-      redirect_to controller: "welcome", action: "contact", form_params: params
+      redirect_to controller: "welcome", action: "contact", contact_params: params
     end
   end
 
@@ -82,6 +82,12 @@ class WelcomeController < ApplicationController
   def robots
     # Don't forget to delete /public/robots.txt
     respond_to :text
+  end
+
+  private
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def contact_params
+    params.permit(:contact_params)
   end
 
 end
