@@ -44,7 +44,7 @@
                 =current_user.name
           -else
             %li
-              %a{href: "/datasets?q=#{CGI.escape('&editor=')}#{current_user.username}"}
+              %a{href: "/datasets?q=editor-#{current_user.username}"}
                 =current_user.name
           %li
             %a{href: "/logout"}
