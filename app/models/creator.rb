@@ -6,6 +6,7 @@ class Creator < ApplicationRecord
   belongs_to :dataset
   validate :name?
   after_create :add_internal_editor
+  after_update :add_internal_editor
   before_destroy :remove_internal_editor
 
   audited except: %i[row_order
