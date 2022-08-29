@@ -13,7 +13,7 @@ class WelcomeController < ApplicationController
   def contact_mail
     if params.has_key?("nobots")
       # ignore the spam
-    elsif verify_recaptcha(message: "MESSAGE NOT SENT: reCAPTCHA verification required")
+    elsif current_user || verify_recaptcha(message: "MESSAGE NOT SENT: reCAPTCHA verification required")
       begin
         help_request = DatabankMailer.contact_help(params)
         help_request.deliver_now
