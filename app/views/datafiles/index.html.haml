@@ -7,9 +7,8 @@
     %hr
     -@dataset.datafiles.each do |datafile|
       .row
-        .col-md-5.col-md-offset-1
+        .col-md-6
           =link_to datafile.bytestream_name, "/datasets/#{@dataset.key}/datafiles/#{datafile.web_id}"
-
         .col-md-2
           = datafile.bytestream? ? "exists in storage" : "does not exist in storage"
         .col-md-2
