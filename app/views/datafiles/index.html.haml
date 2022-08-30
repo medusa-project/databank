@@ -11,6 +11,8 @@
           =link_to datafile.bytestream_name, "/datasets/#{@dataset.key}/datafiles/#{datafile.web_id}"
 
         .col-md-2
+          = datafile.bytestream? ? "exists in storage" : "does not exist in storage"
+        .col-md-2
           = number_to_human_size(datafile.bytestream_size)
         .col-md-2
           %a.btn.btn-primary.btn-block.idb(href="#{IDB_CONFIG[:root_url_text]}/datafiles/#{datafile.web_id}/download_no_record")
