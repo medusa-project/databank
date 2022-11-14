@@ -7,11 +7,11 @@ class ApplicationController < ActionController::Base
 
   include CanCan::ControllerAdditions
 
+  rescue_from ActionView, with: :render400
   rescue_from CanCan::AccessDenied, with: :handle_denied
   rescue_from ActiveRecord::RecordNotFound, with: :render404
   rescue_from ActionController::InvalidCrossOriginRequest, with: :render400
   rescue_from RSolr::Error::Http, with: :render400
-  rescue_from ActionView::MissingTemplate with: :render400
   rescue_from StandardError, with: :error_occurred
   after_action :store_location
 
