@@ -141,7 +141,7 @@ Rails.application.routes.draw do
   get '/check_token', to: 'welcome#check_token'
 
   get '/restoration_events', to: 'restoration_events#index'
-  
+
   get '/policies', to: 'policies#index', :as => :policies
   get '/help', to: 'help#index', :as => :help
   get '/welcome/deposit_login_modal', to: 'welcome#deposit_login_modal'
