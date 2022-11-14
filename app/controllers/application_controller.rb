@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
     return unless request.get?
 
     # don't store ajax calls
-    session[:previous_url] = request.fullpath if request.path != "/login" && request.path != "/logout" && !request.xhr
+    session[:previous_url] = request.fullpath if request.path != "/login" && request.path != "/logout" && !request.xhr?
     session[:previous_url] = "/datasets/new" if request.path == "/welcome/deposit_login_modal"
   end
 
@@ -80,7 +80,7 @@ class ApplicationController < ActionController::Base
     notification = DatabankMailer.error(exception_string)
     notification.deliver_now
     respond_to do |format|
-      format.html { redirect_to controller: :errors, action: :error500, status: :internal_server_error }
+      format.html { render "errors/error500", status: :internal_server_error}
       format.json { render nothing: true, status: :internal_server_error }
       format.xml { render xml: {status: 500}.to_xml }
     end
