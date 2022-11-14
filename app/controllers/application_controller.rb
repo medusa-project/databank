@@ -80,7 +80,7 @@ class ApplicationController < ActionController::Base
     notification = DatabankMailer.error(exception_string)
     notification.deliver_now
     respond_to do |format|
-      format.html { render "errors/error500", status: :internal_server_error }
+      format.html { redirect_to controller: :errors, action: :error500, status: :internal_server_error }
       format.json { render nothing: true, status: :internal_server_error }
       format.xml { render xml: {status: 500}.to_xml }
     end
