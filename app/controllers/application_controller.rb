@@ -68,12 +68,11 @@ class ApplicationController < ActionController::Base
 
     when "CanCan::AccessDenied"
       Rails.logger.warn ("inside CanCan::AccessDenied")
-      redirect_to handle_denied(exception)
-
+      redirect_to 'handle_denied', exception: exception
     when "ActiveRecord::RecordNotFound"
-      render404
-    when [ActionView::MissingTemplate, ActionController::InvalidCrossOriginRequest, RSolr::Error::Http]
-      render400
+      redirect_to 'render404'
+    when ["ActionView::MissingTemplate", "ActionController::InvalidCrossOriginRequest", "RSolr::Error::Http"]
+      redirect_to 'render400'
     else
       Rails.logger.warn("inside else")
       exception_string = "*** Standard Error caught in application_controller.rb on #{IDB_CONFIG[:root_url_text]} ***\nclass: #{exception.class}\nmessage: #{exception.message}\n"
