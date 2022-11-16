@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
@@ -6,12 +8,6 @@ class ApplicationController < ActionController::Base
   helper_method :current_user, :logged_in?
 
   include CanCan::ControllerAdditions
-
-  rescue_from ActionView, with: :render400
-  rescue_from CanCan::AccessDenied, with: :handle_denied
-  rescue_from ActiveRecord::RecordNotFound, with: :render404
-  rescue_from ActionController::InvalidCrossOriginRequest, with: :render400
-  rescue_from RSolr::Error::Http, with: :render400
   rescue_from StandardError, with: :error_occurred
   after_action :store_location
 
@@ -64,25 +60,34 @@ class ApplicationController < ActionController::Base
   protected
 
   def error_occurred(exception)
-    exception_string = "*** Standard Error caught in application_controller.rb on #{IDB_CONFIG[:root_url_text]} ***\nclass: #{exception.class}\nmessage: #{exception.message}\n"
-    exception_string << Time.now.utc.iso8601
+    case exception.class
+    when "CanCan::AccessDenied"
+      handle_denied(exception)
+    when "ActiveRecord::RecordNotFound"
+      render404
+    when ["ActionView::MissingTemplate", "ActionController::InvalidCrossOriginRequest", "RSolr::Error::Http"]
+      render400
+    else
+      exception_string = "*** Standard Error caught in application_controller.rb on #{IDB_CONFIG[:root_url_text]} ***\nclass: #{exception.class}\nmessage: #{exception.message}\n"
+      exception_string << Time.now.utc.iso8601
 
-    exception_string << "\nstack:\n"
-    exception.backtrace.each do |line|
-      exception_string << line
-      exception_string << "\n"
-    end
+      exception_string << "\nstack:\n"
+      exception.backtrace.each do |line|
+        exception_string << line
+        exception_string << "\n"
+      end
 
-    Rails.logger.warn(exception_string)
+      Rails.logger.warn(exception_string)
 
-    exception_string << "\nCurrent User: #{current_user.name} | #{current_user.email}" if current_user
+      exception_string << "\nCurrent User: #{current_user.name} | #{current_user.email}" if current_user
 
-    notification = DatabankMailer.error(exception_string)
-    notification.deliver_now
-    respond_to do |format|
-      format.html { render "errors/error500", status: :internal_server_error}
-      format.json { render nothing: true, status: :internal_server_error }
-      format.xml { render xml: {status: 500}.to_xml }
+      notification = DatabankMailer.error(exception_string)
+      notification.deliver_now
+      respond_to do |format|
+        format.html { render "errors/error500", status: :internal_server_error }
+        format.json { render nothing: true, status: :internal_server_error }
+        format.xml { render xml: {status: 500}.to_xml }
+      end
     end
   end
 
