@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
   include CanCan::ControllerAdditions
 
   rescue_from ActionView, with: :render400
-  rescue_from StandardError::CanCan::AccessDenied, with: :handle_denied
+  rescue_from CanCan::AccessDenied, with: :handle_denied
   rescue_from ActiveRecord::RecordNotFound, with: :render404
   rescue_from ActionController::InvalidCrossOriginRequest, with: :render400
   rescue_from RSolr::Error::Http, with: :render400
@@ -32,7 +32,7 @@ class ApplicationController < ActionController::Base
     session[:previous_url] || main_app.root_url
   end
 
-  def handle_denied
+  def handle_denied(exception)
     if exception.action == :create
       if current_user && current_user.role == "no_deposit"
         redirect_to redirect_path,
