@@ -60,11 +60,17 @@ class ApplicationController < ActionController::Base
   protected
 
   def error_occurred(exception)
+
+    Rails.logger.warn exception.class
+    Rails.logger.warn exception.class.class
+
     case exception.class
-    when CanCan::AccessDenied
+
+    when "CanCan::AccessDenied"
       Rails.logger.warn ("inside CanCan::AccessDenied")
-      handle_denied(exception)
-    when ActiveRecord::RecordNotFound
+      redirect_to handle_denied(exception)
+
+    when "ActiveRecord::RecordNotFound"
       render404
     when [ActionView::MissingTemplate, ActionController::InvalidCrossOriginRequest, RSolr::Error::Http]
       render400
