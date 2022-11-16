@@ -62,12 +62,17 @@ class ApplicationController < ActionController::Base
   def error_occurred(exception)
     case exception.class
     when "CanCan::AccessDenied"
+      Rails.logger.warn ("inside CanCan::AccessDenied")
       handle_denied(exception)
+      break
     when "ActiveRecord::RecordNotFound"
       render404
+      break
     when ["ActionView::MissingTemplate", "ActionController::InvalidCrossOriginRequest", "RSolr::Error::Http"]
       render400
+      break
     else
+      Rails.logger.warn("inside else")
       exception_string = "*** Standard Error caught in application_controller.rb on #{IDB_CONFIG[:root_url_text]} ***\nclass: #{exception.class}\nmessage: #{exception.message}\n"
       exception_string << Time.now.utc.iso8601
 
