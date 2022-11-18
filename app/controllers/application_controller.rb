@@ -89,9 +89,6 @@ class ApplicationController < ActionController::Base
         exception_string_array << line
         exception_string_array << "\n"
       end
-
-      Rails.logger.warn(exception_string)
-
       exception_string_array << if current_user
                                   "\nCurrent User: #{current_user.name}"
                                 else
@@ -99,6 +96,7 @@ class ApplicationController < ActionController::Base
                                 end
 
       exception_string = exception_string_array.join("")
+      Rails.logger.warn(exception_string)
 
       notification = DatabankMailer.error(exception_string)
       notification.deliver_now
