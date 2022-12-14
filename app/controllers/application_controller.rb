@@ -53,7 +53,6 @@ class ApplicationController < ActionController::Base
         format.xml { render xml: {error: "unauthorized"}.to_xml, status: :unauthorized }
       end
     elsif exception.instance_of?(CanCan::AccessDenied)
-      Rails.logger.warn("exception action: #{exception.action}")
       if exception.action == :create || exception.action == :new
         if current_user && current_user.role == "no_deposit"
           redirect_to redirect_path,
@@ -104,7 +103,6 @@ class ApplicationController < ActionController::Base
         format.json { render nothing: true, status: :internal_server_error }
         format.xml { render xml: {status: 500}.to_xml }
       end
-
     end
   end
 
