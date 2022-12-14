@@ -89,12 +89,10 @@ class ApplicationController < ActionController::Base
         exception_string_array << line
         exception_string_array << "\n"
       end
-      exception_string_array << if current_user
-                                  "\nCurrent User: #{current_user.name}"
-                                else
-                                  current_user.email.to_s
-                                end
-
+      if current_user
+        exception_string_array << "\nCurrent User: "
+        exception_string_array << (current_user.name || current_user.email)
+      end
       exception_string = exception_string_array.join("")
       Rails.logger.warn(exception_string)
 
