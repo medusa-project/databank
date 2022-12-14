@@ -53,7 +53,8 @@ class ApplicationController < ActionController::Base
         format.xml { render xml: {error: "unauthorized"}.to_xml, status: :unauthorized }
       end
       elseif exception.instance_of?(CanCan::AccessDenied)
-      if exception.action == :create
+      Rails.logger.warn("exception action: #{exception.action}")
+      if exception.action == :create || exception.action == :new
         if current_user && current_user.role == "no_deposit"
           redirect_to redirect_path,
                       alert: "ACCOUNT NOT ELIGIBLE TO DEPOSIT DATA.<br/>Faculty, staff, and graduate students are eligible to deposit data in Illinois Data Bank.<br/>Please <a href='/help'>contact the Research Data Service</a> if this determination is in error, or if you have any questions."
