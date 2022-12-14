@@ -52,7 +52,7 @@ class ApplicationController < ActionController::Base
         format.json { render nothing: true, status: :unauthorized }
         format.xml { render xml: {error: "unauthorized"}.to_xml, status: :unauthorized }
       end
-      elseif exception.instance_of?(CanCan::AccessDenied)
+    elsif exception.instance_of?(CanCan::AccessDenied)
       Rails.logger.warn("exception action: #{exception.action}")
       if exception.action == :create || exception.action == :new
         if current_user && current_user.role == "no_deposit"
