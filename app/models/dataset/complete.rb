@@ -8,7 +8,6 @@ module Dataset::Complete
   def valid_change2published(new_params:)
     dataset = self
     params = new_params
-    Rails.logger.warn params
     unless params.has_key?(:dataset) && (params[:dataset]).has_key?(:identifier) && params[:dataset][:identifer] != ""
       return "invalid params: #{params}"
     end
