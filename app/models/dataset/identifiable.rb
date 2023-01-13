@@ -357,8 +357,8 @@ module Dataset::Identifiable
   def complete_datacite_xml
     raise "cannot generate DataCite metadata w/o identifier, dataset: #{key}" unless identifier_present?
 
-    release_date_valid = defined?(release_date) && release_date.present? && release_date.to_date > Date.current
-    raise "missing release date for file and metadata publication delay for dataset #{key}" unless release_date_valid
+    release_date_valid = defined?(release_date) && release_date.present?
+    raise "missing release date for published dataset #{key}" unless release_date_valid
 
     contact = Creator.find_by(dataset_id: id, is_contact: true)
     raise StandardError.new("cannot generate DataCite metadata xml without contact, dataset: #{key}") unless contact
