@@ -946,7 +946,6 @@ collaborators to access the data files while the dataset is not public.</li>
   end
 
   def validate_change2published
-    Rails.logger.warn params
     authorize! :update, @dataset
     completion_check_message = @dataset.valid_change2published(new_params: params)
     respond_to do |format|
