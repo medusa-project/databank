@@ -65,7 +65,7 @@ module Dataset::Globusable
       obj_size = StorageManager.instance.draft_root.size(storage_key)
 
       mime_guesses_set = MIME::Types.type_for(name_part.downcase)
-      mime_guess = if mime_guesses_set && !mime_guesses_set.length.positive?
+      mime_guess = if mime_guesses_set&.length&.positive?
                      mime_guesses_set[0].content_type
                    else
                      "application/octet-stream"
