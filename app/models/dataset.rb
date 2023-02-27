@@ -97,6 +97,12 @@ class Dataset < ApplicationRecord
     key
   end
 
+  def ensure_globus_ingest_dir
+    root = StorageManager.instance.draft_root
+    dir_key = "uploads/#{root.ensure_directory_key(key)}"
+    root.s3_client.put_object({bucket: root.s3_bucket.name, key: dir_key})
+  end
+
   def sharing_link
     return "N/A no current sharing link" unless current_share_code
 
