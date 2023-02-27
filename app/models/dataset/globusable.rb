@@ -31,16 +31,17 @@ module Dataset::Globusable
   def ensure_globus_ingest_dir
     return nil unless Rails.env.demo? || Rails.env.production?
 
-    return true if StorageManager.instance.globus_ingest_root.exist?("#{key}/")
+    prefix = Rails.application.credentials[:storage][:draft_prefix]
+    dir_key = "#{prefix}#{root.ensure_directory_key(key)}"
+    return true if StorageManager.instance.globus_ingest_root.exist?(dir_key)
 
     return nil unless IDB_CONFIG[:aws][:s3_mode] == true
 
-    bucket = Rails.application.credentials[:storage][:draft_bucket]
-    prefix = Rails.application.credentials[:storage][:draft_prefix]
-    dir_key = "#{prefix}/#{key}/"
-    client = Application.aws_client
-    client.put_object(bucket: bucket, key: dir_key)
-    StorageManager.instance.globus_ingest_root.exist?("#{key}/")
+    root = StorageManager.instance.draft_root
+    bucket = root.s3_bucket.name
+    client = root.s3_client
+    client.put_object({bucket: bucket, key: dir_key})
+    StorageManager.instance.globus_ingest_root.exist?(dir_key)
   end
 
   def globus_ingest_dir
