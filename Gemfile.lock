@@ -1746,6 +1746,7 @@ GEM
     simplecov_json_formatter (0.1.4)
     simpleidn (0.2.1)
       unf (~> 0.1.4)
+    socketlabs-injectionapi (1.4.0)
     sorted_set (1.0.3)
       rbtree
       set (~> 1.0)
@@ -1895,6 +1896,7 @@ DEPENDENCIES
   shoulda-matchers
   simple_form
   simplecov
+  socketlabs-injectionapi
   sunspot_rails
   sunspot_solr
   tus-server

@@ -71,6 +71,9 @@ gem "jbuilder"
 # bundle exec rake doc:rails generates the API under doc/api.
 gem "sdoc", group: :doc
 
+# use socketlab's gem for mailing
+gem 'socketlabs-injectionapi'
+
 # Use figaro to set environment variables
 gem "figaro"
 
