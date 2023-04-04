@@ -98,7 +98,7 @@ Rails.application.configure do
       address: "smtp-cx.socketlabs.com",
       port: 587,
       enable_starttls_auto: true,
-      user_name: IDB_CONFIG[:smtp][:password],
+      user_name: IDB_CONFIG[:smtp][:username],
       password: IDB_CONFIG[:smtp][:password],
       domain: 'library.illinois.edu ',
       authentication: 'plain'
