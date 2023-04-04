@@ -1,41 +1,24 @@
 require 'rake'
-require "socketlabs-injectionapi"
-include SocketLabs::InjectionApi
-include SocketLabs::InjectionApi::Message
-
 namespace :pub do
 
   desc 'update publication state for datasets with current or past release date'
   task :update_state => :environment do
 
-    message = BasicMessage.new
+    @current_user = User::User.system_user
 
-    message.subject = "Sending A Basic Message"
-    message.html_body = "<html>This is the Html Body of my message.</html>"
-    message.plain_text_body = "This is the Plain Text Body of my message."
+    Dataset.all.each do |dataset|
 
-    message.from_email_address = EmailAddress.new("databank@library.illinois.edu")
+      dataset.release_date = Date.current() unless dataset.release_date
 
-    # A basic message supports up to 50 recipients
-    # and supports several different ways to add recipients
-
-    # Add a To address by passing the email address
-    message.to_email_address.push("srobbins@illinois.edu")
-    message.to_email_address.push(EmailAddress.new("mfall3@illinois.edu", "Colleen Fallaw"))
-
-    # // Adding CC Recipients
-    # message.add_cc_email_address("recipient3@example.com")
-    # message.add_cc_email_address("recipient4@example.com", "Recipient #4")
-
-    # Adding Bcc Recipients
-    # message.add_bcc_email_address(EmailAddress.new("recipient5@example.com"))
-    # message.add_bcc_email_address(EmailAddress.new("recipient6@example.com", "Recipient #6"))
-
-    # Your SocketLabs ServerId and Injection API key
-    client = SocketLabsClient.new(IDB_CONFIG[:smtp][:server_id], IDB_CONFIG[:smtp][:api_key])
-
-    response = client.send(message)
-    Rails.logger.warn(response)
+      if [Databank::PublicationState::Embargo::METADATA, Databank::PublicationState::Embargo::FILE].include?(dataset.publication_state) && dataset.release_date <= Date.current()
+        dataset.publication_state = Databank::PublicationState::RELEASED
+        dataset.embargo = Databank::PublicationState::Embargo::NONE
+        dataset.save
+        dataset.publish_doi
+      end
+    end
   end
+
+end
 
 end
