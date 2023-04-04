@@ -96,10 +96,10 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
 
   config.action_mailer.smtp_settings = {
-      address: "smtp.sparkpostmail.com",
+      address: "smtp-cx.socketlabs.com",
       port: 587,
       enable_starttls_auto: true,
-      user_name: "SMTP_Injection",
+      user_name: IDB_CONFIG[:smtp][:password],
       password: IDB_CONFIG[:smtp][:password],
       domain: 'library.illinois.edu '
   }
