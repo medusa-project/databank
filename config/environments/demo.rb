@@ -94,14 +94,23 @@ Rails.application.configure do
   #email stuff
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: "smtp-cx.socketlabs.com",
-    port: 587,
-    enable_starttls_auto: true,
-    user_name: IDB_CONFIG[:smtp][:username],
-    password: IDB_CONFIG[:smtp][:password],
-    domain: "library.illinois.edu"
+  # config.action_mailer.smtp_settings = {
+  #   address: "smtp-cx.socketlabs.com",
+  #   port: 587,
+  #   enable_starttls_auto: true,
+  #   user_name: IDB_CONFIG[:smtp][:username],
+  #   password: IDB_CONFIG[:smtp][:password],
+  #   domain: "library.illinois.edu"
+  # }
+  ActionMailer::Base.smtp_settings = {
+    :address        => "smtp-cx.socketlabs.com",
+    :port           => 587,
+    :domain         => "library.illinois.edu",
+    :authentication => :plain,
+    :user_name      => IDB_CONFIG[:smtp][:username],
+    :password       => IDB_CONFIG[:smtp][:password]
   }
+
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
