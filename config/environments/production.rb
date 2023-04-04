@@ -101,7 +101,8 @@ Rails.application.configure do
       enable_starttls_auto: true,
       user_name: IDB_CONFIG[:smtp][:password],
       password: IDB_CONFIG[:smtp][:password],
-      domain: 'library.illinois.edu '
+      domain: 'library.illinois.edu ',
+      authentication: 'plain'
   }
 
   # Ignore bad email addresses and do not raise email delivery errors.
