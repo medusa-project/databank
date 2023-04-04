@@ -95,12 +95,12 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: "https://inject-cx.socketlabs.com/api/v1/email",
+    address: "inject-cx.socketlabs.com/api/v1/email",
     port: 587,
     enable_starttls_auto: true,
     user_name: IDB_CONFIG[:smtp][:username],
     password: IDB_CONFIG[:smtp][:password],
-    domain: "smtp-cx.socketlabs.com"
+    domain: "library.illinois.edu"
   }
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
