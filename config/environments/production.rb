@@ -96,13 +96,12 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
 
   config.action_mailer.smtp_settings = {
-      address: "smtp-cx.socketlabs.com",
+      address: "https://inject-cx.socketlabs.com/api/v1/email",
       port: 587,
       enable_starttls_auto: true,
       user_name: IDB_CONFIG[:smtp][:username],
       password: IDB_CONFIG[:smtp][:password],
-      domain: 'library.illinois.edu ',
-      authentication: 'plain'
+      domain: "smtp-cx.socketlabs.com"
   }
 
   # Ignore bad email addresses and do not raise email delivery errors.
