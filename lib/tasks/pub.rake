@@ -20,5 +20,3 @@ namespace :pub do
   end
 
 end
-
-end
