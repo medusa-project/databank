@@ -1,8 +1,6 @@
 :smtp:
   :username: <%= Rails.application.credentials[:smtp][:username] %>
   :password: <%= Rails.application.credentials[:smtp][:password] %>
-  :server_id: <%= Rails.application.credentials[:smtp][:server_id] %>
-  :api_key: <%= Rails.application.credentials[:smtp][:api_key] %>
 :orcid_token: <%= Rails.application.credentials[:orcid_token] %>
 
 :recaptcha:
