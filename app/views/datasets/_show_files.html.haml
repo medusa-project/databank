@@ -107,8 +107,8 @@
                             .row
                               .indent
                                 .preview(id="preview_#{datafile.web_id}")
-                            .row.loading.text-center
-                              %i(class="far fa-spinner fa-spin fa-4x view-load-spinner spinner_#{datafile.web_id}" )
+                            -# .row.loading.text-center
+                            -#   %i(class="far fa-spinner fa-spin fa-4x view-load-spinner spinner_#{datafile.web_id}" )
                     -elsif dataset.datafiles.count > 500
                       %jumbotron
                         Error displaying files, please
