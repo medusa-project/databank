@@ -48,6 +48,7 @@ module Dataset::Complete
       e_arr << "at least one creator" if dataset.creators.count < 1
       e_arr << "license" if dataset.license.blank?
       e_arr << "at least one file" unless dataset.complete_datafiles.count.positive?
+      e_arr << "remove incomplete uploads" if dataset.incomplete_datafiles.count.positive?
       e_arr << "select primary contact from author list" unless dataset.contact
       e_arr << "identifier to import" if dataset.is_import? && !dataset.identifier
       e_arr += Dataset.license_error(dataset) || []

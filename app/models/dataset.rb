@@ -313,25 +313,30 @@ class Dataset < ApplicationRecord
   end
 
   def sorted_datafiles
-    valid_datafiles.sort_by(&:bytestream_name)
+    basic_sorted = valid_datafiles.sort_by(&:bytestream_name)
+    basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
   end
 
   def complete_datafiles
-    datafiles = []
-    sorted_datafiles.each do |datafile|
-      datafiles << datafile if datafile.bytestream? &&
-          datafile.bytestream_name != "" &&
-          datafile.job_status == :complete
-    end
-    datafiles
+    return [] if datafiles.count.zero?
+
+    unsorted = datafiles.to_a - incomplete_datafiles
+    basic_sorted = unsorted.sort_by(&:bytestream_name)
+    basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
   end
 
   def incomplete_datafiles
-    datafiles = []
-    sorted_datafiles.each do |datafile|
-      datafiles << datafile if datafile.job_status != :complete
+    incomplete_datafile_set = Set.new
+    datafiles.each do |datafile|
+      incomplete_datafile_set.add datafile if datafile.job_status == :processing
+      incomplete_datafile_set.add datafile if datafile.job_status == :pending
+      incomplete_datafile_set.add datafile if datafile.storage_root.nil?
+      incomplete_datafile_set.add datafile if datafile.storage_root == ""
+      incomplete_datafile_set.add datafile if datafile.binary_size.nil?
+      incomplete_datafile_set.add datafile if datafile.binary_size.zero?
+      incomplete_datafile_set.add datafile unless datafile.bytestream?
     end
-    datafiles
+    incomplete_datafile_set.to_a
   end
 
   def medusa_ingests

@@ -357,6 +357,12 @@ class Datafile < ApplicationRecord
     Delayed::Job.find_by(id: job_id) if job_id
   end
 
+  def readme?
+    return false if binary_name.nil?
+
+    binary_name.downcase.include?("readme")
+  end
+
   def job_status
     if job
       if job.locked_by
