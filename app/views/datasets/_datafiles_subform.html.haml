@@ -41,7 +41,7 @@
                 -@dataset.sorted_datafiles.each_with_index do |datafile, i|
                   = f.fields_for :datafiles, datafile do |df|
                     %tr(id="datafile_index_#{i}")
-                      %td(class="#{datafile.upload_complete? ? 'uploadComplete' : 'alert alert-alert' }")
+                      %td(class="#{datafile.upload_complete? ? 'uploadComplete' : 'completion-warning' }")
                         .row.checkbox
                           %span(class="col-md-8")
                             -if draft && can_edit

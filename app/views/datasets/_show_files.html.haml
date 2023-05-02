@@ -115,7 +115,7 @@
                         =link_to("contact", "/help/contact_us")
                         the Research Data Service for help if this is unexpected.
                       - dataset.incomplete_datafiles.each do |datafile|
-                        %tr.row
+                        %tr.row(class="#{datafile.upload_complete? ? 'uploadComplete' : 'completion-warning' }")
                           %td
                             .row
                               %span.col-md-6
