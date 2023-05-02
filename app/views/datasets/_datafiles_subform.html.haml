@@ -41,10 +41,10 @@
                 -@dataset.sorted_datafiles.each_with_index do |datafile, i|
                   = f.fields_for :datafiles, datafile do |df|
                     %tr(id="datafile_index_#{i}")
-                      %td
+                      %td(class="#{datafile.upload_complete? ? 'uploadComplete' : 'alert alert-alert' }")
                         .row.checkbox
                           %span(class="col-md-8")
-                            -if (@dataset.publication_state == Databank::PublicationState::DRAFT) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
+                            -if draft && can_edit
                               %label
                                 %input(type="checkbox" class="checkFile checkFileGroup" name="selected_files[]" value="#{i}" onchange="handleCheckFileGroupChange()" )
                                 =datafile.bytestream_name

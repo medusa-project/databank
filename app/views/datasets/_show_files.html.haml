@@ -121,7 +121,7 @@
                               %span.col-md-6
                                 = datafile.bytestream_name
                               %span.col-md-3
-                                = datafile.bytestream? ? "exists in storage" : "does NOT exist in storage - edit dataset to manage"
+                                = datafile.bytestream? ? "exists in storage" : "incomplete--edit dataset to manage"
                               -if datafile.bytestream?
                                 .col-md-2
                                   = number_to_human_size(datafile.bytestream_size)
