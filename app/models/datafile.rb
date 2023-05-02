@@ -39,17 +39,17 @@ class Datafile < ApplicationRecord
   end
 
   def upload_complete?
-    return false if datafile.job_status == :processing
+    return false if job_status == :processing
 
-    return false if datafile.job_status == :pending
+    return false if job_status == :pending
 
-    return false if datafile.storage_root.nil?
+    return false if storage_root.nil?
 
-    return false if datafile.storage_root == ""
+    return false if storage_root == ""
 
-    return false if datafile.binary_size.nil? || datafile.binary_size&.zero?
+    return false if binary_size.nil? || binary_size&.zero?
 
-    datafile.bytestream?
+    bytestream?
   end
 
   def handle_peek
