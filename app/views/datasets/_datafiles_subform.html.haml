@@ -56,7 +56,7 @@
                               = datafile.bytestream_name
                             %input{type: "text", class: "bytestream_name", value: "#{datafile.bytestream_name}"}
                           %span{class: "col-md-2"}
-                            -if datafile.complete?
+                            -if datafile.upload_complete?
                               = number_to_human_size(datafile.bytestream_size)
                             -else
                               = datafile.bytestream? ? "exists in storage" : "does NOT exist in storage"

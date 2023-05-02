@@ -320,7 +320,7 @@ class Dataset < ApplicationRecord
   def complete_datafiles
     return [] if datafiles.count.zero?
 
-    unsorted = datafiles.select(&:complete?)
+    unsorted = datafiles.select(&:upload_complete?)
     return [] if unsorted.count.zero?
 
     basic_sorted = unsorted.sort_by(&:bytestream_name)
@@ -330,7 +330,7 @@ class Dataset < ApplicationRecord
   def incomplete_datafiles
     return [] if datafiles.count.zero?
 
-    datafiles.reject(&:complete?).sort_by(&:bytestream_name)
+    datafiles.reject(&:upload_complete?).sort_by(&:bytestream_name)
   end
 
   def medusa_ingests
