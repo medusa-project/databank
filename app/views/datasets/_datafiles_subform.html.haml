@@ -38,7 +38,7 @@
                               %span(id = "datafilesCount")
                                 = @dataset.datafiles.count
 
-                -@dataset.datafiles.sort_by(:bytestream_name).each_with_index do |datafile, i|
+                -@dataset.sorted_datafiles.each_with_index do |datafile, i|
                   = f.fields_for :datafiles, datafile do |df|
                     %tr(id="datafile_index_#{i}")
                       %td

@@ -312,8 +312,13 @@ class Dataset < ApplicationRecord
              .where("binary_size > ?", 0)
   end
 
-  def sorted_datafiles
+  def sorted_valid_datafiles
     basic_sorted = valid_datafiles.sort_by(&:bytestream_name)
+    basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
+  end
+
+  def sorted_datafiles
+    basic_sorted = datafiles.sort_by(&:bytestream_name)
     basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
   end
 
