@@ -332,8 +332,7 @@ class Dataset < ApplicationRecord
       incomplete_datafile_set.add datafile if datafile.job_status == :pending
       incomplete_datafile_set.add datafile if datafile.storage_root.nil?
       incomplete_datafile_set.add datafile if datafile.storage_root == ""
-      incomplete_datafile_set.add datafile if datafile.binary_size.nil?
-      incomplete_datafile_set.add datafile if datafile.binary_size.zero?
+      incomplete_datafile_set.add datafile if datafile.binary_size.nil? || datafile.binary_size&.zero?
       incomplete_datafile_set.add datafile unless datafile.bytestream?
     end
     incomplete_datafile_set.to_a
