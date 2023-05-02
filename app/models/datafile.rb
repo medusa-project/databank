@@ -38,6 +38,20 @@ class Datafile < ApplicationRecord
     ExtractorTask.find_by(id: task_id)
   end
 
+  def upload_complete?
+    return false if datafile.job_status == :processing
+
+    return false if datafile.job_status == :pending
+
+    return false if datafile.storage_root.nil?
+
+    return false if datafile.storage_root == ""
+
+    return false if datafile.binary_size.nil? || datafile.binary_size&.zero?
+
+    datafile.bytestream?
+  end
+
   def handle_peek
     markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
     raise StandardError.new("no binary_name for datafile id: #{id}") unless binary_name
