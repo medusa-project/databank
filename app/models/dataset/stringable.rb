@@ -66,7 +66,7 @@ module Dataset::Stringable
 
       end
 
-      return_string += %(, "description":"#{description.gsub('"', '\\"')}") if description
+      return_string += %(, "description":"#{description.gsub('"', '\\"').delete('\n').delete('`')}") if description
 
       return_string += %(, "version":"#{dataset_version}")
 
