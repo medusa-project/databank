@@ -159,9 +159,6 @@ gem 'amqp_helper', git: 'https://github.com/medusa-project/amqp_helper.git', bra
 # Used audited-activerecord for dataset changelog
 gem "audited"
 
-# Use google-analytics-rails to support Google Analytics
-gem "google-analytics-rails"
-
 # Use builder to support sitemaps generator
 gem "builder"
 
