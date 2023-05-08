@@ -66,7 +66,7 @@ module Dataset::Stringable
 
       end
 
-      return_string += %(, "description":"#{description.gsub('"', '\\"').delete('\n').delete('`')}") if description
+      return_string += %(, "description":"#{description.gsub('"', '\\"').squish}") if description
 
       return_string += %(, "version":"#{dataset_version}")
 
@@ -163,8 +163,8 @@ module Dataset::Stringable
 
       related_materials.each do |material|
         if material.uri &&
-            (material.relationship_arr.include?(Databank::Relationship::PREVIOUS_VERSION_OF) ||
-                material.relationship_arr.include?(Databank::Relationship::NEW_VERSION_OF))
+          (material.relationship_arr.include?(Databank::Relationship::PREVIOUS_VERSION_OF) ||
+            material.relationship_arr.include?(Databank::Relationship::NEW_VERSION_OF))
           # handled in versions section
         elsif material.citation || material.link
           content += "[ Related"
@@ -246,8 +246,8 @@ module Dataset::Stringable
     begin
       audits.each do |change|
         if change.audited_changes.has_key?("medusa_uuid") ||
-            change.audited_changes.has_key?("binary_name") ||
-            change.audited_changes.has_key?("medusa_dataset_dir")
+          change.audited_changes.has_key?("binary_name") ||
+          change.audited_changes.has_key?("medusa_dataset_dir")
           medusa_changes_arr << change.id
         end
 
