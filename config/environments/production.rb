@@ -3,7 +3,7 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   #Google Analtyics Code
-  GA.tracker = "UA-74879540-1"
+  #GA.tracker = "UA-74879540-1"
 
   # Code is not reloaded between requests.
   config.cache_classes = true
