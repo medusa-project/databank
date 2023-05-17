@@ -29,6 +29,8 @@
 <% end %>
 
 <div id="main-show-div">
+
+  <!-- BEGIN metadata section-->
   <% if version_group && version_group[:entries] && version_group[:entries].length > 1 && @dataset.dataset_version.to_i > 0 && (version_group[:entries][0][:version]).to_i > @dataset.dataset_version.to_i %>
 
     <div class="selected-version boxed-alert">
@@ -42,12 +44,75 @@
 
   <% if @dataset.metadata_public? || (can? :read, @dataset) || @shared_by_link %>
     <%= render partial: 'show_metadata', locals: {dataset: @dataset} %>
-    <% render partial: 'show_versions', locals: {dataset: @dataset, version_group: version_group} %>
-    <% is_too_big = @dataset.total_filesize > (IDB_CONFIG[:globus_only_gb].to_i)*(2**30) %>
-    <%= render partial: 'datasets/show_files', locals: {dataset: @dataset,
-                                                        globus_only: is_too_big,
-                                                        shared_by_link: @shared_by_link} %>
   <% end %>
+
+  <!-- END metadata section-->
+  <div class="panel-group" id="versionGroup" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="versionGroupHeading">
+        <h4 class="panel-title">
+
+          <% if version_group && version_group[:entries] && version_group[:entries].length > 1 %>
+            <a role="button" data-toggle="collapse" data-parent="#versionGroup" href="#versionGroupPanel" aria-expanded="true" aria-controls="versionGroupPanel" class="accordion-toggle">
+              <span class="metadata-label">Versions in Illinois Data Bank</span>
+            </a>
+          <% else %>
+            <a role="button" data-toggle="collapse" data-parent="#versionGroup" href="#versionGroupPanel" aria-expanded="false" aria-controls="versionGroupPanel" class="accordion-toggle collapsed">
+              <span class="metadata-label">Versions</span>
+            </a>
+          <% end %>
+        </h4>
+      </div>
+      <div class="panel-collapse collapse
+        <% if version_group && version_group[:entries] && version_group[:entries].length > 1 %> in
+        <% end %>" id="versionGroupPanel" role="tabpanel" aria-labelledby="versionGroupHeading">
+        <div class="panel-body">
+
+          <% if version_group[:status] == 'error' %>
+            <%= version_group[:error] %>
+          <% else %>
+
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th class="text-center">Version</th>
+                <th>DOI</th>
+                <th>Comment</th>
+                <th>Publication Date</th>
+              </tr>
+              </thead>
+              <tbody>
+
+              <% version_group[:entries].each do |entry| %>
+
+                <tr
+                  <% if entry[:selected] %> class="selected-version"
+                  <% end %> >
+                  <td class="text-center"><%= entry[:version] %></td>
+                  <td><a href="<%= @dataset.persistent_url_base %>/<%= entry[:doi] %>"><%= entry[:doi] %></a></td>
+                  <td><%= entry[:version_comment] %></td>
+                  <td><%= entry[:publication_date] %></td>
+                </tr>
+              <% end %>
+              </tbody>
+            </table>
+
+          <% end %>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BEGIN file section -->
+  <% is_too_big = @dataset.total_filesize > (IDB_CONFIG[:globus_only_gb].to_i)*(2**30) %>
+
+  <%= render partial: 'datasets/show_files', locals: {dataset: @dataset,
+                                                      globus_only: is_too_big,
+                                                      shared_by_link: @shared_by_link} %>
+
+  <!-- END file section -->
+
 
   <% if @dataset.publication_state != Databank::PublicationState::DRAFT %>
 
@@ -93,6 +158,17 @@
     <p>Log into <a href="<%=@datacite_fabrica_url%>">DataCite Fabrica interface</a> for more details about DataCite's test record for this DOI.</p>
 
   </div>
+
+  <!--<div class="curator-only">
+    <p><a href="http://ezid.lib.purdue.edu/manage/display_xml/doi:<%#= @dataset.identifier %>" target="_blank">DataCite
+      Metadata in XML format (via EZID)</a></p>
+
+    <p>
+      <a href="http://ezid.lib.purdue.edu/id/doi:<%#= @dataset.identifier %>" target="_blank">DataCite Metadata on
+        EZID
+        page</a>
+    </p>
+  </div>-->
 
 <% end %>
 
