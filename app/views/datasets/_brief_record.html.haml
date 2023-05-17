@@ -5,6 +5,9 @@
       .label.label-default
         ="updated: #{dataset.updated_at.to_date.iso8601}"
       &nbsp;
+      .label.label-default
+        ="created: #{dataset.created_at.to_date.iso8601}"
+      &nbsp;
       -if dataset.ingest_datetime
         .label.label-default
           ="ingested: #{dataset.ingest_datetime.to_date.iso8601}"
