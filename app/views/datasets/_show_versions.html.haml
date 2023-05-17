@@ -1,0 +1,32 @@
+- collapse_in = version_group && version_group[:entries] && version_group[:entries].length > 1
+#versionGroup.panel-group{"aria-multiselectable" => "true", role: "tablist"}
+  .panel.panel-default
+    #versionGroupHeading.panel-heading{role: "tab"}
+      %h4.panel-title
+        - if version_group && version_group[:entries] && version_group[:entries].length > 1
+          %a.accordion-toggle{"aria-controls" => "versionGroupPanel", "aria-expanded" => "true", "data-parent" => "#versionGroup", "data-toggle" => "collapse", href: "#versionGroupPanel", role: "button"}
+            %span.metadata-label Versions in Illinois Data Bank
+        - else
+          %a.accordion-toggle.collapsed{"aria-controls" => "versionGroupPanel", "aria-expanded" => "false", "data-parent" => "#versionGroup", "data-toggle" => "collapse", href: "#versionGroupPanel", role: "button"}
+            %span.metadata-label Versions
+    #versionGroupPanel.panel-collapse.collapse{"aria-labelledby" => "versionGroupHeading", role: "tabpanel" class: [collapse_in && 'in']}
+      .panel-body
+        - if version_group[:status] == 'error'
+          = version_group[:error]
+        - else
+          %table.table.table-striped
+            %thead
+              %tr
+                %th.text-center Version
+                %th DOI
+                %th Comment
+                %th Publication Date
+            %tbody
+              - version_group[:entries].each do |entry|
+                %tr{class: [entry[:selected] && "selected-version"] }
+                  %td.text-center
+                    = entry[:version]
+                  %td
+                    %a{href: "#{dataset.persistent_url_base}/#{entry[:doi]}/#{entry[:doi]}"}
+                  %td= entry[:version_comment]
+                  %td= entry[:publication_date]
