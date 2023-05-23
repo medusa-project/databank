@@ -65,7 +65,7 @@ module Dataset::Stringable
         end
 
       end
-      processed_description = (description.gsub('"', '\\"').delete_prefix '"'.delete_suffix '"').to_json.squish
+      processed_description = description.squish.to_json.delete_prefix('"').delete_suffix('"')
       return_string += %(, "description":"#{processed_description}") if description
       return_string += %(, "version":"#{dataset_version}")
       return_string += %(, "url":"#{persistent_url}")
@@ -78,7 +78,7 @@ module Dataset::Stringable
         end
         return_string += "]"
       end
-      return_string + + %(, "citation":"#{plain_text_citation.gsub('"', '\\"')}")
+      return_string += %(, "citation":"#{plain_text_citation.gsub('"', '\\"')}")
       license_link = nil
       LICENSE_INFO_ARR.each do |license_info|
         license_link = license_info.external_info_url if (license_info.code == license) && (license != "license.txt")
