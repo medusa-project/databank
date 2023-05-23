@@ -101,6 +101,7 @@ Rails.application.routes.draw do
       get 'confirm_review', to: 'datasets#confirm_review'
       match 'send_publication_notice', to: 'datasets#send_publication_notice', via: [:get, :post]
       get 'share', to: 'datasets#share'
+      get 'version', to: 'datasets#pre_version'
     end
 
     resources :datafiles do

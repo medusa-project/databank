@@ -127,5 +127,7 @@
             = link_to(dataset_path(@dataset.key), method: :delete, data: {confirm: 'Are you sure? This removes all files and metadata.'}, class: "btn idb btn-danger btn-block") do
               %span(class="glyphicon glyphicon-trash" )
               Delete
-
-
+          - if @dataset.publication_state == Databank::PublicationState::DRAFT && @dataset.is_most_recent_version
+            = link_to(version_dataset_path(@dataset.key), :class => "btn idb btn-primary btn-block") do
+              %span(class="glyphicon glyphicon-plus-sign" )
+              Create a version of this published dataset

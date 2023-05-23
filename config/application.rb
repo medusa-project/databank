@@ -23,6 +23,7 @@ module Databank
       NONE = 'none'
       FILE = 'files temporarily suppressed'
       METADATA = 'metadata temporarily suppressed'
+      VERSION = 'version candidate under curator review'
     end
     class PermSuppress
       FILE = 'files permanently suppressed'

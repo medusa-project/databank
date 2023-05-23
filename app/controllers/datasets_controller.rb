@@ -977,6 +977,35 @@ collaborators to access the data files while the dataset is not public.</li>
     set_file_mode
   end
 
+  # permit(:medusa_dataset_dir, :title, :identifier, :publisher, :license, :key, :description, :keywords, :depositor_email, :depositor_name, :corresponding_creator_name, :corresponding_creator_email, :embargo, :complete, :search, :dataset_version, :release_date, :is_test, :is_import, :audit_id, :removed_private, :have_permission, :internal_reviewer, :agree, :web_ids, :org_creators, :version_comment, :subject,
+  #        datafiles_attributes:         [:datafile, :description, :attachment, :dataset_id, :id, :_destroy, :_update, :audit_id],
+  #        creators_attributes:          [:dataset_id, :family_name, :given_name, :institution_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
+  #        contributors_attributes:      [:dataset_id, :family_name, :given_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
+  #        funders_attributes:           [:dataset_id, :code, :name, :identifier, :identifier_scheme, :grant, :id, :_destroy, :_update, :audit_id],
+  #        related_materials_attributes: [:material_type, :selected_type, :availability, :link, :uri, :uri_type, :citation, :datacite_list, :dataset_id, :_destroy, :id, :_update, :audit_id])
+
+  def pre_version
+    d = Dataset.find_by(key: params[:id])
+    d ||= Dataset.find(params[:dataset_id])
+    raise ActiveRecord::RecordNotFound unless d
+
+    new_version_number_string = (d.dataset_version.to_i + 1).to_s
+
+    @dataset = Dataset.new(title: d.title,
+                           identifier: "#{d.identifier.chomp}#{new_version_number_string}",
+                           license: d.license,
+                           description: d.description,
+                           keywords: d.keywords,
+                           dataset_version: new_version_number_string,
+                           is_test: d.is_test,
+                           is_import: false,
+                           internal_reviewer: d.internal_reviewer,
+                           org_creators: d.org_creators,
+                           subject: d.subject)
+
+    set_file_mode
+  end
+
   def remove_sharing_link
     respond_to do |format|
       if @dataset.share_code && @dataset.share_code.destroy!
