@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'json'
 
 module Dataset::Stringable
   extend ActiveSupport::Concern
@@ -63,10 +64,8 @@ module Dataset::Stringable
         else
           return_string += %(, "keywords": "#{keyword_arr[0]}" )
         end
-
       end
-
-      return_string += %(, "description":"#{description.gsub('"', '\\"').squish}") if description
+      return_string += %(, "description":"#{description.delete_prefix '"'.delete_suffix '"'.to_json.squish}") if description
 
       return_string += %(, "version":"#{dataset_version}")
 
@@ -85,7 +84,7 @@ module Dataset::Stringable
         return_string += "]"
       end
 
-      return_string + + %(, "citation":"#{plain_text_citation.gsub('"', '\\"')}")
+      return_string += %(, "citation":"#{plain_text_citation.gsub('"', '\\"')}")
 
       license_link = nil
 
@@ -104,7 +103,6 @@ module Dataset::Stringable
       return_string += %(}</script>)
 
       return_string
-
     else
       ""
     end

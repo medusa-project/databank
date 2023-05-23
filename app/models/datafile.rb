@@ -175,11 +175,23 @@ class Datafile < ApplicationRecord
   end
 
   def exists_on_storage?
-    current_root.exist?(key)
+    return false unless storage_key
+
+    current_root.exist?(storage_key)
   end
 
   def remove_from_storage
-    current_root.delete_content(key)
+    current_root.delete_content(storage_key) if exists_on_storage?
+  end
+
+  def s3_object
+    return nil unless exists_on_storage?
+
+    current_root.s3_object(storage_key)
+  end
+
+  def etag
+    s3_object&.etag
   end
 
   def name
