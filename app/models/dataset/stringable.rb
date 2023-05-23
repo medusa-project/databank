@@ -1,7 +1,8 @@
 # frozen_string_literal: true
-require 'json'
+require "json"
 
-module Dataset::Stringable
+module Dataset
+  module Stringable
   extend ActiveSupport::Concern
 
   def plain_text_citation
@@ -36,7 +37,7 @@ module Dataset::Stringable
       return_string += %(, "author": [)
 
       creators.each_with_index do |creator, index|
-        return_string += ", " if index > 0
+        return_string += ", " if index.positive?
 
         if creator.identifier && creator.identifier != ""
           return_string += %({"@type": "Person", "name":"#{creator.given_name} #{creator.family_name}", "url":"http://orcid.org/#{creator.identifier}"})
@@ -65,7 +66,9 @@ module Dataset::Stringable
           return_string += %(, "keywords": "#{keyword_arr[0]}" )
         end
       end
-      return_string += %(, "description":"#{description.delete_prefix '"'.delete_suffix '"'.to_json.squish}") if description
+      if description
+        return_string += %(, "description":"#{description.description.gsub('"', '\\"').delete_prefix '"'.delete_suffix '"'.to_json.squish}")
+      end
 
       return_string += %(, "version":"#{dataset_version}")
 
@@ -78,7 +81,7 @@ module Dataset::Stringable
         return_string += %(, "funder": [)
 
         funders.each_with_index do |funder, index|
-          return_string += ", " if index > 0
+          return_string += ", " if index.positive?
           return_string += %({"@type": "Organization", "name":"#{funder.name}", "url":"https://doi.org/#{funder.identifier}"})
         end
         return_string += "]"
@@ -135,13 +138,13 @@ module Dataset::Stringable
 
     content = case license
               when "CC01"
-                content + "[ License: ] CC0 - https://creativecommons.org/publicdomain/zero/1.0/\n"
+                "#{content}[ License: ] CC0 - https://creativecommons.org/publicdomain/zero/1.0/\n"
               when "CCBY4"
-                content + "[ License: ] CC BY - http://creativecommons.org/licenses/by/4.0/\n"
+                "#{content}[ License: ] CC BY - http://creativecommons.org/licenses/by/4.0/\n"
               when "license.txt"
-                content + "[ License: ] Custom - See license.txt file in dataset.\n"
+                "#{content}[ License: ] Custom - See license.txt file in dataset.\n"
               else
-                content + "[ License: ] Not found.\n"
+                "#{content}[ License: ] Not found.\n"
               end
 
     content += "[ Corresponding Creator: ] #{corresponding_creator_name}\n"
@@ -169,7 +172,7 @@ module Dataset::Stringable
           content = if material.material_type && material.material_type != ""
                       content + " #{material.material_type}: ] "
                     else
-                      content + "Material: ] "
+                      "#{content}Material: ] "
                     end
 
           content += material.citation.to_s if material.citation && material.citation != ""
@@ -252,7 +255,7 @@ module Dataset::Stringable
         next unless change.audited_changes.has_key?("publication_state")
 
         pub_change = change.audited_changes["publication_state"]
-        if pub_change.class == Array && pub_change[0] == Databank::PublicationState::DRAFT
+        if pub_change.instance_of?(Array) && pub_change[0] == Databank::PublicationState::DRAFT
           publication = change.created_at
           medusa_changes_arr << change.id
         end
@@ -345,5 +348,6 @@ module Dataset::Stringable
                        "funders"   => funders,
                        "materials" => materials,
                        "datafiles" => datafiles}}
+  end
   end
 end
