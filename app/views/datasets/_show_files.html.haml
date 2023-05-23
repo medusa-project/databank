@@ -27,11 +27,6 @@
                                   %span.glyphicon.glyphicon-download
                                   Get Custom Zip and Download Link for Selected
                                   %span.checkFileSelectedCount
-                              -else
-                                %button(class="btn btn-primary" type="submit")
-                                  %span.glyphicon.glyphicon-download
-                                  Zip and Download Selected
-                                  %span.checkFileSelectedCount
                             .col-md-8
                               -if dataset.globus_downloadable?
                                 =link_to "#{image_tag("globus.png", size: "24x18")} Open in Globus File Manager".html_safe, "/datasets/#{dataset.key}/open_in_globus", target: "_blank",
@@ -46,8 +41,6 @@
                                 %label
                                   %input(type="checkbox" id="checkAllFiles" value="checkAllFiles")
                                   Select all
-
-                                  ="(#{dataset.complete_datafiles.count})"
                     -if dataset.datafiles.count > 0 && dataset.datafiles.count <= 500
                       - dataset.complete_datafiles.each do |datafile|
                         %tr.row
