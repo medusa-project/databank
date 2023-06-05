@@ -11,14 +11,18 @@ default: &default
 test: &test
   <<: *default
   database: databank_test
-  host: localhost
+  username: postgres
+  password: postgres
+  host: postgres
+  port: 5432
 
 development:
   <<: *default
   database: databank
-  username: <%= Rails.application.credentials[:primary_db][:username] %>
-  password: <%= Rails.application.credentials[:primary_db][:password] %>
-  host: localhost
+  username: postgres
+  password: postgres
+  host: postgres
+  port: 5432
 
 production:
   <<: *default

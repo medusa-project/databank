@@ -526,6 +526,19 @@ class Datafile < ApplicationRecord
     update_attribute(:task_id, extractor_task.id) if extractor_task
   end
 
+  def self.generate_placeholder(dataset:)
+    return nil unless Dataset.exists?(dataset.id)
+
+    root = StorageManager.instance.draft_root
+    datafile = Datafile.create(dataset_id: dataset.id, binary_name: "placeholder")
+    datafile.binary_name = "#{web_id}_placeholder"
+    storage_key = File.join(dataset.key, datafile.binary_name)
+    root.write_string_to(storage_key, "#{web_id} placeholder")
+    datafile.storage_key = storage_key
+    datafile.binary_size = root.size(storage_key)
+    datafile.save
+  end
+
   ##
   # Generates a guaranteed-unique web ID, of which there are
   # 36^WEB_ID_LENGTH available.

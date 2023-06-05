@@ -10,9 +10,14 @@ PRODUCTION_PREFIXES = ["10.13012", "10.25988"]
 DEMO_PREFIXES = ["10.26123"]
 
 TEST_PREFIXES = ["10.70114"]
+if Rails.env.development? || Rails.env.test?
+  IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/databank-local.yml"))).result)[Rails.env]
+  STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/medusa_storage-local.yml"))).result)[Rails.env]
+elsif Rails.env.demo? || Rails.env.production?
+  IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/databank.yml"))).result)[Rails.env]
+  STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/medusa_storage.yml"))).result)[Rails.env]
+end
 
-IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/databank.yml"))).result)
-STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/medusa_storage.yml"))).result)[Rails.env]
 GLOBUS_CONFIG = YAML.load_file(Rails.root.join('config', 'globus.yml'))[Rails.env]
 METRICS_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/metrics.yml"))).result)
 
@@ -24,11 +29,10 @@ else
   Application.help_transition_state = Databank::HelpTransitionState::HELP
 end
 
-
 # Initializes a Markdown parser
 Application.markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
 
-Tus::Server.opts[:max_size] = 2 * 1024*1024*1024*1024 # 2TB
+Tus::Server.opts[:max_size] = 2 * 1024**4 # 2TB
 
 if IDB_CONFIG[:aws][:s3_mode] == true
 
@@ -55,13 +59,15 @@ if IDB_CONFIG[:aws][:s3_mode] == true
   #                                                   )
 elsif IDB_CONFIG[:aws][:s3_mode] == "local"
   Aws.config.update({region: IDB_CONFIG[:aws][:region]})
+  Aws.config.update({access_key_id: 'minioadmin'})
+  Aws.config.update({secret_access_key: 'minioadmin'})
 
   Application.aws_signer = Aws::S3::Presigner.new
 
   Application.aws_client = Aws::S3::Client.new
 
   Tus::Server.opts[:storage] = Tus::Storage::S3.new(
-      endpoint:          'http://localhost:9000',
+      endpoint:          'http://minio:9000',
       access_key_id:     'minioadmin',
       secret_access_key: 'minioadmin',
       force_path_style:  true,

@@ -1,14 +1,14 @@
 development:
   solr:
-    hostname: localhost
-    port: 8984
+    hostname: sunspot
+    port: 8983
     log_level: WARNING
     path: /solr/development
 
 test:
   solr:
-    hostname: localhost
-    port: 8984
+    hostname: sunspot
+    port: 8983
     log_level: WARNING
     path: /solr/test
 
