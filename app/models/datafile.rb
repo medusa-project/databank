@@ -81,12 +81,14 @@ class Datafile < ApplicationRecord
     end
     save!
     true
+  rescue ActiveRecord::StatementInvalid
+    true
   rescue StandardError => error
     Rails.logger.warn "unexpected problem in handling peek for datafile id: #{id} in dataset: #{dataset.key}."
     Rails.logger.warn error.class
     Rails.logger.warn error.message
     Rails.logger.warn "current user: #{current_user.email}" if current_user
-    false
+    true
   end
 
   def file_download_tallies
