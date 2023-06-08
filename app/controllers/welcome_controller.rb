@@ -89,4 +89,8 @@ class WelcomeController < ApplicationController
     respond_to :text
   end
 
+  def ensure_local_buckets
+    @local_buckets_ensured = StorageManager.instance.ensure_local_buckets
+  end
+
 end
