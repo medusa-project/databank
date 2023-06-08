@@ -55,6 +55,7 @@ class Datafile < ApplicationRecord
   def handle_peek
     markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
     raise StandardError.new("no binary_name for datafile id: #{id}") unless binary_name
+    save!
 
     file_parts = binary_name.split(".")
     if file_parts && markdown_extensions.include?(file_parts.last)
@@ -77,11 +78,12 @@ class Datafile < ApplicationRecord
     when Databank::PeekType::LISTING
       initiate_processing_task
     else
-      return true
+      true
     end
-    save!
-    true
   rescue ActiveRecord::StatementInvalid
+    self.peek_type = Databank::PeekType::NONE
+    self.peek_text = ""
+    save!
     true
   rescue StandardError => error
     Rails.logger.warn "unexpected problem in handling peek for datafile id: #{id} in dataset: #{dataset.key}."
