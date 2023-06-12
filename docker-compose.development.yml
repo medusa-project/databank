@@ -17,4 +17,4 @@ services:
       - "3000:3000"
     volumes:
       - .:/app
-    command: bash -c 'sleep 30 && RAILS_ENV=development bundle exec rails db:drop db:create db:schema:load && curl "http://sunspot:8983/solr/admin/cores?action=CREATE&name=development&instanceDir=development" && RAILS_ENV=development bundle exec rails minio:ensure_local_buckets && RAILS_ENV=development bundle exec rails local_identity:make_testers && RAILS_ENV=development bundle exec rails server -b 0.0.0.0'
+    command: bash -c 'sleep 40 && RAILS_ENV=development bundle exec rails db:drop db:create db:schema:load && curl "http://sunspot:8983/solr/admin/cores?action=CREATE&name=development&instanceDir=development" && RAILS_ENV=development bundle exec rails minio:ensure_local_buckets && RAILS_ENV=development bundle exec rails local_identity:make_testers && RAILS_ENV=development bundle exec rails server -b 0.0.0.0'

@@ -1,0 +1,29 @@
+FROM ubuntu:22.04
+FROM ruby:3.1.2
+
+ARG rails_env=test
+ENV RAILS_ENV=test
+ENV RAILS_LOG_TO_STDOUT=true
+
+RUN apt-get update && apt-get install -y \
+    systemd \
+    nodejs \
+    libmemcached-dev \
+    libmagic-dev \
+    yarn \
+    postgresql-client \
+    memcached
+
+RUN mkdir app
+WORKDIR app
+
+# Copy the main application, except whatever is listed in .dockerignore.
+COPY . ./
+
+RUN cp config/databank-ci.yml config/databank-local.yml
+RUN cp config/medusa_storage-ci.yml config/medusa_storage-local.yml
+
+RUN cd /tmp \
+    && gem install bundler \
+    && bundle install \
+    && cd /app

@@ -6,8 +6,6 @@
 
 config/databank-local.yml
 config/medusa_storage-local.yml
-config/databank-ci.yml
-config/medusa-storage-ci.yml
 
 *.rbc
 capybara-*.html

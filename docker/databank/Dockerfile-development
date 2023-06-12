@@ -4,7 +4,6 @@ FROM ruby:3.1.2
 ARG rails_env=development
 ENV RAILS_ENV=$rails_env
 ENV RAILS_LOG_TO_STDOUT=true
-ENV RAILS_SERVE_STATIC_FILES=true
 
 RUN apt-get update && apt-get install -y \
     systemd \
