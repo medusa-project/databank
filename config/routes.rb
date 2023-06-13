@@ -272,7 +272,7 @@ Rails.application.routes.draw do
 
   get "/metrics/datafiles_simple_list", to: "metrics#datafiles_simple_list"
 
-  get "/metrics/datasets_csv", to: "metrics#datasets_csv"
+  get "/metrics/datasets_tsv", to: "metrics#datasets_tsv"
 
   get "/metrics/funders_csv", to: "metrics#funders_csv"
 

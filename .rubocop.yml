@@ -39,7 +39,6 @@ Layout/SpaceAroundEqualsInParameterDefault:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
-# Most readable form.
 Style/SymbolArray:
   Enabled: true
   EnforcedStyle: brackets
