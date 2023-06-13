@@ -30,11 +30,13 @@ class MetricsController < ApplicationController
 
         datasets.each do |dataset|
           report << [dataset.identifier.to_s,
+                     dataset.ingest_datetime.to_date.iso8601.to_s,
                      dataset.release_date.iso8601.to_s,
                      dataset.datafiles.count.to_s,
                      dataset.total_filesize.to_s,
                      dataset.total_downloads.to_s,
                      dataset.num_external_relationships.to_s,
+                     dataset.creators.count.to_s,
                      dataset.subject.to_s]
         end
       end
