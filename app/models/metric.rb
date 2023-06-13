@@ -157,5 +157,6 @@ class Metric
         end
       end
     end
+
   end
 end
