@@ -22,7 +22,7 @@ class Metric
       raise StandardError.new("unable to create datafiles csv") unless File.exist?(METRICS_CONFIG[:datafiles_csv][:relative_path])
 
       write_datafiles_csv unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
-      raise StandardError.new("unable to create datasets csv") unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
+      raise StandardError.new("unable to create datasets tsv") unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
 
       write_container_contents_csv unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
       raise StandardError.new("unable to create container contents csv") unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
@@ -44,9 +44,7 @@ class Metric
 
     def write_datasets_tsv
       target_path = METRICS_CONFIG[:datasets_tsv][:relative_path]
-
       datasets = Dataset.all_with_public_metadata
-
       headings = ["doi",
                   "ingest_date",
                   "release_date",
@@ -57,27 +55,26 @@ class Metric
                   "num_creators",
                   "subject",
                   "citation_text"]
-
       headings_row = headings.join("\t")
-
+      values_rows = []
+      datasets.each do |dataset|
+        values = [dataset.identifier.to_s,
+                  dataset.ingest_datetime.to_date.iso8601.to_s,
+                  dataset.release_date.iso8601.to_s,
+                  dataset.datafiles.count.to_s,
+                  dataset.total_filesize.to_s,
+                  dataset.total_downloads.to_s,
+                  dataset.num_external_relationships.to_s,
+                  dataset.creators.count.to_s,
+                  dataset.subject.to_s,
+                  dataset.plain_text_citation]
+        values_row = values.join("\t")
+        values_rows << "#{values_row}\n"
+      end
       File.open(target_path, "w") do |f|
         f.puts headings_row
-
-        datasets.each do |dataset|
-          values = [dataset.identifier.to_s,
-                     dataset.ingest_datetime.to_date.iso8601.to_s,
-                     dataset.release_date.iso8601.to_s,
-                     dataset.datafiles.count.to_s,
-                     dataset.total_filesize.to_s,
-                     dataset.total_downloads.to_s,
-                     dataset.num_external_relationships.to_s,
-                     dataset.creators.count.to_s,
-                     dataset.subject.to_s,
-                     dataset.plain_text_citation]
-          values_row = values.join("\t")
-          f.puts values_row
+        f.puts values_rows
       end
-
     end
 
     def write_dataset_downloads_json
@@ -157,6 +154,5 @@ class Metric
         end
       end
     end
-
   end
 end
