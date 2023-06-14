@@ -44,6 +44,14 @@
 .metrics-border
   %h3
     %a(href="/metrics/datafiles_simple_list") Datafiles listing
+  .indent
+    %p A listing of datafiles with associated links to their respective datasets.
+
+.metrics-border
+  %h3
+    %a(href="/datasets_tsv" class="btn btn-primary idb" )
+      %span.glyphicon.glyphicon-download
+      Datasets TSV
   %p
     Modified:
     = modified_times[:datasets_tsv]
@@ -51,17 +59,8 @@
       %span.glyphicon.glyphicon-refresh
       Refresh
   .indent
-    %p A listing of datafiles with associated links to their respective datasets.
-
-.metrics-border
-  %h3
-    %a(href="/metrics/datasets_tsv" class="btn btn-primary idb" )
-      %span.glyphicon.glyphicon-download
-      Datasets TSV
-  %p Generated Dynamically
-  .indent
     %p
-      Button triggers a csv file download of dataset details.
+      Button triggers a tab-separated-values(TSV) file download of dataset details.
       %em (datasets)
 
     %strong Column Headings
