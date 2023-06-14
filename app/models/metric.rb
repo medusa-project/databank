@@ -21,7 +21,7 @@ class Metric
       write_datafiles_csv unless File.exist?(METRICS_CONFIG[:datafiles_csv][:relative_path])
       raise StandardError.new("unable to create datafiles csv") unless File.exist?(METRICS_CONFIG[:datafiles_csv][:relative_path])
 
-      write_datafiles_csv unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
+      write_datasets_tsv unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
       raise StandardError.new("unable to create datasets tsv") unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
 
       write_container_contents_csv unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
