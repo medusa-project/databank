@@ -21,6 +21,10 @@ class MetricsController < ApplicationController
     @datafiles = Datafile.where(dataset_id: metadata_public_dataset_ids)
   end
 
+  def datasets_tsv
+    render "public/datasets.tsv", layout: false
+  end
+
   def datafiles_csv
     render METRICS_CONFIG[:datafiles_csv][:relative_path], layout: false
   end
