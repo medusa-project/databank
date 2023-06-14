@@ -22,7 +22,7 @@ class MetricsController < ApplicationController
   end
 
   def datasets_tsv
-    render "public/datasets.tsv", layout: false
+    render METRICS_CONFIG[:datasets_tsv][:relative_path], layout: false
   end
 
   def datafiles_csv
