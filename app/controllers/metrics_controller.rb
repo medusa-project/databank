@@ -21,28 +21,8 @@ class MetricsController < ApplicationController
     @datafiles = Datafile.where(dataset_id: metadata_public_dataset_ids)
   end
 
-  def datasets_csv
-    datasets = Dataset.select(&:metadata_public?)
-
-    Tempfile.open("datasets_csv") do |t|
-      CSV.open(t, "w") do |report|
-        report << ["doi", "pub_date", "num_files", "num_bytes", "total_downloads", "num_relationships", "subject"]
-
-        datasets.each do |dataset|
-          report << [dataset.identifier.to_s,
-                     dataset.release_date.iso8601.to_s,
-                     dataset.datafiles.count.to_s,
-                     dataset.total_filesize.to_s,
-                     dataset.total_downloads.to_s,
-                     dataset.num_external_relationships.to_s,
-                     dataset.subject.to_s]
-        end
-      end
-
-      send_file t.path, type:        "text/csv",
-                        disposition: "attachment",
-                        filename:    "datasets.csv"
-    end
+  def datasets_tsv
+    render METRICS_CONFIG[:datasets_tsv][:relative_path], layout: false
   end
 
   def datafiles_csv
@@ -127,9 +107,18 @@ class MetricsController < ApplicationController
     end
   end
 
+  def refresh_datasets_tsv
+    Metric.write_datasets_tsv
+    message = "Datasets tsv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
+    respond_to do |format|
+      format.html { render :index, alert: message }
+      format.json { render json: {"message": message} }
+    end
+  end
+
   def refresh_datafiles_csv
     Metric.write_datafiles_csv
-    message = "Dataset csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
+    message = "Datafiles csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
     respond_to do |format|
       format.html { render :index, alert: message }
       format.json { render json: {"message": message} }
