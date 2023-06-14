@@ -107,9 +107,18 @@ class MetricsController < ApplicationController
     end
   end
 
+  def refresh_datasets_tsv
+    Metric.write_datasets_tsv
+    message = "Datasets tsv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
+    respond_to do |format|
+      format.html { render :index, alert: message }
+      format.json { render json: {"message": message} }
+    end
+  end
+
   def refresh_datafiles_csv
     Metric.write_datafiles_csv
-    message = "Dataset csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
+    message = "Datafiles csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
     respond_to do |format|
       format.html { render :index, alert: message }
       format.json { render json: {"message": message} }

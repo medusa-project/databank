@@ -49,9 +49,12 @@
 
 .metrics-border
   %h3
-    %a(href="/metrics/datasets_tsv" class="btn btn-primary idb" )
-      %span.glyphicon.glyphicon-download
-      Datasets TSV
+    -if modified_times[:datasets_tsv] == "not found"
+      refresh before download
+    -else
+      %a(href="/datasets.tsv" class="btn btn-primary idb" )
+        %span.glyphicon.glyphicon-download
+        Datasets TSV
   %p
     Modified:
     = modified_times[:datasets_tsv]
