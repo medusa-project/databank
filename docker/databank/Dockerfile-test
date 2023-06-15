@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     memcached
 
 RUN mkdir app
+RUN mkdir data
 WORKDIR app
 
 # Copy the main application, except whatever is listed in .dockerignore.
@@ -23,6 +24,8 @@ COPY . ./
 RUN cp config/databank-ci.yml config/databank-local.yml
 RUN cp config/medusa_storage-ci.yml config/medusa_storage-local.yml
 
+COPY Gemfile /tmp
+COPY Gemfile.lock /tmp
 RUN cd /tmp \
     && gem install bundler \
     && bundle install \
