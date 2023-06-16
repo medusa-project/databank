@@ -4,7 +4,6 @@ FROM ruby:3.1.2
 ARG rails_env=test
 ENV RAILS_ENV=test
 ENV RAILS_LOG_TO_STDOUT=true
-ENV RAILS_MASTER_KEY="nqyO14DBQJXFMqHg8sSMoiGX8HQ3KPcCN0zq0bN6A1o="
 
 RUN apt-get update && apt-get install -y \
     systemd \
@@ -22,9 +21,10 @@ WORKDIR app
 # Copy the main application, except whatever is listed in .dockerignore.
 COPY . ./
 
-RUN cp config/databank-ci.yml config/databank-local.yml
-RUN cp config/medusa_storage-ci.yml config/medusa_storage-local.yml
+RUN cp config/databank-ci.yml config/databank-test.yml
+RUN cp config/medusa-storage-ci.yml config/medusa-storage-test.yml
 RUN cp config/database-ci.yml config/database.yml
+RUN cp config/amqp-ci.yml config/amqp-test.yml
 
 COPY Gemfile /tmp
 COPY Gemfile.lock /tmp

@@ -110,6 +110,15 @@ stop.sh
 config/initializers/secret_token.rb
 /config/credentials/demo.key
 /config/credentials/production.key
+/config/databank-development.yml
+/config/databank-local.yml
+/config/databank-test.yml
+/config/medusa-storage-local.yml
+/config/medusa-storage-test.yml
+/config/medusa-storage-development.yml
+/config/amqp-local.yml
+/config/amqp-test.yml
+/config/amqp-development.yml
 node_modules
 .java-version
 /config/credentials/dev_colleen.key

@@ -1,14 +1,3 @@
-development:
-  :ssl: false
-  :port: <%= Rails.application.credentials[:amqp][:port] %>
-  :host: <%= Rails.application.credentials[:amqp][:host] %>
-  :user: <%= Rails.application.credentials[:amqp][:user] %>
-  :password: <%= Rails.application.credentials[:amqp][:password] %>
-  :verify: verify_none
-  :verify_peer: false
-  :fail_if_no_peer_cert: false
-  :heartbeat: 10
-
 demo:
   :ssl: true
   :host: <%= Rails.application.credentials[:amqp][:host] %>
@@ -27,17 +16,6 @@ production:
   :password: <%= Rails.application.credentials[:amqp][:password] %>
   :vhost: medusa
   :verify: false
-  :verify_peer: false
-  :fail_if_no_peer_cert: false
-  :heartbeat: 10
-
-test:
-  :ssl: false
-  :port: <%= Rails.application.credentials[:amqp][:port] %>
-  :host: <%= Rails.application.credentials[:amqp][:host] %>
-  :user: <%= Rails.application.credentials[:amqp][:user] %>
-  :password: <%= Rails.application.credentials[:amqp][:password] %>
-  :verify: verify_none
   :verify_peer: false
   :fail_if_no_peer_cert: false
   :heartbeat: 10
