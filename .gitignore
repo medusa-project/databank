@@ -108,13 +108,8 @@ stop.sh
 /data
 /extractions
 config/initializers/secret_token.rb
-/config/credentials/development.key
-/config/credentials/development.yml.enc
 /config/credentials/demo.key
-/config/credentials/test.key
 /config/credentials/production.key
-/config/credentials/developmeht.yml
-/config/credentials/test.yml
 node_modules
 .java-version
 /config/credentials/dev_colleen.key
