@@ -1,18 +1,31 @@
-#
-# Example invocation: docker-compose up --exit-code-from rails
-#
-version: '3'
+# used by docker-run.sh
+
+version: '3.7'
 services:
-  cantaloupe:
-    hostname: cantaloupe
+  sunspot:
+    hostname: sunspot
     build:
-      context: .
-      dockerfile: ./docker/Dockerfile-cantaloupe
-  databank:
+      context: docker/sunspot/.
+      dockerfile: Dockerfile
+    ports:
+      - "8983:8983"
+  minio:
+    image: minio/minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    hostname: minio
+    command: server ~/storage/minio --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+  sqs-mock:
     build:
-      context: .
-      dockerfile: ./docker/Dockerfile-databank
-    command: bash -c "sleep 20 && ENV=test && bin/rails db:prepare && bin/rails test"
+      context: docker/sqs-mock/.
+      dockerfile: Dockerfile
+    hostname: sqs-mock
+    ports:
+      - "9324:9324"
   postgres:
     image: postgres:12-alpine
     environment:
@@ -20,9 +33,17 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     hostname: postgres
+    ports:
+      - "5432:5432"
   rabbitmq:
     build:
       context: .
       dockerfile: ./docker/Dockerfile-rabbitmq
     hostname: rabbitmq
-
+    ports:
+      - "5672:5672"
+  memcached:
+    image: memcached
+    hostname: memcached
+    ports:
+      - '11211:11211'

@@ -55,6 +55,7 @@ class Datafile < ApplicationRecord
   def handle_peek
     markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
     raise StandardError.new("no binary_name for datafile id: #{id}") unless binary_name
+    save!
 
     file_parts = binary_name.split(".")
     if file_parts && markdown_extensions.include?(file_parts.last)
@@ -77,12 +78,19 @@ class Datafile < ApplicationRecord
     when Databank::PeekType::LISTING
       initiate_processing_task
     else
-      return true
+      true
     end
+  rescue ActiveRecord::StatementInvalid
+    self.peek_type = Databank::PeekType::NONE
+    self.peek_text = ""
     save!
+    true
   rescue StandardError => error
-    Rails.logger.warn "problem in handling peek for datafile id: #{id}"
+    Rails.logger.warn "unexpected problem in handling peek for datafile id: #{id} in dataset: #{dataset.key}."
+    Rails.logger.warn error.class
     Rails.logger.warn error.message
+    Rails.logger.warn "current user: #{current_user.email}" if current_user
+    true
   end
 
   def file_download_tallies
@@ -524,6 +532,19 @@ class Datafile < ApplicationRecord
 
     extractor_task = ExtractorTask.create(web_id:)
     update_attribute(:task_id, extractor_task.id) if extractor_task
+  end
+
+  def self.generate_placeholder(dataset:)
+    return nil unless Dataset.exists?(dataset.id)
+
+    root = StorageManager.instance.draft_root
+    datafile = Datafile.create(dataset_id: dataset.id, binary_name: "placeholder")
+    datafile.binary_name = "#{web_id}_placeholder"
+    storage_key = File.join(dataset.key, datafile.binary_name)
+    root.write_string_to(storage_key, "#{web_id} placeholder")
+    datafile.storage_key = storage_key
+    datafile.binary_size = root.size(storage_key)
+    datafile.save
   end
 
   ##

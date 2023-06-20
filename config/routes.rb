@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   get '/contact', to: 'welcome#contact'
   post '/contact_mail', to: 'welcome#contact_mail'
   get '/guides', to: 'guide/sections#guides'
+  post '/ensure_local_buckets', to: 'welcome#ensure_local_buckets'
   get '/help_transition_admin', to: 'welcome#help_transition_admin'
   resources :extractor_errors
   resources :extractor_responses
@@ -272,8 +273,6 @@ Rails.application.routes.draw do
   get "/metrics/file_downloads", to: 'metrics#file_downloads', defaults: {format: 'json'}
 
   get "/metrics/datafiles_simple_list", to: "metrics#datafiles_simple_list"
-
-  get "/metrics/datasets_csv", to: "metrics#datasets_csv"
 
   get "/metrics/funders_csv", to: "metrics#funders_csv"
 

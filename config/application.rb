@@ -166,7 +166,7 @@ module Databank
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    config.load_defaults "6.0"
+    config.load_defaults "6.1"
     config.active_job.queue_adapter = :delayed_job
     config.generators.javascript_engine = :js
     config.active_record.use_yaml_unsafe_load = true

@@ -17,3 +17,7 @@
         .panel-collapse.collapse(id="serviceMsgPanel" role="tabpanel" aria-labelledby="serviceMsgHeading" )
           .panel-body
             = render partial: 'service_message_form'
+-if Rails.env.development? || Rails.env.test
+  %hr
+  =button_to 'Ensure Local Buckets', "/ensure_local_buckets", method: :post, class: "btn btn-primary"
+  %hr

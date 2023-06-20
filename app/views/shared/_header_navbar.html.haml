@@ -49,6 +49,10 @@
           %li
             %a{href: "/logout"}
               Log out
+        - elsif Rails.env.development?
+          %li
+            %a{href: "/identities/login"}
+              Log in Local
         - else
           %li
             %a{href: "/login"}

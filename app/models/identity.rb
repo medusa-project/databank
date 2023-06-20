@@ -78,6 +78,23 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
     reset_sent_at < 2.hours.ago
   end
 
+  def self.create_test_account(name:, email:, role:)
+    invitee = Invitee.find_or_create_by(email: email)
+    invitee.role = role
+    invitee.expires_at = Time.zone.now + 1.years
+    invitee.save!
+    identity = Identity.find_or_create_by(email: email)
+    salt = BCrypt::Engine.generate_salt
+    localpass = IDB_CONFIG[:admin][:localpass]
+    encrypted_password = BCrypt::Engine.hash_secret(localpass, salt)
+    identity.password_digest = encrypted_password
+    identity.update(password: localpass, password_confirmation: localpass)
+    identity.name = name
+    identity.activated = true
+    identity.activated_at = Time.zone.now
+    identity.save!
+  end
+
   private
 
   # Converts email to all lower-case.

@@ -1,6 +1,7 @@
 -modified_times = @modified_times || {dataset_downloads_json:  "not found",
        datafile_downloads_json: "not found",
        datafiles_csv:           "not found",
+       datasets_tsv:            "not found",
        container_contents_csv:  "not found"}
 
 %h2 Metrics
@@ -17,7 +18,7 @@
   %p
     Modified:
     = modified_times[:dataset_downloads_json]
-    %a(href="/metrics/refresh_dataset_downloads" class="btn btn-success btn-sm idb" )
+    %a{href: "/metrics/refresh_dataset_downloads", class: "btn btn-success btn-sm idb"}
       %span.glyphicon.glyphicon-refresh
       Refresh
   .indent
@@ -32,7 +33,7 @@
   %p
     Modified:
     = modified_times[:datafile_downloads_json]
-    %a(href="/metrics/refresh_datafile_downloads" class="btn btn-success btn-sm idb" )
+    %a{href: "/metrics/refresh_datafile_downloads", class: "btn btn-success btn-sm idb"}
       %span.glyphicon.glyphicon-refresh
       Refresh
   .indent
@@ -43,19 +44,26 @@
 .metrics-border
   %h3
     %a(href="/metrics/datafiles_simple_list") Datafiles listing
-  %p Generated dynamically
   .indent
     %p A listing of datafiles with associated links to their respective datasets.
 
 .metrics-border
   %h3
-    %a(href="/metrics/datasets_csv" class="btn btn-primary idb" )
-      %span.glyphicon.glyphicon-download
-      Datasets CSV
-  %p Generated Dynamically
+    -if modified_times[:datasets_tsv] == "not found"
+      refresh before download
+    -else
+      %a(href="/datasets.tsv" class="btn btn-primary idb" )
+        %span.glyphicon.glyphicon-download
+        Datasets TSV
+  %p
+    Modified:
+    = modified_times[:datasets_tsv]
+    %a(href="/metrics/refresh_datasets_tsv" class="btn btn-success btn-sm idb" )
+      %span.glyphicon.glyphicon-refresh
+      Refresh
   .indent
     %p
-      Button triggers a csv file download of dataset details.
+      Button triggers a tab-separated-values (TSV) file download of select dataset features.
       %em (datasets)
 
     %strong Column Headings
@@ -64,7 +72,10 @@
         %strong doi:
         DOI that identifies this dataset
       %li
-        %strong pub_date:
+        %strong ingest_date:
+        Date this dataset was deposited into Illinois Data Bank.
+      %li
+        %strong release_date:
         Date the files in this dataset were first available for download
       %li
         %strong num_files:
@@ -80,8 +91,14 @@
         %strong num_relationships:
         Number of related materials, excluding other versions of this dataset
       %li
+        %strong num_creators:
+        Number of creators of this dataset
+      %li
         %strong subject:
         Subject Area of this dataset
+      %li
+        %strong citation_text:
+        Plain text citation of this dataset as displayed in Illinois Data Bank
 
 .metrics-border
   %h3
@@ -122,20 +139,21 @@
       %li
         %strong total_downloads:
         Number of downloads for this file, calculated as described in our metrics help section:
-        %a(href="https://databank.illinois.edu/help#metrics") https://databank.illinois.edu/help#metrics
+        %a{href: "https://databank.illinois.edu/help#metrics"}
+          https://databank.illinois.edu/help#metrics
 
 .metrics-border
   %h3
     -if modified_times[:container_contents_csv] == "not found"
       refresh before download
     -else
-      %a(href="/archive_file_contents.csv" class="btn btn-primary idb" )
+      %a{href: "/archive_file_contents.csv", class: "btn btn-primary idb"}
         %span.glyphicon.glyphicon-download
         Container File Contents (zip) CSV
   %p
     modified:
     = modified_times[:container_contents_csv]
-    %a(href="/metrics/refresh_container_csv" class="btn btn-success btn-sm idb" )
+    %a{href: "/metrics/refresh_container_csv", class: "btn btn-success btn-sm idb"}
       %span.glyphicon.glyphicon-refresh
       Refresh
   .indent
