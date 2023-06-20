@@ -1,5 +1,9 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - development
+      - feature
 jobs:
   build:
     name: Test in Ubuntu
