@@ -1,0 +1,44 @@
+##
+# Every user in this file MUST have a corresponding
+# Identity in `identities.yml`.
+#
+curator1:
+  provider: identity,
+  uid: $LABEL@mailinator.com,
+  name: $LABEL,
+  email: $LABEL@mailinator.com,
+  role: admin
+  username: $LABEL
+
+curator2:
+  provider: identity,
+  uid: $LABEL@mailinator.com,
+  name: $LABEL,
+  email: $LABEL@mailinator.com,
+  role: admin
+  username: $LABEL
+
+researcher1:
+  provider: identity,
+  uid: $LABEL@mailinator.com,
+  name: $LABEL,
+  email: $LABEL@mailinator.com,
+  role: depositor
+  username: $LABEL
+
+researcher2:
+  provider: identity,
+  uid: $LABEL@mailinator.com,
+  name: $LABEL,
+  email: $LABEL@mailinator.com,
+  role: depositor
+  username: $LABEL
+
+researcher3:
+  provider: identity,
+  uid: $LABEL@mailinator.com,
+  name: $LABEL,
+  email: $LABEL@mailinator.com,
+  role: depositor
+  username: $LABEL
+

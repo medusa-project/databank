@@ -1,0 +1,47 @@
+##
+# Every identity in this file MUST have a corresponding User in
+# `users.yml`, AND an Invitee in invitees.yml.
+#
+
+<% password_digest = BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
+
+curator1:
+  name: $LABEL,
+  email: $LABEL@mailinator.com,
+  password_digest: <%= password_digest %>
+  activation_digest: <%= password_digest %>
+  activated: true
+  activated_at: <%=Time.zone.now %>
+
+curator2:
+  name: $LABEL,
+  email: $LABEL@mailinator.com,
+  password_digest: <%= password_digest %>
+  activation_digest: <%= password_digest %>
+  activated: true
+  activated_at: <%=Time.zone.now %>
+
+researcher1:
+  name: $LABEL,
+  email: $LABEL@mailinator.com,
+  password_digest: <%= password_digest %>
+  activation_digest: <%= password_digest %>
+  activated: true
+  activated_at: <%=Time.zone.now %>
+
+researcher2:
+  name: $LABEL,
+  email: $LABEL@mailinator.com,
+  password_digest: <%= password_digest %>
+  activation_digest: <%= password_digest %>
+  activated: true
+  activated_at: <%=Time.zone.now %>
+
+researcher3:
+  name: $LABEL,
+  email: $LABEL@mailinator.com,
+  password_digest: <%= password_digest %>
+  activation_digest: <%= password_digest %>
+  activated: true
+  activated_at: <%=Time.zone.now %>
+
