@@ -1,23 +1,25 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 ##
-# Tests that the item submission process produces a correct item.
+# Tests that the dataset deposit process produces a correct dataset.
 #
 class DatasetDepositTest < ActionDispatch::IntegrationTest
 
   setup do
-    @user = users(:researcher1)
+    @user = user_identities :researcher1
     log_in_as(@user)
   end
 
   test "hello dataset deposit" do
-    create_draft_dataset
-    assert_equal @dataset, nil
+    create_dataset
+    assert_nil @dataset.title
   end
 
   private
 
-  def create_draft_dataset
-    @dataset = nil
+  def create_dataset
+    @dataset = Dataset.new
   end
 end

@@ -6,11 +6,11 @@ file_and_metadata_permanent_suppression:
   publisher: "University of Illinois at Urbana-Champaign"
   description: "Example of an Illinois Data Bank record with a File and Metadata Permanent Suppression."
   license: "CC01"
-  depositor_name: "Depositor1 Example"
-  depositor_email: "depositor1@mailinator.com"
+  depositor_name: "researcher1"
+  depositor_email: "researcher1@mailinator.com"
   complete: true
-  corresponding_creator_name: "Depositor1 Example"
-  corresponding_creator_email: "depositor1@mailinator.com"
+  corresponding_creator_name: "researcher1"
+  corresponding_creator_email: "researcher1@mailinator.com"
   keywords: ""
   publication_state: "metadata permanently suppressed"
   curator_hold: false
@@ -30,6 +30,8 @@ file_and_metadata_permanent_suppression:
   subject: nil
   org_creators: false
   data_curation_network: false
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
 file_embargo_file_only_publication_delay:
   id: 519
   key: "TEST-5720850"
@@ -39,11 +41,11 @@ file_embargo_file_only_publication_delay:
   publisher: "University of Illinois at Urbana-Champaign"
   description: "This is the embargo dataset example - file only publication delay. One year delay. "
   license: "CC01"
-  depositor_name: "Depositor1 Example"
-  depositor_email: "depositor1@mailinator.com"
+  depositor_name: "researcher1"
+  depositor_email: "researcher1@mailinator.com"
   complete: true
-  corresponding_creator_name: "Depositor1 Example"
-  corresponding_creator_email: "depositor1@mailinator.com"
+  corresponding_creator_name: "researcher1"
+  corresponding_creator_email: "researcher1@mailinator.com"
   keywords: "Embargo; File Only Delay"
   publication_state: "released"
   curator_hold: false
@@ -63,3 +65,5 @@ file_embargo_file_only_publication_delay:
   subject: nil
   org_creators: false
   data_curation_network: false
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>

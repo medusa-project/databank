@@ -1,5 +1,5 @@
 ##
-# Every user in this file MUST have a corresponding
+# Every User::Identity in this file MUST have a corresponding
 # Identity in `identities.yml`.
 #
 curator1:
@@ -9,6 +9,8 @@ curator1:
   email: $LABEL@mailinator.com,
   role: admin
   username: $LABEL
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 curator2:
   provider: identity,
@@ -17,6 +19,8 @@ curator2:
   email: $LABEL@mailinator.com,
   role: admin
   username: $LABEL
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher1:
   provider: identity,
@@ -25,6 +29,8 @@ researcher1:
   email: $LABEL@mailinator.com,
   role: depositor
   username: $LABEL
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher2:
   provider: identity,
@@ -33,6 +39,8 @@ researcher2:
   email: $LABEL@mailinator.com,
   role: depositor
   username: $LABEL
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher3:
   provider: identity,
@@ -41,4 +49,6 @@ researcher3:
   email: $LABEL@mailinator.com,
   role: depositor
   username: $LABEL
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
 

@@ -12,6 +12,8 @@ curator1:
   activation_digest: <%= password_digest %>
   activated: true
   activated_at: <%=Time.zone.now %>
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 curator2:
   name: $LABEL,
@@ -20,6 +22,8 @@ curator2:
   activation_digest: <%= password_digest %>
   activated: true
   activated_at: <%=Time.zone.now %>
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher1:
   name: $LABEL,
@@ -28,6 +32,8 @@ researcher1:
   activation_digest: <%= password_digest %>
   activated: true
   activated_at: <%=Time.zone.now %>
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher2:
   name: $LABEL,
@@ -36,6 +42,8 @@ researcher2:
   activation_digest: <%= password_digest %>
   activated: true
   activated_at: <%=Time.zone.now %>
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher3:
   name: $LABEL,
@@ -44,4 +52,6 @@ researcher3:
   activation_digest: <%= password_digest %>
   activated: true
   activated_at: <%=Time.zone.now %>
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
 

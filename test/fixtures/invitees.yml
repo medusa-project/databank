@@ -2,23 +2,33 @@ curator1:
   email: $LABEL@mailinator.com,
   role: admin
   expires_at: <%= Time.zone.now + 1.years %>
+  created_at: <%= 6.day.ago.to_s(:db) %>
+  updated_at: <%= 6.day.ago.to_s(:db) %>
 
 curator2:
   email: $LABEL@mailinator.com,
   role: admin
   expires_at: <%= Time.zone.now + 1.years %>
+  created_at: <%= 6.day.ago.to_fs(:db) %>
+  updated_at: <%= 6.day.ago.to_fs(:db) %>
 
 researcher1:
   email: $LABEL@mailinator.com,
   role: depositor
   expires_at: <%= Time.zone.now + 1.years %>
+  created_at: <%= 6.day.ago.to_fs(:db) %>
+  updated_at: <%= 6.day.ago.to_fs(:db) %>
 
 researcher2:
   email: $LABEL@mailinator.com,
   role: depositor
   expires_at: <%= Time.zone.now + 1.years %>
+  created_at: <%= 6.day.ago.to_fs(:db) %>
+  updated_at: <%= 6.day.ago.to_fs(:db) %>
 
 researcher3:
   email: $LABEL@mailinator.com,
   role: depositor
   expires_at: <%= Time.zone.now + 1.years %>
+  created_at: <%= 6.day.ago.to_fs(:db) %>
+  updated_at: <%= 6.day.ago.to_fs(:db) %>

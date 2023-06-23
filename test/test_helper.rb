@@ -6,8 +6,8 @@ require "rails/test_help"
 
 class ActiveSupport::TestCase
 
-  # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
-  fixtures :all
+  # Setup fixtures in test/fixtures/*.yml
+  fixtures :invitees, :identities, "user/identities", :datasets
 
   def self.seeding?
     @@seeding
