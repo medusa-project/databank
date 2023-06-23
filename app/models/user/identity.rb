@@ -6,19 +6,17 @@ class User::Identity < User::User
   def self.from_omniauth(auth)
     raise StandardError.new("missing or invalid auth") unless auth && auth[:uid] && auth["info"]["email"]
 
-    if auth && auth[:uid] && auth["info"]["email"]
-      email = auth["info"]["email"].strip
-      identity = Identity.find_by(email: email)
-      if identity&.activated
-        user = User::Identity.find_by(provider: auth["provider"], uid: auth["uid"])
-        if user
-          user.update_with_omniauth(auth)
-        else
-          user = User::Identity.create_with_omniauth(auth)
-        end
-        user
-      end
+    email = auth["info"]["email"].strip
+    identity = Identity.find_by(email: email)
+    raise StandardError.new("identity does not exist or is not activated for #{auth}") unless identity&.activated
+
+    user = User::Identity.find_by(provider: auth["provider"], email: email)
+    if user
+      user.update_with_omniauth(auth)
+    else
+      user = User::Identity.create_with_omniauth(auth)
     end
+    user
   end
 
   def self.create_with_omniauth(auth)

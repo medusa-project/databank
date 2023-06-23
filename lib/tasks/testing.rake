@@ -1,17 +1,33 @@
-require 'rake'
-require 'bunny'
-require 'json'
+# frozen_string_literal: true
+
+require "rake"
+require "bunny"
+require "json"
 
 namespace :testing do
 
-  desc 'detect language test'
-  task :detect_language => :environment do
-    puts "detecting language"
-    DetectLanguage.simple_detect("Buenos dias señor")
+  desc "add seed binaries to bucket"
+  task store_seed_datafiles: :environment do
+    puts "adding seed binaries to bucket"
+
+    source_root = "test/fixtures/files"
+    Datafile.all.each do |datafile|
+      File.open(File.join(source_root, datafile.binary_name), "rb") do |file|
+        case datafile.storage_root
+        when "draft"
+          bucket = StorageManager.instance.draft_root.bucket
+        when "medusa"
+          bucket = StorageManager.instance.medusa_root.bucket
+        else
+          raise "invalid storage root for datafile web_id: #{datafile.web_id}, id: #{datafile.id}"
+        end
+        Aws::S3::Resource.new(client: Application.aws_client).bucket(bucket).object(datafile.storage_key).upload_file(file)
+      end
+    end
   end
 
-  desc 'send a RabbitMQ message'
-  task :send_msg => :environment do
+  desc "send a RabbitMQ message"
+  task send_msg: :environment do
     puts "sending message"
 
     config = (AMQP_CONFIG || {}).symbolize_keys
@@ -22,21 +38,21 @@ namespace :testing do
     conn.start
 
     ch = conn.create_channel
-    q = ch.queue("idb_to_medusa", :durable => true)
+    q = ch.queue("idb_to_medusa", durable: true)
     x = ch.default_exchange
 
     # q.subscribe do |delivery_info, metadata, payload|
     #   puts "Received #{payload}"
     # end
 
-    x.publish("This might be a message.", :routing_key => q.name)
+    x.publish("This might be a message.", routing_key: q.name)
 
     conn.close
 
   end
 
-  desc 'get a RabbitMQ message'
-  task :get_msg => :environment do
+  desc "get a RabbitMQ message"
+  task get_msg: :environment do
     puts "getting message"
 
     config = (AMQP_CONFIG || {}).symbolize_keys
@@ -47,7 +63,7 @@ namespace :testing do
     conn.start
 
     ch = conn.create_channel
-    q = ch.queue("medusa_to_idb", :durable => true)
+    q = ch.queue("medusa_to_idb", durable: true)
     x = ch.default_exchange
 
     delivery_info, properties, payload = q.pop
@@ -61,8 +77,8 @@ namespace :testing do
 
   end
 
-  desc 'simulate RabbitMQ ok response from Medusa'
-  task :send_ok => :environment do
+  desc "simulate RabbitMQ ok response from Medusa"
+  task send_ok: :environment do
     puts "sending message"
 
     config = (AMQP_CONFIG || {}).symbolize_keys
@@ -73,28 +89,28 @@ namespace :testing do
     conn.start
 
     ch = conn.create_channel
-    q = ch.queue("medusa_to_idb", :durable => true)
+    q = ch.queue("medusa_to_idb", durable: true)
     x = ch.default_exchange
 
     # q.subscribe do |delivery_info, metadata, payload|
     #   puts "Received #{payload}"
     # end
 
-    msg_hash = {status: 'ok',
-                operation: 'ingest',
-                staging_path: 'uploads/5g06s/test.txt',
-                medusa_path: '5g06s_test.txt',
-                medusa_uuid: '149603bb-0cad-468b-9ef0-e91023a5d455',
-                error: ''}
+    msg_hash = {status: "ok",
+                operation: "ingest",
+                staging_path: "uploads/5g06s/test.txt",
+                medusa_path: "5g06s_test.txt",
+                medusa_uuid: "149603bb-0cad-468b-9ef0-e91023a5d455",
+                error: ""}
 
-    x.publish("#{msg_hash.to_json}", :routing_key => q.name)
+    x.publish("#{msg_hash.to_json}", routing_key: q.name)
 
     conn.close
 
   end
 
-  desc 'simulate RabbitMQ error response from Medusa'
-  task :send_error => :environment do
+  desc "simulate RabbitMQ error response from Medusa"
+  task send_error: :environment do
     puts "sending message"
 
     config = (AMQP_CONFIG || {}).symbolize_keys
@@ -105,42 +121,42 @@ namespace :testing do
     conn.start
 
     ch = conn.create_channel
-    q = ch.queue("medusa_to_idb", :durable => true)
+    q = ch.queue("medusa_to_idb", durable: true)
     x = ch.default_exchange
 
     # q.subscribe do |delivery_info, metadata, payload|
     #   puts "Received #{payload}"
     # end
 
-    msg_hash = {status: 'error',
-                operation: 'ingest',
-                staging_path: 'uploads/tbzaq/test.txt',
-                medusa_path: '',
-                medusa_uuid: '',
-                error: 'malformed thingy'}
+    msg_hash = {status: "error",
+                operation: "ingest",
+                staging_path: "uploads/tbzaq/test.txt",
+                medusa_path: "",
+                medusa_uuid: "",
+                error: "malformed thingy"}
 
-    x.publish("#{msg_hash.to_json}", :routing_key => q.name)
+    x.publish("#{msg_hash.to_json}", routing_key: q.name)
 
     conn.close
 
   end
 
-  desc 'expose license info array'
-  task :list_info => :environment do
+  desc "expose license info array"
+  task list_info: :environment do
     LICENSE_INFO_ARR.each do |info|
       puts info.to_yaml
     end
   end
 
-  desc 'hit quest directory service'
-  task :blast_directory => :environment do
+  desc "hit quest directory service"
+  task blast_directory: :environment do
     Creator.all.each do |creator|
       puts creator.email
 
       next if creator.email.nil?
 
       email_parts = creator.email.split("@")
-      next unless email_parts.last == 'illinois.edu'
+      next unless email_parts.last == "illinois.edu"
 
       netid = email_parts.first
       begin

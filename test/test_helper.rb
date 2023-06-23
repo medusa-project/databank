@@ -7,7 +7,7 @@ require "rails/test_help"
 class ActiveSupport::TestCase
 
   # Setup fixtures in test/fixtures/*.yml
-  fixtures :invitees, :identities, "user/identities", :datasets
+  fixtures :invitees, :identities, "user/identities", :datasets, :datafiles, :creators
 
   def self.seeding?
     @@seeding
@@ -30,6 +30,13 @@ class ActiveSupport::TestCase
   #
   def setup_s3
     StorageManager.instance.ensure_local_buckets
+    @@seeding = true
+    Datafile.all.each do |datafile|
+      File.open(file_fixture(datafile.binary_name), "r") do |file|
+        StorageManager.instance.draft_root.put_object(key: datafile.storage_key, file: file)
+      end
+    end
+    @@seeding = false
   end
 
   def teardown_s3
@@ -37,5 +44,4 @@ class ActiveSupport::TestCase
     response = s3_client.list_objects({bucket: bucket_name, max_keys: 1000})
     s3_client.delete_objects(bucket: bucket_name, delete: response.contents) if response.contents.count.positive?
   end
-
 end

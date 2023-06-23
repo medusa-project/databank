@@ -10,6 +10,8 @@ module Dataset::Globusable
 
     begin
       datafiles.each do |datafile|
+        return false if Rails.env.test? || Rails.env.development?
+
         return false unless StorageManager.instance.globus_download_root.exist?("#{key}/#{datafile.binary_name}")
       end
     rescue StandardError => e
