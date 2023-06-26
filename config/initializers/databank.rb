@@ -10,16 +10,6 @@ PRODUCTION_PREFIXES = ["10.13012", "10.25988"]
 DEMO_PREFIXES = ["10.26123"]
 
 TEST_PREFIXES = ["10.70114"]
-if Rails.env.development?
-  IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/databank-development.yml"))).result)
-  STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/medusa-storage-development.yml"))).result)
-elsif Rails.env.test?
-  IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/databank-test.yml"))).result)
-  STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/medusa-storage-test.yml"))).result)
-elsif Rails.env.demo? || Rails.env.production?
-  IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/databank.yml"))).result)[Rails.env]
-  STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/medusa-storage.yml"))).result)[Rails.env]
-end
 
 GLOBUS_CONFIG = YAML.load_file(Rails.root.join('config', 'globus.yml'))[Rails.env]
 METRICS_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/metrics.yml"))).result)

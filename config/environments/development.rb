@@ -1,3 +1,6 @@
+IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/databank-development.yml"))).result)
+STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/medusa-storage-development.yml"))).result)
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
