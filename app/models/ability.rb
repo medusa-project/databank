@@ -62,6 +62,6 @@ class Ability
     end
 
     can :read, [Guide::Section, Guide::Item, Guide::Subitem], &:public?
-
+    can :search_orcid, Creator, &:public?
   end
 end

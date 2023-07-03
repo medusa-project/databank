@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+require 'nokogiri'
 class CreatorsController < ApplicationController
   before_action :set_creator, only: [:show, :edit, :update, :destroy]
 
@@ -9,8 +12,7 @@ class CreatorsController < ApplicationController
 
   # GET /creators/1
   # GET /creators/1.json
-  def show
-  end
+  def show; end
 
   # GET /creators/new
   def new
@@ -18,8 +20,7 @@ class CreatorsController < ApplicationController
   end
 
   # GET /creators/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /creators
   # POST /creators.json
@@ -62,7 +63,6 @@ class CreatorsController < ApplicationController
   end
 
   def update_row_order
-
     @creator = Creator.find(creator_params[:creator_id])
     row_order_position_integer = Integer(creator_params[:row_order_position])
     @creator.update_attribute :row_order_position, row_order_position_integer
@@ -72,11 +72,35 @@ class CreatorsController < ApplicationController
   end
 
   def create_for_form
-    @dataset = Dataset.find_by_key(params[:dataset_key])
+    @dataset = Dataset.find_by(key: params[:dataset_key])
     @creator = Creator.new(dataset_id: @dataset.id, is_contact: false)
-    render(json: {"creator_id" => @creator.id}, content_type: request.format, :layout => false)
+    render(json: {creator_id: @creator.id}, content_type: request.format, layout: false)
   end
 
+  def orcid_search
+    authorize! :search_orcid, Creator
+    begin
+      result = Creator.orcid_search(family_name: params["family_name"], given_names: params["given_names"])
+    rescue StandardError => e
+      render(json: {error: e.message}) and return
+    end
+    render(json: {error: "no result", status: :expectation_failed}) and return if result.nil?
+
+    render(json: result, status: :ok)
+  end
+
+  def orcid_person
+    authorize! :search_orcid, Creator
+    Rails.logger.warn "params: #{params.to_yaml}"
+    begin
+      result = Creator.orcid_person(orcid: params["orcid"])
+    rescue StandardError => e
+      render(json: {error: e.message}) and return
+    end
+    render(json: {error: "no result", status: :expectation_failed}) and return if result.nil?
+
+    render(json: result, status: :ok)
+  end
 
   private
   # Use callbacks to share common setup or constraints between actions.

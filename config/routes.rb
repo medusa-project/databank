@@ -126,7 +126,12 @@ Rails.application.routes.draw do
     resources :related_materials
     resources :notes
   end
-  resources :creators
+  resources :creators do
+    collection do
+      get 'orcid_search'
+      get 'orcid_person'
+    end
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -256,8 +261,6 @@ Rails.application.routes.draw do
 
   post "/creators/update_row_order", to: 'creators#update_row_order'
   post "/creators/create_for_form", to: 'creators#create_for_form', defaults: {format: 'json'}
-
-
 
   post "/role_switch", to: 'sessions#role_switch'
   post "/update_help_transition", to: 'welcome#update_help_transition'

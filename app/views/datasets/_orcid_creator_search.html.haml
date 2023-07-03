@@ -15,12 +15,12 @@
         .row
           .col-md-4
             .form-group
-              %label(for="family-name")
+              %label(for="creator-family")
                 Family Name
               %input(type="text" class="form-control" name="creator-family" id="creator-family" )
           .col-md-4
             .form-group
-              %label(for="given-name")
+              %label(for="creator-given")
                 Given Name
               %input(type="text" class="form-control" name="creator-given" id="creator-given" )
           .col-md-4
@@ -43,7 +43,6 @@
           %button(type='button' id='orcid-import-btn' class='btn btn-success' data-dismiss="modal" onclick='set_creator_orcid_from_search_modal()' disabled)
             %span(class="glyphicon glyphicon-transfer" )
             Import Selection
-
 
 
 

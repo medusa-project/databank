@@ -212,7 +212,7 @@ function search_contributor_orcid() {
     $("#orcid-search-results").empty();
     $('.orcid-search-spinner').show();
 
-    var endpoint = 'https://pub.orcid.org/v2.0/search?q=';
+    var endpoint = 'https://pub.orcid.org/v3.0/search?q=';
     if ($("#contributor-family").val() != "") {
         var search_query = 'family-name:' + $("#contributor-family").val() + "*";
         if ($("#contributor-given").val() != "") {
@@ -306,9 +306,9 @@ function search_contributor_orcid() {
 
 function getOrcidPerson(orcid) {
 
-    var endoint = 'https://pub.orcid.org/v2.0/';
+    var endpoint = 'https://pub.orcid.org/v3.0/';
 
-    var personUrl = endoint + orcid + "/person";
+    var personUrl = endpoint + orcid + "/person";
 
     var xmlHttp = new XMLHttpRequest();
 
@@ -324,9 +324,9 @@ function getOrcidPerson(orcid) {
 }
 
 function getOrcidAffiliation(orcid){
-    var endoint = 'https://pub.orcid.org/v2.0/';
+    var endpoint = 'https://pub.orcid.org/v3.0/';
 
-    var employmentsUrl = endoint + orcid + "/employments";
+    var employmentsUrl = endpoint + orcid + "/employments";
 
     var xmlHttp = new XMLHttpRequest();
 
