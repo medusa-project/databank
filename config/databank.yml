@@ -2,7 +2,7 @@
   :username: <%= Rails.application.credentials[:smtp][:username] %>
   :password: <%= Rails.application.credentials[:smtp][:password] %>
 :orcid:
-  :endpoint_base: <%= Rails.application.credentials[:orcid][:endpoint_base]
+  :endpoint_base: <%= Rails.application.credentials[:orcid][:endpoint_base] %>
 
 :recaptcha:
   :site_key: <%= Rails.application.credentials[:recaptcha][:site_key] %>
