@@ -5,7 +5,8 @@
   :username: username
   :password: password
   :host: host
-:orcid_token: token
+:orcid:
+  :endpoint_base: https://pub.orcid.org/v3.0/
 :recaptcha:
   :site_key: site_key
   :secret_key: secret_key

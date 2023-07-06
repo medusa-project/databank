@@ -80,7 +80,7 @@ class CreatorsController < ApplicationController
   def orcid_search
     authorize! :search_orcid, Creator
     begin
-      result = Creator.orcid_search(family_name: params["family_name"], given_names: params["given_names"])
+      result = Creator.orcid_identifier(family_name: params["family_name"], given_names: params["given_names"])
     rescue StandardError => e
       render(json: {error: e.message}) and return
     end

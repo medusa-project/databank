@@ -15,7 +15,7 @@ class Creator < ApplicationRecord
 
   default_scope { order(:row_position) }
 
-  def self.orcid_search(family_name: nil, given_names: nil)
+  def self.orcid_identifier(family_name: nil, given_names: nil)
     query_string = Creator.orcid_query_string(family_name: family_name, given_names: given_names)
     url = URI("#{IDB_CONFIG[:orcid][:endpoint_base]}#{query_string}")
     response = url.read
