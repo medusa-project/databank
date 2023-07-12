@@ -185,6 +185,7 @@ gem "capistrano-bundler"
 gem "capistrano-passenger"
 gem "capistrano-rails"
 gem "capistrano-rbenv"
+gem 'airbrussh'
 
 group :development, :test do
   gem "byebug"
