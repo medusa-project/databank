@@ -984,27 +984,27 @@ collaborators to access the data files while the dataset is not public.</li>
   #        funders_attributes:           [:dataset_id, :code, :name, :identifier, :identifier_scheme, :grant, :id, :_destroy, :_update, :audit_id],
   #        related_materials_attributes: [:material_type, :selected_type, :availability, :link, :uri, :uri_type, :citation, :datacite_list, :dataset_id, :_destroy, :id, :_update, :audit_id])
 
-  def pre_version
-    d = Dataset.find_by(key: params[:id])
-    d ||= Dataset.find(params[:dataset_id])
-    raise ActiveRecord::RecordNotFound unless d
-
-    new_version_number_string = (d.dataset_version.to_i + 1).to_s
-
-    @dataset = Dataset.new(title: d.title,
-                           identifier: "#{d.identifier.chomp}#{new_version_number_string}",
-                           license: d.license,
-                           description: d.description,
-                           keywords: d.keywords,
-                           dataset_version: new_version_number_string,
-                           is_test: d.is_test,
-                           is_import: false,
-                           internal_reviewer: d.internal_reviewer,
-                           org_creators: d.org_creators,
-                           subject: d.subject)
-
-    set_file_mode
-  end
+  # def pre_version
+  #   d = Dataset.find_by(key: params[:id])
+  #   d ||= Dataset.find(params[:dataset_id])
+  #   raise ActiveRecord::RecordNotFound unless d
+  #
+  #   new_version_number_string = (d.dataset_version.to_i + 1).to_s
+  #
+  #   @dataset = Dataset.new(title: d.title,
+  #                          identifier: "#{d.identifier.chomp}#{new_version_number_string}",
+  #                          license: d.license,
+  #                          description: d.description,
+  #                          keywords: d.keywords,
+  #                          dataset_version: new_version_number_string,
+  #                          is_test: d.is_test,
+  #                          is_import: false,
+  #                          internal_reviewer: d.internal_reviewer,
+  #                          org_creators: d.org_creators,
+  #                          subject: d.subject)
+  #
+  #   set_file_mode
+  # end
 
   def remove_sharing_link
     respond_to do |format|
