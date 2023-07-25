@@ -1,3 +1,6 @@
+:local_buckets:
+  - databank-local-main
+  - medusa-local-main
 :storage:
   - :name: draft
     :type: s3
