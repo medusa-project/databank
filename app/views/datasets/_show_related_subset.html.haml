@@ -1,0 +1,26 @@
+-related_materials_subset.each do |material|
+  -if material.uri && (material.relationship_arr.include?(Databank::Relationship::PREVIOUS_VERSION_OF) || material.relationship_arr.include?(Databank::Relationship::NEW_VERSION_OF) )
+            -# handled above
+  -else
+    %tr.row
+      %td
+        %span.metadata-label
+          - if material.material_type && material.material_type != ""
+            = "#{material.material_type}"
+          -else
+            Material
+      %td
+        -if material.link && material.link != ''
+          %a(href="#{material.link}")
+            -if material.citation && material.citation != ''
+              = material.citation
+            -else
+              = material.link
+        -elsif material.citation && material.citation != ''
+          = material.citation
+        -else
+          [Details not provided.]
+        -if material.note && material.note != ""
+          %br
+          %em
+            = material.note

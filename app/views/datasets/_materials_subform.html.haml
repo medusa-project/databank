@@ -86,11 +86,14 @@
 
                 .form-group
                   =ff.select :uri_type, options_for_select(["ARK","arXiv","bibcode","DOI","EAN13","EISSN","Handle","ISBN","ISSN","ISTC","LISSN","LSID","PMID","PURL","UPC","URL","URN"], material.uri_type), {prompt: "Select Type"}, {class: "form-control dataset"}
-
                 .form-group
                   =ff.text_field :uri, {placeholder: "URI: For a DIO, the part that starts with 10. ", class: "form-control dataset"}
-
+                .form-group
+                  =ff.text_field :note, {placeholder: "brief additional explanation ", class: "form-control dataset"}
 
               %td
+                feature
+                %br
+                =ff.check_box :feature
   %table(id="deleted_material_table")
     %tbody

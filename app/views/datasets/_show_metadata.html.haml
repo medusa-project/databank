@@ -49,32 +49,6 @@
             %th.col-lg-2.col-md-3.col-sm-4
             %th.col-lg-10.col-md-9.col-sm-8
         %tbody>
-        -if dataset.related_materials.count > 0
-          -dataset.related_materials.each do |material|
-            -if material.uri && (material.relationship_arr.include?(Databank::Relationship::PREVIOUS_VERSION_OF) || material.relationship_arr.include?(Databank::Relationship::NEW_VERSION_OF) )
-              -# handled above
-            -else
-              %tr.row
-                %td
-                  %span.metadata-label
-                    Related
-                    - if material.material_type && material.material_type != ""
-                      = "#{material.material_type}"
-                    -else
-                      Material
-                %td
-                  -if material.link && material.link != ''
-                    %a(href="#{material.link}")
-                      -if material.citation && material.citation != ''
-                        = material.citation
-                      -else
-                        = material.link
-                  -elsif material.citation && material.citation != ''
-                    = material.citation
-                  -else
-                    [Details not provided.]
-
-
         -if dataset.description && dataset.description != ''
           %tr.row
             %td
@@ -82,7 +56,6 @@
                 Dataset Description
             %td
               = simple_format(dataset.description)
-
         -if dataset.subject && dataset.subject != ''
           %tr.row
             %td
@@ -91,8 +64,6 @@
             %td
               %a(href="#{IDB_CONFIG[:root_url_text]}/datasets?sort_by=sort_updated_desc&q=&subjects%5B%5D=#{CGI.escape(dataset.subject)}" )
                 = dataset.subject
-
-
         -if dataset.keywords && !dataset.keywords.empty?
           %tr.row
             %td
@@ -111,7 +82,6 @@
                 Release Date
             %td
               = dataset.release_date
-
         - dataset.funders.each do |funder|
           %tr.row
             %td
@@ -133,7 +103,6 @@
               ="[corresponding creator name not provided]"
             -else
               = dataset.corresponding_creator_name
-
         -if dataset.contributor_list && dataset.contributor_list != ''
           %tr.row
             %td
@@ -141,7 +110,6 @@
                 Additional Contact(s)
             %td
               =dataset.contributor_list
-
         -if can? :manage, dataset
           %tr.row.curator-only
             %td
@@ -164,3 +132,14 @@
               %span.metadata-label Downloaded
             %td
               = pluralize(dataset.total_downloads, 'time')
+        -if dataset.featured_related_materials.length.positive?
+          %h3 Featured Related Materials
+          = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.featured_related_materials}
+          %hr
+          -if dataset.not_featured_related_materials.length.positive?
+            %h3 Other Related Materials
+            = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.not_featured_related_materials}
+        -elsif dataset.not_featured_related_materials.length.positive?
+          %h3 Related Materials
+          = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.not_featured_related_materials}
+
