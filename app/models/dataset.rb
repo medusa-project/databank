@@ -118,11 +118,9 @@ class Dataset < ApplicationRecord
         datacite_arr.each do |relationship|
           if %w[IsPreviousVersionOf IsNewVersionOf].exclude?(relationship)
             self.num_external_relationships += 1
-            external_related_materials_set.add(material)
             not_featured_materials_set.add(material) unless material.feature == true
           end
         end
-        self.external_related_materials = external_related_materials_set.to_a
         self.not_featured_related_materials = not_featured_materials_set.to_a
       end
     end

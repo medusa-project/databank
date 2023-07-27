@@ -133,13 +133,18 @@
             %td
               = pluralize(dataset.total_downloads, 'time')
         -if dataset.featured_related_materials.length.positive?
-          %h3 Featured Related Materials
-          = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.featured_related_materials}
-          %hr
+          %tr.row
+            %td
+              %h4.metadata-label Featured Related Materials:
+              = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.featured_related_materials}
           -if dataset.not_featured_related_materials.length.positive?
-            %h3 Other Related Materials
-            = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.not_featured_related_materials}
+            %tr.row
+              %td
+                %h4.metadata-label Other Related Materials:
+                = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.not_featured_related_materials}
         -elsif dataset.not_featured_related_materials.length.positive?
-          %h3 Related Materials
-          = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.not_featured_related_materials}
+          %tr.row
+            %td
+              %h4.metadata-label Related Materials:
+              = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.not_featured_related_materials}
 

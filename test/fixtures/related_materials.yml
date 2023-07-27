@@ -12,6 +12,8 @@ article1:
   updated_at: Wed 18 May 2016 19:28:53.179205000 UTC +00:00
   selected_type: "Article"
   datacite_list: "IsSupplementTo,IsCitedBy"
+  feature: true
+  note: "Placeholder for brief description of related resource and the relationship."
 dataset1:
   id: 8
   material_type: "Dataset"
@@ -241,8 +243,7 @@ paper1:
   link: "http://wallar.me/publications/wallar-icra-fleet-2019.pdf"
   uri: "http://wallar.me/publications/wallar-icra-fleet-2019.pdf"
   uri_type: "URL"
-  citation:
-      "A. Wallar J. Alonso-Mora and D. Rus (2019): Optimizing Vehicle Distributions and Fleet Sizes for Mobility-on-Demand 2019 IEEE International Conference on Robotics and Automation (ICRA)"
+  citation: "A. Wallar J. Alonso-Mora and D. Rus (2019): Optimizing Vehicle Distributions and Fleet Sizes for Mobility-on-Demand 2019 IEEE International Conference on Robotics and Automation (ICRA)"
   dataset_id: 13
   created_at: Mon 11 Feb 2019 16:17:08.839706000 UTC +00:00
   updated_at: Mon 11 Feb 2019 16:17:08.839706000 UTC +00:00
@@ -255,13 +256,12 @@ paper2:
   link: "https://doi.org/10.1145/3308558.3313465"
   uri: "10.1145/3308558.3313465"
   uri_type: "DOI"
-  citation:
-      "Chak Fai Yuen Abhishek Pratap Singh Sagar Goyal Sayan Ranu and Amitabha Bagchi. 2019. Beyond Shortest Paths: Route Recommendations for Ride-sharing. In The World Wide Web Conference (WWW '19) Ling Liu and Ryen White (Eds.). ACM New York NY USA 2258-2269. DOI: https://doi.org/10.1145/3308558.3313465"
+  citation: "Chak Fai Yuen Abhishek Pratap Singh Sagar Goyal Sayan Ranu and Amitabha Bagchi. 2019. Beyond Shortest Paths: Route Recommendations for Ride-sharing. In The World Wide Web Conference (WWW '19) Ling Liu and Ryen White (Eds.). ACM New York NY USA 2258-2269. DOI: https://doi.org/10.1145/3308558.3313465"
   dataset_id: 13
   created_at: Mon 20 May 2019 14:55:46.692198000 UTC +00:00
   updated_at: Mon 20 May 2019 14:55:46.692198000 UTC +00:00
   selected_type: "Other"
-  datacite_list: "IsCitedBy">
+  datacite_list: "IsCitedBy"
 article15:
   id: 376
   material_type: "Article"
@@ -359,7 +359,7 @@ article21:
   created_at: Mon 09 Nov 2020 17:21:00.299077000 UTC +00:00
   updated_at: Mon 09 Nov 2020 17:21:00.299077000 UTC +00:00
   selected_type: "Article"
-  datacite_list: "IsCitedBy">
+  datacite_list: "IsCitedBy"
 article22:
   id: 789
   material_type: "Article"
@@ -569,7 +569,7 @@ article34:
   created_at: Tue 20 Sep 2022 20:50:52.088293000 UTC +00:00
   updated_at: Tue 20 Sep 2022 20:50:52.088293000 UTC +00:00
   selected_type: "Article"
-  datacite_list: "IsCitedBy">
+  datacite_list: "IsCitedBy"
 article35:
   id: 1233
   material_type: "Article"

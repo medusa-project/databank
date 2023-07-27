@@ -1,14 +1,13 @@
 -related_materials_subset.each do |material|
-  -if material.uri && (material.relationship_arr.include?(Databank::Relationship::PREVIOUS_VERSION_OF) || material.relationship_arr.include?(Databank::Relationship::NEW_VERSION_OF) )
-            -# handled above
-  -else
+  -unless  material.uri && (material.relationship_arr.include?(Databank::Relationship::PREVIOUS_VERSION_OF) || material.relationship_arr.include?(Databank::Relationship::NEW_VERSION_OF) )
     %tr.row
       %td
         %span.metadata-label
+          &nbsp;&nbsp;
           - if material.material_type && material.material_type != ""
             = "#{material.material_type}"
           -else
-            Material
+            Resource
       %td
         -if material.link && material.link != ''
           %a(href="#{material.link}")
@@ -22,5 +21,6 @@
           [Details not provided.]
         -if material.note && material.note != ""
           %br
+          %strong note:
           %em
             = material.note
