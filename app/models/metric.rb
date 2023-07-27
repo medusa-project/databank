@@ -58,6 +58,7 @@ class Metric
       headings_row = headings.join("\t")
       values_rows = []
       datasets.each do |dataset|
+        dataset.handle_related_materials
         values = [dataset.identifier.to_s,
                   dataset.ingest_datetime.to_date.iso8601.to_s,
                   dataset.release_date.iso8601.to_s,

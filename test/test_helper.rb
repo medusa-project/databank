@@ -7,7 +7,7 @@ require "rails/test_help"
 class ActiveSupport::TestCase
 
   # Setup fixtures in test/fixtures/*.yml
-  fixtures :invitees, :identities, "user/identities", :datasets, :datafiles, :creators
+  fixtures :invitees, :identities, "user/identities", :datasets, :datafiles, :creators, :related_materials
 
   def self.seeding?
     @@seeding

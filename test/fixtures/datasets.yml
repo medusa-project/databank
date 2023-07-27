@@ -209,3 +209,39 @@ file_embargo_file_only_publication_delay:
   data_curation_network: false
   created_at: <%= 5.day.ago.to_fs(:db) %>
   updated_at: <%= 5.day.ago.to_fs(:db) %>
+released3:
+  id: 13,
+  key: "TESTIDB-9610843",
+  title: "New York City Taxi Trip Data (2010-2013)"
+  creator_text: nil
+  identifier: "10.70114/TESTIDB-J8PN93H8"
+  publisher: "University of Illinois at Urbana-Champaign"
+  description:
+      "This dataset contains records of four years of taxi operations in New York City and includes 697,622,444 trips. Each trip records the pickup and drop-off dates, times, and coordinates, as well as the metered distance reported by the taximeter. The trip data also includes fields such as the taxi medallion number, fare amount, and tip amount.  The dataset was obtained through a Freedom of Information Law request from the New York City Taxi and Limousine Commission.\r\n\r\nThe files in this dataset are optimized for use with the ‘decompress.py’ script included in this dataset.  This file has additional documentation and contact information that may be of help if you run into trouble accessing the content of the zip files."
+  license: "CC01"
+  depositor_name: "researcher1"
+  depositor_email: "researcher1@mailinator.com"
+  complete: true
+  corresponding_creator_name: "researcher1"
+  corresponding_creator_email: "researcher1@mailinator.com"
+  created_at: Wed, 18 May 2016 17:02:38.910381000 UTC +00:00
+  updated_at: Fri, 09 Feb 2018 16:00:43.988124000 UTC +00:00
+  keywords: "taxi;transportation;New York City;GPS"
+  publication_state: "released"
+  curator_hold: false
+  release_date: Thu, 19 May 2016
+  embargo: "none"
+  is_test: false
+  is_import: true
+  tombstone_date: nil
+  have_permission: "yes"
+  removed_private: "yes"
+  agree: "yes"
+  hold_state: nil
+  medusa_dataset_dir: nil
+  dataset_version: "1"
+  suppress_changelog: false
+  version_comment: ""
+  subject: "Technology and Engineering"
+  org_creators: false
+  data_curation_network: false

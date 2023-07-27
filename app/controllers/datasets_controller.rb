@@ -662,6 +662,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @completion_check = Dataset.completion_check(@dataset)
     @dataset.ensure_embargo
     set_file_mode
+    @dataset.handle_related_material
   end
 
   def suppression_action
