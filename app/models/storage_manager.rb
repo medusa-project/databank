@@ -12,7 +12,7 @@ class StorageManager
                 :globus_ingest_root,
                 :root_set,
                 :tmpdir,
-                :local_buckets_created
+                :resource
 
   def initialize
     storage_config = STORAGE_CONFIG[:storage].map(&:to_h)
@@ -25,7 +25,7 @@ class StorageManager
       self.globus_download_root = root_set.at("globus_download")
       self.globus_ingest_root = root_set.at("globus_ingest")
     end
-    self.local_buckets_created = false
+    self.resource = Aws::S3::Resource.new(client_options)
     initialize_tmpdir
   end
 
@@ -37,18 +37,32 @@ class StorageManager
   def ensure_local_buckets
     return false unless Rails.env.development? || Rails.env.test?
 
-    local_bucket_names = ["databank-local-main", "medusa-local-main"]
+    s3_client = Application.aws_client
+    local_bucket_names = STORAGE_CONFIG[:local_buckets]
     local_bucket_names.each do |bucket_name|
-      next if bucket_exists?(bucket_name: bucket_name)
+      next if bucket_exists?(s3_client: s3_client, bucket_name: bucket_name)
 
       setup_bucket(bucket_name: bucket_name)
     end
-    self.local_buckets_created = true
+  end
+
+  def empty_local_buckets
+    return false unless Rails.env.development? || Rails.env.test?
+
+    s3_client = Application.aws_client
+    local_bucket_names = STORAGE_CONFIG[:local_buckets]
+    local_bucket_names.each do |bucket_name|
+      next unless bucket_exists?(s3_client: s3_client, bucket_name: bucket_name)
+
+      delete_objects(bucket: bucket_name)
+    end
   end
 
   def setup_bucket(bucket_name:)
+    return false unless Rails.env.development? || Rails.env.test?
+
     s3_client = Application.aws_client
-    s3_client.create_bucket(bucket: bucket_name)
+    s3_client.create_bucket(bucket: bucket_name) unless bucket_exists?(s3_client: s3_client, bucket_name: bucket_name)
     s3_client.put_bucket_policy(bucket: bucket_name,
                                 policy: JSON.generate({
                                                         Version:   "2012-10-17",
@@ -69,12 +83,17 @@ class StorageManager
                                                           }
                                                         ]
                                                       }))
-    response = s3_client.list_objects({bucket: bucket_name, max_keys: 1000})
-    s3_client.delete_objects(bucket: bucket_name, delete: response.contents) if response.contents.count.positive?
+    delete_objects(bucket: bucket_name)
   end
 
-  def bucket_exists?(bucket_name:)
-    s3_client = Application.aws_client
+  # Checks to see whether an Amazon Simple Storage Service
+  #   (Amazon S3) bucket exists.
+  #
+  # @param s3_client [Aws::S3::Client] An initialized S3 client.
+  # @param bucket_name [String] The name of the bucket.
+  # @return [Boolean] true if the bucket exists; otherwise, false.
+  #
+  def bucket_exists?(s3_client:, bucket_name:)
     response = s3_client.list_buckets
     response.buckets.each do |bucket|
       return true if bucket.name == bucket_name
@@ -83,6 +102,25 @@ class StorageManager
   rescue StandardError => e
     Rails.logger.warn "Error listing buckets: #{e.message}"
     false
+  end
+
+  def delete_objects(bucket:, key_prefix: "")
+    bucket = resource.bucket(bucket)
+    bucket.objects(prefix: key_prefix).each(&:delete)
+  end
+
+  def client_options
+    opts = {region: IDB_CONFIG[:aws][:region]}
+    if Rails.env.development? || Rails.env.test?
+      # In development and test, we connect to a custom endpoint, and
+      # credentials are drawn from the application configuration.
+      opts[:endpoint]         = STORAGE_CONFIG[:storage][0][:endpoint]
+      opts[:force_path_style] = true
+      key = STORAGE_CONFIG[:storage][0][:aws_access_key_id]
+      secret = STORAGE_CONFIG[:storage][0][:aws_secret_access_key]
+      opts[:credentials] = Aws::Credentials.new(key, secret)
+    end
+    opts
   end
 
 end

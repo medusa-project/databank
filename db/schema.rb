@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_10_233437) do
-
+ActiveRecord::Schema[7.0].define(version: 2023_07_26_191452) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -186,8 +185,8 @@ ActiveRecord::Schema.define(version: 2022_02_10_233437) do
     t.integer "extractor_response_id"
     t.string "error_type"
     t.string "report"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "extractor_responses", force: :cascade do |t|
@@ -196,16 +195,16 @@ ActiveRecord::Schema.define(version: 2022_02_10_233437) do
     t.string "status"
     t.string "peek_type"
     t.string "peek_text"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "extractor_tasks", force: :cascade do |t|
     t.string "web_id"
     t.datetime "response_at"
     t.string "raw_response"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.datetime "sent_at"
   end
 
@@ -253,8 +252,8 @@ ActiveRecord::Schema.define(version: 2022_02_10_233437) do
     t.string "heading"
     t.string "body"
     t.boolean "public", default: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "guide_sections", force: :cascade do |t|
@@ -262,8 +261,8 @@ ActiveRecord::Schema.define(version: 2022_02_10_233437) do
     t.string "label"
     t.integer "ordinal"
     t.boolean "public", default: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "heading"
     t.string "body"
   end
@@ -276,8 +275,8 @@ ActiveRecord::Schema.define(version: 2022_02_10_233437) do
     t.string "heading"
     t.string "body"
     t.boolean "public", default: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "identities", id: :serial, force: :cascade do |t|
@@ -345,8 +344,8 @@ ActiveRecord::Schema.define(version: 2022_02_10_233437) do
     t.bigint "dataset_id"
     t.string "body"
     t.string "author"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "related_materials", id: :serial, force: :cascade do |t|
@@ -361,6 +360,8 @@ ActiveRecord::Schema.define(version: 2022_02_10_233437) do
     t.datetime "updated_at", null: false
     t.string "selected_type"
     t.string "datacite_list"
+    t.text "note"
+    t.boolean "feature"
   end
 
   create_table "restoration_events", id: :serial, force: :cascade do |t|
@@ -404,8 +405,8 @@ ActiveRecord::Schema.define(version: 2022_02_10_233437) do
   create_table "share_codes", force: :cascade do |t|
     t.string "code"
     t.integer "dataset_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "system_files", id: :serial, force: :cascade do |t|
