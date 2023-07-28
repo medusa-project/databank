@@ -1,14 +1,14 @@
 -related_materials_subset.each do |material|
   -unless  material.uri && (material.relationship_arr.include?(Databank::Relationship::PREVIOUS_VERSION_OF) || material.relationship_arr.include?(Databank::Relationship::NEW_VERSION_OF) )
     %tr.row
-      %td
+      %td{ :class => ("featured-material" if material.feature) }
         %span.metadata-label
           &nbsp;&nbsp;
           - if material.material_type && material.material_type != ""
             = "#{material.material_type}"
           -else
             Resource
-      %td
+      %td{ :class => ("featured-material" if material.feature) }
         -if material.link && material.link != ''
           %a(href="#{material.link}")
             -if material.citation && material.citation != ''

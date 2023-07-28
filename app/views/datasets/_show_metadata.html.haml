@@ -137,11 +137,7 @@
             %td{colspan: "2"}
               %h4.metadata-label Related Materials:
           -if dataset.featured_related_materials.length.positive?
-            %tr.row
-              %td.featured-material{colspan: "2"}
             = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.featured_related_materials}
-            %tr.row
-              %td.featured-material{colspan: "2"}
           -if dataset.not_featured_related_materials.length.positive?
             = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.not_featured_related_materials}
 
