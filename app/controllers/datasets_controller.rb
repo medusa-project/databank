@@ -917,8 +917,8 @@ collaborators to access the data files while the dataset is not public.</li>
             end
             @dataset.save
             # send_dataset_to_medusa only sends metadata files unless old_publication_state is draft
-            MedusaIngest.send_dataset_to_medusa(@dataset)
-            if @dataset.is_test? || @dataset.update_doi
+            MedusaIngest.send_dataset_to_medusa(@dataset) if Rails.env.demo? || Rails.env.production?
+            if @dataset.is_test? || Rails.env.test? || Rails.env.development? || @dataset.update_doi
               format.html { redirect_to dataset_path(@dataset.key) }
               format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
             else
