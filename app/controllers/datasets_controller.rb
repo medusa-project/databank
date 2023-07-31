@@ -803,6 +803,7 @@ collaborators to access the data files while the dataset is not public.</li>
     authorize! :create, Dataset
     @dataset = Dataset.new
     @dataset.publication_state = Databank::PublicationState::DRAFT
+    @previous_key = params["previous"] if params.has_key?("context") && params["context"] == "version"
     @dataset.creators.build
     @dataset.funders.build
     @dataset.related_materials.build
@@ -860,6 +861,11 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset = Dataset.new(dataset_params)
     respond_to do |format|
       if @dataset.save
+        if params.has_key?(:previous_key)
+          redirect_to action: :version_confirmation, previous_key: params[:previous_key], new_key: @dataset.key
+          return
+        end
+
         format.html { redirect_to edit_dataset_path(@dataset.key) }
         format.json { render :edit, status: :created, location: edit_dataset_path(@dataset.key) }
       else
@@ -867,6 +873,10 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render json: @dataset.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def version_confirmation
+
   end
 
   # PATCH/PUT /datasets/1
@@ -985,27 +995,14 @@ collaborators to access the data files while the dataset is not public.</li>
   #        funders_attributes:           [:dataset_id, :code, :name, :identifier, :identifier_scheme, :grant, :id, :_destroy, :_update, :audit_id],
   #        related_materials_attributes: [:material_type, :selected_type, :availability, :link, :uri, :uri_type, :citation, :datacite_list, :dataset_id, :_destroy, :id, :_update, :audit_id])
 
-  # def pre_version
-  #   d = Dataset.find_by(key: params[:id])
-  #   d ||= Dataset.find(params[:dataset_id])
-  #   raise ActiveRecord::RecordNotFound unless d
-  #
-  #   new_version_number_string = (d.dataset_version.to_i + 1).to_s
-  #
-  #   @dataset = Dataset.new(title: d.title,
-  #                          identifier: "#{d.identifier.chomp}#{new_version_number_string}",
-  #                          license: d.license,
-  #                          description: d.description,
-  #                          keywords: d.keywords,
-  #                          dataset_version: new_version_number_string,
-  #                          is_test: d.is_test,
-  #                          is_import: false,
-  #                          internal_reviewer: d.internal_reviewer,
-  #                          org_creators: d.org_creators,
-  #                          subject: d.subject)
-  #
-  #   set_file_mode
-  # end
+  def pre_version
+    @previous = Dataset.find_by(key: params[:id])
+    @previous ||= Dataset.find(params[:dataset_id])
+    raise ActiveRecord::RecordNotFound unless @previous
+
+    @dataset = Dataset.new
+    set_file_mode
+  end
 
   def remove_sharing_link
     respond_to do |format|
@@ -1516,7 +1513,7 @@ collaborators to access the data files while the dataset is not public.</li>
   # def dataset_params
 
   def dataset_params
-    params.require(:dataset).permit(:medusa_dataset_dir, :title, :identifier, :publisher, :license, :key, :description, :keywords, :depositor_email, :depositor_name, :corresponding_creator_name, :corresponding_creator_email, :embargo, :complete, :search, :dataset_version, :release_date, :is_test, :is_import, :audit_id, :removed_private, :have_permission, :internal_reviewer, :agree, :web_ids, :org_creators, :version_comment, :subject,
+    params.require(:dataset).permit(:medusa_dataset_dir, :previous_key, :title, :identifier, :publisher, :license, :key, :description, :keywords, :depositor_email, :depositor_name, :corresponding_creator_name, :corresponding_creator_email, :embargo, :complete, :search, :dataset_version, :release_date, :is_test, :is_import, :audit_id, :removed_private, :have_permission, :internal_reviewer, :agree, :web_ids, :org_creators, :version_comment, :subject,
                                     datafiles_attributes:         [:datafile, :description, :attachment, :dataset_id, :id, :_destroy, :_update, :audit_id],
                                     creators_attributes:          [:dataset_id, :family_name, :given_name, :institution_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
                                     contributors_attributes:      [:dataset_id, :family_name, :given_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],

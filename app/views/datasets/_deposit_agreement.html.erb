@@ -1,4 +1,7 @@
-<h3>To start your data deposit, please review the deposit agreement and answer the following questions:</h3>
+<h3>
+  To start your
+  <%= params.has_key?('context') && params['context']=='version' ? 'new version' : 'data deposit' %>
+  please review the deposit agreement and answer the following questions:</h3>
 <hr/>
 <div class="panel panel-default">
   <div class="panel-heading">

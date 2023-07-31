@@ -56,7 +56,7 @@
     .panel-heading(role="tab" id="doiHeading")
       %h4(class="panel-title")
         %a( role="button" data-toggle="collapse" data-parent="#doi" href="#doiPanel" aria-expanded="false" aria-controls="doiPanel" class="accordion-toggle collapsed" )
-          %span( class="metadata-label" ) What if I don’t need to change my files? (click to expand)
+          %span( class="metadata-label" ) Will the new version get a new Digital Object Identifier (DOI) (click to expand)
     .panel-collapse.collapse(id="doiPanel" role="tabpanel" aria-labelledby="doiHeading" )
       .panel-body
         %p
@@ -67,7 +67,7 @@
     .panel-heading(role="tab" id="identifierHeading")
       %h4(class="panel-title")
         %a( role="button" data-toggle="collapse" data-parent="#identifier" href="#identifierPanel" aria-expanded="false" aria-controls="identifierPanel" class="accordion-toggle collapsed" )
-          %span( class="metadata-label" ) How long does it take to publish a new version? (click to expand)
+          %span( class="metadata-label" ) Can I change my published data without getting a new DOI? (click to expand)
     .panel-collapse.collapse(id="identifierPanel" role="tabpanel" aria-labelledby="identifierHeading" )
       .panel-body
         %p Sorry, no. Once your data is published, there’s no taking it back. People may have already downloaded and used your data, and it’s important that the Illinois Data Bank maintainsan accurate record of that publication.
@@ -77,7 +77,7 @@
     .panel-heading(role="tab" id="newestHeading")
       %h4(class="panel-title")
         %a( role="button" data-toggle="collapse" data-parent="#newest" href="#newestPanel" aria-expanded="false" aria-controls="newestPanel" class="accordion-toggle collapsed" )
-          %span( class="metadata-label" ) Will the old version of my data remain in the Illinois Data Bank? (click to expand)
+          %span( class="metadata-label" ) How will users know which version is the newest? (click to expand)
     .panel-collapse.collapse(id="newestPanel" role="tabpanel" aria-labelledby="newestHeading" )
       .panel-body
         %p
@@ -91,7 +91,7 @@
     .panel-heading(role="tab" id="removeHeading")
       %h4(class="panel-title")
         %a( role="button" data-toggle="collapse" data-parent="#remove" href="#removePanel" aria-expanded="false" aria-controls="removePanel" class="accordion-toggle collapsed" )
-          %span( class="metadata-label" ) What if I don’t need to change my files? (click to expand)
+          %span( class="metadata-label" ) What if I need to remove an old version? (click to expand)
     .panel-collapse.collapse(id="removePanel" role="tabpanel" aria-labelledby="removeHeading" )
       .panel-body
         %p
@@ -114,7 +114,7 @@
 -if Databank::Application.file_mode != Databank::FileMode::READ_ONLY
   .row
     .col-md-3.col-md-offset-9
-      %button(type="button" class="btn btn-primary btn-block" onclick='window.location = "/datasets/new"' )
+      %button(type="button" class="btn btn-primary btn-block" onclick='window.location = "/datasets/new?context=version&previous=#{@previous.key}"' )
         Continue
         %span(class="glyphicon glyphicon-triangle-right" )
       %button(type="button" class="btn btn-success btn-block" onclick='window.location = "/contact"' )
