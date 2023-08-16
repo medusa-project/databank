@@ -258,7 +258,7 @@ module Dataset::Stringable
       changes = audits.where("created_at >= ?", publication).where.not(id: medusa_changes_arr)
       changes.reorder("created_at DESC")
     else
-      Rails.logger.warn "no changes found for dataset #{attributes[:dataset_id]}"
+      #Rails.logger.warn "no changes found for dataset #{attributes[:dataset_id]}"
       {}
     end
   end

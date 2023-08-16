@@ -1,4 +1,4 @@
-- if @dataset.publication_state == Databank::PublicationState::VERSION && (can? :read, @dataset) && current_user&.role == 'depositor'
+- if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION && (can? :read, @dataset) && current_user&.role == 'depositor'
   = render partial: 'version_acknowledge'
 - elsif (@dataset.publication_state != Databank::PublicationState::DRAFT) || (can? :read, @dataset) || @shared_by_link
   = render partial: 'landing'
