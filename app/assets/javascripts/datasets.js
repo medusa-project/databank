@@ -149,6 +149,10 @@ ready = function () {
         $(".checkFileSelectedCount").html("(" + numChecked + ")");
     });
 
+    $("#checkAllVFiles").click(function () {
+        $(".checkVFileGroup").prop('checked', $(this).prop('checked'));
+    });
+
     $('#term-supports').tooltip();
 
     $('#cancel-button').click(function () {

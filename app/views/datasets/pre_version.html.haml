@@ -114,13 +114,13 @@
 -if Databank::Application.file_mode != Databank::FileMode::READ_ONLY
   .row
     .col-md-3.col-md-offset-9
-      %button(type="button" class="btn btn-primary btn-block" onclick='window.location = "/datasets/new?context=version&previous=#{@previous.key}"' )
+      =link_to("/datasets/new?context=version&previous=#{@previous.key}", class: "btn btn-primary btn-block idb") do
         Continue
         %span(class="glyphicon glyphicon-triangle-right" )
-      %button(type="button" class="btn btn-success btn-block" onclick='window.location = "/contact"' )
+      =link_to("/contact", class: "btn btn-success btn-block idb") do
         %span(class="glyphicon glyphicon-question-sign" )
         Get Help
-      %button(type="button" class="btn btn-danger btn-block" name="cancel" onclick='window.location = "/"' )
-        %span(class="glyphicon glyphicon-remove" )
+      =link_to("/datasets/#{@previous.key}", class: "btn btn-block btn-danger idb", name: "cancel", id: 'cancel-button') do
+        %span(class="glyphicon glyphicon-remove")
         Cancel
       %br

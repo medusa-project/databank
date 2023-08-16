@@ -67,6 +67,82 @@ module Dataset::Versionable
     end
   end
 
+  def eligible_for_version?
+    is_most_recent_version && Databank::PublicationState::PUB_ARRAY.include?(publication_state)
+  end
+
+  def send_version_request_emails
+    request_version_email = DatabankMailer.request_version(key)
+    request_version_email.deliver_now
+    acknowledge_request_version_email = DatabankMailer.acknowledge_request_version(key)
+    acknowledge_request_version_email.deliver_now
+  end
+  def add_version_nested_objects(previous:)
+    previous.creators.each do |creator|
+      Creator.create(dataset_id: self.id,
+                     family_name: creator.family_name,
+                     given_name: creator.given_name,
+                     institution_name: creator.institution_name,
+                     identifier: creator.identifier,
+                     type_of: creator.type_of,
+                     row_order: creator.row_order,
+                     email: creator.email,
+                     is_contact: creator.is_contact,
+                     row_position: creator.row_position,
+                     identifier_scheme: creator.identifier_scheme)
+    end
+
+    previous.funders.each do |funder|
+      Funder.create(dataset_id: self.id,
+                    name: funder.name,
+                    identifier: funder.identifier,
+                    identifier_scheme: funder.identifier_scheme,
+                    grant: funder.grant,
+                    code: funder.code)
+    end
+
+    previous.related_materials.each do |material|
+      RelatedMaterial.create(dataset_id: self.id,
+                             material_type: material.material_type,
+                             availability: material.availability,
+                             link: material.link,
+                             uri: material.uri,
+                             citation: material.citation,
+                             selected_type: material.selected_type,
+                             datacite_list: material.datacite_list,
+                             feature: material.feature,
+                             note: material.note)
+    end
+    save
+  end
+
+  def is_unconfirmed_version?
+    publication_state == Databank::PublicationState::TempSuppress::VERSION || hold_state == Databank::PublicationState::TempSuppress::VERSION
+  end
+  def add_version_relationships(previous:)
+    RelatedMaterial.create(dataset_id: self.id,
+                           material_type: Databank::MaterialType::DATASET,
+                           selected_type: Databank::MaterialType::DATASET,
+                           datacite_list: Databank::Relationship::NEW_VERSION_OF,
+                           uri: previous.identifier,
+                           uri_type: "DOI",
+                           citation: previous.plain_text_citation,
+                           link: "https://doi.org/#{previous.identifier}")
+    RelatedMaterial.create(dataset_id: previous.id,
+                           material_type: Databank::MaterialType::DATASET,
+                           selected_type: Databank::MaterialType::DATASET,
+                           datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF,
+                           uri: self.identifier,
+                           uri_type: "DOI",
+                           citation: self.plain_text_citation,
+                           link: "https://doi.org/#{self.identifier}")
+  end
+
+  def add_version_files(previous:)
+    previous.datafiles.each do |datafile|
+      VersionFile.create(dataset_id: self.id, datafile_id: datafile.id, selected: false)
+    end
+  end
   def previous_idb_dataset
     previous_version_related_material = related_materials.find_by(datacite_list: Databank::Relationship::NEW_VERSION_OF)
 

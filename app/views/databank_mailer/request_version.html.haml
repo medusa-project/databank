@@ -1,0 +1,20 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body
+    Name: #{@dataset.depositor_name}
+    %br/
+    Email: #{@dataset.depositor_email}
+    %br/
+    Topic: New Version Request
+    %br/
+    Dataset:
+    %a{:href => "#{@dataset.databank_url}"}
+      = @dataset.databank_url
+    %hr/
+      %h2 New Version Request
+    %hr/
+    %blockquote
+      = @dataset.version_comment
+    %hr/

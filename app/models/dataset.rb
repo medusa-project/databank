@@ -73,6 +73,7 @@ class Dataset < ApplicationRecord
   validates :dataset_version, presence: true
 
   has_many :datafiles, dependent: :destroy
+  has_many :version_files, dependent: :destroy
   has_many :creators, dependent: :destroy
   has_many :contributors, dependent: :destroy
   has_many :funders, dependent: :destroy
@@ -80,6 +81,7 @@ class Dataset < ApplicationRecord
   has_many :system_files, dependent: :destroy
   has_many :notes, dependent: :destroy
   has_one :share_code, dependent: :destroy
+
 
   accepts_nested_attributes_for :datafiles, reject_if: :all_blank, allow_destroy: true
   accepts_nested_attributes_for :creators, reject_if: :invalid_name, allow_destroy: true
@@ -124,6 +126,36 @@ class Dataset < ApplicationRecord
         self.not_featured_related_materials = not_featured_materials_set.to_a
       end
     end
+  end
+
+  def add_version_metadata_copy(previous:)
+    previous_version_number = previous.dataset_version.to_i
+    version_number = previous_version_number + 1
+    identifier_base = previous.identifier.chop
+    self.title = previous.title
+    self.creator_text = previous.creator_text
+    self.identifier = "#{identifier_base}#{version_number}"
+    self.publisher = previous.publisher
+    self.description = previous.description
+    self.license = previous.license
+    self.corresponding_creator_name = "researcher1"
+    self.corresponding_creator_email = "researcher1@mailinator.com"
+    self.keywords = previous.keywords
+    self.publication_state = Databank::PublicationState::TempSuppress::VERSION
+    self.curator_hold = true
+    self.release_date = nil
+    self.embargo = Databank::PublicationState::Embargo::NONE
+    self.is_test = previous.is_test
+    self.is_import = false
+    self.tombstone_date = nil
+    self.hold_state = Databank::PublicationState::TempSuppress::VERSION
+    self.medusa_dataset_dir = nil
+    self.dataset_version =  version_number.to_s
+    self.suppress_changelog = false
+    self.subject = previous.subject
+    self.org_creators = previous.org_creators
+    self.data_curation_network = false
+    save
   end
 
   def sharing_link

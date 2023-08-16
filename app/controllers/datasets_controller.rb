@@ -51,7 +51,10 @@ class DatasetsController < ApplicationController
                                      :suppress_changelog,
                                      :unsuppress,
                                      :permanently_suppress_files,
-                                     :permanently_suppress_metadata
+                                     :permanently_suppress_metadata,
+                                     :version_request,
+                                     :version_confirm,
+                                     :version_acknowledge
   ]
 
   @@num_box_ingest_deamons = 10
@@ -233,6 +236,7 @@ collaborators to access the data files while the dataset is not public.</li>
         search_get_my_facets = Dataset.search do
           all_of do
             without(:depositor, "error")
+            without(:publication_state, Databank::PublicationState::TempSuppress::VERSION)
             any_of do
               with :depositor_email, current_user.email
               with :internal_view_netids, current_netid
@@ -857,12 +861,13 @@ collaborators to access the data files while the dataset is not public.</li>
   # POST /datasets
   # POST /datasets.json
   def create
+    Rails.logger.warn params.to_yaml
     authorize! :create, Dataset
     @dataset = Dataset.new(dataset_params)
     respond_to do |format|
       if @dataset.save
-        if params.has_key?(:previous_key)
-          redirect_to action: :version_confirmation, previous_key: params[:previous_key], new_key: @dataset.key
+        if params[:dataset].has_key?(:previous_key)
+          redirect_to action: :version_request, previous_key: params[:dataset][:previous_key], id: @dataset.key
           return
         end
 
@@ -875,8 +880,28 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
-  def version_confirmation
+  def version_request
+    @previous = Dataset.find_by(key: params[:previous_key])
+    raise ActiveRecord::RecordNotFound unless @previous
 
+    @dataset.add_version_metadata_copy(previous: @previous)
+    @dataset.add_version_nested_objects(previous: @previous)
+    @dataset.add_version_relationships(previous: @previous)
+    @dataset.add_version_files(previous: @previous)
+  end
+
+  def version_confirm
+    authorize! :update, @dataset
+    respond_to do |format|
+      if @dataset.update(dataset_params)
+        @dataset.send_version_request_emails
+        format.html {redirect_to dataset_path(@dataset.key)}
+        format.json {render :show, status: :ok, location: dataset_path(@dataset.key)}
+      else
+        format.html { redirect_to edit_dataset_path(@dataset.key) }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
   # PATCH/PUT /datasets/1
@@ -987,13 +1012,6 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset = Dataset.new
     set_file_mode
   end
-
-  # permit(:medusa_dataset_dir, :title, :identifier, :publisher, :license, :key, :description, :keywords, :depositor_email, :depositor_name, :corresponding_creator_name, :corresponding_creator_email, :embargo, :complete, :search, :dataset_version, :release_date, :is_test, :is_import, :audit_id, :removed_private, :have_permission, :internal_reviewer, :agree, :web_ids, :org_creators, :version_comment, :subject,
-  #        datafiles_attributes:         [:datafile, :description, :attachment, :dataset_id, :id, :_destroy, :_update, :audit_id],
-  #        creators_attributes:          [:dataset_id, :family_name, :given_name, :institution_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
-  #        contributors_attributes:      [:dataset_id, :family_name, :given_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
-  #        funders_attributes:           [:dataset_id, :code, :name, :identifier, :identifier_scheme, :grant, :id, :_destroy, :_update, :audit_id],
-  #        related_materials_attributes: [:material_type, :selected_type, :availability, :link, :uri, :uri_type, :citation, :datacite_list, :dataset_id, :_destroy, :id, :_update, :audit_id])
 
   def pre_version
     @previous = Dataset.find_by(key: params[:id])
@@ -1513,11 +1531,12 @@ collaborators to access the data files while the dataset is not public.</li>
   # def dataset_params
 
   def dataset_params
-    params.require(:dataset).permit(:medusa_dataset_dir, :previous_key, :title, :identifier, :publisher, :license, :key, :description, :keywords, :depositor_email, :depositor_name, :corresponding_creator_name, :corresponding_creator_email, :embargo, :complete, :search, :dataset_version, :release_date, :is_test, :is_import, :audit_id, :removed_private, :have_permission, :internal_reviewer, :agree, :web_ids, :org_creators, :version_comment, :subject,
+    params.require(:dataset).permit(:medusa_dataset_dir, :title, :identifier, :publisher, :license, :key, :description, :keywords, :depositor_email, :depositor_name, :corresponding_creator_name, :corresponding_creator_email, :embargo, :complete, :search, :dataset_version, :release_date, :is_test, :is_import, :audit_id, :removed_private, :have_permission, :internal_reviewer, :agree, :web_ids, :org_creators, :version_comment, :subject,
                                     datafiles_attributes:         [:datafile, :description, :attachment, :dataset_id, :id, :_destroy, :_update, :audit_id],
                                     creators_attributes:          [:dataset_id, :family_name, :given_name, :institution_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
                                     contributors_attributes:      [:dataset_id, :family_name, :given_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
                                     funders_attributes:           [:dataset_id, :code, :name, :identifier, :identifier_scheme, :grant, :id, :_destroy, :_update, :audit_id],
-                                    related_materials_attributes: [:material_type, :selected_type, :availability, :link, :uri, :uri_type, :citation, :datacite_list, :dataset_id, :_destroy, :id, :_update, :audit_id, :feature, :note])
+                                    related_materials_attributes: [:material_type, :selected_type, :availability, :link, :uri, :uri_type, :citation, :datacite_list, :dataset_id, :_destroy, :id, :_update, :audit_id, :feature, :note],
+                                    version_files_attributes:     [:dataset_id, :datafile_id, :selected])
   end
 end
