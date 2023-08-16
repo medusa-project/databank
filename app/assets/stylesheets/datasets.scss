@@ -159,6 +159,14 @@ legend.metadata-border {
   background-color: $color__highlight-orange;
 }
 
+.featured-material {
+  background-color: $color__lightest_blue;
+}
+
+.featured-material :any-link {
+  font-size: 20px;
+}
+
 #creator_table {
   border: 1px solid $color__medium-grey;
 }

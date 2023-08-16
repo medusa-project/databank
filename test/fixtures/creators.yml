@@ -118,3 +118,18 @@ creator8:
   is_contact: true
   row_position: 1
   identifier_scheme: "ORCID"
+creator9:
+  id: 9
+  dataset_id: 13
+  family_name: "Example"
+  given_name: "Researcher1"
+  institution_name: nil
+  identifier: ""
+  type_of: 0
+  row_order: nil
+  created_at: Mon, 12 Jun 2023 17:36:28.541458000 UTC +00:00
+  updated_at: Mon, 12 Jun 2023 17:45:11.278806000 UTC +00:00
+  email: "researcher1@mailinator.com"
+  is_contact: true
+  row_position: 1
+  identifier_scheme: "ORCID"

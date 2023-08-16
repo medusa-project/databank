@@ -25,6 +25,10 @@ class Dataset < ApplicationRecord
   audited except: %i[creator_text key complete is_test is_import updated_at embargo], allow_mass_assignment: true
   has_associated_audits
 
+  attr_accessor :featured_related_materials,
+                :not_featured_related_materials,
+                :num_external_relationships
+
   searchable do
     text :title,
          :description,
@@ -95,6 +99,31 @@ class Dataset < ApplicationRecord
 
   def to_param
     key
+  end
+
+  #   :featured_related_materials,
+  #   :not_featured_related_materials,
+  #   :num_external_relationships
+  def handle_related_material
+    self.num_external_relationships = 0
+    if related_materials.count.zero?
+      self.featured_related_materials = self.not_featured_related_materials = []
+    else
+      self.featured_related_materials = self.related_materials.where(feature: true)
+      external_related_materials_set = Set.new
+      not_featured_materials_set = Set.new
+      related_materials.each do |material|
+        datacite_arr = []
+        datacite_arr = material.datacite_list.split(",") if material.datacite_list && material.datacite_list != ""
+        datacite_arr.each do |relationship|
+          if %w[IsPreviousVersionOf IsNewVersionOf].exclude?(relationship)
+            self.num_external_relationships += 1
+            not_featured_materials_set.add(material) unless material.feature == true
+          end
+        end
+        self.not_featured_related_materials = not_featured_materials_set.to_a
+      end
+    end
   end
 
   def sharing_link
@@ -283,22 +312,6 @@ class Dataset < ApplicationRecord
     end
 
     total
-  end
-
-  def num_external_relationships
-    external_relationship_count = 0
-
-    related_materials.each do |material|
-      datacite_arr = []
-
-      datacite_arr = material.datacite_list.split(",") if material.datacite_list && material.datacite_list != ""
-
-      datacite_arr.each do |relationship|
-        external_relationship_count += 1 if %w[IsPreviousVersionOf IsNewVersionOf].exclude?(relationship)
-      end
-    end
-
-    external_relationship_count
   end
 
   def self.local_zip_max_size

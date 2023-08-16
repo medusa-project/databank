@@ -15,13 +15,15 @@ namespace :testing do
       File.open(File.join(source_root, datafile.binary_name), "rb") do |file|
         case datafile.storage_root
         when "draft"
-          bucket = StorageManager.instance.draft_root.bucket
+          root = StorageManager.instance.draft_root
         when "medusa"
-          bucket = StorageManager.instance.medusa_root.bucket
+          root = StorageManager.instance.medusa_root
         else
           raise "invalid storage root for datafile web_id: #{datafile.web_id}, id: #{datafile.id}"
         end
-        Aws::S3::Resource.new(client: Application.aws_client).bucket(bucket).object(datafile.storage_key).upload_file(file)
+        key = "#{root.prefix}#{datafile.storage_key}"
+        puts key
+        Aws::S3::Resource.new(client: Application.aws_client).bucket(root.bucket).object(key).upload_file(file)
       end
     end
   end
