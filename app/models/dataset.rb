@@ -60,7 +60,7 @@ class Dataset < ApplicationRecord
     string :hold_state
     string :publication_state
     boolean :is_test
-    boolean :is_most_recent_version
+    boolean :most_recent_version?
     time :ingest_datetime
     time :release_date
     time :created_at

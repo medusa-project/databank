@@ -2,8 +2,6 @@
   <%= render partial: 'data_curation_network/heading' %>
 <% end %>
 
-<% version_group = @dataset.version_group %>
-
 <% if [Databank::PublicationState::RELEASED, Databank::PublicationState::TempSuppress::FILE, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state) %>
   <%= @dataset.structured_data.html_safe %>
 <% end %>
@@ -24,19 +22,19 @@
     &nbsp;|&nbsp;
     <%= link_to("Suppression Controls", "/datasets/#{@dataset.key}/suppression_controls")%>
     &nbsp;|&nbsp;
+    <%= link_to("Suppression Controls", "/datasets/#{@dataset.key}/version_controls")%>
+    &nbsp;|&nbsp;
     <%= link_to("Medusa Details", "/datasets/#{@dataset.key}/medusa_details")%>
   </div>
 <% end %>
 
 <div id="main-show-div">
 
-  <% if version_group && version_group[:entries] && version_group[:entries].length > 1 && @dataset.dataset_version.to_i > 0 && (version_group[:entries][0][:version]).to_i > @dataset.dataset_version.to_i %>
-
+  <% if @dataset.has_newer_version? %>
     <div class="selected-version boxed-alert">
       A newer version of this dataset is available.
-      <a href="<%= @dataset.persistent_url_base %>/<%= version_group[:entries][0][:doi] %>">View the latest version.</a>
+      <a href="<%= @dataset.persistent_url_base %>/<%= @dataset.version_group.group_hash[:entries][0][:doi] %>">View the latest version.</a>
     </div>
-
   <% end %>
 
   <%= render partial: 'metadata_restriction_alert', locals: {dataset: @dataset} %>
@@ -48,7 +46,7 @@
         <div class="panel-heading" role="tab" id="versionGroupHeading">
           <h4 class="panel-title">
 
-            <% if version_group && version_group[:entries] && version_group[:entries].length > 1 %>
+            <% if @dataset.version_group.group_hash[:entries].length > 1 %>
               <a role="button" data-toggle="collapse" data-parent="#versionGroup" href="#versionGroupPanel" aria-expanded="true" aria-controls="versionGroupPanel" class="accordion-toggle">
                 <span class="metadata-label">Versions in Illinois Data Bank</span>
               </a>
@@ -60,12 +58,12 @@
           </h4>
         </div>
         <div class="panel-collapse collapse
-        <% if version_group && version_group[:entries] && version_group[:entries].length > 1 %> in
+        <% if @dataset.version_group.group_hash[:entries].length > 1 %> in
         <% end %>" id="versionGroupPanel" role="tabpanel" aria-labelledby="versionGroupHeading">
           <div class="panel-body">
 
-            <% if version_group[:status] == 'error' %>
-              <%= version_group[:error] %>
+            <% if @dataset.version_group.group_hash[:status] == 'error' %>
+              <%= @dataset.version_group.group_hash[:error] %>
             <% else %>
 
               <table class="table table-striped">
@@ -155,20 +153,7 @@
       <p>Once it is available, see DataCite Search result at: <a href="https://search.datacite.org/works/<%= @dataset.identifier %>"><%="https://search.datacite.org/works/#{@dataset.identifier}"%></a></p>
     <% end %>
     <p>Log into <a href="<%=@datacite_fabrica_url%>">DataCite Fabrica interface</a> for more details about DataCite's test record for this DOI.</p>
-
   </div>
-
-  <!--<div class="curator-only">
-    <p><a href="http://ezid.lib.purdue.edu/manage/display_xml/doi:<%#= @dataset.identifier %>" target="_blank">DataCite
-      Metadata in XML format (via EZID)</a></p>
-
-    <p>
-      <a href="http://ezid.lib.purdue.edu/id/doi:<%#= @dataset.identifier %>" target="_blank">DataCite Metadata on
-        EZID
-        page</a>
-    </p>
-  </div>-->
-
 <% end %>
 
 <% if (@dataset.title) && (@dataset.title.downcase.include? 'unicorn') && ((can? :update, @dataset) && [Databank::PublicationState::RELEASED, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state)) %>

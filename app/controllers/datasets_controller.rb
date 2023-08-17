@@ -113,7 +113,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
         search_get_facets = Dataset.search do
           without(:depositor, "error")
-          with(:is_most_recent_version, true)
+          with(:most_recent_version?, true)
           keywords(params[:q])
           facet(:license_code)
           facet(:funder_codes)
@@ -242,7 +242,7 @@ collaborators to access the data files while the dataset is not public.</li>
               with :internal_view_netids, current_netid
               with :internal_editor_netids, current_netid
             end
-            with(:is_most_recent_version, true)
+            with(:most_recent_version?, true)
             with :is_test, false
             any_of do
               with :publication_state, Databank::PublicationState::DRAFT
@@ -403,7 +403,7 @@ collaborators to access the data files while the dataset is not public.</li>
         search_get_facets = Dataset.search do
           all_of do
             without(:depositor, "error")
-            with(:is_most_recent_version, true)
+            with(:most_recent_version?, true)
             with :is_test, false
             without :hold_state, Databank::PublicationState::TempSuppress::METADATA
             any_of do
@@ -515,7 +515,7 @@ collaborators to access the data files while the dataset is not public.</li>
       search_get_facets = Dataset.search do
         all_of do
           without(:depositor, "error")
-          with(:is_most_recent_version, true)
+          with(:most_recent_version?, true)
           with :is_test, false
           without :hold_state, Databank::PublicationState::TempSuppress::METADATA
           any_of do
@@ -540,7 +540,7 @@ collaborators to access the data files while the dataset is not public.</li>
       @search = Dataset.search do
         all_of do
           without(:depositor, "error")
-          with(:is_most_recent_version, true)
+          with(:most_recent_version?, true)
           with :is_test, false
           without :hold_state, Databank::PublicationState::TempSuppress::METADATA
           any_of do
@@ -665,6 +665,7 @@ collaborators to access the data files while the dataset is not public.</li>
                             end
     @completion_check = Dataset.completion_check(@dataset)
     @dataset.ensure_embargo
+    @dataset.ensure_version_group
     set_file_mode
     @dataset.handle_related_material
   end
@@ -1149,6 +1150,66 @@ collaborators to access the data files while the dataset is not public.</li>
       respond_to do |format|
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Failed to remove from Globus Download.) }
         format.json { render json: {}, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def suppress_review
+    @dataset.hold_state = Databank::PublicationState::TempSuppress::VERSION
+    respond_to do |format|
+      if @dataset.save
+        format.html {
+          redirect_to dataset_path(@dataset.key), notice: %(Dataset version candidate under curator review.)
+        }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def unsuppress_review
+    @dataset.hold_state = Databank::PublicationState::TempSuppress::NONE
+    respond_to do |format|
+      if @dataset.save
+        format.html {
+          redirect_to dataset_path(@dataset.key), notice: %(Dataset released for pre-publication review.)
+        }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def version_to_draft
+    @dataset.publication_state = Databank::PublicationState::DRAFT
+    respond_to do |format|
+      if @dataset.save
+        format.html {
+          redirect_to dataset_path(@dataset.key), notice: %(Dataset designated as standard draft.)
+        }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def draft_to_version
+    @dataset.publication_state = Databank::PublicationState::TempSuppress::VERSION
+    respond_to do |format|
+      if @dataset.save
+        format.html {
+          redirect_to dataset_path(@dataset.key), notice: %(Dataset designated as standard draft.)
+        }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
       end
     end
   end

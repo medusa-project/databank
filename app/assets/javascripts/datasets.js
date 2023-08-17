@@ -651,7 +651,6 @@ function unsuppressChangelog() {
 }
 
 function tmpSuppressFiles() {
-
     if (window.confirm("Are you sure?")) {
         $('#suppression_action').val("temporarily_suppress_files");
         $('#suppression_form').submit();
@@ -661,6 +660,33 @@ function tmpSuppressFiles() {
 function tmpSuppressMetadata() {
     if (window.confirm("Are you sure?")) {
         $('#suppression_action').val("temporarily_suppress_metadata");
+        $('#suppression_form').submit();
+    }
+}
+
+function unsuppressReview() {
+    if (window.confirm("Are you sure?")) {
+        $('#suppression_action').val("unsuppress_review");
+        $('#suppression_form').submit();
+    }
+}
+function suppressReview() {
+    if (window.confirm("Are you sure?")) {
+        $('#suppression_action').val("suppress_review");
+        $('#suppression_form').submit();
+    }
+}
+
+function version2draft() {
+    if (window.confirm("Are you sure?")) {
+        $('#suppression_action').val("version_to_draft");
+        $('#suppression_form').submit();
+    }
+}
+
+function draft2version() {
+    if (window.confirm("Are you sure?")) {
+        $('#suppression_action').val("draft_to_version");
         $('#suppression_form').submit();
     }
 }

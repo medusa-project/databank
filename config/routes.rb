@@ -106,6 +106,7 @@ Rails.application.routes.draw do
       get 'version_confirm'
       get 'version_request'
       get 'version_acknowledge'
+      get 'version_controls'
     end
 
     resources :datafiles do
