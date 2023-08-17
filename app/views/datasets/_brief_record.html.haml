@@ -31,11 +31,11 @@
         -else
           Uncategorized
 
-      -if dataset.hold_state == Dataset::PublicationState::TempSuppress::VERSION
+      -if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
         &nbsp;
         .label.label-danger
           version candidate under review
-      - elsif dataset.publication_state == Dataset::PublicationState::TempSuppress::VERSION
+      - elsif dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
         &nbsp;
         .label.label-success
           version candidate eligible to be submitted for pre-publication review
