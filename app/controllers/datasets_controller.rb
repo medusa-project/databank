@@ -113,7 +113,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
         search_get_facets = Dataset.search do
           without(:depositor, "error")
-          with(:most_recent_version?, true)
+          with(:is_most_recent_version, true)
           keywords(params[:q])
           facet(:license_code)
           facet(:funder_codes)
@@ -242,7 +242,7 @@ collaborators to access the data files while the dataset is not public.</li>
               with :internal_view_netids, current_netid
               with :internal_editor_netids, current_netid
             end
-            with(:most_recent_version?, true)
+            with(:is_most_recent_version, true)
             with :is_test, false
             any_of do
               with :publication_state, Databank::PublicationState::DRAFT
@@ -403,7 +403,7 @@ collaborators to access the data files while the dataset is not public.</li>
         search_get_facets = Dataset.search do
           all_of do
             without(:depositor, "error")
-            with(:most_recent_version?, true)
+            with(:is_most_recent_version, true)
             with :is_test, false
             without :hold_state, Databank::PublicationState::TempSuppress::METADATA
             any_of do
@@ -515,7 +515,7 @@ collaborators to access the data files while the dataset is not public.</li>
       search_get_facets = Dataset.search do
         all_of do
           without(:depositor, "error")
-          with(:most_recent_version?, true)
+          with(:is_most_recent_version, true)
           with :is_test, false
           without :hold_state, Databank::PublicationState::TempSuppress::METADATA
           any_of do
@@ -540,7 +540,7 @@ collaborators to access the data files while the dataset is not public.</li>
       @search = Dataset.search do
         all_of do
           without(:depositor, "error")
-          with(:most_recent_version?, true)
+          with(:is_most_recent_version, true)
           with :is_test, false
           without :hold_state, Databank::PublicationState::TempSuppress::METADATA
           any_of do

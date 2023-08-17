@@ -37,7 +37,7 @@ module Dataset::Versionable
       hold_state == Databank::PublicationState::TempSuppress::NONE
   end
 
-  def most_recent_version?
+  def is_most_recent_version
     ensure_version_group
     if !self.version_group&.empty?
       (version_group[:entries][0])[:version] == dataset_version.to_i
@@ -47,7 +47,7 @@ module Dataset::Versionable
   end
 
   def eligible_for_version?
-    most_recent_version? && Databank::PublicationState::PUB_ARRAY.include?(publication_state)
+    is_most_recent_version && Databank::PublicationState::PUB_ARRAY.include?(publication_state)
   end
 
   def send_version_request_emails
