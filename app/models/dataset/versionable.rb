@@ -6,7 +6,7 @@ module Dataset::Versionable
 
   def related_version_entry_hash
     # version group is an array of hashes
-    self_version = dataset.dataset_version.to_i
+    self_version = self.dataset_version.to_i
 
     self_version = 1 if !self_version || self_version < 1
 

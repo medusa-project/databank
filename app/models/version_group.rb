@@ -13,7 +13,7 @@ class VersionGroup
     group_hash[:entries] = [self_version_entry]
 
     # follow daisy chain of previous versions
-    current_dataset = self
+    current_dataset = dataset
     current_group_count = 0
     max_group_count = 50
 
@@ -27,7 +27,7 @@ class VersionGroup
     end
 
     # reset pointer for chain of next versions
-    current_dataset = self
+    current_dataset = dataset
     current_group_count = 0
     while current_dataset
       next_dataset = current_dataset.next_idb_dataset
