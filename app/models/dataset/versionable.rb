@@ -27,9 +27,9 @@ module Dataset::Versionable
 
   def has_newer_version?
     ensure_version_group
-    self.version_group[:entries].length > 1 &&
+    self.version_group.group_hash[:entries].length > 1 &&
       dataset_version.to_i.positive? &&
-      (self.version_group[:entries][0][:version]).to_i > dataset_version.to_i
+      (self.version_group.group_hash[:entries][0][:version]).to_i > dataset_version.to_i
   end
 
   def version_eligible_for_review?
@@ -39,8 +39,8 @@ module Dataset::Versionable
 
   def is_most_recent_version
     ensure_version_group
-    if !self.version_group&.empty?
-      (version_group[:entries][0])[:version] == dataset_version.to_i
+    if self.version_group.group_hash[:entries].length > 1
+      (version_group.group_hash[:entries][0])[:version] == dataset_version.to_i
     else
       true
     end
