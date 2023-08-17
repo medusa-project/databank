@@ -77,7 +77,7 @@
                 </thead>
                 <tbody>
 
-                <% version_group.group_hash[:entries].each do |entry| %>
+                <% @dataset.version_group.group_hash[:entries].each do |entry| %>
 
                   <tr
                     <% if entry[:selected] %> class="selected-version"
