@@ -31,7 +31,15 @@
         -else
           Uncategorized
 
-      -if !dataset.hold_state.nil? && dataset.hold_state != 'none'
+      -if dataset.hold_state == Dataset::PublicationState::TempSuppress::VERSION
+        &nbsp;
+        .label.label-danger
+          version candidate under review
+      - elsif dataset.publication_state == Dataset::PublicationState::TempSuppress::VERSION
+        &nbsp;
+        .label.label-success
+          version candidate eligible to be submitted for pre-publication review
+      -elsif !dataset.hold_state.nil? && dataset.hold_state != 'none'
         &nbsp;
         .label.label-danger
           suppressed by curator

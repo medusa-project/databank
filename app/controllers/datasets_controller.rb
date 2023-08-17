@@ -828,7 +828,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @completion_check = Dataset.completion_check(@dataset)
     @dataset.org_creators = @dataset.org_creators || false
     # set_license(@dataset)
-    @publish_modal_msg = Dataset.publish_modal_msg(@dataset)
+    @publish_modal_msg = Dataset.publish_modal_msg(dataset: @dataset)
     @dataset.embargo ||= Databank::PublicationState::Embargo::NONE
 
     @token = @dataset.current_token
@@ -1433,7 +1433,7 @@ collaborators to access the data files while the dataset is not public.</li>
       proposed_dataset.embargo = new_embargo_state
       proposed_dataset.release_date = params["release_date"] || @dataset.release_date
     end
-    render json: {status: :ok, message: Dataset.publish_modal_msg(proposed_dataset)}
+    render json: {status: :ok, message: Dataset.publish_modal_msg(dataset: proposed_dataset)}
   end
 
   def download_endNote_XML

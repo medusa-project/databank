@@ -49,7 +49,9 @@ module Dataset::Versionable
   end
 
   def eligible_for_version?
-    is_most_recent_version && Databank::PublicationState::PUB_ARRAY.include?(publication_state)
+    is_most_recent_version &&
+      Databank::PublicationState::PUB_ARRAY.include?(publication_state) &&
+      next_idb_dataset.nil?
   end
 
   def send_version_request_emails

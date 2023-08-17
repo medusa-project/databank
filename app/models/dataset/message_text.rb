@@ -90,15 +90,22 @@ module Dataset::MessageText
       end
     end
 
-    def publish_modal_msg(dataset)
+    def embargoed_with_valid_date(dataset:)
+      dataset.release_date &&
+        dataset.release_date >= Date.current &&
+        dataset.embargo &&
+        Databank::PublicationState::Embargo::EMBARGO_ARRAY.include?(dataset.embargo)
+    end
+
+    def publish_modal_msg(dataset:)
+      raise "no dataset passed to publish_modal_msg" if dataset.nil?
+
       effective_embargo = nil
       effective_release_date = Date.current.iso8601
 
-      if dataset.release_date && dataset.release_date >= Date.current
-        if dataset.embargo && [Databank::PublicationState::Embargo::FILE, Databank::PublicationState::Embargo::METADATA].include?(dataset.embargo)
-          effective_embargo = dataset.embargo
-          effective_release_date = dataset.release_date.iso8601
-        end
+      if Dataset.embargoed_with_valid_date(dataset: dataset)
+        effective_embargo = dataset.embargo
+        effective_release_date = dataset.release_date.iso8601
       end
 
       msg = "<div class='confirm-modal-text'>"
