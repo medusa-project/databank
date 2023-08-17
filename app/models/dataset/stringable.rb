@@ -268,6 +268,8 @@ module Dataset::Stringable
       "[Creator List]"
     elsif creators.count == 1
       creator = creators.first
+      raise("mysteriously missing creator when creators.count was detected as equal to 1") unless creator
+
       if creator.institution_name && creator.institution_name != "" || creator.family_name && creator.family_name != ""
         creator.list_name
       end

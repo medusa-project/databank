@@ -5,7 +5,7 @@ module Dataset::Versionable
   attr_accessor :version_group
 
   def related_version_entry_hash
-    # version group is an array of hashes
+    # version_group[:group_hash] is an array of hashes
     self_version = self.dataset_version.to_i
 
     self_version = 1 if !self_version || self_version < 1
@@ -38,6 +38,8 @@ module Dataset::Versionable
   end
 
   def is_most_recent_version
+    return false if self.publication_state == Databank::PublicationState::TempSuppress::VERSION
+
     ensure_version_group
     if self.version_group.group_hash[:entries].length > 1
       (version_group.group_hash[:entries][0])[:version] == dataset_version.to_i
