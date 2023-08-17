@@ -260,6 +260,7 @@ collaborators to access the data files while the dataset is not public.</li>
         search_get_facets = Dataset.search do
           all_of do
             without(:depositor, "error")
+            without(:publication_state, Databank::PublicationState::TempSuppress::VERSION)
             with(:is_test, false)
             any_of do
               with :depositor_email, current_user.email
@@ -291,6 +292,7 @@ collaborators to access the data files while the dataset is not public.</li>
         @search = Dataset.search do
           all_of do
             without(:depositor, "error")
+            without(:publication_state, Databank::PublicationState::TempSuppress::VERSION)
             with :is_test, false
             any_of do
               with :depositor_email, current_user.email
