@@ -9,11 +9,11 @@
         .col-md-8
           -if (can? :manage, @dataset)
             .curator-only
-              -if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+              -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
                 &nbsp;
                 .label.label-danger
                   version candidate under review
-              - elsif dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
+              - elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
                 &nbsp;
                 .label.label-success
                   version candidate eligible to be submitted for pre-publication review
