@@ -17,7 +17,7 @@
                 &nbsp;
                 .label.label-success
                   version candidate eligible to be submitted for pre-publication review
-              -elsif !dataset.hold_state.nil? && dataset.hold_state != 'none'
+              -elsif !@dataset.hold_state.nil? && @dataset.hold_state != 'none'
                 &nbsp;
                 .label.label-danger
                   suppressed by curator
