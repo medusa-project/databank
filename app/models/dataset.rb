@@ -106,7 +106,7 @@ class Dataset < ApplicationRecord
   #   :featured_related_materials,
   #   :not_featured_related_materials,
   #   :num_external_relationships
-  def handle_related_material
+  def handle_related_materials
     self.num_external_relationships = 0
     if related_materials.count.zero?
       self.featured_related_materials = self.not_featured_related_materials = []
