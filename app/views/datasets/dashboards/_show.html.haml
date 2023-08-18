@@ -123,7 +123,7 @@
             %button(type="button" class="btn btn-info btn-block" name="cancel" onclick='window.location = "/datasets?q=editor=%5B%5D==#{current_user.name}&context=exit_doi"' )
               %span(class="glyphicon glyphicon-pushpin" )
               Exit this saved dataset
-          - if @dataset.publication_state == Databank::PublicationState::DRAFT
+          - if [Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)
             = link_to(dataset_path(@dataset.key), method: :delete, data: {confirm: 'Are you sure? This removes all files and metadata.'}, class: "btn idb btn-danger btn-block") do
               %span(class="glyphicon glyphicon-trash" )
               Delete
