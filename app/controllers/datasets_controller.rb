@@ -669,7 +669,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.ensure_embargo
     @dataset.ensure_version_group
     set_file_mode
-    @dataset.handle_related_material
+    @dataset.handle_related_materials
   end
 
   def suppression_action
