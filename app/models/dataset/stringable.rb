@@ -268,7 +268,7 @@ module Dataset::Stringable
     if creators_arr.count.zero?
       "[Creator List]"
     elsif creators_arr.count == 1
-      creator = creators.first
+      creator = creators_arr.first
       raise("mysteriously missing creator when creators.count #{creators_arr.count} was detected as equal to 1 #{creators_arr.to_yaml}") unless creator
 
       if creator.institution_name && creator.institution_name != "" || creator.family_name && creator.family_name != ""
