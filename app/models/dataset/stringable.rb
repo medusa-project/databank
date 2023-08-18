@@ -264,11 +264,12 @@ module Dataset::Stringable
   end
 
   def creator_list
-    if creators.count.zero?
+    creators_arr = Creator.where(dataset_id: id)
+    if creators_arr.count.zero?
       "[Creator List]"
-    elsif creators.count == 1
-      creator = self.creators.first
-      raise("mysteriously missing creator when creators.count was detected as equal to 1 #{creators.to_yaml}") unless creator
+    elsif creators_arr.count == 1
+      creator = creators.first
+      raise("mysteriously missing creator when creators.count #{creators_arr.count} was detected as equal to 1 #{creators_arr.to_yaml}") unless creator
 
       if creator.institution_name && creator.institution_name != "" || creator.family_name && creator.family_name != ""
         creator.list_name

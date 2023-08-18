@@ -13,14 +13,17 @@
                 &nbsp;
                 .label.label-danger
                   version candidate under review
+                &nbsp;
               - elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
                 &nbsp;
                 .label.label-success
                   version candidate eligible to be submitted for pre-publication review
+                &nbsp;
               -elsif !@dataset.hold_state.nil? && @dataset.hold_state != 'none'
                 &nbsp;
                 .label.label-danger
                   suppressed by curator
+                &nbsp;
               .label.label-default
                 ="updated: #{@dataset.updated_at.to_date.iso8601}"
               &nbsp;
