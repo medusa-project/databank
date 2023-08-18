@@ -9,6 +9,18 @@
         .col-md-8
           -if (can? :manage, @dataset)
             .curator-only
+              -if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+                &nbsp;
+                .label.label-danger
+                  version candidate under review
+              - elsif dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
+                &nbsp;
+                .label.label-success
+                  version candidate eligible to be submitted for pre-publication review
+              -elsif !dataset.hold_state.nil? && dataset.hold_state != 'none'
+                &nbsp;
+                .label.label-danger
+                  suppressed by curator
               .label.label-default
                 ="updated: #{@dataset.updated_at.to_date.iso8601}"
               &nbsp;

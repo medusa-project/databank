@@ -1,4 +1,12 @@
 = render partial: 'confirm_deposit_modal'
+-if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+  &nbsp;
+  .label.label-danger
+    version candidate under review
+- elsif dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
+  &nbsp;
+  .label.label-success
+    version candidate eligible to be submitted for pre-publication review
 = render 'brief_record', dataset:@dataset
 %span.metadata-label publication state:
 = @dataset.publication_state

@@ -133,14 +133,16 @@ module Dataset::Indexable
                         "Metadata Published, Files Publication Delayed (Embargoed)"
                       when Databank::PublicationState::Embargo::METADATA
                         "Metadata and Files Publication Delayed (Embargoed)"
-                       when Databank::PublicationState::TempSuppress::FILE
-                         "Metadata Published, Files Suppressed"
-                       when Databank::PublicationState::TempSuppress::METADATA
-                         "Metadata and Files Suppressed"
-                       when Databank::PublicationState::PermSuppress::FILE
+                      when Databank::PublicationState::TempSuppress::FILE
+                        "Metadata Published, Files Suppressed"
+                      when Databank::PublicationState::TempSuppress::METADATA
+                        "Metadata and Files Suppressed"
+                      when Databank::PublicationState::PermSuppress::FILE
                         "Metadata Published, Files Withdrawn"
-                       when Databank::PublicationState::PermSuppress::METADATA
+                      when Databank::PublicationState::PermSuppress::METADATA
                         "Metadata and Files Withdrawn"
+                      when Databank::PublicationState::TempSuppress::VERSION
+                        "Metadata and Files Suppressed"
                       else
                         # should never get here
                         "Unknown, please contact the Research Data Service"

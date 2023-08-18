@@ -674,7 +674,6 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def suppression_action
     authorize! :manage, @dataset
-
     redirect_to action: params[:suppression_action]
   end
 
@@ -685,6 +684,11 @@ collaborators to access the data files while the dataset is not public.</li>
   def suppression_controls
     authorize! :manage, @dataset
   end
+
+  def version_controls
+    authorize! :manage, @dataset
+  end
+
 
   def review_requests
     authorize! :manage, @dataset
@@ -884,6 +888,7 @@ collaborators to access the data files while the dataset is not public.</li>
   end
 
   def version_request
+    authorize! :update, @dataset
     @previous = Dataset.find_by(key: params[:previous_key])
     raise ActiveRecord::RecordNotFound unless @previous
 
