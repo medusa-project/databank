@@ -94,7 +94,7 @@ module Dataset::MessageText
       dataset.release_date &&
         dataset.release_date >= Date.current &&
         dataset.embargo &&
-        Databank::PublicationState::Embargo::EMBARGO_ARRAY.include?(dataset.embargo)
+        Databank::PublicationState::EMBARGO_ARRAY.include?(dataset.embargo)
     end
 
     def publish_modal_msg(dataset:)

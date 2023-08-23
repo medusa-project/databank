@@ -15,7 +15,15 @@ class DatabankMailer < ActionMailer::Base
          subject: subject)
   end
 
-  def acknowledge_request_version(dataset_key)
+  def notify_version_copy_complete(dataset_key:)
+    @dataset = Dataset.find_by(key: dataset_key)
+    subject_base = "Version Copy Complete"
+    subject = prepend_system_code(subject_base)
+    mail(to:      IDB_CONFIG[:admin][:contact_email],
+         subject: subject)
+  end
+
+  def acknowledge_request_version(dataset_key:)
     @dataset = Dataset.find_by(key: dataset_key)
     subject_base = "Version Request Acknowledgement"
     subject = prepend_system_code(subject_base)

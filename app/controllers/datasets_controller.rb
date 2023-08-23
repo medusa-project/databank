@@ -54,7 +54,9 @@ class DatasetsController < ApplicationController
                                      :permanently_suppress_metadata,
                                      :version_request,
                                      :version_confirm,
-                                     :version_acknowledge
+                                     :version_acknowledge,
+                                     :version_controls,
+                                     :copy_version_files
   ]
 
   @@num_box_ingest_deamons = 10
@@ -81,6 +83,12 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render json: {private_share_link: nil}, status: :unprocessable_entity }
       end
     end
+  end
+
+  def copy_version_files
+    t = Thread.new{@dataset.copy_version_files}
+    t.join
+    redirect_to dataset_path(@dataset.key), notice: "Version files copies initiated."
   end
 
   def import_from_globus

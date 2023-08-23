@@ -4,9 +4,15 @@ module Dataset::Versionable
   extend ActiveSupport::Concern
   attr_accessor :version_group
 
+  def copy_version_files
+    version_files.each(&:copy_file)
+    files_copied_email = DatabankMailer.notify_version_copy_complete(dataset_key: key)
+    files_copied_email.deliver_now
+  end
+
   def related_version_entry_hash
     # version_group[:group_hash] is an array of hashes
-    self_version = self.dataset_version.to_i
+    self_version = dataset_version.to_i
 
     self_version = 1 if !self_version || self_version < 1
 
@@ -38,7 +44,7 @@ module Dataset::Versionable
   end
 
   def is_most_recent_version
-    return false if self.publication_state == Databank::PublicationState::TempSuppress::VERSION
+    return false if publication_state == Databank::PublicationState::TempSuppress::VERSION
 
     ensure_version_group
     if self.version_group.group_hash[:entries].length > 1
@@ -55,9 +61,9 @@ module Dataset::Versionable
   end
 
   def send_version_request_emails
-    request_version_email = DatabankMailer.request_version(key)
+    request_version_email = DatabankMailer.request_version(dataset_key: key)
     request_version_email.deliver_now
-    acknowledge_request_version_email = DatabankMailer.acknowledge_request_version(key)
+    acknowledge_request_version_email = DatabankMailer.acknowledge_request_version(dataset_key: key)
     acknowledge_request_version_email.deliver_now
   end
   def add_version_nested_objects(previous:)

@@ -1,75 +1,104 @@
 = render partial: 'confirm_deposit_modal'
--if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
-  &nbsp;
-  .label.label-danger
-    version candidate under review
-- elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
-  &nbsp;
-  .label.label-success
-    version candidate eligible to be submitted for pre-publication review
 = render 'brief_record', dataset:@dataset
-%span.metadata-label publication state:
-= @dataset.publication_state
-%span.metadata-label hold state:
-= @dataset.hold_state
 %hr/
-=form_tag("/datasets/#{@dataset.key}/suppression_action", id: "suppression_form") do
+%h3 Version Control Curator Guidance
+%p
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ipsum sapien, finibus sed eros eget,
+  euismod malesuada quam. Morbi id nunc eget purus dapibus vestibulum ac et magna. Vestibulum condimentum
+  molestie libero sed ullamcorper. Integer interdum iaculis lectus, ut consequat dui pulvinar ut.
+  Aenean vitae lacus justo. Mauris nunc purus, cursus non odio id, egestas tempus est. Sed suscipit mattis
+  ex quis fermentum. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+  Suspendisse potenti. Curabitur rutrum lorem eu tempus ornare. Duis eget pharetra orci.
+  Vestibulum vel dapibus orci.
+  =form_for(@dataset, :url => {action: 'copy_version_files'}, html: {role: "form", class: "input-append dataset-form" }) do |f|
+    .panel-group(id="vFiles" role="tablist" aria-multiselectable="true")
+    .panel.panel-default
+      .panel-heading(role="tab" id="vFilesHeading")
+        %h4(class="panel-title")
+          %a(role="button" data-toggle="collapse" data-parent="#access" href="#vFilesPanel" aria-expanded="false" aria-controls="vFilesPanel" class="accordion-toggle collapsed" )
+            %span( class="metadata-label" ) File Copy Selection
+      .panel-collapse.collapse.in(id="vFilesPanel" role="tabpanel" aria-labelledby="vFilesHeading" )
+        .panel-body
+          %table.table.table-striped#versionfiles
+            %tbody
+              %tr.row
+                %td.col-md-2
+                  %input#checkAllVFiles{type: "checkbox"}
+                    Select all
+                    =surround "(", ")" do
+                      %span#datafilesCount
+                        = @dataset.version_files.count
+              -@dataset.version_files.each do |version_file|
+                = f.fields_for :version_files, version_file do |vf|
+                  %tr.row
+                    %td.col-md-2
+                      = vf.check_box.checkVFile.checkVFileGroup :selected, html: {disabled: (version_file.initiated)}
+                    %td.col-md-6
+                      = version_file.source_datafile.bytestream_name
+                    %td.col-md-2
+                      -if version_file.initiated
+                        %span.label.label-warning
+                          Initiated
+                      -else
+                        %span.label.label-default
+                          Not Initiated
+                    %td.col-md-2
+                      -if version_file.complete
+                        %span.label.label-success
+                          Complete
+                    %td.col-md-2
+                      = number_to_human_size(version_file.source_datafile.bytestream_size)
+=form_tag("/datasets/#{@dataset.key}/suppression_action", id: "suppression_form") do |f|
   %input(id="suppression_action" type="hidden" name="suppression_action" )
-.panel-group(id="access" role="tablist" aria-multiselectable="true")
-  .panel.panel-default
-    .panel-heading(role="tab" id="accessHeading")
-      %h4(class="panel-title")
-        %a(role="button" data-toggle="collapse" data-parent="#access" href="#accessPanel" aria-expanded="false" aria-controls="accessPanel" class="accordion-toggle collapsed" )
-          %span( class="metadata-label" ) Version Control Buttons
-    .panel-collapse.collapse.in(id="accessPanel" role="tabpanel" aria-labelledby="accessHeading" )
-      .panel-body
-        %h3 Version Control Curator Guidance
-        %p Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ipsum sapien, finibus sed eros eget,
-        euismod malesuada quam. Morbi id nunc eget purus dapibus vestibulum ac et magna. Vestibulum condimentum
-        molestie libero sed ullamcorper. Integer interdum iaculis lectus, ut consequat dui pulvinar ut.
-        Aenean vitae lacus justo. Mauris nunc purus, cursus non odio id, egestas tempus est. Sed suscipit mattis
-        ex quis fermentum. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-        Suspendisse potenti. Curabitur rutrum lorem eu tempus ornare. Duis eget pharetra orci.
-        Vestibulum vel dapibus orci.
-        .row
-          .col-md-4
-            -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
-              %button(id="suppressReviewBtn" type="btn" class="btn btn-lg btn-success btn-block" onclick="unsuppressReview()" )
-                Permit Pre-Publication Review
-            -else
-              %button(id="suppressReviewBtn" type="btn" class="btn btn-lg btn-success btn-block" onclick="suppressReview()" )
-                Block Pre-Publication Review
-          .col-md-8
-            %ul
-              %li
-                Change the hold state to permit or block pre-publication review.
-                %br/
-                All requested versions go through pre-publication review by the Curator team.
-                This button reveals a "request pre-publication review" and permits related functionality
-                for the depositor of this dataset.
-        %hr/
-        .row
-          .col-md-4
-            -if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
-              %button(id="publishOverideBtn" type="btn" class="btn btn-lg btn-success btn-block" onclick="version2draft()" )
-                %span(class="far fa-fire fa-2x flame-icon" )
-                Permit Publish without Pre-Publication Review
-            -elsif @dataset.publication_state == Databank::PublicationState::DRAFT
-              %button(id="publishOverideBtn" type="btn" class="btn btn-lg btn-success btn-block" onclick="draft2version()" )
-                Designate this Draft Dataset a Version (draft)
-            -else
-              %button(id="publishOverideBtn" type="btn" class="btn btn-lg btn-default btn-block" disabled )
-                Draft/Version toggle
-              %em Publication state must be draft or version to use this button.
-          .col-md-8
-            %ul
-              %li
-                Controls the publication state of this dataset.
-                Can go from version draft to plain draft or from plain draft to version draft.
-                Version drafts are
-                %em required
-                to go through pre-publication review.
-              %li
-                Designating a draft as a version draft will not copy metadata or do anything else to the dataset.
-        %hr/
+  .panel-group(id="access" role="tablist" aria-multiselectable="true")
+    .panel.panel-default
+      .panel-heading(role="tab" id="accessHeading")
+        %h4(class="panel-title")
+          %a(role="button" data-toggle="collapse" data-parent="#access" href="#accessPanel" aria-expanded="false" aria-controls="accessPanel" class="accordion-toggle collapsed" )
+            %span( class="metadata-label" ) Version Control Buttons
+      .panel-collapse.collapse.in(id="accessPanel" role="tabpanel" aria-labelledby="accessHeading" )
+        .panel-body
+
+          %hr/
+          .row
+            .col-md-4
+              -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+                %button(id="suppressReviewBtn" type="btn" class="btn btn-lg btn-success btn-block" onclick="unsuppressReview()" )
+                  Permit Pre-Publication Review
+              -else
+                %button(id="suppressReviewBtn" type="btn" class="btn btn-lg btn-primary btn-block" onclick="suppressReview()" )
+                  Block Pre-Publication Review
+            .col-md-8
+              %ul
+                %li
+                  Change the hold state to permit or block pre-publication review.
+                  %br/
+                  All requested versions go through pre-publication review by the Curator team.
+                  This button reveals a "request pre-publication review" and permits related functionality
+                  for the depositor of this dataset.
+          %hr/
+          .row
+            .col-md-4
+              -if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
+                %button(id="publishOverideBtn" type="btn" class="btn btn-lg btn-danger btn-block" onclick="version2draft()" )
+                  %span(class="glyphicon glyphicon-fire" )
+                  Permit Publish without Pre-Publication Review
+              -elsif @dataset.publication_state == Databank::PublicationState::DRAFT
+                %button(id="publishOverideBtn" type="btn" class="btn btn-lg btn-primary btn-block" onclick="draft2version()" )
+                  Designate this Draft Dataset a Version (draft)
+              -else
+                %button(id="publishOverideBtn" type="btn" class="btn btn-lg btn-default btn-block" disabled )
+                  Draft/Version toggle
+                %em Publication state must be draft or version to use this button.
+            .col-md-8
+              %ul
+                %li
+                  Controls the publication state of this dataset.
+                  Can go from version draft to plain draft or from plain draft to version draft.
+                  Version drafts are
+                  %em required
+                  to go through pre-publication review.
+                %li
+                  Designating a draft as a version draft will not copy metadata or do anything else to the dataset.
+          %hr/
 

@@ -1,0 +1,31 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body
+    Topic: Version Copy Complete
+    %br/
+    Dataset:
+    %a{:href => "#{@dataset.databank_url}"}
+      = @dataset.databank_url
+    %hr/
+      %h2 Version Copy Complete
+    %hr/
+    %blockquote
+      = @dataset.version_files.each do |version_file|
+        %p
+          = version_file.source_datafile.bytestream_name
+          %br/
+          = number_to_human_size(version_file.source_datafile.bytestream_size)
+          %br/
+          -if version_file.selected
+            %span.label.label-warning
+              Selected
+          -else
+            %span.label.label-default
+              Not Selected
+          %br/
+          -if version_file.complete
+            %span.label.label-success
+              Complete
+    %hr/

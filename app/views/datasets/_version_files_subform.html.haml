@@ -15,7 +15,7 @@
                     Select all
                     =surround "(", ")" do
                       %span#datafilesCount
-                        = @dataset.datafiles.count
+                        = @dataset.version_files.count
               -@dataset.version_files.each do |version_file|
                 = f.fields_for :version_files, version_file do |vf|
                   %tr.row
