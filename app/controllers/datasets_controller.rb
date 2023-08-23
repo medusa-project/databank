@@ -86,9 +86,9 @@ collaborators to access the data files while the dataset is not public.</li>
   end
 
   def copy_version_files
-    t = Thread.new{@dataset.copy_version_files}
-    t.join
-    redirect_to dataset_path(@dataset.key), notice: "Version files copies initiated."
+    # t = Thread.new{@dataset.copy_version_files}
+    # t.join
+    render :version_controls
   end
 
   def import_from_globus

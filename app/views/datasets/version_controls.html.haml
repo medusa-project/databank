@@ -32,22 +32,42 @@
                 = f.fields_for :version_files, version_file do |vf|
                   %tr.row
                     %td.col-md-2
-                      = vf.check_box.checkVFile.checkVFileGroup :selected, disabled: (version_file.initiated)
-                    %td.col-md-6
+                      = vf.check_box :selected, class: 'checkVFile checkVFileGroup', disabled: version_file.initiated
+                    %td.col-md-4
                       = version_file.source_datafile.bytestream_name
+                    %td.col-md-2
+                      = number_to_human_size(version_file.source_datafile.bytestream_size)
                     %td.col-md-2
                       -if version_file.initiated
                         %span.label.label-warning
-                          Initiated
+                          Copy Initiated
                       -else
-                        %span.label.label-default
-                          Not Initiated
+                        %span.label.label-info
+                          Copy Not Initiated
                     %td.col-md-2
-                      -if version_file.complete
+                      -if version_file.complete?
                         %span.label.label-success
-                          Complete
-                    %td.col-md-2
-                      = number_to_human_size(version_file.source_datafile.bytestream_size)
+                          Copy Complete
+                      -elsif version_file.initiated
+                        %span.label.label-info
+                          Copy In Progress
+                  .row
+              %tr.row
+                %td.col-md-2
+                %td.col-md-4
+                %td.col-md-2
+                %td.col-span-2
+                  -if @dataset.version_copies_complete?
+                    %span.label.label-success
+                      Version Copies Complete
+                  -elsif @dataset.version_copies_initiated?
+                    %span.label.label-default
+                      Version Copies Initiated
+                  -else
+                    %button#copyFilesBtn.btn.btn-lg.btn-primary.btn-block
+                      %span.glyphicon.glyphicon-copy
+                      Copy Selected Files to Version
+
 =form_tag("/datasets/#{@dataset.key}/suppression_action", id: "suppression_form") do |f|
   %input(id="suppression_action" type="hidden" name="suppression_action" )
   .panel-group(id="access" role="tablist" aria-multiselectable="true")
@@ -58,15 +78,14 @@
             %span( class="metadata-label" ) Version Control Buttons
       .panel-collapse.collapse.in(id="accessPanel" role="tabpanel" aria-labelledby="accessHeading" )
         .panel-body
-
           %hr/
           .row
             .col-md-4
               -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
-                %button(id="suppressReviewBtn" type="btn" class="btn btn-lg btn-success btn-block" onclick="unsuppressReview()" )
+                %button(id="suppressReviewBtn" type="button" class="btn btn-lg btn-success btn-block" onclick="unsuppressReview()" )
                   Permit Pre-Publication Review
               -else
-                %button(id="suppressReviewBtn" type="btn" class="btn btn-lg btn-primary btn-block" onclick="suppressReview()" )
+                %button(id="suppressReviewBtn" type="button" class="btn btn-lg btn-primary btn-block" onclick="suppressReview()" )
                   Block Pre-Publication Review
             .col-md-8
               %ul
@@ -80,14 +99,14 @@
           .row
             .col-md-4
               -if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
-                %button(id="publishOverideBtn" type="btn" class="btn btn-lg btn-danger btn-block" onclick="version2draft()" )
+                %button(id="publishOverideBtn" type="button" class="btn btn-lg btn-danger btn-block" onclick="version2draft()" )
                   %span(class="glyphicon glyphicon-fire" )
                   Permit Publish without Pre-Publication Review
               -elsif @dataset.publication_state == Databank::PublicationState::DRAFT
-                %button(id="publishOverideBtn" type="btn" class="btn btn-lg btn-primary btn-block" onclick="draft2version()" )
+                %button(id="publishOverideBtn" type="button" class="btn btn-lg btn-primary btn-block" onclick="draft2version()" )
                   Designate this Draft Dataset a Version (draft)
               -else
-                %button(id="publishOverideBtn" type="btn" class="btn btn-lg btn-default btn-block" disabled )
+                %button(id="publishOverideBtn" type="button" class="btn btn-lg btn-default btn-block" disabled )
                   Draft/Version toggle
                 %em Publication state must be draft or version to use this button.
             .col-md-8

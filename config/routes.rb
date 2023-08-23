@@ -107,6 +107,7 @@ Rails.application.routes.draw do
       get 'version_request'
       get 'version_acknowledge'
       get 'version_controls'
+      match 'copy_version_files', via: [:get, :post]
     end
 
     resources :datafiles do

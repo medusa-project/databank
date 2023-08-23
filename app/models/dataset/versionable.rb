@@ -4,8 +4,27 @@ module Dataset::Versionable
   extend ActiveSupport::Concern
   attr_accessor :version_group
 
+  def version_copies_complete?
+    version_files.each do |version_file|
+      return false unless version_file.complete?
+    end
+    true
+  end
+
+  def version_copies_initiated?
+    version_files.each do |version_file|
+      return true if version_file.initiated?
+    end
+    false
+  end
+
   def copy_version_files
-    version_files.each(&:copy_file)
+    files_to_copy = version_files.where(selected: true, initiated: false)
+    files_to_copy.each do |file_to_copy|
+      file_to_copy.update_attribute(:initiated, true)
+    end
+    t = Thread.new{files_to_copy & (:copy_file)}
+    t.join
     files_copied_email = DatabankMailer.notify_version_copy_complete(dataset_key: key)
     files_copied_email.deliver_now
   end
@@ -66,6 +85,7 @@ module Dataset::Versionable
     acknowledge_request_version_email = DatabankMailer.acknowledge_request_version(dataset_key: key)
     acknowledge_request_version_email.deliver_now
   end
+
   def add_version_nested_objects(previous:)
     return true if creators.count.positive?
 
@@ -110,6 +130,7 @@ module Dataset::Versionable
   def is_unconfirmed_version?
     publication_state == Databank::PublicationState::TempSuppress::VERSION || hold_state == Databank::PublicationState::TempSuppress::VERSION
   end
+
   def add_version_relationships(previous:)
     return true if related_materials.count.positive?
 
@@ -138,6 +159,7 @@ module Dataset::Versionable
       VersionFile.create(dataset_id: id, datafile_id: datafile.id, selected: false)
     end
   end
+
   def previous_idb_dataset
     previous_version_related_material = related_materials.find_by(datacite_list: Databank::Relationship::NEW_VERSION_OF)
 

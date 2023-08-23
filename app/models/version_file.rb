@@ -7,7 +7,7 @@ class VersionFile < ApplicationRecord
   end
 
   def target_datafile
-    relation = Datafile.where(dataset_id: dataset.id, filename: filename)
+    relation = Datafile.where(dataset_id: dataset.id, binary_name: :binary_name)
     return nil if relation.count.zero?
 
     relation.first
@@ -27,8 +27,6 @@ class VersionFile < ApplicationRecord
     return false unless selected
 
     return true if complete?
-
-    raise "already initiated" if initiated
 
     begin
       update_attribute(:initiated, true)
