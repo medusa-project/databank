@@ -32,7 +32,7 @@
                 = f.fields_for :version_files, version_file do |vf|
                   %tr.row
                     %td.col-md-2
-                      = vf.check_box.checkVFile.checkVFileGroup :selected, html: {disabled: (version_file.initiated)}
+                      = vf.check_box.checkVFile.checkVFileGroup :selected, disabled: (version_file.initiated)
                     %td.col-md-6
                       = version_file.source_datafile.bytestream_name
                     %td.col-md-2

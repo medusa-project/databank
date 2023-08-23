@@ -1,5 +1,7 @@
 class VersionFile < ApplicationRecord
   belongs_to :dataset
+  validates :datafile_id, uniqueness: true
+
   def source_datafile
     Datafile.find_by_id(datafile_id)
   end

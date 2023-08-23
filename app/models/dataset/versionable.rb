@@ -67,6 +67,8 @@ module Dataset::Versionable
     acknowledge_request_version_email.deliver_now
   end
   def add_version_nested_objects(previous:)
+    return true if creators.count.positive?
+
     previous.creators.each do |creator|
       Creator.create(dataset_id: id,
                      family_name: creator.family_name,
@@ -109,6 +111,8 @@ module Dataset::Versionable
     publication_state == Databank::PublicationState::TempSuppress::VERSION || hold_state == Databank::PublicationState::TempSuppress::VERSION
   end
   def add_version_relationships(previous:)
+    return true if related_materials.count.positive?
+
     RelatedMaterial.create(dataset_id: id,
                            material_type: Databank::MaterialType::DATASET,
                            selected_type: Databank::MaterialType::DATASET,
@@ -128,6 +132,8 @@ module Dataset::Versionable
   end
 
   def add_version_files(previous:)
+    return true if version_files.count.positive?
+
     previous.datafiles.each do |datafile|
       VersionFile.create(dataset_id: id, datafile_id: datafile.id, selected: false)
     end

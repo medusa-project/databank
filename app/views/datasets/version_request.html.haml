@@ -11,7 +11,7 @@
     = render partial: 'datasets/version_files_subform', locals: {f: f}
     .row
       .col-md-3.col-md-offset-9
-        = f.submit class: "btn btn-primary btn-block idb" do
+        = button_tag(class: "btn btn-primary btn-block idb", type: "submit") do
           Request New Version
           %span.glyphicon.glyphicon-triangle-right
         =link_to("/contact", class: "btn btn-success btn-block idb") do

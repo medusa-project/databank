@@ -129,6 +129,8 @@ class Dataset < ApplicationRecord
   end
 
   def add_version_metadata_copy(previous:)
+    return true if self.title == previous.title
+
     previous_version_number = previous.dataset_version.to_i
     version_number = previous_version_number + 1
     identifier_base = previous.identifier.chop
