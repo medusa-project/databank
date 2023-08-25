@@ -698,6 +698,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def version_controls
     authorize! :manage, @dataset
+    @previous = @dataset.previous_idb_dataset
   end
 
 
@@ -926,7 +927,6 @@ collaborators to access the data files while the dataset is not public.</li>
   # PATCH/PUT /datasets/1
   # PATCH/PUT /datasets/1.json
   def update
-    Rails.logger.warn params
     authorize! :update, @dataset
     old_publication_state = @dataset.publication_state
     old_creator_state = @dataset.org_creators || false

@@ -112,6 +112,9 @@ module Dataset::Versionable
     end
 
     previous.related_materials.each do |material|
+      next if material.datacite_list == Databank::Relationship::NEW_VERSION_OF
+      next if material.datacite_list == Databank::Relationship::PREVIOUS_VERSION_OF
+
       RelatedMaterial.create(dataset_id: id,
                              material_type: material.material_type,
                              availability: material.availability,
@@ -131,7 +134,7 @@ module Dataset::Versionable
   end
 
   def add_version_relationships(previous:)
-    return true if related_materials.count.positive?
+    return true if related_materials.find_by(dataset_id: id, datacite_list: Databank::Relationship::NEW_VERSION_OF)
 
     RelatedMaterial.create(dataset_id: id,
                            material_type: Databank::MaterialType::DATASET,
@@ -141,6 +144,10 @@ module Dataset::Versionable
                            uri_type: "DOI",
                            citation: previous.plain_text_citation,
                            link: "https://doi.org/#{previous.identifier}")
+    if related_materials.find_by(dataset_id: previous.id, datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF)
+      return true
+    end
+
     RelatedMaterial.create(dataset_id: previous.id,
                            material_type: Databank::MaterialType::DATASET,
                            selected_type: Databank::MaterialType::DATASET,
