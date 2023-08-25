@@ -12,20 +12,23 @@
     %h2 Version Copy Complete
     %hr/
     %blockquote
-      = @dataset.version_files.each do |version_file|
-        %p
-          = version_file.source_datafile.bytestream_name
-          %br/
-          = number_to_human_size(version_file.source_datafile.bytestream_size)
-          %br/
-          -if version_file.selected
-            %span.label.label-warning
-              Selected
-          -else
-            %span.label.label-default
-              Not Selected
-          %br/
-          -if version_file.complete?
-            %span.label.label-success
-              Complete
+      .container
+        - @dataset.version_files.each do |version_file|
+          .row
+            .col-md-6
+              = version_file.source_datafile.bytestream_name
+            .col-md-2
+              = number_to_human_size(version_file.source_datafile.bytestream_size)
+            .col-md-2
+              -if version_file.selected
+                %span.label.label-warning
+                  Selected
+              -else
+                %span.label.label-default
+                  Not Selected
+              %br/
+            .col-md-2
+              -if version_file.complete?
+                %span.label.label-success
+                  Complete
     %hr/
