@@ -20,6 +20,7 @@
                 = f.fields_for :version_files, version_file do |vf|
                   %tr.row
                     %td.col-md-2
+                      = vf.hidden_field :id
                       = vf.check_box :selected, class: "checkVFile checkVFileGroup"
                     %td.col-md-8
                       = version_file.source_datafile.bytestream_name

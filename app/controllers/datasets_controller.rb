@@ -56,7 +56,11 @@ class DatasetsController < ApplicationController
                                      :version_confirm,
                                      :version_acknowledge,
                                      :version_controls,
-                                     :copy_version_files
+                                     :copy_version_files,
+                                     :unsuppress_review,
+                                     :suppress_review,
+                                     :version_to_draft,
+                                     :draft_to_version
   ]
 
   @@num_box_ingest_deamons = 10
@@ -86,9 +90,8 @@ collaborators to access the data files while the dataset is not public.</li>
   end
 
   def copy_version_files
-    # t = Thread.new{@dataset.copy_version_files}
-    # t.join
-    render :version_controls
+    @dataset.copy_version_files
+    redirect_to action: :version_controls
   end
 
   def import_from_globus
@@ -923,6 +926,7 @@ collaborators to access the data files while the dataset is not public.</li>
   # PATCH/PUT /datasets/1
   # PATCH/PUT /datasets/1.json
   def update
+    Rails.logger.warn params
     authorize! :update, @dataset
     old_publication_state = @dataset.publication_state
     old_creator_state = @dataset.org_creators || false
@@ -1613,6 +1617,6 @@ collaborators to access the data files while the dataset is not public.</li>
                                     contributors_attributes:      [:dataset_id, :family_name, :given_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
                                     funders_attributes:           [:dataset_id, :code, :name, :identifier, :identifier_scheme, :grant, :id, :_destroy, :_update, :audit_id],
                                     related_materials_attributes: [:material_type, :selected_type, :availability, :link, :uri, :uri_type, :citation, :datacite_list, :dataset_id, :_destroy, :id, :_update, :audit_id, :feature, :note],
-                                    version_files_attributes:     [:dataset_id, :datafile_id, :selected])
+                                    version_files_attributes:     [:id, :dataset_id, :datafile_id, :selected])
   end
 end

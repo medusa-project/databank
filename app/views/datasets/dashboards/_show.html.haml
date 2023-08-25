@@ -107,18 +107,8 @@
 
           - elsif @completion_check == 'ok'
             -# confirm button conditional complex, so broken into three statements
-            -if ((can? :manage, @dataset) && (@dataset.publication_state != Databank::PublicationState::DRAFT) && (@dataset.publication_state != Databank::PublicationState::Embargo::METADATA) && (@dataset.embargo == Databank::PublicationState::Embargo::METADATA))
+            -if (can? :edit, @dataset) && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
               =render partial: 'datasets/offer_review_btn'
-              -#=render partial: 'datasets/confirm_btn'
-
-            -elsif (@dataset.publication_state == Databank::PublicationState::DRAFT)
-              =render partial: 'datasets/offer_review_btn'
-              -#=render partial: 'datasets/confirm_btn'
-
-            -elsif @dataset.publication_state == Databank::PublicationState::Embargo::METADATA && @dataset.embargo != Databank::PublicationState::Embargo::METADATA
-              =render partial: 'datasets/offer_review_btn'
-              -#=render partial: 'datasets/confirm_btn'
-
           -else
             %button(type="button" id="show-confirm-modal-link" class="btn btn-default btn-block" data-toggle="modal" data-target="#incomplete")
               Confirm

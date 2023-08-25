@@ -7,7 +7,7 @@ class VersionFile < ApplicationRecord
   end
 
   def target_datafile
-    relation = Datafile.where(dataset_id: dataset.id, binary_name: :binary_name)
+    relation = Datafile.where(dataset_id: dataset.id, binary_name: source_datafile.binary_name)
     return nil if relation.count.zero?
 
     relation.first
@@ -15,12 +15,9 @@ class VersionFile < ApplicationRecord
 
   def complete?
     td = target_datafile
+    return false if td.nil?
 
-    return false if td.blank?
-
-    return false unless td.bytestream_size
-
-    td.bytestream_size == source_datafile.bytestream_size
+    td.exists_on_storage?
   end
 
   def copy_file

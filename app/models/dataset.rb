@@ -89,6 +89,7 @@ class Dataset < ApplicationRecord
   accepts_nested_attributes_for :funders, reject_if:     proc {|attributes| attributes["name"].blank? },
                                           allow_destroy: true
   accepts_nested_attributes_for :related_materials, reject_if: :invalid_material, allow_destroy: true
+  accepts_nested_attributes_for :version_files, allow_destroy: true
 
   before_create :set_key
   after_create :store_agreement
@@ -103,9 +104,22 @@ class Dataset < ApplicationRecord
     key
   end
 
-  #   :featured_related_materials,
-  #   :not_featured_related_materials,
-  #   :num_external_relationships
+  def ok_to_publish?
+    # metadata-only embargo datasets are ok to publish, which removes the embargo
+    return true if (publication_state != Databank::PublicationState::DRAFT) &&
+      (publication_state != Databank::PublicationState::Embargo::METADATA) &&
+      (embargo == Databank::PublicationState::Embargo::METADATA)
+
+    # draft datasets are ok to publish
+    return true if publication_state == Databank::PublicationState::DRAFT
+
+    # file-embargoed datasets are ok to publish, which removes the embargo
+    return true if publication_state == Databank::PublicationState::Embargo::METADATA &&
+      embargo != Databank::PublicationState::Embargo::METADATA
+
+    false
+  end
+
   def handle_related_materials
     self.num_external_relationships = 0
     if related_materials.count.zero?

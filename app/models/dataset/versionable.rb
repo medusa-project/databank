@@ -23,8 +23,7 @@ module Dataset::Versionable
     files_to_copy.each do |file_to_copy|
       file_to_copy.update_attribute(:initiated, true)
     end
-    t = Thread.new{files_to_copy & (:copy_file)}
-    t.join
+    files_to_copy.each(&:copy_file)
     files_copied_email = DatabankMailer.notify_version_copy_complete(dataset_key: key)
     files_copied_email.deliver_now
   end

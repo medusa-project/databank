@@ -9,7 +9,7 @@
     %a{:href => "#{@dataset.databank_url}"}
       = @dataset.databank_url
     %hr/
-      %h2 Version Copy Complete
+    %h2 Version Copy Complete
     %hr/
     %blockquote
       = @dataset.version_files.each do |version_file|
@@ -25,7 +25,7 @@
             %span.label.label-default
               Not Selected
           %br/
-          -if version_file.complete
+          -if version_file.complete?
             %span.label.label-success
               Complete
     %hr/
