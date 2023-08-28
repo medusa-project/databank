@@ -76,7 +76,7 @@
       .panel-heading(role="tab" id="reportHeading")
         %h4(class="panel-title")
           %a(role="button" data-toggle="collapse" data-parent="#report" href="#reportPanel" aria-expanded="false" aria-controls="reportPanel" class="accordion-toggle" )
-            %span( class="metadata-label" ) Difference Report
+            %span( class="metadata-label" ) Difference Report (fields with differences are highlighted)
       .panel-collapse.collapse.in(id="reportPanel" role="tabpanel" aria-labelledby="reportHeading" )
         .panel-body
           %table.table
@@ -89,8 +89,8 @@
                 %th
                   %span.metadata-label Previous
             %tbody
-              %tr.row
-                %td.col-span-3.category
+              %tr.row.category
+                %td.col-span-3
                   %span.metadata-label
                     Direct Dataset Properties
               %tr.row{class: "#{(@dataset.title == @previous.title) ? 'same' : 'different'}"}
@@ -156,8 +156,8 @@
                   = @dataset.subject
                 %td
                   = @previous.subject
-              %tr.row
-                %td.col-span-3.category
+              %tr.row.category
+                %td.col-span-3
                   %span.metadata-label Creators
               -@previous.creators.each do |creator|
                 %tr.row
