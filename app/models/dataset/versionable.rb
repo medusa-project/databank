@@ -27,6 +27,7 @@ module Dataset::Versionable
     files_copied_email = DatabankMailer.notify_version_copy_complete(dataset_key: key)
     files_copied_email.deliver_now
   end
+  handle_asynchronously :copy_version_files
 
   def related_version_entry_hash
     # version_group[:group_hash] is an array of hashes
