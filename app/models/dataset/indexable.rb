@@ -25,6 +25,8 @@ module Dataset::Indexable
         "Metadata and Files Withdrawn"
       when "withdrawn_f"
         "Metadata Published, Files Withdrawn"
+      when "suppressed_v"
+        "Version Candidate Draft"
       else
         "Error: publication state not found"
       end
@@ -170,6 +172,8 @@ module Dataset::Indexable
                         "withdrawn_f"
                       when Databank::PublicationState::PermSuppress::METADATA
                         "withdrawn_mf"
+                      when Databank::PublicationState::TempSuppress::VERSION
+                        "suppressed_v"
                       else
                         "suppressed_f"
                       end

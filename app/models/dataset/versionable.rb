@@ -80,10 +80,18 @@ module Dataset::Versionable
   end
 
   def send_version_request_emails
-    request_version_email = DatabankMailer.request_version(dataset_key: key)
-    request_version_email.deliver_now
-    acknowledge_request_version_email = DatabankMailer.acknowledge_request_version(dataset_key: key)
-    acknowledge_request_version_email.deliver_now
+    begin
+      request_version_email = DatabankMailer.request_version(dataset_key: key)
+      request_version_email.deliver_now
+      acknowledge_v_request_email = DatabankMailer.acknowledge_request_version(dataset_key: key)
+      acknowledge_v_request_email.deliver_now
+    rescue Net::SMTPSyntaxError => e
+      Rails.logger.warn(e.message)
+      Rails.logger.warn("could not version request mail #{params}")
+    rescue StandardError => e
+      Rails.logger.warn("error while trying to send version_request_emails #{e.message}")
+      raise e
+    end
   end
 
   def add_version_nested_objects(previous:)
