@@ -186,18 +186,13 @@ ready = function () {
     });
 
     $('#update-save-button').click(function () {
-
-
         if ($(".invalid-name").length > 0) {
             alert("All names must be complete.");
             $(".invalid-name > input").first().focus();
             return
         }
-
         if ($(".progress-bar").length == 0) {
-
             window.onbeforeunload = null;
-
             $("[id^=edit_dataset]").submit();
         } else {
             alert("UPLOADS IN PROGRESS. Try again once uploads are complete.")
