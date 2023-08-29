@@ -101,6 +101,7 @@ Rails.application.routes.draw do
     member do
       get 'confirm_review', to: 'datasets#confirm_review'
       match 'send_publication_notice', to: 'datasets#send_publication_notice', via: [:get, :post]
+      match 'version_confirm', via: [:get, :post, :patch]
       get 'share'
       get 'version', to: 'datasets#pre_version'
       get 'version_confirm'
