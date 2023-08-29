@@ -1,6 +1,6 @@
 %h2 New Version Request Form
 .container-fluid
-  = form_for(@dataset, :url => {action: 'update'}, html: {role: "form", class: "input-append dataset-form" }) do |f|
+  = form_for(@dataset, :url => {action: 'version_confirm'}, html: {role: "form", class: "input-append dataset-form" }) do |f|
     = f.hidden_field :id
     = f.hidden_field :previous_id, value: @previous.id
     .form-group

@@ -914,14 +914,11 @@ collaborators to access the data files while the dataset is not public.</li>
     authorize! :update, @dataset
     respond_to do |format|
       if @dataset.update(dataset_params)
-        # TEMP DEBUG
-        Rails.logger.warn "sending version request emails"
         @dataset.send_version_request_emails
-        Rails.logger.warn "should have sent version request emails"
-        format.html {redirect_to dataset_path(@dataset.key)}
+        format.html {redirect_to dataset_path(@dataset.key), notice: "version requested"}
         format.json {render :show, status: :ok, location: dataset_path(@dataset.key)}
       else
-        format.html { redirect_to edit_dataset_path(@dataset.key) }
+        format.html { redirect_to dataset_path(@dataset.previous_key), notice: "error attempting to create version" }
         format.json { render json: @dataset.errors, status: :unprocessable_entity }
       end
     end
