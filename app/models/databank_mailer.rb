@@ -27,7 +27,7 @@ class DatabankMailer < ActionMailer::Base
     @dataset = Dataset.find_by(key: dataset_key)
     subject_base = "Version Request Acknowledgement"
     subject = prepend_system_code(subject_base)
-    mail(to:      dataset.depositor_email,
+    mail(to:      @dataset.depositor_email,
          cc:      IDB_CONFIG[:admin][:contact_email],
          subject: subject)
   end
