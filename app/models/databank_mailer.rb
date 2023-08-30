@@ -7,7 +7,7 @@ require "open_uri_redirections"
 class DatabankMailer < ActionMailer::Base
   default from: IDB_CONFIG[:admin][:contact_email]
 
-  def request_version(dataset_key)
+  def request_version(dataset_key:)
     @dataset = Dataset.find_by(key: dataset_key)
     subject_base = "Version Request"
     subject = prepend_system_code(subject_base)
