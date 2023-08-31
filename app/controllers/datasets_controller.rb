@@ -91,6 +91,10 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def copy_version_files
     @dataset.copy_version_files
+    respond_to do |format|
+      format.html { render :copy_version_files, notice: "Files copied." }
+      format.json { render json: {notice: "Files copied"}, status: :ok }
+    end
   end
 
   def import_from_globus
