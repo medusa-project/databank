@@ -91,7 +91,6 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def copy_version_files
     @dataset.copy_version_files
-    redirect_to action: :version_controls
   end
 
   def import_from_globus
