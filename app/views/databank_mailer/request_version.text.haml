@@ -4,9 +4,10 @@ Topic: New Version Request
 Dataset: "#{@dataset.databank_url}"
 
 New Version Request
-
+  
 Version Comment:
 = @dataset.version_comment
+
 Files:
 - @dataset.version_files.each do |version_file|
   - name = version_file.source_datafile.bytestream_name

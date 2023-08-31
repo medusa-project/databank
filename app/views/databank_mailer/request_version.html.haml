@@ -16,11 +16,13 @@
     %h2 New Version Request
     %hr/
     %blockquote
-      %p Version Comment:
+      %strong Version Comment:
+      &nbsp;&nbsp;&nbsp;
       = @dataset.version_comment
-      %p Files:
+      %strong Files:
       - @dataset.version_files.each do |version_file|
         - name = version_file.source_datafile.bytestream_name
         - size = number_to_human_size(version_file.source_datafile.bytestream_size)
         - selected = version_file.selected ? "Selected" : "Not Selected"
+        &nbsp;&nbsp;&nbsp;
         = "#{name} | #{size} | #{selected}"
