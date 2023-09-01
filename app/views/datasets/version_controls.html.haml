@@ -168,17 +168,17 @@
                     = creator.email
                     |
                     = creator.identifier
-    %td
-      -current_creator = @dataset.creators.find_by(email: creator.email)
-      -if current_creator.nil?
-        %span.label.label-danger
-          Not found in current version
-      -else
-        = current_creator.display_name
-        |
-        = current_creator.email
-        |
-        = current_creator.identifier
+                  %td
+                    -current_creator = @dataset.creators.find_by(email: creator.email)
+                    -if current_creator.nil?
+                      %span.label.label-danger
+                        Not found in current version
+                    -else
+                      = current_creator.display_name
+                      |
+                      = current_creator.email
+                      |
+                      = current_creator.identifier
     -@dataset.creators.each do |creator|
       -if @previous.creators.find_by(email: creator.email).nil?
         %tr.row
