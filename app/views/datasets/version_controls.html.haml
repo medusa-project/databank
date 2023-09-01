@@ -24,7 +24,7 @@
               %table.table.table-bordered#versionfiles
                 %tbody
                   %tr.row
-                    %td.col-span-5
+                    %td
                       %input#checkAllVFiles{type: "checkbox"}
                         Select all
                         =surround "(", ")" do
@@ -58,7 +58,7 @@
                     %td.col-md-2
                     %td.col-md-4
                     %td.col-md-2
-                    %td.col-span-2
+                    %td.col-md-4{colspan: "2"}
                       -if @dataset.version_copies_complete?
                         %span.label.label-success
                           Version Copies Complete
@@ -89,7 +89,7 @@
                   %span.metadata-label Previous
             %tbody
               %tr.row.category
-                %td.col-span-5
+                %td
                   %span.metadata-label
                     Dataset Metadata
               %tr.row{class: "#{(@dataset.title == @previous.title) ? 'same' : 'different'}"}
@@ -156,7 +156,7 @@
                 %td
                   = @previous.subject
               %tr.row.category
-                %td.col-span-5
+                %td
                   %span.metadata-label Creators
               -@previous.creators.each do |creator|
                 %tr.row
@@ -181,14 +181,11 @@
                     %td
                       = creator.display_info
               %tr.row.category
-                %td.col-span-5
+                %td
                   %span.metadata-label Funders
               -if @previous.funders.empty? && @dataset.funders.empty?
                 %tr.row
-                  %td
-                  %td
-                    No funders found in current or previous version
-                  %td
+                  %td{colspan: "3"}
                     No funders found in current or previous version
               -else
                 - @dataset.funders.each do |funder|
@@ -217,14 +214,11 @@
                     %td
                       = previous_funder.display_info
               %tr.row.category
-                %td.col-span-5
+                %td
                   %span.metadata-label Relationships (non-version)
               -if @previous.nonversion_related_materials.empty? && @dataset.nonversion_related_materials.empty?
                 %tr.row
-                  %td
-                  %td
-                    No non-version relationships found in current or previous version
-                  %td
+                  %td{colspan: "3"}
                     No non-version relationships found in current or previous version
               -else
                 -@dataset.nonversion_related_materials.each do |relationship|
