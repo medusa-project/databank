@@ -9,4 +9,10 @@ class Funder < ApplicationRecord
   def as_json(_options={})
     super(only: %i[name identifier identifier_scheme grant created_at updated_at])
   end
+
+  def display_info
+    return "#{name}-Grant:#{grant}" if grant.present?
+
+    name
+  end
 end
