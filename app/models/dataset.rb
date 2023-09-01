@@ -174,6 +174,10 @@ class Dataset < ApplicationRecord
     save
   end
 
+  def nonversion_related_materials
+    related_materials.select(&:nonversion_relationships.count.positive?)
+  end
+
   def sharing_link
     return "N/A no current sharing link" unless current_share_code
 
