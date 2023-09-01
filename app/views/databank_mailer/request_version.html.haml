@@ -19,7 +19,9 @@
       %strong Version Comment:
       &nbsp;&nbsp;&nbsp;
       = @dataset.version_comment
+      %br/
       %strong Files:
+      %br/
       - @dataset.version_files.each do |version_file|
         - name = version_file.source_datafile.bytestream_name
         - size = number_to_human_size(version_file.source_datafile.bytestream_size)
