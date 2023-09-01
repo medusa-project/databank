@@ -175,7 +175,11 @@ class Dataset < ApplicationRecord
   end
 
   def nonversion_related_materials
-    related_materials.select(&:nonversion_relationships.count.positive?)
+    relationship_arr = []
+    related_materials.each do |material|
+      relationship_arr << material if material.nonversion_relationships.count.positive?
+    end
+    relationship_arr
   end
 
   def sharing_link
