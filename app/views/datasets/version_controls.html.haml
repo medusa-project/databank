@@ -89,7 +89,7 @@
                   %span.metadata-label Previous
             %tbody
               %tr.row.category
-                %td.col-span-3
+                %td.col-span-5
                   %span.metadata-label
                     Dataset Metadata
               %tr.row{class: "#{(@dataset.title == @previous.title) ? 'same' : 'different'}"}
@@ -156,7 +156,7 @@
                 %td
                   = @previous.subject
               %tr.row.category
-                %td.col-span-3
+                %td.col-span-5
                   %span.metadata-label Creators
               -@previous.creators.each do |creator|
                 %tr.row
@@ -171,81 +171,81 @@
                         Not found in current version
                     -else
                       = current_creator.display_info
-    -@dataset.creators.each do |creator|
-      -if @previous.creators.find_by(email: creator.email).nil?
-        %tr.row
-          %td
-          %td
-            %span.label.label-danger
-              Not found in previous version
-          %td
-            = creator.display_info
-    %tr.row.category
-      %td.col-span-3
-        %span.metadata-label Funders
-    -if @previous.funders.empty? && @dataset.funders.empty?
-      %tr.row
-        %td.col-span-3
-          No funders found in current or previous version
-    -else
-      - @dataset.funders.each do |funder|
-        - previous_funder = @previous.funders.find_by(name: funder.name)
-        - if previous_funder.nil?
-          %tr.row.different
-          %td
-          %td
-            = funder.display_info
-          %td
-            New funder in current version
-        -else
-          %tr.row{class: "#{(funder.display_info == previous_funder.display_info) ? 'same' : 'different'}"}
-          %td
-          %td
-            = funder.display_info
-          %td
-            = previous_funder.display_info
-      - @previous.funders.each do |previous_funder|
-        - funder = @dataset.funders.find_by(name: previous_funder.name)
-        - if funder.nil?
-          %tr.row.different
-          %td
-          %td
-            Funder removed in current version
-          %td
-            = previous_funder.display_info
-    %tr.row.category
-      %td.col-span-3
-        %span.metadata-label Relationships (non-version)
-    -if @previous.nonversion_related_materials.empty? && @dataset.nonversion_related_materials.empty?
-      %tr.row
-        %td.col-span-3
-          No non-version relationships found in current or previous version
-    -else
-      -@dataset.nonversion_related_materials.each do |relationship|
-        -previous_relationship = @previous.related_materials.find_by(uri: relationship.uri)
-        -if previous_relationship.nil?
-          %tr.row.different
-          %td
-          %td
-            = relationship.display_info
-          %td
-            New relationship in current version
-        -else
-          %tr.row{class: "#{relationship.equals(previous_relationship) ? 'same' : 'different'}"}
-          %td
-          %td
-            = relationship.display_info
-          %td
-            = previous_relationship.display_info
-      -@previous.nonversion_related_materials.each do |previous_relationship|
-        -relationship = @dataset.related_materials.find_by(uri: previous_relationship.uri)
-        -if relationship.nil?
-          %tr.row.different
-          %td
-          %td
-          Relationship removed in current version
-          %td
-          = previous_relationship.display_info
+              -@dataset.creators.each do |creator|
+                -if @previous.creators.find_by(email: creator.email).nil?
+                  %tr.row
+                    %td
+                    %td
+                      %span.label.label-danger
+                        Not found in previous version
+                    %td
+                      = creator.display_info
+              %tr.row.category
+                %td.col-span-5
+                  %span.metadata-label Funders
+              -if @previous.funders.empty? && @dataset.funders.empty?
+                %tr.row
+                  %td.col-span-3
+                    No funders found in current or previous version
+              -else
+                - @dataset.funders.each do |funder|
+                  - previous_funder = @previous.funders.find_by(name: funder.name)
+                  - if previous_funder.nil?
+                    %tr.row.different
+                    %td
+                    %td
+                      = funder.display_info
+                    %td
+                      New funder in current version
+                  -else
+                    %tr.row{class: "#{(funder.display_info == previous_funder.display_info) ? 'same' : 'different'}"}
+                    %td
+                    %td
+                      = funder.display_info
+                    %td
+                      = previous_funder.display_info
+                - @previous.funders.each do |previous_funder|
+                  - funder = @dataset.funders.find_by(name: previous_funder.name)
+                  - if funder.nil?
+                    %tr.row.different
+                    %td
+                    %td
+                      Funder removed in current version
+                    %td
+                      = previous_funder.display_info
+              %tr.row.category
+                %td.col-span-3
+                  %span.metadata-label Relationships (non-version)
+              -if @previous.nonversion_related_materials.empty? && @dataset.nonversion_related_materials.empty?
+                %tr.row
+                  %td.col-span-3
+                    No non-version relationships found in current or previous version
+              -else
+                -@dataset.nonversion_related_materials.each do |relationship|
+                  -previous_relationship = @previous.related_materials.find_by(uri: relationship.uri)
+                  -if previous_relationship.nil?
+                    %tr.row.different
+                    %td
+                    %td
+                      = relationship.display_info
+                    %td
+                      New relationship in current version
+                  -else
+                    %tr.row{class: "#{relationship.equals(previous_relationship) ? 'same' : 'different'}"}
+                    %td
+                    %td
+                      = relationship.display_info
+                    %td
+                      = previous_relationship.display_info
+                -@previous.nonversion_related_materials.each do |previous_relationship|
+                  -relationship = @dataset.related_materials.find_by(uri: previous_relationship.uri)
+                  -if relationship.nil?
+                    %tr.row.different
+                    %td
+                    %td
+                    Relationship removed in current version
+                    %td
+                    = previous_relationship.display_info
     =form_tag("/datasets/#{@dataset.key}/suppression_action", id: "suppression_form") do |f|
       %input(id="suppression_action" type="hidden" name="suppression_action" )
       .panel-group(id="access" role="tablist" aria-multiselectable="true")
