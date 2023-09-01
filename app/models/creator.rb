@@ -30,6 +30,10 @@ class Creator < ApplicationRecord
     {"num-found" => num_found_nodeset[0].value.to_i, "result" => result}
   end
 
+  def display_info
+    "#{display_name}, #{email}, #{identifier}"
+  end
+
   def self.orcid_person(orcid:)
     url = URI("#{IDB_CONFIG[:orcid][:endpoint_base]}#{orcid}/record")
     response = url.read

@@ -163,22 +163,14 @@
                   %td
                   %td
                     %span.label.label-default
-                    = creator.display_name
-                    |
-                    = creator.email
-                    |
-                    = creator.identifier
+                    = creator.display_info
                   %td
                     -current_creator = @dataset.creators.find_by(email: creator.email)
                     -if current_creator.nil?
                       %span.label.label-danger
                         Not found in current version
                     -else
-                      = current_creator.display_name
-                      |
-                      = current_creator.email
-                      |
-                      = current_creator.identifier
+                      = current_creator.display_info
     -@dataset.creators.each do |creator|
       -if @previous.creators.find_by(email: creator.email).nil?
         %tr.row
@@ -187,11 +179,7 @@
             %span.label.label-danger
               Not found in previous version
           %td
-            = creator.display_name
-            |
-            = creator.email
-            |
-            = creator.identifier
+            = creator.display_info
     %tr.row.category
       %td.col-span-3
         %span.metadata-label Funders
