@@ -233,7 +233,7 @@
                       %td
                         New relationship in current version
                   -else
-                    %tr.row{class: "#{relationship.equals(previous_relationship) ? 'same' : 'different'}"}
+                    %tr.row{class: "#{relationship.equals?(previous_relationship) ? 'same' : 'different'}"}
                       %td
                       %td
                         = relationship.display_info
