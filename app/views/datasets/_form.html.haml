@@ -235,7 +235,7 @@
               = render partial: 'materials_subform', locals: {f: f}
       = render partial: 'datafiles_subform', locals: {f: f}
 
-  - if (@dataset.publication_state == Databank::PublicationState::DRAFT) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
+  - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
 
     .container-fluid
 
