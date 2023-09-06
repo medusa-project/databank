@@ -250,7 +250,7 @@ collaborators to access the data files while the dataset is not public.</li>
         search_get_my_facets = Dataset.search do
           all_of do
             without(:depositor, "error")
-            without(:publication_state, Databank::PublicationState::TempSuppress::VERSION)
+            without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
             any_of do
               with :depositor_email, current_user.email
               with :internal_view_netids, current_netid
@@ -274,7 +274,7 @@ collaborators to access the data files while the dataset is not public.</li>
         search_get_facets = Dataset.search do
           all_of do
             without(:depositor, "error")
-            without(:publication_state, Databank::PublicationState::TempSuppress::VERSION)
+            without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
             with(:is_test, false)
             any_of do
               with :depositor_email, current_user.email
@@ -306,7 +306,7 @@ collaborators to access the data files while the dataset is not public.</li>
         @search = Dataset.search do
           all_of do
             without(:depositor, "error")
-            without(:publication_state, Databank::PublicationState::TempSuppress::VERSION)
+            without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
             with :is_test, false
             any_of do
               with :depositor_email, current_user.email
@@ -422,6 +422,7 @@ collaborators to access the data files while the dataset is not public.</li>
             with(:is_most_recent_version, true)
             with :is_test, false
             without :hold_state, Databank::PublicationState::TempSuppress::METADATA
+            without :publication_state, Databank::PublicationState::TempSuppress::VERSION
             any_of do
               with :publication_state, Databank::PublicationState::RELEASED
               with :publication_state, Databank::PublicationState::Embargo::FILE
@@ -445,7 +446,10 @@ collaborators to access the data files while the dataset is not public.</li>
         @search = Dataset.search do
           all_of do
             without(:depositor, "error")
+            with(:is_most_recent_version, true)
             with(:is_test, false)
+            without :hold_state, Databank::PublicationState::TempSuppress::METADATA
+            without :publication_state, Databank::PublicationState::TempSuppress::VERSION
             any_of do
               with :publication_state, Databank::PublicationState::RELEASED
               with :publication_state, Databank::PublicationState::Embargo::FILE
