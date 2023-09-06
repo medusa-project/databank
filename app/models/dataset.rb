@@ -51,6 +51,7 @@ class Dataset < ApplicationRecord
     string :visibility_code
     string :dataset_version
     string :internal_view_netids, multiple: true
+    string :draft_viewer_netids, multiple: true
     string :funder_codes, multiple: true
     string :grant_numbers, multiple: true
     string :creator_names, multiple: true
@@ -180,15 +181,6 @@ class Dataset < ApplicationRecord
       relationship_arr << material if material.nonversion_relationships.count.positive?
     end
     relationship_arr
-  end
-
-  def netids_can_edit
-    netids = []
-    if internal_editor_netids && internal_editor_netids != ""
-      netids = internal_editor_netids.split(",")
-    end
-    netids << depositor_email.split("@").first
-    netids
   end
 
   def sharing_link

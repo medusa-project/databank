@@ -218,6 +218,11 @@ module Dataset::Indexable
     Funder.where(dataset_id: id).pluck(:code)
   end
 
+  def draft_viewer_netids
+    depositor_netid = depositor_email.split("@")[0]
+    internal_view_netids + [depositor_netid]
+  end
+
   def funder_names_fulltext
     funder_names.join(" ").to_s
   end

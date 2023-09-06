@@ -248,26 +248,45 @@ collaborators to access the data files while the dataset is not public.</li>
         current_netid = current_user.email.split("@").first
 
         search_get_my_facets = Dataset.search do
-          all_of do
-            without(:depositor, "error")
-            without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-            unless netids_can_edit.include? current_netid
-              without :publication_state, Databank::PublicationState::TempSuppress::VERSION
+          any_of do
+            all_of do
+              without(:depositor, "error")
+              with :draft_viewer_netids, current_netid
+              with :publication_state, Databank::PublicationState::TempSuppress::VERSION
+              without(:depositor, "error")
+              without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
+              with(:is_most_recent_version, true)
+              with :is_test, false
             end
-            any_of do
-              with :depositor_email, current_user.email
-              with :internal_view_netids, current_netid
-              with :internal_editor_netids, current_netid
-            end
-            with(:is_most_recent_version, true)
-            with :is_test, false
-            any_of do
+            all_of do
+              without(:depositor, "error")
+              with :draft_viewer_netids, current_netid
               with :publication_state, Databank::PublicationState::DRAFT
-              with :publication_state, Databank::PublicationState::RELEASED
-              with :publication_state, Databank::PublicationState::Embargo::FILE
-              with :publication_state, Databank::PublicationState::TempSuppress::FILE
+              without(:depositor, "error")
+              without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
+              with(:is_most_recent_version, true)
+              with :is_test, false
+            end
+            all_of do
+              without(:depositor, "error")
+              with :draft_viewer_netids, current_netid
               with :publication_state, Databank::PublicationState::TempSuppress::METADATA
-              with :publication_state, Databank::PublicationState::PermSuppress::FILE
+              without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
+              with(:is_most_recent_version, true)
+              with :is_test, false
+            end
+            all_of do
+              without(:depositor, "error")
+              without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
+              with(:is_most_recent_version, true)
+              with :is_test, false
+              any_of do
+                with :publication_state, Databank::PublicationState::DRAFT
+                with :publication_state, Databank::PublicationState::RELEASED
+                with :publication_state, Databank::PublicationState::Embargo::FILE
+                with :publication_state, Databank::PublicationState::TempSuppress::FILE
+                with :publication_state, Databank::PublicationState::PermSuppress::FILE
+              end
             end
           end
           keywords(params[:q])
@@ -275,28 +294,46 @@ collaborators to access the data files while the dataset is not public.</li>
         end
 
         search_get_facets = Dataset.search do
-          all_of do
-            without(:depositor, "error")
-            without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-            unless netids_can_edit.include? current_netid
-              without :publication_state, Databank::PublicationState::TempSuppress::VERSION
+          any_of do
+            all_of do
+              without(:depositor, "error")
+              with :draft_viewer_netids, current_netid
+              with :publication_state, Databank::PublicationState::TempSuppress::VERSION
+              without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
+              with(:is_most_recent_version, true)
+              with :is_test, false
             end
-            with(:is_test, false)
-            any_of do
-              with :depositor_email, current_user.email
-              with :internal_view_netids, current_netid
-              with :internal_editor_netids, current_netid
-              with :publication_state, Databank::PublicationState::RELEASED
-              with :publication_state, Databank::PublicationState::Embargo::FILE
-              with :publication_state, Databank::PublicationState::TempSuppress::FILE
-              with :publication_state, Databank::PublicationState::PermSuppress::FILE
-              all_of do
+            all_of do
+              without(:depositor, "error")
+              with :draft_viewer_netids, current_netid
+              with :publication_state, Databank::PublicationState::DRAFT
+              without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
+              with(:is_most_recent_version, true)
+              with :is_test, false
+            end
+            all_of do
+              without(:depositor, "error")
+              with :draft_viewer_netids, current_netid
+              with :publication_state, Databank::PublicationState::TempSuppress::METADATA
+              without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
+              with(:is_most_recent_version, true)
+              with :is_test, false
+            end
+            all_of do
+              without(:depositor, "error")
+              without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
+              with(:is_test, false)
+              any_of do
                 with :depositor_email, current_user.email
-                with :publication_state, Databank::PublicationState::TempSuppress::METADATA
+                with :internal_view_netids, current_netid
+                with :internal_editor_netids, current_netid
+                with :publication_state, Databank::PublicationState::RELEASED
+                with :publication_state, Databank::PublicationState::Embargo::FILE
+                with :publication_state, Databank::PublicationState::TempSuppress::FILE
+                with :publication_state, Databank::PublicationState::PermSuppress::FILE
               end
             end
           end
-
           keywords(params[:q])
           facet(:license_code)
           facet(:funder_codes)
@@ -312,15 +349,23 @@ collaborators to access the data files while the dataset is not public.</li>
         @search = Dataset.search do
           all_of do
             without(:depositor, "error")
-            without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-            unless netids_can_edit.include? current_netid
-              without :publication_state, Databank::PublicationState::TempSuppress::VERSION
+            without :hold_state, Databank::PublicationState::TempSuppress::VERSION
+            any_of do
+              all_of do
+                with :draft_viewer_netids, current_netid
+                with :publication_state, Databank::PublicationState::TempSuppress::VERSION
+              end
+              all_of do
+                with :draft_viewer_netids, current_netid
+                with :publication_state, Databank::PublicationState::DRAFT
+              end
+              all_of do
+                with :draft_viewer_netids, current_netid
+                with :publication_state, Databank::PublicationState::TempSuppress::METADATA
+              end
             end
             with :is_test, false
             any_of do
-              with :depositor_email, current_user.email
-              with :internal_view_netids, current_netid
-              with :internal_editor_netids, current_netid
               with :publication_state, Databank::PublicationState::RELEASED
               with :publication_state, Databank::PublicationState::Embargo::FILE
               with :publication_state, Databank::PublicationState::TempSuppress::FILE
