@@ -251,7 +251,7 @@ collaborators to access the data files while the dataset is not public.</li>
           all_of do
             without(:depositor, "error")
             without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-            unless :netids_can_edit.include? current_netid
+            unless netids_can_edit.include? current_netid
               without :publication_state, Databank::PublicationState::TempSuppress::VERSION
             end
             any_of do
@@ -278,7 +278,7 @@ collaborators to access the data files while the dataset is not public.</li>
           all_of do
             without(:depositor, "error")
             without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-            unless :netids_can_edit.include? current_netid
+            unless netids_can_edit.include? current_netid
               without :publication_state, Databank::PublicationState::TempSuppress::VERSION
             end
             with(:is_test, false)
@@ -313,7 +313,7 @@ collaborators to access the data files while the dataset is not public.</li>
           all_of do
             without(:depositor, "error")
             without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-            unless :netids_can_edit.include? current_netid
+            unless netids_can_edit.include? current_netid
               without :publication_state, Databank::PublicationState::TempSuppress::VERSION
             end
             with :is_test, false
