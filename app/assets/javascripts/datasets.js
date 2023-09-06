@@ -40,6 +40,9 @@ ready = function () {
         window.location.href = "/datasets/" + dataset_key + "/request_review"
 
     });
+    $("#review-version-btn").click(function () {
+        window.location.href = "/datasets/" + dataset_key + "/request_review"
+    });
 
     $(".choose_review_block_v").click(function () {
         $('#choose_review_v').trigger("click");
