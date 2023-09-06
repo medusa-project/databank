@@ -43,13 +43,13 @@
     .label.label-danger
       pre-publication review
     &nbsp;
-    -if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
-      .label.label-danger
-        version candidate under review
-    - elsif dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
-      .label.label-success
-        version candidate eligible to be submitted for pre-publication review
-      &nbsp;
+  -if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+    .label.label-danger
+      version candidate under review
+  - elsif dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
+    .label.label-success
+      version candidate eligible to be submitted for pre-publication review
+    &nbsp;
   -if dataset.share_code
     .label.label-success
       has sharing link
