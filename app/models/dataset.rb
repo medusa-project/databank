@@ -56,7 +56,6 @@ class Dataset < ApplicationRecord
     string :creator_names, multiple: true
     string :filenames, multiple: true
     string :internal_editor_netids, multiple: true
-    string :netids_can_edit, multiple: true
     string :datafile_extensions, multiple: true
     string :hold_state
     string :publication_state
