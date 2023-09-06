@@ -363,15 +363,14 @@ collaborators to access the data files while the dataset is not public.</li>
                 with :draft_viewer_netids, current_netid
                 with :publication_state, Databank::PublicationState::TempSuppress::METADATA
               end
+              any_of do
+                with :publication_state, Databank::PublicationState::RELEASED
+                with :publication_state, Databank::PublicationState::Embargo::FILE
+                with :publication_state, Databank::PublicationState::TempSuppress::FILE
+                with :publication_state, Databank::PublicationState::PermSuppress::FILE
+              end
             end
             with :is_test, false
-            any_of do
-              with :publication_state, Databank::PublicationState::RELEASED
-              with :publication_state, Databank::PublicationState::Embargo::FILE
-              with :publication_state, Databank::PublicationState::TempSuppress::FILE
-              with :publication_state, Databank::PublicationState::PermSuppress::FILE
-            end
-
             if params.has_key?("depositors")
               any_of do
                 params["depositors"].each do |depositor_netid|
