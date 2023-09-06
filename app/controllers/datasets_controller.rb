@@ -255,7 +255,6 @@ collaborators to access the data files while the dataset is not public.</li>
               with :publication_state, Databank::PublicationState::TempSuppress::VERSION
               without(:depositor, "error")
               without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-              with(:is_most_recent_version, true)
               with :is_test, false
             end
             all_of do
@@ -264,7 +263,6 @@ collaborators to access the data files while the dataset is not public.</li>
               with :publication_state, Databank::PublicationState::DRAFT
               without(:depositor, "error")
               without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-              with(:is_most_recent_version, true)
               with :is_test, false
             end
             all_of do
@@ -272,13 +270,11 @@ collaborators to access the data files while the dataset is not public.</li>
               with :draft_viewer_netids, current_netid
               with :publication_state, Databank::PublicationState::TempSuppress::METADATA
               without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-              with(:is_most_recent_version, true)
               with :is_test, false
             end
             all_of do
               without(:depositor, "error")
               without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-              with(:is_most_recent_version, true)
               with :is_test, false
               any_of do
                 with :publication_state, Databank::PublicationState::DRAFT
@@ -300,7 +296,6 @@ collaborators to access the data files while the dataset is not public.</li>
               with :draft_viewer_netids, current_netid
               with :publication_state, Databank::PublicationState::TempSuppress::VERSION
               without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-              with(:is_most_recent_version, true)
               with :is_test, false
             end
             all_of do
@@ -308,7 +303,6 @@ collaborators to access the data files while the dataset is not public.</li>
               with :draft_viewer_netids, current_netid
               with :publication_state, Databank::PublicationState::DRAFT
               without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-              with(:is_most_recent_version, true)
               with :is_test, false
             end
             all_of do
@@ -316,7 +310,6 @@ collaborators to access the data files while the dataset is not public.</li>
               with :draft_viewer_netids, current_netid
               with :publication_state, Databank::PublicationState::TempSuppress::METADATA
               without(:hold_state, Databank::PublicationState::TempSuppress::VERSION)
-              with(:is_most_recent_version, true)
               with :is_test, false
             end
             all_of do
