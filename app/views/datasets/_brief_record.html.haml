@@ -37,15 +37,13 @@
       &nbsp;
       .label.label-default
         = pluralize(dataset.notes.count, 'note')
-  - is_draft = (dataset.publication_state == Databank::PublicationState::DRAFT)
-  - has_identifier = (dataset.identifier && dataset.identifier != '')
-  -if((can? :read, dataset) && is_draft && has_identifier)
-    .label.label-danger
-      pre-publication review
-    &nbsp;
-  -if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+      &nbsp;
+  - if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
     .label.label-danger
       version candidate under review
+  - elsif dataset.in_pre_publication_review?
+    .label.label-danger
+      pre-publication review
   - elsif dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
     .label.label-success
       version candidate eligible to be submitted for pre-publication review

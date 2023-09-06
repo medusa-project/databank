@@ -3,7 +3,7 @@ require 'csv'
 namespace :fix do
 
   desc 'hide embargoed resources'
-  task :hide_embargoed => :environment do
+  task hide_embargoed: :environment do
     Dataset.where(publication_state: Databank::PublicationState::RELEASED,
                   embargo: [Databank::PublicationState::Embargo::FILE,
                             Databank::PublicationState::Embargo::METADATA]).each do |dataset|
@@ -14,14 +14,14 @@ namespace :fix do
 
   # to be run BEFORE switching dev system config to test system
   desc 'report on doi states'
-  task :doi_report => :environment do
+  task doi_report: :environment do
     Dataset.all.each do |dataset|
       puts "#{dataset.key}, #{dataset.doi_state}, #{dataset.publication_state}"
     end
   end
 
   desc 'retrofit markdown text'
-  task :retrofit_markdown => :environment do
+  task retrofit_markdown: :environment do
     markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
     Dataset.all.each do |dataset|
       dataset.datafiles.each do |datafile|
@@ -37,18 +37,18 @@ namespace :fix do
   end
 
   desc 'update datacite metadata store'
-  task :update_datacite => :environment do
+  task update_datacite: :environment do
     datasets = Dataset.select(&:metadata_public?)
     datasets.each(&:update_doi)
   end
   
   desc 'remove draft files if medusa ingest successful'
-  task :remove_draft_if_in_medusa => :environment do
+  task remove_draft_if_in_medusa: :environment do
     MedusaIngest.remove_draft_if_in_medusa
   end
 
   desc 'update embargo state for released datasets'
-  task :fix_embargo_for_released => :environment do
+  task fix_embargo_for_released: :environment do
     Dataset.all.each do |dataset|
       if dataset.publication_state == Databank::PublicationState::RELEASED && dataset.embargo != Databank::PublicationState::Embargo::NONE
         dataset.embargo = Databank::PublicationState::Embargo::NONE
@@ -58,7 +58,7 @@ namespace :fix do
   end
 
   desc 'create doi objects from dataset identifiers'
-  task :retrofit_dois => :environment do
+  task retrofit_dois: :environment do
     Dataset.all.each do |dataset|
       if dataset.identifier && !dataset.identifier.empty?
         Doi.create!(dataset_id: dataset.id, identifier: dataset.identifier)
@@ -67,7 +67,7 @@ namespace :fix do
   end
 
   desc 'update reviewer roles to network_reviewer'
-  task :fix_reviewers => :environment do
+  task fix_reviewers: :environment do
     Invitee.where(role: 'reviewer').each do |invitee|
       invitee.update_attribute('role', Databank::UserRole::NETWORK_REVIEWER)
     end
@@ -78,12 +78,12 @@ namespace :fix do
   end
 
   desc 'fix storage root for preserved files'
-  task :fix_storage_root => :environment do
+  task fix_storage_root: :environment do
     Datafile.where(storage_root: 'draft').each(&:in_medusa)
   end
 
   desc 'fix missing version'
-  task :fix_missing_version => :environment do
+  task fix_missing_version: :environment do
     datasets_missing_version = Dataset.where(dataset_version: nil)
 
     if datasets_missing_version.count > 0
@@ -99,7 +99,7 @@ namespace :fix do
   end
 
   desc 'fix missing mime type'
-  task :fix_missing_mime => :environment do
+  task fix_missing_mime: :environment do
     datafiles_missing_mime = Datafile.where(mime_type: nil)
 
     if datafiles_missing_mime.count > 0
@@ -116,7 +116,7 @@ namespace :fix do
   end
 
   desc 'remove invalid creators'
-  task :remove_invalid_creators => :environment do
+  task remove_invalid_creators: :environment do
     Creator.all do |creator|
       unless (creator.institution_name && creator.institution_name != '') || (creator.given_name && creator.given_name != '' && creator.family_name && creatorbun.family_name != '')
         creator.destroy
@@ -125,7 +125,7 @@ namespace :fix do
   end
 
   desc 'pretend some dev datasets never happened'
-  task :fix_dev => :environment do
+  task fix_dev: :environment do
 
     datasets_to_destroy = Dataset.where(key: ['IDBDEV-1772206'])
 
@@ -134,7 +134,7 @@ namespace :fix do
   end
 
   desc 'report top level mime types for datafiles on filesystem'
-  task :datafile_mimes => :environment do
+  task datafile_mimes: :environment do
     Datafile.all.each do |datafile|
       begin
         file_info = `file --mime "#{datafile.filepath}"`
@@ -146,18 +146,16 @@ namespace :fix do
   end
 
   desc 'remove orphan datafiles'
-  task :remove_orphan_datafiles => :environment do
+  task remove_orphan_datafiles: :environment do
 
     Datafile.all.each do |datafile|
       datasets = Dataset.where(id: datafile.dataset_id)
-      if datasets.count == 0
-        datafile.destroy
-      end
+      datafile.destroy if datasets.count == 0
     end
   end
 
   desc 'correct peek type for unsupported image mime types'
-  task :correct_image_peek => :environment do
+  task correct_image_peek: :environment do
 
     supported_image_subtypes = ['jp2', 'jpeg', 'dicom', 'gif', 'png', 'bmp']
 
@@ -181,7 +179,7 @@ namespace :fix do
   end
 
   desc 'reset peek_type of none to nil for re-evaluation'
-  task :reset_none_peek => :environment do
+  task reset_none_peek: :environment do
 
     datafiles = Datafile.where(peek_type: Databank::PeekType::NONE)
 
@@ -193,7 +191,7 @@ namespace :fix do
   end
 
   desc 'reset peek_type of all text to nil for re-evaluation'
-  task :reset_text_peek => :environment do
+  task reset_text_peek: :environment do
 
     datafiles = Datafile.where(peek_type: Databank::PeekType::ALL_TEXT)
 
@@ -205,7 +203,7 @@ namespace :fix do
   end
 
   desc 'find invalid datafiles'
-  task :find_invalid_datafiles => :environment do
+  task find_invalid_datafiles: :environment do
     Datafile.all.each do |datafile|
       if !datafile.storage_root
         puts "missing storage_root for datafile #{datafile.web_id}"
@@ -219,7 +217,7 @@ namespace :fix do
 
 
   desc 'fix dev medusa dataset directory values'
-  task :fix_dev_medusa_dir => :environment do
+  task fix_dev_medusa_dir: :environment do
 
     cfs_hash = Hash.new
 
@@ -237,7 +235,7 @@ namespace :fix do
   end
 
   desc 'fix aws medusa dataset directory values'
-  task :fix_aws_medusa_dir => :environment do
+  task fix_aws_medusa_dir: :environment do
 
     cfs_hash = Hash.new
 
@@ -255,7 +253,7 @@ namespace :fix do
   end
 
   desc 'fix prod medusa dataset directory values'
-  task :fix_prod_medusa_dir => :environment do
+  task fix_prod_medusa_dir: :environment do
 
     cfs_hash = Hash.new
 
@@ -273,9 +271,9 @@ namespace :fix do
   end
 
   desc 'make datacite record not findable as appropriate for datasets'
-  task :redact_from_datacite => :environment do
+  task redact_from_datacite: :environment do
 
-    test = Dataset.where(:is_test => true)
+    test = Dataset.where(is_test: true)
 
     held = Dataset.where(hold_state: Databank::PublicationState::TempSuppress::METADATA)
 
@@ -290,16 +288,14 @@ namespace :fix do
   end
 
   desc 'make dev datasets not findable in datacite'
-  task :redact_dev => :environment do
+  task redact_dev: :environment do
 
-    if Rails.env.development?
-      Dataset.where.not(publication_state: Databank::PublicationState::DRAFT).each(&:hide_doi)
-    end
+    Dataset.where.not(publication_state: Databank::PublicationState::DRAFT).each(&:hide_doi) if Rails.env.development?
 
   end
 
   desc 'fix specific test records in datacite'
-  task :fix_datacite_custom => :environment do
+  task fix_datacite_custom: :environment do
 
     host = IDB_CONFIG[:datacite][:endpoint]
     user = IDB_CONFIG[:datacite][:username]
@@ -327,7 +323,7 @@ namespace :fix do
   end
 
   desc 'migrate demo datasets'
-  task :migrate_demo_datasets => :environment do
+  task migrate_demo_datasets: :environment do
 
     host = IDB_CONFIG[:test_datacite_endpoint]
     user = IDB_CONFIG[:test_datacite_username]
@@ -376,7 +372,7 @@ namespace :fix do
   end
 
   desc "charstuff"
-  task :charstuff => :environment do
+  task charstuff: :environment do
     test_path = "/Users/mfall3/Downloads/Bobcat data description.txt"
     if File.file?(test_path)
       content = File.read(test_path)
@@ -385,6 +381,13 @@ namespace :fix do
       puts content
     else
       puts "file not found"
+    end
+  end
+
+  desc "remove orphan Review Request records"
+  task remove_orphan_review_requests: :environment do
+    ReviewRequest.all.each do |review_request|
+      review_request.destroy if review_request.dataset.nil?
     end
   end
 

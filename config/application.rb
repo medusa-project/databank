@@ -31,6 +31,7 @@ module Databank
     end
     PUB_ARRAY = [Databank::PublicationState::RELEASED, Databank::PublicationState::Embargo::FILE, Databank::PublicationState::Embargo::METADATA]
     EMBARGO_ARRAY = [Databank::PublicationState::Embargo::FILE, Databank::PublicationState::Embargo::METADATA]
+    DRAFT_ARRAY = [Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION]
   end
 
   class FileMode

@@ -14,6 +14,11 @@
                 .label.label-danger
                   version candidate under review
                 &nbsp;
+              -elsif @dataset.in_pre_publication_review?
+                &nbsp;
+                .label.label-danger
+                  pre-publication review
+                &nbsp;
               - elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
                 &nbsp;
                 .label.label-success
@@ -69,7 +74,7 @@
           .row
             .col-md-6
               = @dataset.visibility
-              -if @dataset.in_pre_publication_review
+              -if @dataset.in_pre_publication_review?
                 &nbsp;
                 .label.label-danger
                   pre-publication review
@@ -100,13 +105,11 @@
                       class: "btn idb btn-danger remove-share-btn") do
                         %span(class="glyphicon glyphicon-trash")
         .col-md-4
-          - if @completion_check == 'ok' && @dataset.in_pre_publication_review
+          - if @dataset.publication_state == Databank::PublicationState::DRAFT && @completion_check == 'ok' && @dataset.in_pre_publication_review
             %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
               Continue
               %span(class="glyphicon glyphicon-triangle-right" )
-
           - elsif @completion_check == 'ok'
-            -# confirm button conditional complex, so broken into three statements
             -if (can? :edit, @dataset) && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
               =render partial: 'datasets/offer_review_btn'
           -else

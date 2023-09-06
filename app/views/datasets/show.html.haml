@@ -1,6 +1,6 @@
 - if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION && (can? :read, @dataset) && current_user&.role == 'depositor'
   = render partial: 'version_acknowledge'
-- elsif @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION && @dataset.draft_viewer_netids.include?(current_user&.netid)
+- elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION && @dataset.draft_viewer_netids.include?(current_user&.netid)
   = render partial: 'landing'
 - elsif (@dataset.publication_state != Databank::PublicationState::DRAFT) || (can? :read, @dataset) || @shared_by_link
   = render partial: 'landing'

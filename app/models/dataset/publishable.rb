@@ -79,6 +79,18 @@ module Dataset::Publishable
     end
   end
 
+  def has_review_request?
+    ReviewRequest.exists?(dataset_key: key)
+  end
+
+  def review_requests
+    ReviewRequest.where(dataset_key: key)
+  end
+
+  def destroy_review_requests
+    review_requests.destroy_all
+  end
+
   def destroy_incomplete_uploads
     datafile_web_ids = self.datafiles.pluck(:web_id)
     valid_web_ids = self.datafiles.pluck(:web_id)

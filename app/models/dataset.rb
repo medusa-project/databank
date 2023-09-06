@@ -96,6 +96,7 @@ class Dataset < ApplicationRecord
   after_create :store_agreement
   after_create :ensure_globus_ingest_dir
   before_save :set_primary_contact
+  before_destroy :destroy_review_requests
   before_destroy :remove_system_files
   before_destroy :destroy_audit
   before_destroy :remove_globus_ingest_dir
@@ -560,10 +561,8 @@ class Dataset < ApplicationRecord
     ReviewRequest.where(dataset_key: self.key)
   end
 
-  def in_pre_publication_review
-    publication_state == Databank::PublicationState::DRAFT &&
-        ((identifier && identifier != "") ||
-            review_requests.count.positive?)
+  def in_pre_publication_review?
+    Databank::PublicationState::DRAFT_ARRAY.include?(self.publication_state) && self.has_review_requests?
   end
 
   def error_hash(message)
