@@ -56,6 +56,7 @@ class Dataset < ApplicationRecord
     string :creator_names, multiple: true
     string :filenames, multiple: true
     string :internal_editor_netids, multiple: true
+    string :netids_can_edit, multiple: true
     string :datafile_extensions, multiple: true
     string :hold_state
     string :publication_state
@@ -180,6 +181,15 @@ class Dataset < ApplicationRecord
       relationship_arr << material if material.nonversion_relationships.count.positive?
     end
     relationship_arr
+  end
+
+  def netids_can_edit
+    netids = []
+    if internal_editor_netids && internal_editor_netids != ""
+      netids = internal_editor_netids.split(",")
+    end
+    netids << depositor_email.split("@").first
+    netids
   end
 
   def sharing_link
