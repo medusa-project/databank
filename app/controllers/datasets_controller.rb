@@ -244,9 +244,6 @@ collaborators to access the data files while the dataset is not public.</li>
         end
 
       when "depositor"
-
-        current_netid = current_user.email.split("@").first
-
         search_get_my_facets = Dataset.search do
           all_of do
             without(:depositor, "error")
@@ -254,15 +251,15 @@ collaborators to access the data files while the dataset is not public.</li>
             with :is_test, false
             any_of do
               all_of do
-                with :draft_viewer_netids, current_user.email
+                with :draft_viewer_netids, current_user.netid
                 with :publication_state, Databank::PublicationState::DRAFT
               end
               all_of do
-                with :draft_viewer_netids, current_user.email
+                with :draft_viewer_netids, current_user.netid
                 with :publication_state, Databank::PublicationState::TempSuppress::VERSION
               end
               all_of do
-                with :draft_viewer_netids, current_user.email
+                with :draft_viewer_netids, current_user.netid
                 with :publication_state, Databank::PublicationState::Embargo::METADATA
               end
               any_of do
@@ -284,15 +281,15 @@ collaborators to access the data files while the dataset is not public.</li>
             with :is_test, false
             any_of do
               all_of do
-                with :draft_viewer_netids, current_user.email
+                with :draft_viewer_netids, current_user.netid
                 with :publication_state, Databank::PublicationState::DRAFT
               end
               all_of do
-                with :draft_viewer_netids, current_user.email
+                with :draft_viewer_netids, current_user.netid
                 with :publication_state, Databank::PublicationState::TempSuppress::VERSION
               end
               all_of do
-                with :draft_viewer_netids, current_user.email
+                with :draft_viewer_netids, current_user.netid
                 with :publication_state, Databank::PublicationState::Embargo::METADATA
               end
               any_of do
@@ -322,15 +319,15 @@ collaborators to access the data files while the dataset is not public.</li>
             with :is_test, false
             any_of do
               all_of do
-                with :draft_viewer_netids, current_user.email
+                with :draft_viewer_netids, current_user.netid
                 with :publication_state, Databank::PublicationState::DRAFT
               end
               all_of do
-                with :draft_viewer_netids, current_user.email
+                with :draft_viewer_netids, current_user.netid
                 with :publication_state, Databank::PublicationState::TempSuppress::VERSION
               end
               all_of do
-                with :draft_viewer_netids, current_user.email
+                with :draft_viewer_netids, current_user.netid
                 with :publication_state, Databank::PublicationState::Embargo::METADATA
               end
               any_of do
