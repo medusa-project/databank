@@ -562,7 +562,7 @@ class Dataset < ApplicationRecord
   end
 
   def in_pre_publication_review?
-    Databank::PublicationState::DRAFT_ARRAY.include?(self.publication_state) && self.has_review_requests?
+    Databank::PublicationState::DRAFT_ARRAY.include?(self.publication_state) && self.has_review_request?
   end
 
   def error_hash(message)
