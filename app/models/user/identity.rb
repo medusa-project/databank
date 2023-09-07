@@ -58,4 +58,8 @@ class User::Identity < User::User
 
     identity.name || email
   end
+
+  def netid
+    nil
+  end
 end
