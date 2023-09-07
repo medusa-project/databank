@@ -42,7 +42,7 @@ module Dataset::Publishable
                                Databank::PublicationState::RELEASED
                              end
 
-    if old_publication_state == Databank::PublicationState::DRAFT &&
+    if Databank::PublicationState::DRAFT_ARRAY.include?(old_publication_state) &&
       self.publication_state == Databank::PublicationState::RELEASED && !is_import
       self.release_date = Date.current
     end
