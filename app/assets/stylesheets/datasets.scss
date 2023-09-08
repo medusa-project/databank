@@ -438,3 +438,7 @@ tr.category, td.category {
 tr.different {
     background-color: $color__yellow-background;
 }
+
+#differnce_report td:not(:last-child) {
+  border-right: 1px solid $color__lightest-grey;
+}

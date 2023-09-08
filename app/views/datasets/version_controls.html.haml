@@ -21,7 +21,7 @@
                 %span( class="metadata-label" ) File Copy Selection
           .panel-collapse.collapse.in(id="vFilesPanel" role="tabpanel" aria-labelledby="vFilesHeading" )
             .panel-body
-              %table.table.table-bordered#versionfiles
+              %table.table#versionfiles
                 %tbody
                   %tr.row
                     %td
@@ -78,7 +78,7 @@
             %span( class="metadata-label" ) Difference Report (fields with differences are highlighted)
       .panel-collapse.collapse.in(id="reportPanel" role="tabpanel" aria-labelledby="reportHeading" )
         .panel-body
-          %table.table.table-bordered
+          %table.table#differnce_report
             %thead
               %tr.row
                 %th
@@ -89,7 +89,7 @@
                   %span.metadata-label Previous
             %tbody
               %tr.row.category
-                %td{cospan: "3"}
+                %td{colspan: "3"}
                   %span.metadata-label
                     Dataset Metadata
               %tr.row{class: "#{(@dataset.title == @previous.title) ? 'same' : 'different'}"}
@@ -156,7 +156,7 @@
                 %td
                   = @previous.subject
               %tr.row.category
-                %td{cospan: "3"}
+                %td{colspan: "3"}
                   %span.metadata-label Creators
               -@previous.creators.each do |creator|
                 %tr.row
@@ -181,7 +181,7 @@
                     %td
                       = creator.display_info
               %tr.row.category
-                %td{cospan: "3"}
+                %td{colspan: "3"}
                   %span.metadata-label Funders
               -if @previous.funders.empty? && @dataset.funders.empty?
                 %tr.row
@@ -215,7 +215,7 @@
                     %td
                       = previous_funder.display_info
               %tr.row.category
-                %td
+                %td{colspan: "3"}
                   %span.metadata-label Relationships (non-version)
               -if @previous.nonversion_related_materials.empty? && @dataset.nonversion_related_materials.empty?
                 %tr.row
@@ -248,6 +248,28 @@
                         Relationship removed in current version
                       %td
                         = previous_relationship.display_info
+              %tr.row.category
+                %td{colspan: "3"}
+                  %span.metadata-label Files
+              -@previous.datafiles.each do |file|
+                -current_file = @dataset.datafiles.find_by(binary_name: file.binary_name)
+                %tr.row{class: "#{current_file.nil? ? 'different' : 'same'}"}
+                  %td
+                  %td
+                    = file.binary_name
+                  %td
+                    -if current_file.nil?
+                      Not in current version
+                    -else
+                      = current_file.binary_name
+              -@dataset.datafiles.each do |file|
+                -if @previous.datafiles.find_by(binary_name: file.binary_name).nil?
+                  %tr.row{class: "different"}
+                    %td
+                    %td
+                      = file.binary_name
+                    %td
+                      New file in current version
     =form_tag("/datasets/#{@dataset.key}/suppression_action", id: "suppression_form") do |f|
       %input(id="suppression_action" type="hidden" name="suppression_action" )
       .panel-group(id="access" role="tablist" aria-multiselectable="true")
