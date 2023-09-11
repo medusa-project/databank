@@ -17,7 +17,7 @@
                       %span.col-md-4.col-md-offset-4
                         %a(href="/datasets/#{@dataset.key}/datafiles" class="btn btn-primary btn-block idb")
                           Advanced File Management
-                -draft = @dataset.publication_state == Databank::PublicationState::DRAFT
+                -draft = Databank::PublicationState::DRAFT_ARRAY.include?( @dataset.publication_state)
                 -can_edit = (can? :manage, @dataset ) || (can? :update, @dataset)
 
                 -if draft && can_edit
