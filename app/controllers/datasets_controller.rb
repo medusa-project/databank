@@ -904,7 +904,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset = Dataset.new(dataset_params)
     respond_to do |format|
       if @dataset.save
-        if params[:dataset].has_key?(:previous_key)
+        if params[:dataset].has_key?(:previous_key) && params[:dataset][:previous_key].present?
           redirect_to action: :version_request, previous_key: params[:dataset][:previous_key], id: @dataset.key
           return
         end
