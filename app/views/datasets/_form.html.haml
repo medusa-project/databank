@@ -378,13 +378,13 @@
   = render partial: 'datasets/help/license_help_modal'
   = render partial: 'datasets/help/embargo_help_modal'
 
-  -#=render partial: 'template_upload'
+  -# =render partial: 'template_upload'
 
-  -#%script(id="template-upload" type="text/x-tmpl")
-  -#  .upload
-  -#    {%=o.name%}
-  -#    .progress
-  -#      %div(class="bar progress-bar" style="width: 0%;")
+  %script(id="template-upload" type="text/x-tmpl")
+    .upload
+    {%=o.name%}
+    .progress
+      %div(class="bar progress-bar" style="width: 0%;")
 
   - if !@dataset.depositor_email
     %script
