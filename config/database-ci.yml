@@ -10,7 +10,7 @@ default: &default
 # Do not set this db to the same as development or production.
 test: &test
   <<: *default
-  database: databank_test
+  database: databank
   username: postgres
   password: postgres
   host: postgres
