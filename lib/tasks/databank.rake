@@ -173,7 +173,7 @@ namespace :databank do
       identity.save!
     end
 
-    # create rspec test user -- not just identity
+    # create rspec test user -- not just identity.rb
     auth = OmniAuth.config.mock_auth[:identity]
     user = User::Identity.create_with_omniauth(auth)
     user.save!

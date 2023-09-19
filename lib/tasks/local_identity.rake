@@ -1,7 +1,7 @@
 namespace :local_identity do
   desc 'generate dev local identities'
   task :make_admins => :environment do
-    # create local identity accounts for admins
+    # create local identity.rb accounts for admins
     admins = IDB_CONFIG[:admin][:netids].split(",").collect {|x| x.strip || x}
     admins.each do |netid|
       email = "#{netid}@illinois.edu"

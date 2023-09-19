@@ -18,7 +18,7 @@
   %p
     Modified:
     = modified_times[:dataset_downloads_json]
-    %a{href: "/metrics/refresh_dataset_downloads", class: "btn btn-success btn-sm idb"}
+    %a{href: "/metric.rb/refresh_dataset_downloads", class: "btn btn-success btn-sm idb"}
       %span.glyphicon.glyphicon-refresh
       Refresh
   .indent
@@ -33,7 +33,7 @@
   %p
     Modified:
     = modified_times[:datafile_downloads_json]
-    %a{href: "/metrics/refresh_datafile_downloads", class: "btn btn-success btn-sm idb"}
+    %a{href: "/metric.rb/refresh_datafile_downloads", class: "btn btn-success btn-sm idb"}
       %span.glyphicon.glyphicon-refresh
       Refresh
   .indent
@@ -86,7 +86,7 @@
       %li
         %strong total_downloads:
         Number of downloads for this dataset, calculated as described in our metrics help section:
-        %a(href="https://databank.illinois.edu/help#metrics") https://databank.illinois.edu/help#metrics
+        %a(href="https://databank.illinois.edu/help#metrics") https://databank.illinois.edu/help#metric.rb
       %li
         %strong num_relationships:
         Number of related materials, excluding other versions of this dataset
@@ -153,7 +153,7 @@
   %p
     modified:
     = modified_times[:container_contents_csv]
-    %a{href: "/metrics/refresh_container_csv", class: "btn btn-success btn-sm idb"}
+    %a{href: "/metric.rb/refresh_container_csv", class: "btn btn-success btn-sm idb"}
       %span.glyphicon.glyphicon-refresh
       Refresh
   .indent

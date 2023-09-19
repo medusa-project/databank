@@ -143,8 +143,6 @@ module Databank
 
     attr_accessor :file_mode
 
-    attr_accessor :help_transition_state
-
     attr_accessor :settings
 
     attr_accessor :ldap

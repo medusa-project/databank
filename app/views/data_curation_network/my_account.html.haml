@@ -1,7 +1,7 @@
 =render partial: 'heading'
 
 -if @identity
-  =form_for @identity, url: "/data_curation_network/identity/#{@identity.id}/update" do |f|
+  =form_for @identity, url: "/data_curation_network/identity.rb/#{@identity.id}/update" do |f|
     .form-group.required.row
       .col-md-2.col-md-offset-3
         %label.control-label{for: :name}

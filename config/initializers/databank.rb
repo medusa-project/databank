@@ -14,14 +14,6 @@ TEST_PREFIXES = ["10.70114"]
 GLOBUS_CONFIG = YAML.load_file(Rails.root.join('config', 'globus.yml'))[Rails.env]
 METRICS_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/metrics.yml"))).result)
 
-# help transition state
-if File.exist?(IDB_CONFIG[:help_transition_filepath])
-  Application.help_transition_state = File.read(IDB_CONFIG[:help_transition_filepath])
-else
-  File.open(IDB_CONFIG[:help_transition_filepath], 'w') { |file| file.write(Databank::HelpTransitionState::HELP) }
-  Application.help_transition_state = Databank::HelpTransitionState::HELP
-end
-
 # Initializes a Markdown parser
 Application.markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
 

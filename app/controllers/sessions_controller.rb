@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
 
     if auth[:provider] && auth[:provider] == 'shibboleth'
       user = User::Shibboleth.from_omniauth(auth)
-    elsif auth[:provider] && auth[:provider] == 'identity'
+    elsif auth[:provider] && auth[:provider] == 'identity.rb'
       user = User::Identity.from_omniauth(auth)
     else
       unauthorized
@@ -21,7 +21,7 @@ class SessionsController < ApplicationController
 
     if user&.id
       session[:user_id] = user.id
-      if user.provider == 'identity' && user.role == Databank::UserRole::NETWORK_REVIEWER
+      if user.provider == 'identity.rb' && user.role == Databank::UserRole::NETWORK_REVIEWER
         redirect_to '/data_curation_network'
       elsif user.role == 'no_deposit'
         redirect_to root_url, notice: "ACCOUNT NOT ELIGABLE TO DEPOSIT DATA.<br/>Faculty, staff, and graduate students are eligable to deposit data in Illinois Data Bank.<br/>Please <a href='/help'>contact the Research Data Service</a> if this determination is in error, or if you have any questions."

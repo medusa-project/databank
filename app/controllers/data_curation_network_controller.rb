@@ -13,7 +13,7 @@ class DataCurationNetworkController < ApplicationController
       redirect_to("/data_curation_network", notice: "Log in to curate datasets or manage your account.") && return
     end
     @identity = Identity.find_by(email: current_user.email)
-    redirect_to("/data_curation_network", notice: "Unable to verify identity.") unless @identity
+    redirect_to("/data_curation_network", notice: "Unable to verify identity.rb.") unless @identity
   end
 
   def add_account

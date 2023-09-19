@@ -1,4 +1,4 @@
-<% if current_user&.provider == 'identity' && current_user.role == Databank::UserRole::NETWORK_REVIEWER %>
+<% if current_user&.provider == 'identity.rb' && current_user.role == Databank::UserRole::NETWORK_REVIEWER %>
   <%= render partial: 'data_curation_network/heading' %>
 <% end %>
 

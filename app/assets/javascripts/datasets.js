@@ -433,7 +433,7 @@ function handleAgreeModal(email, name) {
 function handlePrivateYes() {
     if ($('#private-yes').is(':checked')) {
         $('#dataset_removed_private').val('yes');
-        $('#review_link').html('<a href="/review_deposit_agreement?removed=yes" target="_blank">Review Deposit Agreement</a>');
+        $('#review_link').html('<a href="/datasets/review_deposit_agreement?removed=yes" target="_blank">Review Deposit Agreement</a>');
         $('#private-na').attr('checked', false);
         $('#private-no').attr('checked', false);
         if (agree_answers_all_yes()) {
@@ -451,7 +451,7 @@ function handlePrivateYes() {
 function handlePrivateNA() {
 
     if ($('#private-na').is(':checked')) {
-        $('#review_link').html('<a href="/review_deposit_agreement?removed=na" target="_blank">Review Deposit Agreement</a>');
+        $('#review_link').html('<a href="/datasets/review_deposit_agreement?removed=na" target="_blank">Review Deposit Agreement</a>');
         $('#dataset_removed_private').val('na');
         $('#private-yes').attr('checked', false);
         $('#private-no').attr('checked', false);
