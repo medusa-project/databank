@@ -11,16 +11,17 @@ require "openssl"
 
 class Dataset < ApplicationRecord
   include ActiveModel::Serialization
-  include Dataset::Recoverable
-  include Dataset::MessageText
-  include Dataset::Indexable
-  include Dataset::Stringable
   include Dataset::Complete
-  include Dataset::Versionable
-  include Dataset::Publishable
   include Dataset::Exportable
-  include Dataset::Identifiable
+  include Dataset::Filterable
   include Dataset::Globusable
+  include Dataset::Identifiable
+  include Dataset::Indexable
+  include Dataset::MessageText
+  include Dataset::Publishable
+  include Dataset::Recoverable
+  include Dataset::Stringable
+  include Dataset::Versionable
 
   audited except: %i[creator_text key complete is_test is_import updated_at embargo], allow_mass_assignment: true
   has_associated_audits
@@ -28,45 +29,6 @@ class Dataset < ApplicationRecord
   attr_accessor :featured_related_materials,
                 :not_featured_related_materials,
                 :num_external_relationships
-
-  searchable do
-    text :title,
-         :description,
-         :subject_text,
-         :keywords,
-         :identifier,
-         :funder_names_fulltext,
-         :grant_numbers_fulltext,
-         :creator_names_fulltext,
-         :filenames_fulltext,
-         :datafile_extensions_fulltext,
-         :publication_year
-
-    string :publication_year
-    string :license_code
-    string :depositor
-    string :depositor_netid
-    string :subject_text
-    string :depositor_email
-    string :visibility_code
-    string :dataset_version
-    string :internal_view_netids, multiple: true
-    string :draft_viewer_netids, multiple: true
-    string :funder_codes, multiple: true
-    string :grant_numbers, multiple: true
-    string :creator_names, multiple: true
-    string :filenames, multiple: true
-    string :internal_editor_netids, multiple: true
-    string :datafile_extensions, multiple: true
-    string :hold_state
-    string :publication_state
-    boolean :is_test
-    boolean :is_most_recent_version
-    time :ingest_datetime
-    time :release_date
-    time :created_at
-    time :updated_at
-  end
 
   MIN_FILES = 1
   MAX_FILES = 10_000
@@ -82,7 +44,6 @@ class Dataset < ApplicationRecord
   has_many :system_files, dependent: :destroy
   has_many :notes, dependent: :destroy
   has_one :share_code, dependent: :destroy
-
 
   accepts_nested_attributes_for :datafiles, reject_if: :all_blank, allow_destroy: true
   accepts_nested_attributes_for :creators, reject_if: :invalid_name, allow_destroy: true

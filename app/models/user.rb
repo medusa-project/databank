@@ -18,6 +18,17 @@ module User
               uniqueness: {case_sensitive: false}
 
     class_attribute :system_user
+    def admin?
+      role == Databank::UserRole::ADMIN
+    end
+    def depositor?
+      role == Databank::UserRole::DEPOSITOR
+    end
+    def guest?
+      role == Databank::UserRole::GUEST
+    end
+
+
 
     def is?(requested_role)
       role == requested_role.to_s
