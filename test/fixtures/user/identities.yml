@@ -3,7 +3,7 @@
 # Identity in `identities.yml`.
 #
 curator1:
-  provider: identity.rb
+  provider: identity
   uid: $LABEL@mailinator.com
   name: $LABEL
   email: $LABEL@mailinator.com
@@ -13,7 +13,7 @@ curator1:
   updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 curator2:
-  provider: identity.rb
+  provider: identity
   uid: $LABEL@mailinator.com
   name: $LABEL
   email: $LABEL@mailinator.com
@@ -23,7 +23,7 @@ curator2:
   updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher1:
-  provider: identity.rb
+  provider: identity
   uid: $LABEL@mailinator.com
   name: $LABEL
   email: $LABEL@mailinator.com
@@ -33,7 +33,7 @@ researcher1:
   updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher2:
-  provider: identity.rb
+  provider: identity
   uid: $LABEL@mailinator.com
   name: $LABEL
   email: $LABEL@mailinator.com
@@ -43,7 +43,7 @@ researcher2:
   updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher3:
-  provider: identity.rb
+  provider: identity
   uid: $LABEL@mailinator.com
   name: $LABEL
   email: $LABEL@mailinator.com

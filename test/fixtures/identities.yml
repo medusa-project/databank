@@ -1,5 +1,5 @@
 ##
-# Every identity.rb in this file MUST have a corresponding User::Identity in
+# Every identity in this file MUST have a corresponding User::Identity in
 # `user/identities.yml`, AND an Invitee in invitees.yml.
 #
 

@@ -8,6 +8,6 @@ resources :data_curation_network, only: [:index] do
     get 'after_registration'
     get 'account/add', to: 'data_curation_network#add_account'
     get 'accounts/:id/edit', to: 'data_curation_network#edit_account'
-    patch 'identity.rb/:id/update', to: 'data_curation_network#update_identity'
+    patch 'identity/:id/update', to: 'data_curation_network#update_identity'
   end
 end

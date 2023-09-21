@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   post '/', to: "errors#error404"
   post 'api/dataset/:dataset_key/upload', to: 'api_dataset#upload', defaults: {format: 'json'}
   post 'api/dataset/:dataset_key/datafile', to: 'api_dataset#datafile', defaults: {format: 'json'}
+  draw :auth
   get '/contact', to: 'welcome#contact'
   post '/contact_mail', to: 'welcome#contact_mail'
   resources :contributors

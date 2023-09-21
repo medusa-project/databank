@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# This type of user comes from the identity.rb authentication strategy
+# This type of user comes from the identity authentication strategy
 
 class User::Identity < User::User
   def self.from_omniauth(auth)
@@ -8,7 +8,7 @@ class User::Identity < User::User
 
     email = auth["info"]["email"].strip
     identity = Identity.find_by(email: email)
-    raise StandardError.new("identity.rb does not exist or is not activated for #{auth}") unless identity&.activated
+    raise StandardError.new("identity does not exist or is not activated for #{auth}") unless identity&.activated
 
     user = User::Identity.find_by(provider: auth["provider"], email: email)
     if user

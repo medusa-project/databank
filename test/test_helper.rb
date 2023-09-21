@@ -15,10 +15,10 @@ class ActiveSupport::TestCase
 
   ##
   # @param user [User]
-  # (local, non-shibboleth) identity.rb provider is assumed
+  # (local, non-shibboleth) identity provider is assumed
   #
   def log_in_as(user)
-    post "/auth/identity.rb/callback", params: {
+    post "/auth/identity/callback", params: {
       auth_key: user.email,
       password: "password"
     }

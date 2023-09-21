@@ -3,44 +3,6 @@
 module Dataset::Filterable
   extend ActiveSupport::Concern
 
-  searchable do
-    text :title,
-         :description,
-         :subject_text,
-         :keywords,
-         :identifier,
-         :funder_names_fulltext,
-         :grant_numbers_fulltext,
-         :creator_names_fulltext,
-         :filenames_fulltext,
-         :datafile_extensions_fulltext,
-         :publication_year
-
-    string :publication_year
-    string :license_code
-    string :depositor
-    string :depositor_netid
-    string :subject_text
-    string :depositor_email
-    string :visibility_code
-    string :dataset_version
-    string :internal_view_netids, multiple: true
-    string :draft_viewer_netids, multiple: true
-    string :funder_codes, multiple: true
-    string :grant_numbers, multiple: true
-    string :creator_names, multiple: true
-    string :filenames, multiple: true
-    string :internal_editor_netids, multiple: true
-    string :datafile_extensions, multiple: true
-    string :hold_state
-    string :publication_state
-    boolean :is_test
-    boolean :is_most_recent_version
-    time :ingest_datetime
-    time :release_date
-    time :created_at
-    time :updated_at
-  end
 
   class_methods do
     def filtered_list(current_user: nil, params: {})
@@ -51,7 +13,7 @@ module Dataset::Filterable
                  end
       if current_user.nil? || current_user.role.nil?
         list = public_list(params: params, per_page: per_page)
-        facets = public_facets
+        facets = public_facets(params: params)
         [:subject_text, :publication_year, :license_code, :funder_codes].each do |facet|
           list = list_with_facet(list: list, search_get_facets: facets, facet: facet)
         end
@@ -61,16 +23,16 @@ module Dataset::Filterable
       case current_user.role
       when Databank::UserRole::ADMIN
         list = admin_list(params: params, per_page: per_page)
-        facets = admin_facets
+        facets = admin_facets(params: params)
         list = list_with_facet(list: list, search_get_facets: facets, facet: :visibility_code)
         list = list_with_facet(list: list, search_get_facets: facets, facet: :depositor)
       when Databank::UserRole::DEPOSITOR
         list = depositor_list(current_user: current_user, params: params, per_page: per_page)
-        facets = depositor_facets(current_user: current_user)
+        facets = depositor_facets(current_user: current_user, params: params)
         list = list_with_facet(list: list, search_get_facets: facets, facet: :visibility_code)
       else
         list = public_list(params: params, per_page: per_page)
-        facets = public_facets
+        facets = public_facets(params: params)
       end
       [:subject_text, :publication_year, :license_code, :funder_codes].each do |facet|
         list = list_with_facet(list: list, search_get_facets: facets, facet: facet)
@@ -164,7 +126,7 @@ module Dataset::Filterable
       end
     end
 
-    def depositor_list(current_user: , params: {}, per_page: 25)
+    def depositor_list(current_user: , params:, per_page: 25)
       Dataset.search do
         all_of do
           without(:depositor, "error")
@@ -359,7 +321,7 @@ module Dataset::Filterable
       end
     end
 
-    def admin_facets()
+    def admin_facets(params:)
       Dataset.search do
         without(:depositor, "error")
         with(:is_most_recent_version, true)
@@ -375,7 +337,7 @@ module Dataset::Filterable
       end
     end
 
-    def depositor_facets(current_user:)
+    def depositor_facets(current_user:, params:)
       Dataset.search do
         all_of do
           without(:depositor, "error")
@@ -415,7 +377,7 @@ module Dataset::Filterable
       end
     end
 
-    def depositor_my_facets(current_user:)
+    def depositor_my_facets(current_user:, params:)
       Dataset.search do
         all_of do
           without(:depositor, "error")
@@ -447,7 +409,7 @@ module Dataset::Filterable
       end
     end
 
-    def public_facets
+    def public_facets(params:)
       Dataset.search do
         all_of do
           without(:depositor, "error")

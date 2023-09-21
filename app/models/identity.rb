@@ -39,7 +39,7 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
 
   def invited
     set_invitee
-    errors.add(:base, "Registered identity.rb must have current invitation.") unless [nil, ""].exclude?(invitee_id)
+    errors.add(:base, "Registered identity must have current invitation.") unless [nil, ""].exclude?(invitee_id)
   end
 
   def activation_url

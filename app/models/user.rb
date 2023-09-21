@@ -48,12 +48,12 @@ module User
     def group
       if provider == "shibboleth"
         provider
-      elsif provider == "identity.rb"
+      elsif provider == "identity"
         invitee = Invitee.find_by(email: email)
         if invitee
           invitee.group
         else
-          raise StandardError.new("no invitation found for identity.rb: #{email}")
+          raise StandardError.new("no invitation found for identity: #{email}")
         end
       end
     end

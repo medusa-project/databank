@@ -133,7 +133,7 @@ gem "valid_email"
 # Use boostrap-datepicker-rails for selecting release date
 # gem 'bootstrap-datepicker-rails'
 
-# Use identity.rb strategy to create local accounts for testing
+# Use identity strategy to create local accounts for testing
 gem "omniauth-identity"
 gem "omniauth-shibboleth"
 
