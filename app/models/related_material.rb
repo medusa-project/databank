@@ -42,7 +42,7 @@ class RelatedMaterial < ApplicationRecord
     material_type == other.material_type &&
       (link == other.link || (link.nil? && other.link.nil?)) &&
       (uri == other.uri || (uri.nil? && other.uri.nil?)) &&
-      (uri_type == other.uri_type || (uri_type.nil && other.uri_type.nil?)) &&
+      (uri_type == other.uri_type || (uri_type.nil? && other.uri_type.nil?)) &&
       (citation == other.citation || (citation.nil? && other.citation.nil?))
   end
 
