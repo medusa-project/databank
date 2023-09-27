@@ -384,12 +384,12 @@ class Dataset < ApplicationRecord
   end
 
   def sorted_valid_datafiles
-    basic_sorted = valid_datafiles.sort_by(&:bytestream_name)
+    basic_sorted = valid_datafiles.sort_by(&:binary_name)
     basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
   end
 
   def sorted_datafiles
-    basic_sorted = datafiles.sort_by(&:bytestream_name)
+    basic_sorted = datafiles.sort_by(&:binary_name)
     basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
   end
 
@@ -399,14 +399,14 @@ class Dataset < ApplicationRecord
     unsorted = datafiles.select(&:upload_complete?)
     return [] if unsorted.count.zero?
 
-    basic_sorted = unsorted.sort_by(&:bytestream_name)
+    basic_sorted = unsorted.sort_by(&:binary_name)
     basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
   end
 
   def incomplete_datafiles
     return [] if datafiles.count.zero?
 
-    datafiles.reject(&:upload_complete?).sort_by(&:bytestream_name)
+    datafiles.reject(&:upload_complete?).sort_by(&:binary_name)
   end
 
   def medusa_ingests
