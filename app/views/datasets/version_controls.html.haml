@@ -226,6 +226,8 @@
                 -@dataset.nonversion_related_materials.each do |relationship|
                   -previous_relationship = @previous.related_materials.find_by(uri: relationship.uri)
                   -if previous_relationship.nil?
+                    -previous_relationship = @previous.related_materials.find_by(link: relationship.link)
+                  -if previous_relationship.nil?
                     %tr.row.different
                       %td
                       %td
