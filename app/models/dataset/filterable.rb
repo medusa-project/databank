@@ -5,30 +5,23 @@ module Dataset::Filterable
 
 
   class_methods do
-    def filtered_list(current_user: nil, params: {})
+    def filtered_list(user_role: Databank::UserRole::GUEST, user: nil, params: {})
       per_page = if params.has_key?(:per_page)
                    params[:per_page].to_i
                  else
                    25
                  end
-      if current_user.nil? || current_user.role.nil?
-        list = public_list(params: params, per_page: per_page)
-        facets = public_facets(params: params)
-        [:subject_text, :publication_year, :license_code, :funder_codes].each do |facet|
-          list = list_with_facet(list: list, search_get_facets: facets, facet: facet)
-        end
-        return list
-      end
-
-      case current_user.role
+      case user_role
       when Databank::UserRole::ADMIN
         list = admin_list(params: params, per_page: per_page)
         facets = admin_facets(params: params)
         list = list_with_facet(list: list, search_get_facets: facets, facet: :visibility_code)
         list = list_with_facet(list: list, search_get_facets: facets, facet: :depositor)
       when Databank::UserRole::DEPOSITOR
-        list = depositor_list(current_user: current_user, params: params, per_page: per_page)
-        facets = depositor_facets(current_user: current_user, params: params)
+        raise ArgumentError.new("net_id required for depositor role") if user_netid.nil?
+
+        list = depositor_list(user: user, params: params, per_page: per_page)
+        facets = depositor_facets(user: user, params: params)
         list = list_with_facet(list: list, search_get_facets: facets, facet: :visibility_code)
       else
         list = public_list(params: params, per_page: per_page)
@@ -126,7 +119,7 @@ module Dataset::Filterable
       end
     end
 
-    def depositor_list(current_user: , params:, per_page: 25)
+    def depositor_list(user:, params:, per_page:)
       Dataset.search do
         all_of do
           without(:depositor, "error")
@@ -134,15 +127,15 @@ module Dataset::Filterable
           with :is_test, false
           any_of do
             all_of do
-              with :draft_viewer_netids, current_user.netid
+              with :draft_viewer_emails, user.email
               with :publication_state, Databank::PublicationState::DRAFT
             end
             all_of do
-              with :draft_viewer_netids, current_user.netid
+              with :draft_viewer_emails, user.email
               with :publication_state, Databank::PublicationState::TempSuppress::VERSION
             end
             all_of do
-              with :draft_viewer_netids, current_user.netid
+              with :draft_viewer_netids, user_netid
               with :publication_state, Databank::PublicationState::Embargo::METADATA
             end
             any_of do
@@ -337,7 +330,7 @@ module Dataset::Filterable
       end
     end
 
-    def depositor_facets(current_user:, params:)
+    def depositor_facets(user_netid:, params:)
       Dataset.search do
         all_of do
           without(:depositor, "error")
@@ -345,15 +338,15 @@ module Dataset::Filterable
           with :is_test, false
           any_of do
             all_of do
-              with :draft_viewer_netids, current_user.netid
+              with :draft_viewer_netids, user_netid
               with :publication_state, Databank::PublicationState::DRAFT
             end
             all_of do
-              with :draft_viewer_netids, current_user.netid
+              with :draft_viewer_netids, user_netid
               with :publication_state, Databank::PublicationState::TempSuppress::VERSION
             end
             all_of do
-              with :draft_viewer_netids, current_user.netid
+              with :draft_viewer_netids, user_netid
               with :publication_state, Databank::PublicationState::Embargo::METADATA
             end
             any_of do
@@ -377,7 +370,7 @@ module Dataset::Filterable
       end
     end
 
-    def depositor_my_facets(current_user:, params:)
+    def depositor_my_facets(user_netid:, params:)
       Dataset.search do
         all_of do
           without(:depositor, "error")
@@ -385,15 +378,15 @@ module Dataset::Filterable
           with :is_test, false
           any_of do
             all_of do
-              with :draft_viewer_netids, current_user.netid
+              with :draft_viewer_netids, user_netid
               with :publication_state, Databank::PublicationState::DRAFT
             end
             all_of do
-              with :draft_viewer_netids, current_user.netid
+              with :draft_viewer_netids, user_netid
               with :publication_state, Databank::PublicationState::TempSuppress::VERSION
             end
             all_of do
-              with :draft_viewer_netids, current_user.netid
+              with :draft_viewer_netids, user_netid
               with :publication_state, Databank::PublicationState::Embargo::METADATA
             end
             any_of do

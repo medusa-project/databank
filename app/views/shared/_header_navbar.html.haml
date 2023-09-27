@@ -43,7 +43,7 @@
           %li
             %a{href: "/logout"}
               Log out
-        - elsif Rails.env.development?
+        - elsif Rails.env.development? || Rails.env.test?
           %li
             %a{href: "/identities/login"}
               Log in Local

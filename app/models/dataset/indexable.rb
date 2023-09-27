@@ -38,7 +38,7 @@ module Dataset::Indexable
       if %w[unselected custom].include?(code)
         code
       else
-        licenses = LICENSE_INFO_ARR.select {|license| license.code == code }
+        licenses = LICENSE_INFO_ARR.select { |license| license.code == code }
         return code if licenses.blank?
 
         licenses[0].name
@@ -49,7 +49,7 @@ module Dataset::Indexable
       if code == "other"
         "Other"
       else
-        funders = FUNDER_INFO_ARR.select {|funder| funder.code == code }
+        funders = FUNDER_INFO_ARR.select { |funder| funder.code == code }
         return "funder not found" if funders.blank?
 
         funders[0].name
@@ -218,47 +218,27 @@ module Dataset::Indexable
     Funder.where(dataset_id: id).pluck(:code)
   end
 
-  def draft_viewer_netids
-    depositor_netid = depositor_email.split("@")[0]
-    internal_view_netids + [depositor_netid]
+  def draft_viewer_emails
+    internal_view_emails + [depositor_email]
   end
 
   def funder_names_fulltext
     funder_names.join(" ").to_s
   end
 
-  def internal_view_netids
-    internal_reviewer_netids + internal_editor_netids
+  def internal_view_emails
+    reviewer_emails + internal_editor_netids
   end
 
-  def internal_reviewer_netids
-    uids = UserAbility.where(user_provider: "shibboleth",
-                             resource_type: "Dataset",
-                             ability:       "view_files",
-                             'resource_id': id).pluck(:user_uid)
-    net_ids = []
+  def reviewer_emails
+    UserAbility.where(resource_type: "Dataset",
+                      ability:       "view_files",
+                      'resource_id': id).pluck(:user_uid).uniq
 
-    uids.each do |uid|
-      uid_parts = uid.split("@")
-      net_ids << uid_parts[0]
-    end
-
-    net_ids.uniq - internal_editor_netids
   end
 
-  def internal_editor_netids
-    uids = UserAbility.where(user_provider: "shibboleth",
-                             resource_type: "Dataset",
-                             ability:       "update",
-                             'resource_id': id).pluck(:user_uid)
-    net_ids = []
-
-    uids.each do |uid|
-      uid_parts = uid.split("@")
-      net_ids << uid_parts[0]
-    end
-
-    net_ids.uniq
+  def editor_emails
+    UserAbility.where(resource_type: "Dataset", ability: "update", 'resource_id': id).pluck(:user_uid).uniq
   end
 
   def grant_numbers

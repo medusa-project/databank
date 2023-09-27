@@ -7,8 +7,8 @@ class Creator < ApplicationRecord
   include ActiveModel::Serialization
   belongs_to :dataset
   validate :name?
-  after_create :add_internal_editor
-  after_update :add_internal_editor
+  after_create :add_editor
+  after_update :add_editor
   before_destroy :remove_internal_editor
 
   audited except: [:row_order, :type_of, :identifier_scheme, :dataset_id, :institution_name], associated_with: :dataset
@@ -60,24 +60,12 @@ class Creator < ApplicationRecord
     "search?q=family-name:#{family_name}+AND+given-names:#{given_names}*"
   end
 
-  def add_internal_editor
-    return false unless at_illinois?
-
-    netid = email.split("@").first
-    editor_netids = dataset.internal_editor_netids || []
-    return true if editor_netids.include?(netid)
-
-    UserAbility.add_to_internal_editors(dataset: dataset, netid: netid)
+  def add_editor
+    UserAbility.add_to_editors(dataset: dataset, email: email)
   end
 
-  def remove_internal_editor
-    return false unless at_illinois?
-
-    netid = email.split("@").first
-    editor_netids = dataset.internal_editor_netids || []
-    return true unless editor_netids.include?(netid)
-
-    UserAbility.remove_from_internal_editors(dataset: dataset, netid: netid)
+  def remove_editor
+    UserAbility.remove_from_editors(dataset: dataset, email: email)
   end
 
   def as_json(*)

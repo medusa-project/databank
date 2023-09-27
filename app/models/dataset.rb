@@ -84,13 +84,13 @@ class Dataset < ApplicationRecord
     string :depositor_email
     string :visibility_code
     string :dataset_version
-    string :internal_view_netids, multiple: true
-    string :draft_viewer_netids, multiple: true
+    string :internal_view_emails, multiple: true
+    string :draft_viewer_emails, multiple: true
     string :funder_codes, multiple: true
     string :grant_numbers, multiple: true
     string :creator_names, multiple: true
     string :filenames, multiple: true
-    string :internal_editor_netids, multiple: true
+    string :editor_emails, multiple: true
     string :datafile_extensions, multiple: true
     string :hold_state
     string :publication_state

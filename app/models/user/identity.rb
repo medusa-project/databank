@@ -59,7 +59,10 @@ class User::Identity < User::User
     identity.name || email
   end
 
+
   def netid
+    return username if Rails.env.test? || Rails.env.development?
+
     nil
   end
 end

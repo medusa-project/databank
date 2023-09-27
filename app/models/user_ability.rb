@@ -47,7 +47,7 @@ class UserAbility < ApplicationRecord
 
       add_read = form_can_read - current_can_read
       add_read.each do |netid|
-        grant_internal(dataset, netid, :read)
+        grant(dataset: dataset, email: "#{netid}@illinois.edu", ability: :read)
         grant_internal(dataset, netid, :view_files)
       end
 
@@ -62,47 +62,98 @@ class UserAbility < ApplicationRecord
       end
     end
 
-    def add_to_internal_editors(dataset:, netid:)
-      current_reviewers = dataset.internal_reviewer_netids || []
-      current_editors = dataset.internal_editor_netids || []
-      current_can_read = current_reviewers + current_editors
-      grant_internal(dataset, netid, :read) unless current_can_read.include?(netid)
-      grant_internal(dataset, netid, :view_files) unless current_can_read.include?(netid)
-      grant_internal(dataset, netid, :update) unless current_editors.include?(netid)
+    def add_to_editors(dataset:, email:)
+      return true if dataset.editor_emails.include?(email)
+
+      email_parts = email.split("@")
+      if email_parts[1] == "illinois.edu"
+        netid = email_parts[0]
+        grant_internal(dataset, netid, :read)
+        grant_internal(dataset, netid, :view_files)
+        grant_internal(dataset, netid, :update)
+      else
+        user = User::Identity.find_by(email: email)
+        return false unless user
+
+        grant(dataset: dataset, user: user, ability: :read)
+        grant(dataset: dataset, user: user, ability: :view_files)
+        grant(dataset: dataset, user: user, ability: :update)
+      end
     end
 
-    def remove_from_internal_editors(dataset:, netid:)
-      current_reviewers = dataset.internal_reviewer_netids || []
-      current_editors = dataset.internal_editor_netids || []
-      revoke_internal(dataset, netid, :read) unless current_reviewers.include?(netid)
-      revoke_internal(dataset, netid, :view_files) if current_reviewers.include?(netid)
-      revoke_internal(dataset, netid, :update) if current_editors.include?(netid)
+    def remove_from_editors(dataset:, email:)
+      return true unless dataset.editor_emails.include?(email)
+
+      email_parts = email.split("@")
+      if email_parts[1] == "illinois.edu"
+        netid = email_parts[0]
+        revoke_internal(dataset, netid, :read)
+        revoke_internal(dataset, netid, :view_files)
+        revoke_internal(dataset, netid, :update)
+      else
+        user = User::Identity.find_by(email: email)
+        return false unless user
+
+        revoke(dataset: dataset, user: user, ability: :read)
+        revoke(dataset: dataset, user: user, ability: :view_files)
+        revoke(dataset: dataset, user: user, ability: :update)
+      end
     end
 
-    def grant_internal(dataset, netid, ability)
-      clean_netid = netid.gsub("@illinois.edu", "")
+    def grant_external(dataset:, user:, ability:)
+      existing_record = UserAbility.find_by(resource_type: "Dataset",
+                                            resource_id:   dataset.id,
+                                            user_provider: user.provider,
+                                            user_uid:      user.email,
+                                            ability:       ability)
+      existing_record ||= UserAbility.create!(resource_type: "Dataset",
+                                              resource_id:   dataset.id,
+                                              user_provider: user.provider,
+                                              user_uid:      user.email,
+                                              ability:       ability)
+      raise "#{ability} record not created for #{user.email}, #{dataset.key}" unless existing_record
+    end
+
+    def grant(dataset:, email:, ability:)
+      user = User::Identity.find_by(email: email)
+      return grant_external(dataset: dataset, user: user, ability: ability) if user
+
+      email_parts = email.split("@")
+      return false unless email_parts[1] == "illinois.edu"
 
       existing_record = UserAbility.find_by(resource_type: "Dataset",
                                             resource_id:   dataset.id,
                                             user_provider: "shibboleth",
-                                            user_uid:      "#{clean_netid}@illinois.edu",
+                                            user_uid:      email,
                                             ability:       ability)
       existing_record ||= UserAbility.create!(resource_type: "Dataset",
                                               resource_id:   dataset.id,
                                               user_provider: "shibboleth",
-                                              user_uid:      "#{clean_netid}@illinois.edu",
+                                              user_uid:      email,
                                               ability:       ability)
-      raise "#{ability} record not created for #{netid}, #{dataset.key}" unless existing_record
+      raise "#{ability} record not created for #{email}, #{dataset.key}" unless existing_record
     end
 
-    def revoke_internal(dataset, netid, ability)
+    def revoke(dataset:, email:, ability:)
+      user = User::Identity.find_by(email: email)
+      return revoke_external(dataset: dataset, user: user, ability: ability) if user
 
-      clean_netid = netid.gsub("@illinois.edu", "")
+      email_parts = email.split("@")
+      return false unless email_parts[1] == "illinois.edu"
 
       existing_record = UserAbility.find_by(resource_type: "Dataset",
                                             resource_id:   dataset.id,
-                                            user_provider: "shibboleth",
-                                            user_uid:      "#{clean_netid}@illinois.edu",
+                                            user_provider: "Shibboleth",
+                                            user_uid:      email,
+                                            ability:       ability)
+      existing_record&.destroy
+    end
+
+    def revoke_external(dataset:, user:, ability:)
+      existing_record = UserAbility.find_by(resource_type: "Dataset",
+                                            resource_id:   dataset.id,
+                                            user_provider: user.provider,
+                                            user_uid:      user.email,
                                             ability:       ability)
       existing_record&.destroy
     end
