@@ -124,7 +124,7 @@ module Dataset::Versionable
                     code: funder.code)
     end
 
-    previous.related_materials.each do |material|
+    previous.related_materials.sort_by(&:created_at).each do |material|
       next if material.datacite_list == Databank::Relationship::NEW_VERSION_OF
       next if material.datacite_list == Databank::Relationship::PREVIOUS_VERSION_OF
 
