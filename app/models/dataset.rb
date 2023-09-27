@@ -565,6 +565,16 @@ class Dataset < ApplicationRecord
     Databank::PublicationState::DRAFT_ARRAY.include?(self.publication_state) && self.has_review_request?
   end
 
+  def show_publish_only?
+    return false unless in_pre_publication_review?
+
+    return false unless [Databank::PublicationState::TempSuppress::NONE, nil].include?(hold_state)
+
+    return false unless Dataset.completion_check(self) == "ok"
+
+    true
+  end
+
   def error_hash(message)
     {status: "error", error_text: message}
   end
