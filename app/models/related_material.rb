@@ -40,10 +40,10 @@ class RelatedMaterial < ApplicationRecord
 
   def equals?(other)
     material_type == other.material_type &&
-      link == other.link &&
-      uri == other.uri &&
-      uri_type == other.uri_type &&
-      citation == other.citation
+      (link == other.link || (link.nil? && other.link.nil?)) &&
+      (uri == other.uri || (uri.nil? && other.uri.nil?)) &&
+      (uri_type == other.uri_type ||(uri_type.nil && other.uri_type.nil?)) &&
+      (citation == other.citation || (citation.nil? && other.citation.nil?))
   end
 
   def nonversion_relationships
