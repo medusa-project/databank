@@ -159,7 +159,7 @@ module Dataset::Complete
 
       dataset.related_materials.each do |related_material|
         if related_material.uri_type.blank? && related_material.uri.present?
-          return ["a uri_type for uri for related_material #{related_material.display_info}"]
+          return ["a uri_type for uri for each related material"]
         end
       end
 
