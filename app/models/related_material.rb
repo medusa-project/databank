@@ -38,14 +38,6 @@ class RelatedMaterial < ApplicationRecord
     info_arr.join(", ")
   end
 
-  def equals?(other)
-    material_type == other.material_type &&
-      link == other.link &&
-      uri == other.uri &&
-      uri_type == other.uri_type &&
-      citation == other.citation
-  end
-
   def nonversion_relationships
     relationship_arr - %w[IsPreviousVersionOf IsNewVersionOf]
   end

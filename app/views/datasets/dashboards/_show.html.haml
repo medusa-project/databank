@@ -105,7 +105,7 @@
                       class: "btn idb btn-danger remove-share-btn") do
                         %span(class="glyphicon glyphicon-trash")
         .col-md-4
-          - if @dataset.publication_state == Databank::PublicationState::DRAFT && @completion_check == 'ok' && @dataset.in_pre_publication_review?
+          - if @dataset.show_publish_only?
             %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
               Continue
               %span(class="glyphicon glyphicon-triangle-right" )

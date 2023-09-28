@@ -224,7 +224,13 @@
                     No non-version relationships found in current or previous version
               -else
                 -@dataset.nonversion_related_materials.each do |relationship|
-                  -previous_relationship = @previous.related_materials.find_by(uri: relationship.uri)
+                  -if relationship.uri.present?
+                    -previous_relationship = @previous.related_materials.find_by(uri: relationship.uri)
+                  -elsif relationship.link.present?
+                    -previous_relationship = @previous.related_materials.find_by(link: relationship.link)
+                  -elsif relationship.citation.present?
+                    -previous_relationship = @previous.related_materials.find_by(citation: relationship.citation)
+                  -else previous_relationship = nil
                   -if previous_relationship.nil?
                     %tr.row.different
                       %td
@@ -233,7 +239,7 @@
                       %td
                         New relationship in current version
                   -else
-                    %tr.row{class: "#{relationship.equals?(previous_relationship) ? 'same' : 'different'}"}
+                    %tr.row{class: "#{relationship.display_info == previous_relationship.display_info ? 'same' : 'different'}"}
                       %td
                       %td
                         = relationship.display_info
