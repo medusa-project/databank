@@ -16,6 +16,8 @@ module Dataset::Publishable
     false
   end
 
+
+
   def publish(user)
 
     self.destroy_incomplete_uploads

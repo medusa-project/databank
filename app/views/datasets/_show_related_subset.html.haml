@@ -1,4 +1,4 @@
--related_materials_subset.each do |material|
+-related_materials_subset.sort_by(&:created_at).each do |material|
   -unless  material.uri && (material.relationship_arr.include?(Databank::Relationship::PREVIOUS_VERSION_OF) || material.relationship_arr.include?(Databank::Relationship::NEW_VERSION_OF) )
     %tr.row
       %td{ :class => ("featured-material" if material.feature) }
