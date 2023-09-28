@@ -57,6 +57,7 @@ module Dataset::Complete
       e_arr += Dataset.duplicate_datafile_error(dataset) || []
       e_arr += Dataset.embargo_errors(dataset) || []
       e_arr += Dataset.import_date_errors(dataset) || []
+      e_arr += Dataset.related_material_errors(dataset) || []
       e_arr << "500 or fewer datafiles" if dataset.datafiles.count > 500
       return "ok" if e_arr.empty?
 
@@ -151,6 +152,15 @@ module Dataset::Complete
       return ["a release date for imported dataset"] if dataset.is_import && dataset.release_date.nil?
 
       nil
+    end
+
+    def related_material_errors(dataset)
+      return [] if dataset.related_materials.count.zero?
+      dataset.related_materials.each do |related_material|
+        if related_material.uri_type.blank? && related_material.uri.present?
+          return ["a uri_type for uri for related_material #{related_material.display_info}"]
+        end
+      end
     end
 
     def valid_netid(netid)
