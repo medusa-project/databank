@@ -94,12 +94,9 @@ class Creator < ApplicationRecord
   end
 
   def at_illinois?
-    if type_of && type_of == Databank::CreatorType::PERSON && email && !email.empty?
-      email_parts = email.split("@")
-      email_parts.length > 1 && email_parts[1] == "illinois.edu"
-    else
-      false
-    end
+    return false unless type_of && type_of == Databank::CreatorType::PERSON && email && !email.empty?
+
+    email[-12..] == "illinois.edu"
   end
 
   private

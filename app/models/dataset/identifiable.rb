@@ -402,7 +402,7 @@ module Dataset::Identifiable
           creator_identifier_node.content = creator.identifier.to_s
           creator_identifier_node.parent = creator_node
         end
-        if creator.email.split("@").last == "illinois.edu"
+        if creator.email[-12..] == "illinois.edu"
           affiliation_node = doc.create_element("affiliation")
           affiliation_node["affiliationIdentifier"] = "https://ror.org/047426m28"
           affiliation_node["affiliationIdentifierScheme"] = "ROR"

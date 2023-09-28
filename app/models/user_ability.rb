@@ -65,9 +65,8 @@ class UserAbility < ApplicationRecord
     def add_to_editors(dataset:, email:)
       return true if dataset.editor_emails.include?(email)
 
-      email_parts = email.split("@")
-      if email_parts[1] == "illinois.edu"
-        netid = email_parts[0]
+      if email[-12..] == "illinois.edu"
+        netid = email.split("@")[0]
         grant_internal(dataset, netid, :read)
         grant_internal(dataset, netid, :view_files)
         grant_internal(dataset, netid, :update)
@@ -75,18 +74,17 @@ class UserAbility < ApplicationRecord
         user = User::Identity.find_by(email: email)
         return false unless user
 
-        grant(dataset: dataset, user: user, ability: :read)
-        grant(dataset: dataset, user: user, ability: :view_files)
-        grant(dataset: dataset, user: user, ability: :update)
+        grant(dataset: dataset, email: email, ability: :read)
+        grant(dataset: dataset, email: email, ability: :view_files)
+        grant(dataset: dataset, email: email, ability: :update)
       end
     end
 
     def remove_from_editors(dataset:, email:)
       return true unless dataset.editor_emails.include?(email)
 
-      email_parts = email.split("@")
-      if email_parts[1] == "illinois.edu"
-        netid = email_parts[0]
+      if email[-12..] == "illinois.edu"
+        netid = email.split("@")[0]
         revoke_internal(dataset, netid, :read)
         revoke_internal(dataset, netid, :view_files)
         revoke_internal(dataset, netid, :update)
@@ -118,8 +116,7 @@ class UserAbility < ApplicationRecord
       user = User::Identity.find_by(email: email)
       return grant_external(dataset: dataset, user: user, ability: ability) if user
 
-      email_parts = email.split("@")
-      return false unless email_parts[1] == "illinois.edu"
+      return false unless email[-12..] == "illinois.edu"
 
       existing_record = UserAbility.find_by(resource_type: "Dataset",
                                             resource_id:   dataset.id,
@@ -138,8 +135,7 @@ class UserAbility < ApplicationRecord
       user = User::Identity.find_by(email: email)
       return revoke_external(dataset: dataset, user: user, ability: ability) if user
 
-      email_parts = email.split("@")
-      return false unless email_parts[1] == "illinois.edu"
+      return false unless email[-12..] == "illinois.edu"
 
       existing_record = UserAbility.find_by(resource_type: "Dataset",
                                             resource_id:   dataset.id,
