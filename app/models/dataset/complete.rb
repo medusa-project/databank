@@ -162,6 +162,8 @@ module Dataset::Complete
           return ["a uri_type for uri for related_material #{related_material.display_info}"]
         end
       end
+
+      []
     end
 
     def valid_netid(netid)
