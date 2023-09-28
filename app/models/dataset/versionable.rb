@@ -133,6 +133,7 @@ module Dataset::Versionable
                              availability: material.availability,
                              link: material.link,
                              uri: material.uri,
+                             uri_type: material.uri_type,
                              citation: material.citation,
                              selected_type: material.selected_type,
                              datacite_list: material.datacite_list,
