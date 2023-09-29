@@ -9,7 +9,7 @@ class Creator < ApplicationRecord
   validate :name?
   after_create :add_editor
   after_update :add_editor
-  before_destroy :remove_internal_editor
+  before_destroy :remove_editor
 
   audited except: [:row_order, :type_of, :identifier_scheme, :dataset_id, :institution_name], associated_with: :dataset
 

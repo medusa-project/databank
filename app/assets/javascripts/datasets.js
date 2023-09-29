@@ -876,17 +876,17 @@ function setOrgCreators(dataset_id, new_value) {
     }
 }
 
-function addInternalReviewerRow(){
-    var netid = $("#newInternalReviewer").val();
-    var reviewerRow ="<div class='row'><div class='col-md-1'><div class='pull-right'><input name='internal_reviewer[]' type='checkbox' value='" + netid + "' checked='checked'></div></div><div class='col-md-3'>"+ netid +"</div>"
-    $(reviewerRow).prependTo("#newInternalReviewersDiv");
-    $("#newInternalReviewer").val("");
+function addReviewerRow(){
+    var email = $("#newReviewer").val();
+    var reviewerRow ="<div class='row'><div class='col-md-1'><div class='pull-right'><input name='reviewer_emails[]' type='checkbox' value='" + email + "' checked='checked'></div></div><div class='col-md-3'>"+ email +"</div>"
+    $(reviewerRow).prependTo("#newReviewersDiv");
+    $("#newReviewer").val("");
 }
 
 function addInternalEditorRow(){
     var netid = $("#newInternalEditor").val();
     var reviewerRow ="<div class='row'><div class='col-md-1'><div class='pull-right'><input name='internal_editor[]' type='checkbox' value='" + netid + "' checked='checked'></div></div><div class='col-md-3'>"+ netid +"</div>"
-    $(reviewerRow).prependTo("#newInternalEditorsDiv");
+    $(reviewerRow).prependTo("#newEditorsDiv");
     $("#newInternalEditor").val("");
 }
 

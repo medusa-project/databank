@@ -173,9 +173,9 @@ collaborators to access the data files while the dataset is not public.</li>
     else
       @dataset.update_attribute(:data_curation_network, false)
     end
-    reviewer_netids = params[:internal_reviewer] || []
-    editor_netids = params[:internal_editor] || []
-    UserAbility.update_internal_permissions(@dataset.key, reviewer_netids, editor_netids)
+    reviewer_emails = params[:reviewer_emails] || []
+    editor_emails = params[:editor_emails] || []
+    UserAbility.update_permissions(@dataset.key, reviewer_emails, editor_emails)
 
     respond_to do |format|
       if @dataset.save

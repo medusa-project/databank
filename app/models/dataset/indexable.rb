@@ -219,15 +219,15 @@ module Dataset::Indexable
   end
 
   def draft_viewer_emails
-    internal_view_emails + [depositor_email]
+    view_emails + [depositor_email]
   end
 
   def funder_names_fulltext
     funder_names.join(" ").to_s
   end
 
-  def internal_view_emails
-    reviewer_emails + internal_editor_netids
+  def view_emails
+    reviewer_emails + editor_emails
   end
 
   def reviewer_emails

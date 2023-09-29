@@ -135,7 +135,7 @@ module Dataset::Filterable
               with :publication_state, Databank::PublicationState::TempSuppress::VERSION
             end
             all_of do
-              with :draft_viewer_netids, user_netid
+              with :draft_viewer_emails, user.email
               with :publication_state, Databank::PublicationState::Embargo::METADATA
             end
             any_of do
@@ -154,7 +154,7 @@ module Dataset::Filterable
           end
           if params.has_key?("editor")
             any_of do
-              with :internal_editor_netids, params["editor"]
+              with :editor_emails, params["editor"]
               with :depositor_netid, params["editor"]
             end
           end

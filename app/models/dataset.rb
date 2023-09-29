@@ -84,7 +84,7 @@ class Dataset < ApplicationRecord
     string :depositor_email
     string :visibility_code
     string :dataset_version
-    string :internal_view_emails, multiple: true
+    string :view_emails, multiple: true
     string :draft_viewer_emails, multiple: true
     string :funder_codes, multiple: true
     string :grant_numbers, multiple: true
@@ -129,7 +129,6 @@ class Dataset < ApplicationRecord
       self.featured_related_materials = self.not_featured_related_materials = []
     else
       self.featured_related_materials = self.related_materials.where(feature: true)
-      external_related_materials_set = Set.new
       not_featured_materials_set = Set.new
       related_materials.each do |material|
         datacite_arr = []
