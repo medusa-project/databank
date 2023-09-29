@@ -33,7 +33,7 @@
           %div#newReviewersDiv
           .row
             .col-md-3.col-md-offset-1
-              %input(type="text" name="newReviewer" id="newReviewer" class="form-control" placeholder="enter email then click Add")
+              %input(type="email" name="newReviewer" id="newReviewer" class="form-control" placeholder="enter email address then click Add")
             .col-md-2
               %button(type="button" class= "btn btn-success" onclick="addReviewerRow()")
                 Add
@@ -50,7 +50,7 @@
           %div#newEditorsDiv
           .row
             .col-md-3.col-md-offset-1
-              %input(type="text" name="newEditor" id="newEditor" class="form-control" placeholder="enter email then click Add")
+              %input(type="email" name="newEditor" id="newEditor" class="form-control" placeholder="enter email address then click Add")
             .col-md-2
               %button(type="button" class= "btn btn-success" onclick="addEditorRow()")
                 Add

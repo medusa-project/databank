@@ -108,14 +108,15 @@ collaborators to access the data files while the dataset is not public.</li>
   # GET /datasets.json
   def index
     if current_user
-      user_role = current_user&.role
-      user_netid = current_user&.email&.split("@").first
+      user_role = current_user.role
+      user = User::Shibboleth.find_by(email: current_user&.email)
+      user ||= User::Identity.find_by(email: current_user&.email)
     else
       user_role = Databank::UserRole::GUEST
-      user_netid = nil
+      user = nil
     end
     @datasets = Dataset.select(&:metadata_public?) # used for public json response
-    @search = Dataset.filtered_list(user_role: user_role, user_netid: user_netid, params: params)
+    @search = Dataset.filtered_list(user_role: user_role, user: user, params: params)
     @report = Dataset.citation_report(@search, request.original_url, current_user)
     send_data @report, filename: "report.txt" if params.has_key?("download") && params["download"] == "now"
   end

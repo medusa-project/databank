@@ -251,6 +251,12 @@ class Dataset < ApplicationRecord
     self.save!
   end
 
+  def ensure_creator_editors
+    return true unless creators.count.positive?
+
+    creators.each(&:add_editor)
+  end
+
   def publication_year
     if release_date
       release_date.year || Time.now.in_time_zone.year

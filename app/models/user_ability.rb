@@ -39,7 +39,6 @@ class UserAbility < ApplicationRecord
 
       update_reviewers(dataset: dataset, form_can_read: form_can_read, current_can_read: current_can_read)
       update_editors(dataset: dataset, form_editors: form_editors, current_editors: current_editors)
-
     end
 
     def update_reviewers(dataset:, form_can_read:, current_can_read:)
@@ -89,6 +88,7 @@ class UserAbility < ApplicationRecord
     end
 
     def grant(dataset:, email:, ability:)
+      email = email.strip.downcase
       user = User::Identity.find_by(email: email)
       return grant_external(dataset: dataset, user: user, ability: ability) if user
 
@@ -122,6 +122,7 @@ class UserAbility < ApplicationRecord
     end
 
     def revoke(dataset:, email:, ability:)
+      email = email.strip.downcase
       user = User::Identity.find_by(email: email)
       return revoke_external(dataset: dataset, user: user, ability: ability) if user
 

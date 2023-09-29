@@ -18,7 +18,7 @@ module Dataset::Filterable
         list = list_with_facet(list: list, search_get_facets: facets, facet: :visibility_code)
         list = list_with_facet(list: list, search_get_facets: facets, facet: :depositor)
       when Databank::UserRole::DEPOSITOR
-        raise ArgumentError.new("net_id required for depositor role") if user_netid.nil?
+        raise ArgumentError.new("net_id required for depositor role") if user.nil?
 
         list = depositor_list(user: user, params: params, per_page: per_page)
         facets = depositor_facets(user: user, params: params)
@@ -330,7 +330,7 @@ module Dataset::Filterable
       end
     end
 
-    def depositor_facets(user_netid:, params:)
+    def depositor_facets(user:, params:)
       Dataset.search do
         all_of do
           without(:depositor, "error")
@@ -338,15 +338,15 @@ module Dataset::Filterable
           with :is_test, false
           any_of do
             all_of do
-              with :draft_viewer_netids, user_netid
+              with :draft_viewer_emails, user.email
               with :publication_state, Databank::PublicationState::DRAFT
             end
             all_of do
-              with :draft_viewer_netids, user_netid
+              with :draft_viewer_emails, user.email
               with :publication_state, Databank::PublicationState::TempSuppress::VERSION
             end
             all_of do
-              with :draft_viewer_netids, user_netid
+              with :draft_viewer_emails, user.email
               with :publication_state, Databank::PublicationState::Embargo::METADATA
             end
             any_of do
@@ -370,7 +370,7 @@ module Dataset::Filterable
       end
     end
 
-    def depositor_my_facets(user_netid:, params:)
+    def depositor_my_facets(user:, params:)
       Dataset.search do
         all_of do
           without(:depositor, "error")
@@ -378,15 +378,15 @@ module Dataset::Filterable
           with :is_test, false
           any_of do
             all_of do
-              with :draft_viewer_netids, user_netid
+              with :draft_viewer_emails, user.email
               with :publication_state, Databank::PublicationState::DRAFT
             end
             all_of do
-              with :draft_viewer_netids, user_netid
+              with :draft_viewer_emails, user.email
               with :publication_state, Databank::PublicationState::TempSuppress::VERSION
             end
             all_of do
-              with :draft_viewer_netids, user_netid
+              with :draft_viewer_emails, user.email
               with :publication_state, Databank::PublicationState::Embargo::METADATA
             end
             any_of do

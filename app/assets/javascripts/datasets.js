@@ -738,7 +738,7 @@ function confirm_update() {
         datatype: 'json',
         success: function (data) {
 
-            if (data.message == "ok") {
+            if (data.message === "ok") {
                 reset_confirm_msg();
                 $('#deposit').modal('show');
             } else {
