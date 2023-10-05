@@ -62,10 +62,12 @@ class Creator < ApplicationRecord
 
   def add_editor
     UserAbility.add_to_editors(dataset: dataset, email: email)
+    Sunspot.index! [dataset]
   end
 
   def remove_editor
     UserAbility.remove_from_editors(dataset: dataset, email: email)
+    Sunspot.index! [dataset]
   end
 
   def as_json(*)

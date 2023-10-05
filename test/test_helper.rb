@@ -28,6 +28,8 @@ class ActiveSupport::TestCase
     Dataset.all.each do |dataset|
       dataset.creators.each(&:add_editor)
     end
+    Dataset.reindex
+    Sunspot.commit
   end
 
   ##

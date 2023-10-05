@@ -1,5 +1,4 @@
 resources :datasets do
-
   member do
     get 'add_review_request'
     get "citation_text", defaults: {format: 'json'}
@@ -59,6 +58,7 @@ resources :datasets do
     get 'pre_deposit'
     get 'review_deposit_agreement'
   end
+  resources :creators
   resources :datafiles do
     member do
       get 'bucket_and_key', to: 'datafiles#bucket_and_key', defaults: { format: 'json' }
@@ -78,9 +78,8 @@ resources :datasets do
     collection do
       get 'add', to: 'datafiles#add'
     end
-    resources :creators
-    resources :funders
-    resources :related_materials
-    resources :notes
   end
+  resources :funders
+  resources :notes
+  resources :related_materials
 end

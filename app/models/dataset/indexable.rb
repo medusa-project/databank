@@ -219,7 +219,7 @@ module Dataset::Indexable
   end
 
   def draft_viewer_emails
-    view_emails + [depositor_email]
+    (view_emails + [depositor_email]).uniq
   end
 
   def funder_names_fulltext
@@ -227,14 +227,13 @@ module Dataset::Indexable
   end
 
   def view_emails
-    reviewer_emails + editor_emails
+    (reviewer_emails + editor_emails).uniq
   end
 
   def reviewer_emails
     UserAbility.where(resource_type: "Dataset",
                       ability:       "view_files",
                       'resource_id': id).pluck(:user_uid).uniq
-
   end
 
   def editor_emails

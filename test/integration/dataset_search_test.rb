@@ -27,6 +27,8 @@ class DatasetSearchTest < ActionDispatch::IntegrationTest
     @search = Dataset.filtered_list(user_role: Databank::UserRole::DEPOSITOR, user: @user, params: {})
     expected_keys = @user.datasets_user_can_view(user: @user).map(&:key)
     actual_keys = @search.results.map(&:key)
+    # puts "expected_keys: #{expected_keys.to_yaml}"
+    # puts "actual_keys: #{actual_keys.to_yaml}"
     assert expected_keys & actual_keys == expected_keys
   end
 
