@@ -31,7 +31,9 @@ class Ability
 
     can :view, Guide::Subitem, &:public
 
-    can :read, Dataset do |dataset|
+    can [:view, :read], Dataset do |dataset|
+      return false if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+
       dataset.metadata_public? ||
           dataset.depositor_email == user.email ||
           UserAbility.user_can?("Dataset", dataset.id, :update, user) ||

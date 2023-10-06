@@ -1,11 +1,12 @@
-%h2 draft reviewers
-=debug(@dataset.draft_viewer_emails)
-- if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION && (can? :read, @dataset) && current_user&.role == 'depositor'
+- if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION && (can? :read, @dataset)
   = render partial: 'version_acknowledge'
-- elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION && @dataset.draft_viewer_netids.include?(current_user&.netid)
+- elsif @dataset.metadata_public? || (can? :read, @dataset) || @shared_by_link
   = render partial: 'landing'
-- elsif (@dataset.publication_state != Databank::PublicationState::DRAFT) || (can? :read, @dataset) || @shared_by_link
-  = render partial: 'landing'
+- elsif true
+  = "@dataset.metadata_public? = #{@dataset.metadata_public?}"
+  = "can? :read, @dataset = #{can? :read, @dataset}"
+  = "@shared_by_link = #{@shared_by_link}"
+  = debug(params)
 - else
   = render partial: 'welcome/welcome'
   .modal.fade{"id" => "login-prompt", "aria-hidden" => "true", "aria-labelledby" => "agreement-label", :role => "dialog", :tabindex => "-1"}
