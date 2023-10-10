@@ -26,16 +26,15 @@ class VersionFile < ApplicationRecord
     return true if complete?
 
     begin
-      update_attribute(:initiated, true)
       new_datafile = source_datafile.copy_to_dataset(dataset: dataset)
       return true if new_datafile
     rescue StandardError => e
       update_attribute(:initiated, false)
-      raise StandardError.new("Failed to copy version file #{self.id} | #{e.message}")
+      raise StandardError.new("Failed to copy version file #{id} | #{e.message}")
     end
 
     update_attribute(:initiated, false)
-    raise StandardError.new("Failed to copy version file #{self.id} | #{new_datafile.errors.full_messages}")
+    raise StandardError.new("Failed to copy version file #{id} | #{new_datafile.errors.full_messages}")
 
   end
 

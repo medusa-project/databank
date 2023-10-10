@@ -18,7 +18,7 @@ class Ability
 
     can :manage, Datafile do |datafile|
       datafile.dataset.publication_state == Databank::PublicationState::DRAFT &&
-          user.can?(:update, datafile.dataset)
+        user.can?(:update, datafile.dataset)
     end
 
     can :view, Guide::Section do |section|
@@ -31,32 +31,37 @@ class Ability
 
     can :view, Guide::Subitem, &:public
 
-    can [:view, :read], Dataset do |dataset|
-      return false if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+    can :view_version_acknowledgement, Dataset do |dataset|
+      dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION &&
+        (dataset.depositor_email == user.email ||
+        UserAbility.user_can?("Dataset", dataset.id, :update, user) ||
+        UserAbility.user_can?("Dataset", dataset.id, :read, user))
+    end
 
-      dataset.metadata_public? ||
-          dataset.depositor_email == user.email ||
-          UserAbility.user_can?("Dataset", dataset.id, :update, user) ||
-          UserAbility.user_can?("Dataset", dataset.id, :read, user) ||
-          dataset.data_curation_network && user.is?(Databank::UserRole::NETWORK_REVIEWER)
+    can [:view, :read], Dataset do |dataset|
+      dataset.hold_state != Databank::PublicationState::TempSuppress::VERSION && (dataset.metadata_public? ||
+        dataset.depositor_email == user.email ||
+        UserAbility.user_can?("Dataset", dataset.id, :update, user) ||
+        UserAbility.user_can?("Dataset", dataset.id, :read, user) ||
+        dataset.data_curation_network && user.is?(Databank::UserRole::NETWORK_REVIEWER))
     end
 
     can :update, Dataset do |dataset|
       dataset.depositor_email == user.email ||
-          UserAbility.user_can?("Dataset", dataset.id, :update, user)
+        UserAbility.user_can?("Dataset", dataset.id, :update, user)
     end
 
     can :destroy, Dataset do |dataset|
       dataset.publication_state == Databank::PublicationState::DRAFT &&
-          (dataset.depositor_email == user.email || UserAbility.user_can?("Dataset", dataset.id, :update, user))
+        (dataset.depositor_email == user.email || UserAbility.user_can?("Dataset", dataset.id, :update, user))
     end
 
     can :view_files, Dataset do |dataset|
       dataset.files_public? ||
-          dataset.depositor_email == user.email ||
-          UserAbility.user_can?("Dataset", dataset.id, :update, user) ||
-          UserAbility.user_can?("Dataset", dataset.id, :read, user) ||
-          dataset.data_curation_network && user.is?(Databank::UserRole::NETWORK_REVIEWER)
+        dataset.depositor_email == user.email ||
+        UserAbility.user_can?("Dataset", dataset.id, :update, user) ||
+        UserAbility.user_can?("Dataset", dataset.id, :read, user) ||
+        dataset.data_curation_network && user.is?(Databank::UserRole::NETWORK_REVIEWER)
     end
 
     can [:read, :update], Identity do |identity|

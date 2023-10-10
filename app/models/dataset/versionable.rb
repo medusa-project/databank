@@ -18,12 +18,18 @@ module Dataset::Versionable
     false
   end
 
-  def copy_version_files
-    files_to_copy = version_files.where(selected: true, initiated: false)
+  def mark_version_files_initiated(files_to_copy:)
     files_to_copy.each do |file_to_copy|
       file_to_copy.update_attribute(:initiated, true)
     end
-    files_to_copy.each(&:copy_file)
+  end
+
+  def copy_version_files
+    selected_files = version_files.select(&:selected)
+    incomplete_files = selected_files.reject(&:complete?)
+    return true if incomplete_files.count.zero?
+
+    incomplete_files.each(&:copy_file)
     if Rails.env.demo? || Rails.env.production?
       files_copied_email = DatabankMailer.notify_version_copy_complete(dataset_key: key)
       files_copied_email.deliver_now
