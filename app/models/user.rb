@@ -18,6 +18,70 @@ module User
               uniqueness: {case_sensitive: false}
 
     class_attribute :system_user
+    def admin?
+      role == Databank::UserRole::ADMIN
+    end
+
+    def depositor?
+      role == Databank::UserRole::DEPOSITOR
+    end
+
+    def guest?
+      role == Databank::UserRole::GUEST
+    end
+
+    def network_reviewer?
+      role == Databank::UserRole::NETWORK_REVIEWER
+    end
+
+    def datasets_user_can_view(user:)
+      forbidden_hold_states = [Databank::PublicationState::TempSuppress::VERSION,
+                               Databank::PublicationState::PermSuppress::METADATA]
+      case user.role
+      when Databank::UserRole::ADMIN
+        Dataset.all
+      when Databank::UserRole::DEPOSITOR
+        datasets = Dataset.select(&:metadata_public?)
+        datasets += Dataset.where(depositor_email: user.email)
+        ability_datasets = UserAbility.where(user_provider: user.provider,
+                                             user_uid:      user.email,
+                                             resource_type: "Dataset",
+                                             ability:       :read).pluck(:resource_id)
+        datasets += Dataset.where(id: ability_datasets)
+        datasets -= Dataset.where(hold_state: forbidden_hold_states)
+        datasets -= Dataset.where(publication_state: Databank::PublicationState::PermSuppress::METADATA)
+        datasets.uniq
+      when Databank::UserRole::NETWORK_REVIEWER
+        datasets = Dataset.select(&:metadata_public?)
+        datasets += Dataset.where(data_curation_network: true)
+        datasets -= Dataset.where(hold_state: forbidden_hold_states)
+        datasets -= Dataset.where(publication_state: Databank::PublicationState::PermSuppress::METADATA)
+        datasets.uniq
+      else
+        Dataset.select(&:metadata_public?)
+      end
+    end
+
+    def datasets_user_can_edit(user:)
+      forbidden_hold_states = [Databank::PublicationState::TempSuppress::VERSION,
+                               Databank::PublicationState::PermSuppress::METADATA]
+      case user.role
+      when Databank::UserRole::ADMIN
+        Dataset.all
+      when Databank::UserRole::DEPOSITOR
+        datasets = Dataset.where(depositor_email: user.email)
+        ability_datasets = UserAbility.where(user_provider: user.provider,
+                                             user_uid:      user.email,
+                                             resource_type: "Dataset",
+                                             ability:       :update).pluck(:resource_id)
+        datasets += Dataset.where(id: ability_datasets)
+        datasets -= Dataset.where(hold_state: forbidden_hold_states)
+        datasets -= Dataset.where(publication_state: Databank::PublicationState::PermSuppress::METADATA)
+        datasets.uniq
+      else
+        []
+      end
+    end
 
     def is?(requested_role)
       role == requested_role.to_s
@@ -35,15 +99,16 @@ module User
     end
 
     def group
-      if provider == "shibboleth"
+      case provider
+      when "shibboleth"
         provider
-      elsif provider == "identity"
+      when "identity"
         invitee = Invitee.find_by(email: email)
-        if invitee
-          invitee.group
-        else
-          raise StandardError.new("no invitation found for identity: #{email}")
-        end
+        return invitee.group if invitee
+
+        raise StandardError.new("no invitation found for identity: #{email}")
+      else
+        raise StandardError.new("unknown provider: #{provider}")
       end
     end
 

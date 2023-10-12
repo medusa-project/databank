@@ -24,6 +24,14 @@ class ActiveSupport::TestCase
     }
   end
 
+  def ensure_creator_editors
+    Dataset.all.each do |dataset|
+      dataset.creators.each(&:add_editor)
+    end
+    Dataset.reindex
+    Sunspot.commit
+  end
+
   ##
   # Creates the application S3 bucket (if it does not already exist) and
   # uploads objects to it corresponding to every [datafile].

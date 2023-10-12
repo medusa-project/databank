@@ -235,7 +235,7 @@
               = render partial: 'materials_subform', locals: {f: f}
       = render partial: 'datafiles_subform', locals: {f: f}
 
-  - if (@dataset.publication_state == Databank::PublicationState::DRAFT) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
+  - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
 
     .container-fluid
 
@@ -366,7 +366,7 @@
     %hr
     - if (params[:action] == 'new')
       %div(id="review_link")
-        %a(href="/review_deposit_agreement" target="_blank" ) Review Deposit Agreement
+        %a(href="/datasets/review_deposit_agreement" target="_blank" ) Review Deposit Agreement
     - else
       %a(href="/datasets/#{@dataset.key}/review_deposit_agreement?" target="_blank" ) Review Deposit Agreement
 
@@ -378,13 +378,13 @@
   = render partial: 'datasets/help/license_help_modal'
   = render partial: 'datasets/help/embargo_help_modal'
 
-  -#=render partial: 'template_upload'
+  -# =render partial: 'template_upload'
 
-  -#%script(id="template-upload" type="text/x-tmpl")
-  -#  .upload
-  -#    {%=o.name%}
-  -#    .progress
-  -#      %div(class="bar progress-bar" style="width: 0%;")
+  %script(id="template-upload" type="text/x-tmpl")
+    .upload
+    {%=o.name%}
+    .progress
+      %div(class="bar progress-bar" style="width: 0%;")
 
   - if !@dataset.depositor_email
     %script

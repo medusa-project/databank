@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_26_191452) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_23_161256) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -447,4 +447,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_26_191452) do
     t.string "username"
   end
 
+  create_table "version_files", force: :cascade do |t|
+    t.bigint "dataset_id", null: false
+    t.integer "datafile_id"
+    t.boolean "selected"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "initiated", default: false
+    t.index ["datafile_id"], name: "index_version_files_on_datafile_id", unique: true
+    t.index ["dataset_id"], name: "index_version_files_on_dataset_id"
+  end
+
+  add_foreign_key "version_files", "datasets"
 end

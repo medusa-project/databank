@@ -218,6 +218,22 @@ class Datafile < ApplicationRecord
     end
   end
 
+  def copy_to_dataset(dataset:)
+    if Datafile.exists?(dataset_id: dataset.id, binary_name: binary_name)
+      raise StandardError.new "file with name #{binary_name} already exists in dataset: #{dataset.key}"
+    end
+
+    datafile = Datafile.create(dataset_id: dataset.id, binary_name: binary_name)
+
+    StorageManager.instance.draft_root.copy_content_to("#{dataset.key}/#{datafile.binary_name}",
+                                                       current_root,
+                                                       storage_key)
+    datafile.storage_root = "draft"
+    datafile.storage_key = "#{dataset.key}/#{datafile.binary_name}"
+    datafile.binary_size = StorageManager.instance.draft_root.size(datafile.storage_key)
+    datafile.save
+  end
+
   def remove_from_tmpfs
     return true unless tmpfs_root.exist?(tmpfs_key)
 
@@ -416,10 +432,10 @@ class Datafile < ApplicationRecord
   def temp_placeholder(temp_dataset_id:)
     Datafile.create(dataset_id:   temp_dataset_id,
                     web_id:       "#{self.web_id}_tmp",
-                    storage_root: self.storage_root,
-                    storage_key:  self.storage_key,
-                    binary_name:  self.binary_name,
-                    binary_size:  self.binary_size)
+                    storage_root: storage_root,
+                    storage_key:  storage_key,
+                    binary_name:  binary_name,
+                    binary_size:  binary_size)
   end
 
   def download_link

@@ -88,12 +88,7 @@
               %span.metadata-label
                 Funder
             %td
-              = funder.name
-              -if funder.grant && funder.grant != ""
-                ="-"
-                %span.metadata-label
-                  Grant:
-                = funder.grant
+              = funder.display_info
         %tr.row
           %td
             %span.metadata-label

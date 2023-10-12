@@ -24,7 +24,7 @@ class User::Identity < User::User
     if invitee&.expires_at >= Time.current
       create! do |user|
         user.provider = auth["provider"]
-        user.uid = auth["uid"]
+        user.uid = auth["info"]["email"]
         user.email = auth["info"]["email"]
         user.name = auth["info"]["name"]
         user.username = user.email
@@ -35,7 +35,7 @@ class User::Identity < User::User
 
   def update_with_omniauth(auth)
     update_attribute(:provider, auth["provider"])
-    update_attribute(:uid, auth["uid"])
+    update_attribute(:uid, auth["info"]["email"])
     update_attribute(:email, auth["info"]["email"])
     update_attribute(:username, email.split("@").first)
     update_attribute(:name, auth["info"]["name"])
@@ -57,5 +57,11 @@ class User::Identity < User::User
     return email unless identity
 
     identity.name || email
+  end
+
+  def netid
+    return username if Rails.env.test? || Rails.env.development?
+
+    nil
   end
 end

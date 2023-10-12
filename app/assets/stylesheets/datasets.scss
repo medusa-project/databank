@@ -430,4 +430,15 @@ a.morelink {
   padding: 3px;
   border: 1px solid $color__burnt-orange;
 }
+tr.category, td.category {
+  font-weight: bold;
+  background-color: $color__lightest-grey;
+}
 
+tr.different {
+    background-color: $color__yellow-background;
+}
+
+#differnce_report td:not(:last-child) {
+  border-right: 1px solid $color__lightest-grey;
+}

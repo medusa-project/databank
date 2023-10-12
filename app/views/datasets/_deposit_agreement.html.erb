@@ -1,4 +1,7 @@
-<h3>To start your data deposit, please review the deposit agreement and answer the following questions:</h3>
+<h3>
+  To start your
+  <%= params.has_key?('context') && params['context']=='version' ? 'new version' : 'data deposit' %>
+  please review the deposit agreement and answer the following questions:</h3>
 <hr/>
 <div class="panel panel-default">
   <div class="panel-heading">
@@ -80,15 +83,16 @@
 
     <div class="col-md-2">
       <% current_user_name = current_user.name.gsub(/'/, {"'" => "\\'"}) %>
-      <button onclick="handleAgreeModal('<%= current_user.email %>', '<%= current_user_name %>')", type="button" class="btn btn-block btn-primary" id="agree-button">
+      <button onclick="handleAgreeModal('<%= current_user.email %>', '<%= current_user_name %>')" type="button" class="btn btn-block btn-primary" id="agree-button">
         <span class="glyphicon glyphicon-check"></span> Submit
       </button>
-      <button onclick='window.open("/help")' , type="button" class="btn btn-block btn-success">
-        <span class="glyphicon glyphicon-question-sign"></span> Get Help
-      </button>
-      <button title="do not agree" type="button" class="btn btn-block btn-danger" id="cancel-button" onclick='window.location = "/"'>
+      <%= link_to "/help", class: "btn btn-block btn-success" do %>
+        <span class="glyphicon glyphicon-question-sign idb"></span> Get Help
+      <% end %>
+      <% cancel_to = params.has_key?('context') && params['context']=='version' ? "/datasets/#{@previous_key}" : "/" %>
+      <%= link_to cancel_to, class: "btn btn-block btn-danger idb", id: 'cancel-button' do %>
         <span class="glyphicon glyphicon-remove"></span> Cancel
-      </button>
+      <% end %>
     </div>
   </div>
 </div>

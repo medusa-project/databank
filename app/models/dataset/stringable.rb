@@ -258,16 +258,19 @@ module Dataset::Stringable
       changes = audits.where("created_at >= ?", publication).where.not(id: medusa_changes_arr)
       changes.reorder("created_at DESC")
     else
-      Rails.logger.warn "no changes found for dataset #{attributes[:dataset_id]}"
+      #Rails.logger.warn "no changes found for dataset #{attributes[:dataset_id]}"
       {}
     end
   end
 
   def creator_list
-    if creators.count.zero?
+    creators_arr = Creator.where(dataset_id: id)
+    if creators_arr.count.zero?
       "[Creator List]"
-    elsif creators.count == 1
-      creator = creators.first
+    elsif creators_arr.count == 1
+      creator = creators_arr.first
+      raise("mysteriously missing creator when creators.count #{creators_arr.count} was detected as equal to 1 #{creators_arr.to_yaml}") unless creator
+
       if creator.institution_name && creator.institution_name != "" || creator.family_name && creator.family_name != ""
         creator.list_name
       end

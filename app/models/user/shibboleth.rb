@@ -37,6 +37,10 @@ class User::Shibboleth < User::User
     self
   end
 
+  def netid
+    email.split("@")[0]
+  end
+
   def self.user_role(auth)
     admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
     net_id = auth["info"]["email"].split("@").first
