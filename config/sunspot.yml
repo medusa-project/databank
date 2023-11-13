@@ -14,7 +14,7 @@ test:
 
 demo:
   solr:
-    hostname: aws-rabbitmq-solr-demo.library.illinois.edu
+    hostname: aws-rabbitmq-solr-demo-rocky.library.illinois.edu
     port: 8983
     log_level: WARNING
     path: /solr/databank
