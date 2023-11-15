@@ -109,7 +109,7 @@ gem "rest-client"
 # gem 'httpclient', git: 'git://github.com/medusa-project/httpclient.git'
 
 gem "equivalent-xml"
-gem "nokogiri"
+gem "nokogiri", :platforms => :ruby
 gem "nokogiri-diff"
 
 # use sunspot for searching
