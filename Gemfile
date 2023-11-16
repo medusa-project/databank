@@ -109,8 +109,8 @@ gem "rest-client"
 # gem 'httpclient', git: 'git://github.com/medusa-project/httpclient.git'
 
 gem "equivalent-xml"
-gem "nokogiri", platforms: :ruby
-gem "nokogiri-diff", platforms: :ruby
+gem "nokogiri", force_ruby_platform: true
+gem "nokogiri-diff", force_ruby_platform: true
 
 # use sunspot for searching
 gem "progress_bar"
