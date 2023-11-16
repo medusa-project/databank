@@ -23,7 +23,7 @@ module Dataset::Globusable
   end
 
   def globus_download_dir
-    if Rails.env.demo? || Rails.env.production?
+    if Rails.env.demo? || Rails.env.production? || Rails.env == "demo-rocky"
       "#{GLOBUS_CONFIG[:download_url_base]}#{key}"
     else
       "https://app.globus.org"
@@ -31,7 +31,7 @@ module Dataset::Globusable
   end
 
   def ensure_globus_ingest_dir
-    return nil unless Rails.env.demo? || Rails.env.production?
+    return nil unless Rails.env.demo? || Rails.env.production? || Rails.env == "demo-rocky"
 
     root = StorageManager.instance.draft_root
     prefix = Rails.application.credentials[:storage][:draft_prefix]
@@ -47,7 +47,7 @@ module Dataset::Globusable
   end
 
   def globus_ingest_dir
-    if Rails.env.demo? || Rails.env.production?
+    if Rails.env.demo? || Rails.env.production? || Rails.env == "demo-rocky"
       "#{GLOBUS_CONFIG[:ingest_url_base]}#{key}"
     else
       "https://app.globus.org"
@@ -55,7 +55,7 @@ module Dataset::Globusable
   end
 
   def import_from_globus
-    raise "invalid environment, must be demo or production" unless Rails.env.demo? || Rails.env.production?
+    raise "invalid environment" unless Rails.env.demo? || Rails.env.production? || Rails.env == "demo-rocky"
     raise "files not found on Globus endpoint" unless StorageManager.instance.globus_ingest_root.exist?("#{key}/")
 
     storage_keys = StorageManager.instance.globus_ingest_root.file_keys(key)
@@ -83,7 +83,7 @@ module Dataset::Globusable
   end
 
   def remove_from_globus_download
-    return nil unless Rails.env.demo? || Rails.env.production?
+    return nil unless Rails.env.demo? || Rails.env.production? || Rails.env == "demo-rocky"
     return nil unless StorageManager.instance.globus_download_root.exist?("#{key}/")
 
     storage_keys = StorageManager.instance.globus_download_root.file_keys(key)
@@ -94,7 +94,7 @@ module Dataset::Globusable
   end
 
   def remove_globus_ingest_dir
-    return nil unless Rails.env.demo? || Rails.env.production?
+    return nil unless Rails.env.demo? || Rails.env.production? || Rails.env == "demo-rocky"
 
     return nil unless StorageManager.instance.globus_ingest_root.exist?("#{key}/")
 

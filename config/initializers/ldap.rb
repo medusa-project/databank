@@ -1,4 +1,4 @@
-if Rails.env.demo? || Rails.env.production?
+if Rails.env.demo? || Rails.env.production? || Rails.env == "demo-rocky"
   Application.ldap = Net::LDAP.new :host => Rails.application.credentials[:ldap][:host],
                                    :port => 389,
                                    :auth => {
