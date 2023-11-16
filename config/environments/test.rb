@@ -8,7 +8,6 @@ STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/medus
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  config.active_record.legacy_connection_handling = false
 
   config.cache_classes = true
 
