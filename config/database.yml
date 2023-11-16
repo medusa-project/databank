@@ -41,8 +41,9 @@ demo:
 demo-rocky:
   <<: *default
   database: databank
-  username: <%= Rails.env.demo-rocky? ? Rails.application.credentials[:primary_db][:username] : "username" %>
-  password: <%= Rails.env.demo-rocky? ? Rails.application.credentials[:primary_db][:password] : "password" %>
-  host: <%= Rails.env.demo-rocky? ? Rails.application.credentials[:primary_db][:host] : "host" %>
+  username: <%= (Rails.env == "demo-rocky") ? Rails.application.credentials[:primary_db][:username] : "username" %>
+  password: <%= (Rails.env == "demo-rocky") ? Rails.application.credentials[:primary_db][:password] : "password" %>
+  host: <%= (Rails.env == "demo-rocky") ? Rails.application.credentials[:primary_db][:host] : "host" %>
+
 cucumber:
   <<: *test
