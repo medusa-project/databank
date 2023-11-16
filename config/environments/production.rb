@@ -6,7 +6,7 @@ Rails.application.configure do
 
   #Google Analtyics Code
   #GA.tracker = "UA-74879540-1"
-  
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 
