@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 source "https://rubygems.org"
-ruby '3.1.4'
-gem 'rails', '~> 7.0'
+ruby "3.1.4"
+gem "rails", "~> 7.0"
 
 # Use postgresql as the database for Active Record
 gem "pg"
@@ -19,7 +19,7 @@ gem "uglifier"
 gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "master"
 
 # Use net-ldap to interact with campus active directory
-gem 'net-ldap', '~> 0.16.2'
+gem "net-ldap", "~> 0.16.2"
 
 # Use aws-sdk to manage signed urls for downloads
 gem "aws-sdk"
@@ -39,7 +39,7 @@ gem "jquery-rails"
 gem "jquery-ui-rails"
 
 # Use clipboard-rails to access clipboard.js Javascript library
-gem 'clipboard-rails', '~> 1.7', '>= 1.7.1'
+gem "clipboard-rails", "~> 1.7", ">= 1.7.1"
 
 # Use filemagic to detect file types
 gem "ruby-filemagic"
@@ -109,12 +109,12 @@ gem "rest-client"
 # gem 'httpclient', git: 'git://github.com/medusa-project/httpclient.git'
 
 gem "equivalent-xml"
-gem "nokogiri", :platforms => :ruby
-gem "nokogiri-diff"
+gem "nokogiri", platforms: :ruby
+gem "nokogiri-diff", platforms: :ruby
 
 # use sunspot for searching
 gem "progress_bar"
-gem 'sunspot_rails'
+gem "sunspot_rails"
 gem "sunspot_solr"
 
 # use will_paginate for pagination of search results
@@ -152,9 +152,9 @@ gem "progress_job"
 gem "cancancan"
 
 # User bunny to handle RabbitMQ messages
-gem 'bunny'
-gem 'amq-protocol'
-gem 'amqp_helper', git: 'https://github.com/medusa-project/amqp_helper.git', branch: "master"
+gem "bunny"
+gem "amq-protocol"
+gem "amqp_helper", git: "https://github.com/medusa-project/amqp_helper.git", branch: "master"
 
 # Used audited-activerecord for dataset changelog
 gem "audited"
@@ -185,7 +185,7 @@ gem "capistrano-bundler"
 gem "capistrano-passenger"
 gem "capistrano-rails"
 gem "capistrano-rbenv"
-gem 'airbrussh'
+gem "airbrussh"
 
 group :development, :test do
   gem "byebug"
@@ -197,18 +197,18 @@ end
 
 group :test do
   #gem 'cucumber', '~> 2.0'
-  gem 'cucumber-rails', require: false
-  gem 'database_cleaner'
-  gem 'simplecov'
-  gem 'json_spec'
-  gem 'capybara'
-  gem 'capybara-email'
-  gem 'launchy'
+  gem "cucumber-rails", require: false
+  gem "database_cleaner"
+  gem "simplecov"
+  gem "json_spec"
+  gem "capybara"
+  gem "capybara-email"
+  gem "launchy"
   #testing with javascript - requires phantomjs to be installed on the test machine
-  gem 'poltergeist'
+  gem "poltergeist"
   #other js testing options
-  gem 'selenium-webdriver'
-  gem 'connection_pool'
-  gem 'bunny-mock'
-  gem 'rack_session_access'
+  gem "selenium-webdriver"
+  gem "connection_pool"
+  gem "bunny-mock"
+  gem "rack_session_access"
 end
