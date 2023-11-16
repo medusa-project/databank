@@ -36,6 +36,25 @@ demo:
     name: displayName
     email: mail
 
+demo-rocky:
+  host: test.databank.illinois.edu
+  uid_field: eppn
+  extra_fields:
+    - eppn
+    - unscoped-affiliation
+    - uid
+    - sn
+    - nickname
+    - mail
+    - givenName
+    - displayName
+    - iTrustAffiliation
+    - uiucEduStudentLevelCode
+  request_type: header
+  info_fields:
+    name: displayName
+    email: mail
+
 production:
   host: databank.illinois.edu
   uid_field: eppn
