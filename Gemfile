@@ -125,7 +125,7 @@ gem "will_paginate-bootstrap"
 gem "bcrypt"
 
 # Use Passenger standalone
-gem "passenger", require: "phusion_passenger/rack_handler"
+gem "passenger"
 
 # Use email validator for model
 gem "valid_email"
