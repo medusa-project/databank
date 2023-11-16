@@ -2007,6 +2007,7 @@ GEM
       zip_tricks (>= 4.2.1, < 6.0)
 
 PLATFORMS
+  aarch64-linux
   x86_64-darwin-22
 
 DEPENDENCIES
