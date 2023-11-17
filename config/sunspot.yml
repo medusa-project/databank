@@ -19,6 +19,13 @@ demo:
     log_level: WARNING
     path: /solr/databank
 
+demo-rocky:
+  solr:
+    hostname: rabbitmq-solr-demo-rocky.library.illinois.edu
+    port: 8983
+    log_level: WARNING
+    path: /solr/databank
+
 production:
   solr:
     hostname: solr-prod.library.illinois.edu
