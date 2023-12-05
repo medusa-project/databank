@@ -37,7 +37,7 @@ demo:
     email: mail
 
 demo-rocky:
-  host: test.databank.illinois.edu
+  host: demo.databank.illinois.edu
   uid_field: eppn
   extra_fields:
     - eppn
