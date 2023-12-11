@@ -17,6 +17,7 @@ class User::Shibboleth < User::User
   end
 
   def self.create_with_omniauth(auth)
+    Rails.logger.warn("creating user with auth: #{auth.to_yaml}")
     create! do |user|
       user.provider = auth["provider"]
       user.uid = auth["uid"]
@@ -28,6 +29,7 @@ class User::Shibboleth < User::User
   end
 
   def update_with_omniauth(auth)
+    Rails.logger.warn("updating user with auth: #{auth.to_yaml}")
     update_attribute(:provider, auth["provider"])
     update_attribute(:uid, auth["uid"])
     update_attribute(:email, auth["info"]["email"])

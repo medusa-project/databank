@@ -31,6 +31,7 @@ module User
 
     # Converts email to all lower-case.
     def downcase_email
+      Rails.logger.warn("downcasing email: #{self.to_yaml}")
       self.email = email.downcase
     end
 
