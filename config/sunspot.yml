@@ -32,3 +32,10 @@ production:
     port: 8983
     log_level: WARNING
     path: /solr/databank
+
+production-rocky:
+  solr:
+    hostname: solr-prod.library.illinois.edu
+    port: 8983
+    log_level: WARNING
+    path: /solr/databank
