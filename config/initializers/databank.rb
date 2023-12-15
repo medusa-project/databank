@@ -22,7 +22,7 @@ else
   Application.help_transition_state = Databank::HelpTransitionState::HELP
 end
 
-Application.server_envs=["production", "demo", "demo-rocky", "production-rocky"]
+
 
 # Initializes a Markdown parser
 Application.markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
