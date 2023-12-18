@@ -111,7 +111,7 @@ config/initializers/secret_token.rb
 /config/credentials/demo.key
 /config/credentials/production.key
 /config/credentials/demo-rocky.key
-/config/credentials/production-rocky.key
+/config/credentials/prod-rocky.key
 /config/databank-development.yml
 /config/databank-local.yml
 /config/databank-test.yml

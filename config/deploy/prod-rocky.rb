@@ -6,14 +6,14 @@
 # server 'example.com', user: 'deploy', roles: %w{app db web}, my_property: :my_value
 # server 'example.com', user: 'deploy', roles: %w{app web}, other_property: :other_value
 # server 'db.example.com', user: 'deploy', roles: %w{db}
-server 'databank-prod.library.illinois.edu', user: 'databank', roles: %w{app db web}
+server 'databank-prod-rocky.library.illinois.edu', user: 'databank', roles: %w{app db web}
 
-set :rails_env, 'production-rocky'
+set :rails_env, 'prod-rocky'
 
 set :ssh_options, {
-    forward_agent: true,
-    auth_methods: ["publickey"],
-    keys: ["#{Dir.home}/.ssh/medusa_prod.pem"]
+  forward_agent: true,
+  auth_methods: ["publickey"],
+  keys: ["#{Dir.home}/.ssh/medusa-2023.pem"]
 }
 
 # Ask which branch to deploy
@@ -23,7 +23,7 @@ ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
 set :deploy_to, '/home/databank'
 
 # Default value for :linked_files is []
-set :linked_files, fetch(:linked_files, []).push('config/credentials/production.key', 'nginx.conf.erb')
+set :linked_files, fetch(:linked_files, []).push('config/credentials/prod-rocky.key', 'nginx.conf.erb')
 
 # role-based syntax
 # ==================
