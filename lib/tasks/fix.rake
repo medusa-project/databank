@@ -16,7 +16,7 @@ namespace :fix do
       candidates << funders_up if funders_up
       materials_up = dataset.related_materials.maximum(:updated_at) if dataset.related_materials.count.positive?
       candidates << materials_up if materials_up
-      dataset.update_attribute(nested_updated_at, candidates.max) if candidates.count.positive?
+      dataset.update_attribute(:nested_updated_at, candidates.max) if candidates.count.positive?
     end
   end
 
