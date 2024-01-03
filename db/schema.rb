@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_26_191452) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_03_155405) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -142,6 +142,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_26_191452) do
     t.string "subject"
     t.boolean "org_creators", default: false
     t.boolean "data_curation_network", default: false, null: false
+    t.datetime "nested_updated_at"
     t.index ["key"], name: "index_datasets_on_key", unique: true
   end
 
