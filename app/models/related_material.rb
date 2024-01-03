@@ -8,7 +8,9 @@ class RelatedMaterial < ApplicationRecord
   include ActiveModel::Serialization
   belongs_to :dataset
   audited associated_with: :dataset
-
+  after_create :set_dataset_nested_updated_at
+  after_update :set_dataset_nested_updated_at
+  before_destroy :set_dataset_nested_updated_at
   def as_json(*)
     super(only: %i[material_type
                    availability
@@ -50,6 +52,10 @@ class RelatedMaterial < ApplicationRecord
 <td>#{IDB_CONFIG[:root_url_text]}/datasets/#{dataset.key}</td>\
 <td>#{selected_type}</td><td>#{nonversion_relationships}</td>\
 <td>#{link}</td><td>#{link_status}</td></tr>"
+  end
+
+  def set_dataset_nested_updated_at
+    dataset.update_attribute(:nested_updated_at, Time.now.utc)
   end
 
   # html string of link report table

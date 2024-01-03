@@ -4,6 +4,9 @@
 class Contributor < ApplicationRecord
   include ActiveModel::Serialization
   belongs_to :dataset
+  after_create :set_dataset_nested_updated_at
+  after_update :set_dataset_nested_updated_at
+  before_destroy :set_dataset_nested_updated_at
   audited except:          %i[row_order
                               type_of
                               identifier_scheme
@@ -38,4 +41,8 @@ class Contributor < ApplicationRecord
       "#{family_name || ''}, #{given_name || ''}"
     end
   end
+end
+
+def set_dataset_nested_updated_at
+  dataset.update_attribute(:nested_updated_at, Time.now.utc)
 end

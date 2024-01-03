@@ -1,6 +1,25 @@
 require 'csv'
 
 namespace :fix do
+  
+  desc 'fix missing nested_updated_at values'
+  task :nested_updated_at => :environment do
+    Dataset.all.each do |dataset|
+      candidates = Array.new
+      datafiles_up = dataset.datafiles.maximum(:updated_at) if dataset.datafiles.count.positive?
+      candidates << datafiles_up if datafiles_up
+      creators_up = dataset.creators.maximum(:updated_at) if dataset.creators.count.positive?
+      candidates << creators_up if creators_up
+      contributors_up = dataset.contributors.maximum(:updated_at) if dataset.contributors.count.positive?
+      candidates << contributors_up if contributors_up
+      funders_up = dataset.funders.maximum(:updated_at) if dataset.funders.count.positive?
+      candidates << funders_up if funders_up
+      materials_up = dataset.related_materials.maximum(:updated_at) if dataset.related_materials.count.positive?
+      candidates << materials_up if materials_up
+      dataset.nested_updated_at = candidates.max if candidates.count.positive?
+      dataset.save
+    end
+  end
 
   desc 'hide embargoed resources'
   task :hide_embargoed => :environment do
@@ -150,9 +169,7 @@ namespace :fix do
 
     Datafile.all.each do |datafile|
       datasets = Dataset.where(id: datafile.dataset_id)
-      if datasets.count == 0
-        datafile.destroy
-      end
+      datafile.destroy if datasets.count == 0
     end
   end
 
@@ -292,9 +309,7 @@ namespace :fix do
   desc 'make dev datasets not findable in datacite'
   task :redact_dev => :environment do
 
-    if Rails.env.development?
-      Dataset.where.not(publication_state: Databank::PublicationState::DRAFT).each(&:hide_doi)
-    end
+    Dataset.where.not(publication_state: Databank::PublicationState::DRAFT).each(&:hide_doi) if Rails.env.development?
 
   end
 

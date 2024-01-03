@@ -10,7 +10,7 @@
           -if (can? :manage, @dataset)
             .curator-only
               .label.label-default
-                ="updated: #{@dataset.updated_at.to_date.iso8601}"
+                ="updated: #{@dataset.updated_date}"
               &nbsp;
               -if @dataset.ingest_datetime
                 .label.label-default

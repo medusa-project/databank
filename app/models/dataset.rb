@@ -101,6 +101,12 @@ class Dataset < ApplicationRecord
     key
   end
 
+  def updated_date
+    return updated_at.to_date.iso8601 if nested_updated_at.nil?
+
+    [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
+  end
+
   #   :featured_related_materials,
   #   :not_featured_related_materials,
   #   :num_external_relationships
