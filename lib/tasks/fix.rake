@@ -1,24 +1,6 @@
 require 'csv'
 
 namespace :fix do
-  
-  desc 'fix missing nested_updated_at values'
-  task :nested_updated_at => :environment do
-    Dataset.all.each do |dataset|
-      candidates = Array.new
-      datafiles_up = dataset.datafiles.maximum(:updated_at) if dataset.datafiles.count.positive?
-      candidates << datafiles_up if datafiles_up
-      creators_up = dataset.creators.maximum(:updated_at) if dataset.creators.count.positive?
-      candidates << creators_up if creators_up
-      contributors_up = dataset.contributors.maximum(:updated_at) if dataset.contributors.count.positive?
-      candidates << contributors_up if contributors_up
-      funders_up = dataset.funders.maximum(:updated_at) if dataset.funders.count.positive?
-      candidates << funders_up if funders_up
-      materials_up = dataset.related_materials.maximum(:updated_at) if dataset.related_materials.count.positive?
-      candidates << materials_up if materials_up
-      dataset.update_attribute(:nested_updated_at, candidates.max) if candidates.count.positive?
-    end
-  end
 
   desc 'hide embargoed resources'
   task :hide_embargoed => :environment do
