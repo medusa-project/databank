@@ -107,6 +107,10 @@ class Dataset < ApplicationRecord
     [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
   end
 
+  def last_real_change
+    audits.where.not(audited_changes: nil).last.created_at
+  end
+
   #   :featured_related_materials,
   #   :not_featured_related_materials,
   #   :num_external_relationships
