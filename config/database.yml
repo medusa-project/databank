@@ -34,9 +34,9 @@ production:
 prod-rocky:
   <<: *default
   database: databank
-  username: <%= Rails.env.production? ? Rails.application.credentials[:primary_db][:username] : "username" %>
-  password: <%= Rails.env.production? ? Rails.application.credentials[:primary_db][:password] : "password" %>
-  host: <%= Rails.env.production? ? Rails.application.credentials[:primary_db][:host] : "host" %>
+  username: <%= (Rails.env == "prod-rocky") ? Rails.application.credentials[:primary_db][:username] : "username" %>
+  password: <%= (Rails.env == "prod-rocky") ? Rails.application.credentials[:primary_db][:password] : "password" %>
+  host: <%= (Rails.env == "prod-rocky") ? Rails.application.credentials[:primary_db][:host] : "host" %>
 
 demo:
   <<: *default
