@@ -53,13 +53,13 @@ class ApplicationController < ActionController::Base
         format.xml { render xml: {error: "unauthorized"}.to_xml, status: :unauthorized }
       end
     elsif exception.instance_of?(CanCan::AccessDenied)
-      Rails.logger.warn("CanCan::AccessDenied: #{exception.message}") if Rails.env.test?
+      # Rails.logger.warn("CanCan::AccessDenied: #{exception.message}") if Rails.env.test?
       if exception.action == :create || exception.action == :new
         if current_user && current_user.role == "no_deposit"
           redirect_to redirect_path,
                       alert: "ACCOUNT NOT ELIGIBLE TO DEPOSIT DATA.<br/>Faculty, staff, and graduate students are eligible to deposit data in Illinois Data Bank.<br/>Please <a href='/help'>contact the Research Data Service</a> if this determination is in error, or if you have any questions."
         else
-          Rails.logger.warn("redirecting to /welcome/deposit_login_modal") if Rails.env.test?
+          #Rails.logger.warn("redirecting to /welcome/deposit_login_modal") if Rails.env.test?
           redirect_to "/welcome/deposit_login_modal"
         end
       else

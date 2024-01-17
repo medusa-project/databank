@@ -544,7 +544,7 @@ class Datafile < ApplicationRecord
   end
 
   def initiate_processing_task
-    return nil unless Rails.env.production? || Rails.env.demo? || Rails.env.development?
+    return nil if Rails.env.test?
 
     extractor_task = ExtractorTask.create(web_id:)
     update_attribute(:task_id, extractor_task.id) if extractor_task

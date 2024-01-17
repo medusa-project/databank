@@ -30,7 +30,7 @@ module Dataset::Versionable
     return true if incomplete_files.count.zero?
 
     incomplete_files.each(&:copy_file)
-    if Rails.env.demo? || Rails.env.production?
+    if Application.server_envs.include?(Rails.env)
       files_copied_email = DatabankMailer.notify_version_copy_complete(dataset_key: key)
       files_copied_email.deliver_now
     else

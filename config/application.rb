@@ -153,6 +153,8 @@ module Databank
 
     attr_accessor :aws_client
 
+    attr_accessor :server_envs
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
