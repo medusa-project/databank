@@ -11,8 +11,6 @@ Rails.application.configure do
   config.log_level = :warn
 
   # Settings specified here will take precedence over those in config/application.rb.
-  config.active_record.legacy_connection_handling = false
-
   config.cache_classes = true
 
   # Do not eager load code on boot. This avoids loading your whole application

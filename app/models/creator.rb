@@ -9,11 +9,18 @@ class Creator < ApplicationRecord
   validate :name?
   after_create :add_editor
   after_update :add_editor
+  after_create :set_dataset_nested_updated_at
+  after_update :set_dataset_nested_updated_at
+  before_destroy :set_dataset_nested_updated_at
   before_destroy :remove_editor
 
   audited except: [:row_order, :type_of, :identifier_scheme, :dataset_id, :institution_name], associated_with: :dataset
 
   default_scope { order(:row_position) }
+
+  def set_dataset_nested_updated_at
+    dataset.update_attribute(:nested_updated_at, Time.now.utc)
+  end
 
   def self.orcid_identifier(family_name: nil, given_names: nil)
     query_string = Creator.orcid_query_string(family_name: family_name, given_names: given_names)

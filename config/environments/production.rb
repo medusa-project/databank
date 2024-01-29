@@ -6,7 +6,6 @@ Rails.application.configure do
 
   #Google Analtyics Code
   #GA.tracker = "UA-74879540-1"
-  config.active_record.legacy_connection_handling = false
 
   # Code is not reloaded between requests.
   config.cache_classes = true

@@ -20,7 +20,9 @@ class Datafile < ApplicationRecord
   ALLOWED_DISPLAY_BYTES = ALLOWED_CHAR_NUM * 8
   before_create { self.web_id ||= generate_web_id }
   after_create :handle_peek
-
+  after_create :set_dataset_nested_updated_at
+  after_update :set_dataset_nested_updated_at
+  before_destroy :set_dataset_nested_updated_at
   before_destroy :destroy_job
   before_destroy :remove_binary
 
@@ -30,6 +32,10 @@ class Datafile < ApplicationRecord
 
   def as_json(_options={})
     super(only: %i[web_id binary_name binary_size medusa_id storage_root storage_key created_at updated_at])
+  end
+
+  def set_dataset_nested_updated_at
+    dataset.update_attribute(:nested_updated_at, Time.now.utc)
   end
 
   def extractor_task

@@ -107,6 +107,12 @@ class Dataset < ApplicationRecord
     key
   end
 
+  def updated_date
+    return updated_at.to_date.iso8601 if nested_updated_at.nil?
+
+    [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
+  end
+
   def ok_to_publish?
     # metadata-only embargo datasets are ok to publish, which removes the embargo
     return true if (publication_state != Databank::PublicationState::DRAFT) &&
