@@ -75,7 +75,7 @@ production:
     email: mail
 
 prod-rocky:
-  host: databank.illinois.edu
+  host: test.databank.illinois.edu
   uid_field: eppn
   extra_fields:
     - eppn
