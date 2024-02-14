@@ -21,7 +21,7 @@ class StorageManager
     self.medusa_root = root_set.at("medusa")
     self.message_root = root_set.at("message")
     self.tmpfs_root = root_set.at("tmpfs")
-    if Rails.env.production? || Rails.env.demo? || Rails.env == "demo-rocky"
+    unless Rails.env.test? || Rails.env.developmnet
       self.globus_download_root = root_set.at("globus_download")
       self.globus_ingest_root = root_set.at("globus_ingest")
     end
