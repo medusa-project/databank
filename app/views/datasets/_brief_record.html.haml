@@ -48,7 +48,7 @@
     .label.label-success
       version candidate eligible to be submitted for pre-publication review
     &nbsp;
-  -if dataset.share_code
+  -if(can? :edit, dataset) && dataset.share_code
     .label.label-success
       has sharing link
     &nbsp;
