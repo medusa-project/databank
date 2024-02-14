@@ -37,7 +37,7 @@
       %meta{:content => "#{@dataset.identifier}", :name => "citation_doi"}/
       %meta{:content => "en", :name => "citation_language"}/
   %body
-    -if Rails.env.production? || Rails.env.prod-rocky?
+    -if Rails.env.production? || Rails.env == "prod-rocky"
       %noscript
         %iframe{src: "https://www.googletagmanager.com/ns.html?id=GTM-P5CT7JQ",
         height: "0",
