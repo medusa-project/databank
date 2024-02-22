@@ -90,14 +90,21 @@ collaborators to access the data files while the dataset is not public.</li>
   end
 
   def copy_version_files
-    files_to_copy = @dataset.version_files.where(selected: true, initiated: false)
-    raise("No files selected for copy.") unless files_to_copy.count.positive?
+    if @dataset.update(dataset_params)
+      files_to_copy = @dataset.version_files.where(selected: true, initiated: false)
+      raise("No files selected for copy.") unless files_to_copy.count.positive?
 
-    @dataset.mark_version_files_initiated(files_to_copy: files_to_copy)
-    @dataset.copy_version_files
-    respond_to do |format|
-      format.html { render :copy_version_files, notice: "File copy process initiated." }
-      format.json { render json: {notice: "File copy process initiated"}, status: :ok }
+      @dataset.mark_version_files_initiated(files_to_copy: files_to_copy)
+      @dataset.copy_version_files
+      respond_to do |format|
+        format.html { render :copy_version_files, notice: "File copy process initiated." }
+        format.json { render json: {notice: "File copy process initiated"}, status: :ok }
+      end
+    else
+      respond_to do |format|
+        format.html { render :edit, alert: "Error attempting to copy files." }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
     end
   end
 
