@@ -92,8 +92,13 @@ collaborators to access the data files while the dataset is not public.</li>
   def copy_version_files
     if @dataset.update(dataset_params)
       files_to_copy = @dataset.version_files.where(selected: true, initiated: false)
-      raise("No files selected for copy.") unless files_to_copy.count.positive?
-
+      unless files_to_copy.count.positive?
+        respond_to do |format|
+          format.html { render :edit, alert: "No files selected for copy." }
+          format.json { render json: {error: "No files selected for copy."}, status: :unprocessable_entity }
+        end
+        return
+      end
       @dataset.mark_version_files_initiated(files_to_copy: files_to_copy)
       @dataset.copy_version_files
       respond_to do |format|
