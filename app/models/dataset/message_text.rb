@@ -3,6 +3,16 @@
 module Dataset::MessageText
   extend ActiveSupport::Concern
 
+  def availability_statement
+    if embargoed_with_valid_date?
+      "The dataset supporting these findings will be openly available in the Illinois Data Bank at #{persistent_url} on #{release_date}."
+    elsif publication_state == Databank::PublicationState::RELEASED
+      "The dataset supporting these findings is openly available in the Illinois Data Bank at #{persistent_url}."
+    else
+      "This dataset is not publicly available."
+    end
+  end
+
   class_methods do
     def deposit_confirmation_notice(old_state, dataset)
       new_state = dataset.publication_state
@@ -11,13 +21,13 @@ module Dataset::MessageText
       when Databank::PublicationState::DRAFT
         case new_state
         when Databank::PublicationState::RELEASED
-          %(Dataset was successfully published and the DataCite DOI is #{dataset.identifier}.<br/>The persistent link to this dataset is now <a href = "#{dataset.persistent_url}">#{dataset.persistent_url}</a>.<br/>There may be a delay before the persistent link will be in effect.  If this link does not redirect to the dataset immediately, try again in an hour.)
+          %(Dataset was successfully published and the DataCite DOI is #{dataset.identifier}.<br/>The persistent URL to cite this dataset is now <a href = "#{dataset.persistent_url}">#{dataset.persistent_url}</a>.<br/>There may be a delay before the persistent link will be in effect.  If this link does not redirect to the dataset immediately, try again in an hour.)
 
         when Databank::PublicationState::Embargo::METADATA
-          %(DataCite DOI #{dataset.identifier} successfully reserved.<br/>The persistent link to this dataset will be <a href = "#{dataset.persistent_url}">#{dataset.persistent_url}</a> starting #{dataset.release_date}.)
+          %(DataCite DOI #{dataset.identifier} successfully reserved.<br/>The persistent URL to cite this dataset will be <a href = "#{dataset.persistent_url}">#{dataset.persistent_url}</a> starting #{dataset.release_date}.)
 
         when Databank::PublicationState::Embargo::FILE
-          %(Dataset record was successfully published and the DataCite DOI is #{dataset.identifier}.<br/>Although the record for your dataset will be <strong>publicly</strong> visible, your data files will not be made available until #{dataset.release_date.iso8601}.<br/>The persistent link to this dataset is now <a href = "#{dataset.persistent_url}">#{dataset.persistent_url}</a>.<br/>There may be a delay before the persistent link will be in effect.  If this link does not redirect to the dataset immediately, try again in an hour.)
+          %(Dataset record was successfully published and the DataCite DOI is #{dataset.identifier}.<br/>Although the record for your dataset will be <strong>publicly</strong> visible, your data files will not be made available until #{dataset.release_date.iso8601}.<br/>The persistent URL to cite this dataset is now <a href = "#{dataset.persistent_url}">#{dataset.persistent_url}</a>.<br/>There may be a delay before the persistent link will be in effect.  If this link does not redirect to the dataset immediately, try again in an hour.)
         else
           Rails.logger.warn("UE1 - key: #{dataset.key}, old_state: #{old_state}, new_state: #{new_state}")
           %(Unexpected error, please contact the <a href="/help">Research Data Service Team</help>.)

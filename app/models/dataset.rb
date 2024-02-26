@@ -237,6 +237,10 @@ class Dataset < ApplicationRecord
       ((hold_state.nil? || (hold_state == Databank::PublicationState::TempSuppress::NONE)))
   end
 
+  def embargoed_with_valid_date?
+    Databank::PublicationState::EMBARGO_ARRAY.include?(embargo) && release_date && release_date > Time.current
+  end
+
   def self.all_with_public_metadata
     Dataset.all.select(&:metadata_public?)
   end
