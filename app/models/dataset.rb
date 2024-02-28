@@ -143,10 +143,7 @@ class Dataset < ApplicationRecord
           if [Databank::Relationship::SUPPLEMENT_TO, Databank::Relationship::SUPPLEMENTED_BY].include?(relationship)
             self.materials_related << material
           end
-          if [Databank::Relationship::SUPPLEMENT_TO, Databank::Relationship::SUPPLEMENTED_BY].include?(relationship)
-            self.materials_related << material
-          end
-          if [Databank::Relationship::CITED_BY].include?(relationship)
+          if relationship == Databank::Relationship::CITED_BY
             self.materials_cited_by << material
           end
         end
