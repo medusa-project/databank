@@ -7,8 +7,6 @@
       .citation
         .metadata-label
           Cite this dataset:
-        .citation-example
-          =dataset.plain_text_citation
           %span(class="citation-download")
             %span(class="dropdown")
               %button(type="button" id="downloadCitation" class="btn btn-default dropdown-toggle" data-toggle="dropdown")
@@ -28,6 +26,8 @@
                 %li
                   %a(id="datasetForm:plainTextCitationLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_plaintext_citation"')
                     Plain Text
+        .citation-example
+          =dataset.plain_text_citation
       - if dataset.identifier && dataset.identifier != ""
         Use this persistent URL to link to this dataset:
         .row
@@ -127,12 +127,26 @@
               %span.metadata-label Downloaded
             %td
               = pluralize(dataset.total_downloads, 'time')
-        -if dataset.num_external_relationships.positive?
-          %tr.row
-            %td{colspan: "2"}
-              %h4.metadata-label Related Materials:
-          -if dataset.featured_related_materials.length.positive?
-            = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.featured_related_materials}
-          -if dataset.not_featured_related_materials.length.positive?
-            = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.not_featured_related_materials}
+        -if dataset.materials_related.length.positive?
+          .panel-group(id="related" role="tablist" aria-multiselectable="true")
+            .panel.panel-default
+              .panel-heading(role="tab" id="relatedHeading")
+                %h4(class="panel-title")
+                  %a( role="button" data-toggle="collapse" data-parent="#related" href="#relatedPanel" aria-expanded="false" aria-controls="relatedPanel" class="accordion-toggle collapsed" )
+                    %span( class="metadata-label" )
+                      = "Related Materials (#{dataset.materials_related.length})"
+              .panel-collapse.collapse(id="relatedPanel" role="tabpanel" aria-labelledby="relatedHeading" )
+                .panel-body
+                  = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_related}
+          -if dataset.materials_cited_by.length.positive?
+            .panel-group(id="cited" role="tablist" aria-multiselectable="true")
+              .panel.panel-default
+                .panel-heading(role="tab" id="citedHeading")
+                  %h4(class="panel-title")
+                    %a( role="button" data-toggle="collapse" data-parent="#cited" href="#citedPanel" aria-expanded="false" aria-controls="citedPanel" class="accordion-toggle collapsed" )
+                      %span( class="metadata-label" )
+                        = "Cited By (#{dataset.materials_cited_by.length})"
+                .panel-collapse.collapse(id="citedPanel" role="tabpanel" aria-labelledby="citedHeading" )
+                  .panel-body
+                    = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_cited_by}
 

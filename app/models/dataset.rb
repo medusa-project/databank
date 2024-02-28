@@ -26,8 +26,8 @@ class Dataset < ApplicationRecord
   audited except: %i[creator_text key complete is_test is_import updated_at embargo], allow_mass_assignment: true
   has_associated_audits
 
-  attr_accessor :featured_related_materials,
-                :not_featured_related_materials,
+  attr_accessor :materials_related,
+                :materials_cited_by,
                 :num_external_relationships
 
   MIN_FILES = 1
@@ -132,26 +132,32 @@ class Dataset < ApplicationRecord
   def handle_related_materials
     self.num_external_relationships = 0
     if related_materials.count.zero?
-      self.featured_related_materials = self.not_featured_related_materials = []
+      self.materials_related = self.materials_cited_by = []
     else
-      self.featured_related_materials = self.related_materials.where(feature: true)
-      not_featured_materials_set = Set.new
+      self.materials_related = related_materials.where(feature: true)
       related_materials.each do |material|
         datacite_arr = []
         datacite_arr = material.datacite_list.split(",") if material.datacite_list && material.datacite_list != ""
         datacite_arr.each do |relationship|
-          if %w[IsPreviousVersionOf IsNewVersionOf].exclude?(relationship)
+          if [Databank::Relationship::NEW_VERSION_OF, Databank::Relationship::PREVIOUS_VERSION_OF].exclude?(relationship)
             self.num_external_relationships += 1
-            not_featured_materials_set.add(material) unless material.feature == true
+          end
+          if [Databank::Relationship::SUPPLEMENT_TO, Databank::Relationship::SUPPLEMENTED_BY].include?(relationship)
+            materials_related << material
+          end
+          if [Databank::Relationship::SUPPLEMENT_TO, Databank::Relationship::SUPPLEMENTED_BY].include?(relationship)
+            materials_related << material
+          end
+          if [Databank::Relationship::CITED_BY].include?(relationship)
+            materials_cited_by << material
           end
         end
-        self.not_featured_related_materials = not_featured_materials_set.to_a
       end
     end
   end
 
   def add_version_metadata_copy(previous:)
-    return true if self.title == previous.title
+    return true if title == previous.title
 
     previous_version_number = previous.dataset_version.to_i
     version_number = previous_version_number + 1
@@ -257,8 +263,8 @@ class Dataset < ApplicationRecord
 
     return true if release_date <= Time.current
 
-    self.publication_state = self.embargo
-    self.save!
+    self.publication_state = embargo
+    save!
   end
 
   def ensure_creator_editors
@@ -578,7 +584,7 @@ class Dataset < ApplicationRecord
   end
 
   def in_pre_publication_review?
-    Databank::PublicationState::DRAFT_ARRAY.include?(self.publication_state) && self.has_review_request?
+    Databank::PublicationState::DRAFT_ARRAY.include?(publication_state) && has_review_request?
   end
 
   def show_publish_only?
