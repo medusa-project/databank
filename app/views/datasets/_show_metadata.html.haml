@@ -138,7 +138,7 @@
                         %span( class="metadata-label" )
                           = "Related Materials (#{dataset.materials_related.length})"
                   .panel-collapse.collapse(id="relatedPanel" role="tabpanel" aria-labelledby="relatedHeading" )
-                    .panel-body
+                    .panel-body.container
                       = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_related}
           %tr.row
             %td(colspan="2" )
@@ -151,6 +151,6 @@
                           %span( class="metadata-label" )
                             = "Cited By (#{dataset.materials_cited_by.length})"
                     .panel-collapse.collapse(id="citedPanel" role="tabpanel" aria-labelledby="citedHeading" )
-                      .panel-body
+                      .panel-body.container
                         = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_cited_by}
 
