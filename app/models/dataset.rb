@@ -132,23 +132,27 @@ class Dataset < ApplicationRecord
   def handle_related_materials
     self.num_external_relationships = 0
     self.materials_related = self.materials_cited_by = []
+    tmp_related = Set.new
+    tmp_cited = Set.new
+    tmp_external = Set.new
     if related_materials.count.positive?
       related_materials.each do |material|
         datacite_arr = []
         datacite_arr = material.datacite_list.split(",") if material.datacite_list && material.datacite_list != ""
         datacite_arr.each do |relationship|
           if [Databank::Relationship::NEW_VERSION_OF, Databank::Relationship::PREVIOUS_VERSION_OF].exclude?(relationship)
-            self.num_external_relationships += 1
+            tmp_external.add(material)
           end
           if [Databank::Relationship::SUPPLEMENT_TO, Databank::Relationship::SUPPLEMENTED_BY].include?(relationship)
-            self.materials_related << material
+            tmp_related.add(material)
           end
-          if relationship == Databank::Relationship::CITED_BY
-            self.materials_cited_by << material
-          end
+          tmp_cited.add(material) if relationship == Databank::Relationship::CITED_BY
         end
       end
     end
+    self.materials_related = tmp_related.to_a
+    self.materials_cited_by = tmp_cited.to_a
+    self.num_external_relationships = tmp_external.count
   end
 
   def add_version_metadata_copy(previous:)
