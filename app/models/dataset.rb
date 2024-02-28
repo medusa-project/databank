@@ -131,10 +131,8 @@ class Dataset < ApplicationRecord
 
   def handle_related_materials
     self.num_external_relationships = 0
-    if related_materials.count.zero?
-      self.materials_related = self.materials_cited_by = []
-    else
-      self.materials_related = related_materials.where(feature: true)
+    self.materials_related = self.materials_cited_by = []
+    if related_materials.count.positive?
       related_materials.each do |material|
         datacite_arr = []
         datacite_arr = material.datacite_list.split(",") if material.datacite_list && material.datacite_list != ""
@@ -143,13 +141,13 @@ class Dataset < ApplicationRecord
             self.num_external_relationships += 1
           end
           if [Databank::Relationship::SUPPLEMENT_TO, Databank::Relationship::SUPPLEMENTED_BY].include?(relationship)
-            materials_related << material
+            self.materials_related << material
           end
           if [Databank::Relationship::SUPPLEMENT_TO, Databank::Relationship::SUPPLEMENTED_BY].include?(relationship)
-            materials_related << material
+            self.materials_related << material
           end
           if [Databank::Relationship::CITED_BY].include?(relationship)
-            materials_cited_by << material
+            self.materials_cited_by << material
           end
         end
       end
