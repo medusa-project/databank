@@ -1,14 +1,14 @@
 -related_materials_subset.sort_by(&:created_at).each do |material|
   -unless  material.uri && (material.relationship_arr.include?(Databank::Relationship::PREVIOUS_VERSION_OF) || material.relationship_arr.include?(Databank::Relationship::NEW_VERSION_OF) )
-    .row
-      .col-span-2
+    .row.resource-item
+      .col-md-2.resource-label
         %span.metadata-label
           &nbsp;&nbsp;
           - if material.material_type && material.material_type != ""
             = "#{material.material_type}"
           -else
             Resource
-      .col-span-10
+      .col-md-10
         -if material.link && material.link != ''
           %a(href="#{material.link}")
             -if material.citation && material.citation != ''

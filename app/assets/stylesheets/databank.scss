@@ -7,6 +7,19 @@ $minibar-height: 50px;
 //  list-style-type: none !important;
 //}
 
+#citedHeading, #relatedHeading {
+  background-color: $color__light-grey !important;
+  color: black;
+}
+
+.resource-item{
+  margin-bottom: 5px;
+}
+
+.resource-label{
+  text-align: right;
+}
+
 .idb-help p {
   font-size: large;
   line-height: 1.3;
