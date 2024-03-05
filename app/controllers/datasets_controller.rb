@@ -70,6 +70,15 @@ class DatasetsController < ApplicationController
 
   # enable zipline
   include Zipline
+  def cancel_version
+    @dataset = Dataset.find_by(key: params[:id])
+    authorize! :edit, @dataset
+    @previous = @dataset.previous_idb_dataset
+    render "edit" and return if @previous.nil?
+
+    @dataset.destroy!
+    redirect_to dataset_path(@previous.key)
+  end
 
   def share
     @dataset.create_share_code(id: @dataset.id) unless @dataset.current_share_code
