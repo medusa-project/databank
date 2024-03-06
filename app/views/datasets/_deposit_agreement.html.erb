@@ -86,8 +86,8 @@
       <button onclick="handleAgreeModal('<%= current_user.email %>', '<%= current_user_name %>')" type="button" class="btn btn-block btn-primary" id="agree-button">
         <span class="glyphicon glyphicon-check"></span> Submit
       </button>
-      <%= link_to "/help", class: "btn btn-block btn-success" do %>
-        <span class="glyphicon glyphicon-question-sign idb"></span> Get Help
+      <%= link_to "/help", class: "btn btn-block btn-success idb" do %>
+        <span class="glyphicon glyphicon-question-sign"></span> Get Help
       <% end %>
       <% cancel_to = params.has_key?('context') && params['context']=='version' ? "/datasets/#{@previous_key}" : "/" %>
       <%= link_to cancel_to, class: "btn btn-block btn-danger idb", id: 'cancel-button' do %>
