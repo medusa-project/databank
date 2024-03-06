@@ -7,7 +7,7 @@
       - version_comment_label = "In 1-2 sentences, please summarize why you would like to create a new version of this dataset:"
       = f.label :version_comment, version_comment_label, class: "control-label"
       %br
-      = f.text_area :version_comment, rows: 3, cols: 80, class: "form-control dataset", placeholder: "Purpose Summary"
+      = f.text_area :version_comment, rows: 3, cols: 80, class: "form-control dataset", required: true, placeholder: "Purpose Summary"
     = render partial: 'datasets/version_files_subform', locals: {f: f}
     .row
       .col-md-3.col-md-offset-9
