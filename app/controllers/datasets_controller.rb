@@ -671,6 +671,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.hold_state = Databank::PublicationState::TempSuppress::NONE
     respond_to do |format|
       if @dataset.save
+        @dataset.send_approve_version
         format.html {
           redirect_to dataset_path(@dataset.key), notice: %(Dataset released for pre-publication review.)
         }

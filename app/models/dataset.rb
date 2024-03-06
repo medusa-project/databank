@@ -462,6 +462,11 @@ class Dataset < ApplicationRecord
     "#{dirname}/system/deposit_agreement.txt"
   end
 
+  def send_approve_version
+    notification = DatabankMailer.approve_version(dataset_key: self.key)
+    notification.deliver_now
+  end
+
   def send_incomplete_1m
     notification = DatabankMailer.dataset_incomplete_1m(self.key)
     notification.deliver_now
