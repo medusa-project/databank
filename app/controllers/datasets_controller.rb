@@ -76,6 +76,8 @@ class DatasetsController < ApplicationController
     @previous = @dataset.previous_idb_dataset
     render "edit" and return if @previous.nil?
 
+    relationship_from_previous_dataset = @previous.related_materials.find_by(datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF)
+    relationship_from_previous_dataset&.destroy!
     @dataset.destroy!
     redirect_to dataset_path(@previous.key)
   end
@@ -521,7 +523,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def remove_sharing_link
     respond_to do |format|
-      if @dataset.share_code && @dataset.share_code.destroy!
+      if @dataset.share_code&.destroy!
         format.html { redirect_to dataset_path(@dataset.key), notice: "Private Sharing Link has been removed." }
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
