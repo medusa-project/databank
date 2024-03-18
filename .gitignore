@@ -127,3 +127,5 @@ node_modules
 /config/serializations/help_transition.txt
 .DS_Store
 .idea
+
+/config/credentials/rocky-prod.key
