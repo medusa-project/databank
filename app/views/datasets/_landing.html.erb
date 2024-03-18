@@ -36,6 +36,12 @@
       <a href="<%= @dataset.persistent_url_base %>/<%= @dataset.version_group.group_hash[:entries][0][:doi] %>">View the latest version.</a>
     </div>
   <% end %>
+  <% if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION &&
+    @dataset.hold_state == Databank::PublicationState::TempSuppress::NONE %>
+    <div class="selected-version boxed-alert">
+      This version is ready for editing. Please use the green edit button to modify your dataset and then continue.
+    </div>
+  <% end %>
 
   <%= render partial: 'metadata_restriction_alert', locals: {dataset: @dataset} %>
 

@@ -685,8 +685,10 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def version_to_draft
     @dataset.publication_state = Databank::PublicationState::DRAFT
+    @dataset.hold_state = Databank::PublicationState::TempSuppress::NONE
     respond_to do |format|
       if @dataset.save
+        @dataset.send_approve_version
         format.html {
           redirect_to dataset_path(@dataset.key), notice: %(Dataset designated as standard draft.)
         }
