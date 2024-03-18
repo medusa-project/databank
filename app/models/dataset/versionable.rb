@@ -165,18 +165,19 @@ module Dataset::Versionable
                            uri_type: "DOI",
                            citation: previous.plain_text_citation,
                            link: "https://doi.org/#{previous.identifier}")
-    if related_materials.find_by(dataset_id: previous.id, datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF)
-      return true
-    end
-
-    RelatedMaterial.create(dataset_id: previous.id,
-                           material_type: Databank::MaterialType::DATASET,
-                           selected_type: Databank::MaterialType::DATASET,
-                           datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF,
-                           uri: identifier,
-                           uri_type: "DOI",
-                           citation: plain_text_citation,
-                           link: "https://doi.org/#{identifier}")
+    # Previous version of relationship is added manually by the curator after publication
+    # if related_materials.find_by(dataset_id: previous.id, datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF)
+    #   return true
+    # end
+    #
+    # RelatedMaterial.create(dataset_id: previous.id,
+    #                        material_type: Databank::MaterialType::DATASET,
+    #                        selected_type: Databank::MaterialType::DATASET,
+    #                        datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF,
+    #                        uri: identifier,
+    #                        uri_type: "DOI",
+    #                        citation: plain_text_citation,
+    #                        link: "https://doi.org/#{identifier}")
   end
 
   def add_version_files(previous:)

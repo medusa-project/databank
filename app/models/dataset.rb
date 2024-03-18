@@ -237,6 +237,9 @@ class Dataset < ApplicationRecord
              Databank::PublicationState::PermSuppress::FILE].include?(hold_state))
   end
 
+  def draft?
+    publication_state == Databank::PublicationState::DRAFT
+  end
   def files_public?
     (publication_state == Databank::PublicationState::RELEASED) &&
       ((hold_state.nil? || (hold_state == Databank::PublicationState::TempSuppress::NONE)))
