@@ -53,11 +53,11 @@
       has sharing link
     &nbsp;
   -if(can? :edit, dataset) && dataset.publication_state == Databank::PublicationState::DRAFT
-    .label.label-primary
+    .label.label-default
       draft
     &nbsp;
   -if(can? :read, dataset) && dataset.release_date && dataset.metadata_public?
-    .label.label-info
+    .label.label-primary
       -if dataset.release_date > Date.current()
         planned publication date:
       -elsif dataset.publication_state == Databank::PublicationState::RELEASED

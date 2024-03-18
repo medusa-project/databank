@@ -46,6 +46,7 @@ module Dataset::Versionable
     self_version = 1 if !self_version || self_version < 1
 
     {version:          self_version,
+     key:              key,
      selected:         false,
      doi:              identifier || "not yet set",
      version_comment:  version_comment || "",
