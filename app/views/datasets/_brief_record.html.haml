@@ -41,9 +41,11 @@
   - if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
     .label.label-danger
       version candidate under review
+    &nbsp;
   - elsif dataset.in_pre_publication_review?
     .label.label-danger
       pre-publication review
+    &nbsp;
   - elsif dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
     .label.label-success
       version candidate eligible to be submitted for pre-publication review
