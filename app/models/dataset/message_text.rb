@@ -18,6 +18,23 @@ module Dataset::MessageText
       new_state = dataset.publication_state
 
       case old_state
+      when Databank::PublicationState::TempSuppress::VERSION
+        case new_state
+        when Databank::PublicationState::DRAFT
+          %(Your dataset record changes have been successfully saved and are awaiting curator review.)
+
+        when Databank::PublicationState::RELEASED
+          %(Your dataset record changes have been successfully published.)
+
+        when Databank::PublicationState::Embargo::METADATA
+          %(Your dataset record changes have been successfully saved and are awaiting curator review.)
+
+        when Databank::PublicationState::Embargo::FILE
+          %(Your dataset record changes have been successfully saved and are awaiting curator review.)
+        else
+          Rails.logger.warn("UE1 - key: #{dataset.key}, old_state: #{old_state}, new_state: #{new_state}")
+          %(Unexpected error, please contact the <a href="/help">Research Data Service Team</help>.)
+        end
       when Databank::PublicationState::DRAFT
         case new_state
         when Databank::PublicationState::RELEASED
@@ -95,7 +112,7 @@ module Dataset::MessageText
         end
 
       else
-        Rails.logger.warn "unexpected state during publish for dataset #{dataset.key}."
+        Rails.logger.warn("UE4 - key: #{dataset.key}, unexpected old_state: #{old_state}, new_state: #{new_state}")
         %(Changes to this dataset's <strong>public</strong> record have been made effective.)
       end
     end
