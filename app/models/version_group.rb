@@ -33,11 +33,8 @@ class VersionGroup
       next_dataset = current_dataset.next_idb_dataset
       break if next_dataset.nil? || next_dataset == current_dataset
 
-      unless next_dataset.is_unconfirmed_version? || next_dataset.draft?
-        current_group_count += 1
-        group_hash[:entries] << next_dataset.related_version_entry_hash
-
-      end
+      current_group_count += 1
+      group_hash[:entries] << next_dataset.related_version_entry_hash
       # go to next, if it exists, else set control to nil and break
       current_dataset = next_dataset
     end
