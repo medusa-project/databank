@@ -36,9 +36,10 @@ class VersionGroup
       unless next_dataset.is_unconfirmed_version? || next_dataset.draft?
         current_group_count += 1
         group_hash[:entries] << next_dataset.related_version_entry_hash
-        # go to next, if it exists, else set control to nil and break
-        current_dataset = next_dataset
+
       end
+      # go to next, if it exists, else set control to nil and break
+      current_dataset = next_dataset
     end
     (group_hash[:entries].sort_by! {|k| k[:version] }).reverse!
   end
