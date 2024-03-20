@@ -45,12 +45,13 @@ module Dataset::Versionable
 
     self_version = 1 if !self_version || self_version < 1
 
-    {version:          self_version,
-     key:              key,
-     selected:         false,
-     doi:              identifier || "not yet set",
-     version_comment:  version_comment || "",
-     publication_date: release_date ? release_date.iso8601 : "not yet set"}
+    {version:           self_version,
+     key:               key,
+     publication_state: publication_state,
+     selected:          false,
+     doi:               identifier || "not yet set",
+     version_comment:   version_comment || "",
+     publication_date:  release_date ? release_date.iso8601 : "not yet set"}
   end
 
   def ensure_version_group
@@ -63,9 +64,16 @@ module Dataset::Versionable
 
   def has_newer_version?
     ensure_version_group
-    self.version_group.group_hash[:entries].length > 1 &&
-      dataset_version.to_i.positive? &&
+    return false if self.version_group.group_hash[:entries].length < 2
+
+    return false unless self.version_to_i.positive?
+
+    if self.version_group.group_hash[:entries][0][:publication_state] == Databank::PublicationState::TempSuppress::VERSION
+      (self.version_group.group_hash[:entries][1][:version]).to_i > dataset_version.to_i
+    else
       (self.version_group.group_hash[:entries][0][:version]).to_i > dataset_version.to_i
+    end
+
   end
 
   def version_eligible_for_review?
@@ -78,7 +86,11 @@ module Dataset::Versionable
 
     ensure_version_group
     if self.version_group.group_hash[:entries].length > 1
-      (version_group.group_hash[:entries][0])[:version] == dataset_version.to_i
+      if self.version_group.group_hash[:entries][0][:publication_state] == Databank::PublicationState::TempSuppress::VERSION
+        (version_group.group_hash[:entries][1])[:version] == dataset_version.to_i
+      else
+        (version_group.group_hash[:entries][0])[:version] == dataset_version.to_i
+      end
     else
       true
     end
@@ -109,43 +121,43 @@ module Dataset::Versionable
     return true if creators.count.positive?
 
     previous.creators.each do |creator|
-      Creator.create(dataset_id: id,
-                     family_name: creator.family_name,
-                     given_name: creator.given_name,
-                     institution_name: creator.institution_name,
-                     identifier: creator.identifier,
-                     type_of: creator.type_of,
-                     row_order: creator.row_order,
-                     email: creator.email,
-                     is_contact: creator.is_contact,
-                     row_position: creator.row_position,
+      Creator.create(dataset_id:        id,
+                     family_name:       creator.family_name,
+                     given_name:        creator.given_name,
+                     institution_name:  creator.institution_name,
+                     identifier:        creator.identifier,
+                     type_of:           creator.type_of,
+                     row_order:         creator.row_order,
+                     email:             creator.email,
+                     is_contact:        creator.is_contact,
+                     row_position:      creator.row_position,
                      identifier_scheme: creator.identifier_scheme)
     end
 
     previous.funders.each do |funder|
-      Funder.create(dataset_id: id,
-                    name: funder.name,
-                    identifier: funder.identifier,
+      Funder.create(dataset_id:        id,
+                    name:              funder.name,
+                    identifier:        funder.identifier,
                     identifier_scheme: funder.identifier_scheme,
-                    grant: funder.grant,
-                    code: funder.code)
+                    grant:             funder.grant,
+                    code:              funder.code)
     end
 
     previous.related_materials.sort_by(&:created_at).each do |material|
       next if material.datacite_list == Databank::Relationship::NEW_VERSION_OF
       next if material.datacite_list == Databank::Relationship::PREVIOUS_VERSION_OF
 
-      RelatedMaterial.create(dataset_id: id,
+      RelatedMaterial.create(dataset_id:    id,
                              material_type: material.material_type,
-                             availability: material.availability,
-                             link: material.link,
-                             uri: material.uri,
-                             uri_type: material.uri_type,
-                             citation: material.citation,
+                             availability:  material.availability,
+                             link:          material.link,
+                             uri:           material.uri,
+                             uri_type:      material.uri_type,
+                             citation:      material.citation,
                              selected_type: material.selected_type,
                              datacite_list: material.datacite_list,
-                             feature: material.feature,
-                             note: material.note)
+                             feature:       material.feature,
+                             note:          material.note)
     end
     save
   end
@@ -157,27 +169,27 @@ module Dataset::Versionable
   def add_version_relationships(previous:)
     return true if related_materials.find_by(dataset_id: id, datacite_list: Databank::Relationship::NEW_VERSION_OF)
 
-    RelatedMaterial.create(dataset_id: id,
+    RelatedMaterial.create(dataset_id:    id,
                            material_type: Databank::MaterialType::DATASET,
                            selected_type: Databank::MaterialType::DATASET,
                            datacite_list: Databank::Relationship::NEW_VERSION_OF,
-                           uri: previous.identifier,
-                           uri_type: "DOI",
-                           citation: previous.plain_text_citation,
-                           link: "https://doi.org/#{previous.identifier}")
+                           uri:           previous.identifier,
+                           uri_type:      "DOI",
+                           citation:      previous.plain_text_citation,
+                           link:          "https://doi.org/#{previous.identifier}")
 
     if related_materials.find_by(dataset_id: previous.id, datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF)
       return true
     end
 
-    RelatedMaterial.create(dataset_id: previous.id,
+    RelatedMaterial.create(dataset_id:    previous.id,
                            material_type: Databank::MaterialType::DATASET,
                            selected_type: Databank::MaterialType::DATASET,
                            datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF,
-                           uri: identifier,
-                           uri_type: "DOI",
-                           citation: plain_text_citation,
-                           link: "https://doi.org/#{identifier}")
+                           uri:           identifier,
+                           uri_type:      "DOI",
+                           citation:      plain_text_citation,
+                           link:          "https://doi.org/#{identifier}")
   end
 
   def add_version_files(previous:)

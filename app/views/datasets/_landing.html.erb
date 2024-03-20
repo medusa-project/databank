@@ -84,15 +84,25 @@
                 <tbody>
 
                 <% @dataset.version_group.group_hash[:entries].each do |entry| %>
-
-                  <tr
-                    <% if entry[:selected] %> class="selected-version"
-                    <% end %> >
-                    <td class="text-center"><%= entry[:version] %></td>
-                    <td><a href="<%= @dataset.persistent_url_base %>/<%= entry[:doi] %>"><%= entry[:doi] %></a></td>
-                    <td><%= entry[:version_comment] %></td>
-                    <td><%= entry[:publication_date] %></td>
-                  </tr>
+                  <% if entry[:publication_state] == Databank::PublicationState::TempSuppress::VERSION %>
+                    <% if (can? :manage, @dataset) %>
+                      <tr class = "curator-only">
+                        <td class="text-center"><%= entry[:version] %></td>
+                        <td><a href="<%= @dataset.persistent_url_base %>/<%= entry[:doi] %>"><%= entry[:doi] %></a></td>
+                        <td><%= entry[:version_comment] %></td>
+                        <td><%= entry[:publication_date] %></td>
+                      </tr>
+                    <% end %>
+                  <% else %>
+                    <tr
+                      <% if entry[:selected] %> class="selected-version"
+                      <% end %> >
+                      <td class="text-center"><%= entry[:version] %></td>
+                      <td><a href="<%= @dataset.persistent_url_base %>/<%= entry[:doi] %>"><%= entry[:doi] %></a></td>
+                      <td><%= entry[:version_comment] %></td>
+                      <td><%= entry[:publication_date] %></td>
+                    </tr>
+                  <% end %>
                 <% end %>
                 </tbody>
               </table>
@@ -113,9 +123,6 @@
 
     <!-- END file section -->
   <% end %>
-
-
-
 
   <% if @dataset.publication_state != Databank::PublicationState::DRAFT %>
 
