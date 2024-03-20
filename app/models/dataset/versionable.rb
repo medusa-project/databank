@@ -66,7 +66,7 @@ module Dataset::Versionable
     ensure_version_group
     return false if self.version_group.group_hash[:entries].length < 2
 
-    return false unless self.version_to_i.positive?
+    return false unless self.dataset_version&.to_i&.positive?
 
     if self.version_group.group_hash[:entries][0][:publication_state] == Databank::PublicationState::TempSuppress::VERSION
       (self.version_group.group_hash[:entries][1][:version]).to_i > dataset_version.to_i
