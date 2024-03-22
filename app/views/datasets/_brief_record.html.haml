@@ -30,10 +30,6 @@
           =dataset.subject
         -else
           Uncategorized
-      -if !dataset.hold_state.nil? && dataset.hold_state != 'none'
-        &nbsp;
-        .label.label-danger
-          suppressed by curator
       &nbsp;
       .label.label-default
         = pluralize(dataset.notes.count, 'note')
@@ -49,6 +45,10 @@
   - elsif dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
     .label.label-success
       version candidate eligible to be submitted for pre-publication review
+    &nbsp;
+  -elsif !dataset.hold_state.nil? && dataset.hold_state != 'none'
+    .label.label-danger
+      suppressed by curator
     &nbsp;
   -if(can? :edit, dataset) && dataset.share_code
     .label.label-success
