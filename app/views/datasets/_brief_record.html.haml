@@ -50,7 +50,7 @@
     .label.label-danger
       suppressed by curator
     &nbsp;
-  -if(can? :edit, dataset) && dataset.share_code
+  -if(can? :edit, dataset) && dataset.share_code && dataset.publication_state != Databank::PublicationState::RELEASED
     .label.label-success
       has sharing link
     &nbsp;
