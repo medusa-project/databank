@@ -18,16 +18,10 @@
             %a{:href => "/policies"}
               %span.glyphicon.glyphicon-info-sign
               Policies
-          -unless Application.help_transition_state == Databank::HelpTransitionState::GUIDE
-            %li
-              %a{:href => "/help"}
-                %span.glyphicon.glyphicon-question-sign
-                Help
-          -unless Application.help_transition_state == Databank::HelpTransitionState::HELP
-            %li
-              %a{:href => "/guides"}
-                %span.glyphicon.glyphicon-question-sign
-                Guides
+          %li
+            %a{:href => "/guides"}
+              %span.glyphicon.glyphicon-question-sign
+              Guides
           %li
             %a{:href => "/contact"}
               %span.glyphicon.glyphicon-envelope
