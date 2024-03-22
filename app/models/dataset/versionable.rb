@@ -72,7 +72,7 @@ module Dataset::Versionable
 
     return false unless self.dataset_version&.to_i&.positive?
 
-    if self.version_group.group_hash[:entries][0][:publication_state] == Databank::PublicationState::TempSuppress::VERSION
+    if Databank::PublicationState::DRAFT_ARRAY.include?(self.version_group.group_hash[:entries][0][:publication_state])
       (self.version_group.group_hash[:entries][1][:version]).to_i > dataset_version.to_i
     else
       (self.version_group.group_hash[:entries][0][:version]).to_i > dataset_version.to_i
