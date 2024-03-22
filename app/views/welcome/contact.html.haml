@@ -1,88 +1,17 @@
-- case params['context']
-  - when 'sensitive'
-    %p.idb-callout
-      In order to deposit data in the Illinois Data Bank,
-      %strong you must remove any private, confidential, or other legally protected information
-      from the dataset. Please get in touch with the IDB curation staff using this form so we can assist you with your dataset.
-  - else
-    %h3 The Research Data Service has data publishing experts and we're here to help!
+%h2.contact-header Contact us, we are here to help!
 
-.container-fluid
-  = form_tag(contact_mail_path, class: "form-horizontal", role: "form") do
+%p
+  Email us at
+  %a(href="mailto:databank@library.illinois.edu" )
+    databank@library.illinois.edu
+  for support with your dataset submission. Or, fill out the
+  %a(href="https://forms.illinois.edu/sec/1628290621" )
+    Illinois Data Bank Consultation Request form
+  to seek assistance from the Research Data Service team.
 
-    %input(type="text" name="help-nobots" id="help-nobots" style="display:none;" )
-
-    .form-group
-      %label(for="help-name" class="control-label col-md-2" ) Name
-      .col-md-10
-        -if params.has_key?('help-name')
-          %input(type="text" name="help-name" id="help-name" class="form-control help" value="#{params['help-name']}" )
-        -elsif current_user
-          %input(type="text" name="help-name" id="help-name" class="form-control help" value="#{current_user.name}" )
-        -else
-          %input(type="text" name="help-name" id="help-name" class="form-control help" placeholder="[Your Name]")
-
-    .form-group.required
-      %label(for="name" class="control-label col-md-2" ) Email
-      .col-md-10
-        -if params.has_key?('help-email')
-          %input(type="email" name="help-email" id="help-email" class="form-control help" value="#{params['help-email']}" required )
-        -elsif current_user
-          %input(type="email" name="help-email" id="help-email" class="form-control help" value="#{current_user.email}" required )
-        -else
-          %input(type="text" name="help-email" id="help-email" class="form-control help" placeholder="[Your Email Address]" required )
-
-    .form-group
-      %label(for="help-topic" class="control-label col-md-2" ) Topic
-      .col-md-10
-        %select(name="help-topic" id="help-topic" class="form-control help" )
-          %option{value: "No Selection Made" } Please Select ...
-          %option{value: "Depositing Data"} Depositing Data
-          - if params['context'] == 'sensitive'
-            %option{value: "Sensitive Data", selected: true} Sensitive Data
-          - else
-            %option{value: "Sensitive Data"} Sensitive Data
-
-          - if params['context'] == 'review'
-            %option{value: "Dataset Consultation", selected: true} Dataset Consultation
-          -else
-            %option{value: "Dataset Consultation"} Dataset Consultation
-
-          -if params['context'] == 'pickup'
-            %option{value: "Physical pickup or Globus transfer", selected: true} Physical pickup or Globus transfer
-          -else
-            %option{value: "Physical pickup or Globus transfer"} Physical pickup or Globus transfer
-
-          %option{value: "Delaying Publication (Embargo)"} Delaying Publication (Embargo)
-          %option{value: "Finding Data"} Finding Data
-
-          -if params['context']=='feedback'
-            %option{value: "Feedback", selected:true} Feedback
-          -else
-            %option{value: "Feedback"} Feedback
-          %option{value: "Other"} Other
-    -if @dataset
-      .form-group
-        %label(for='help-dataset' class="control-label col-md-2" )
-          Dataset
-        .col-md-10
-          %input(type="text" name="help-dataset" id="help-dataset" class="form-control help" value="#{request.base_url}#{dataset_path(@dataset.key)}" readonly=true)
-
-    .form-group
-      %label(for="help-message" class="control-label col-md-2" ) Message
-      .col-md-10
-        %textarea(rows="6" name="help-message" id="help-message" class="form-control help")
-          - if params.has_key?('help-message')
-            = params['help-message']
-          - elsif params['context']=='pickup'
-            Please contact me to arrange custom transfer of dataset files. My preferred method is:
-
-    - unless current_user
-      .row
-        .pull-right
-          =recaptcha_tags
-    .row
-      .col-md-8.col-md-offset-2
-        %em A copy of this email will be sent to you automatically.
-      .col-md-2
-        %button(type="submit" class="btn btn btn-success btn-block") Send
+%p
+  To learn about our Deposit Agreement, Preservation Policy, Withdraw Guidelines and more, refer to the
+  %a(href="/policies" )
+    %span.glyphicon.glyphicon-info-sign
+    Policies
+  page.
