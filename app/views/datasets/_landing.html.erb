@@ -86,9 +86,9 @@
                 <% @dataset.version_group.group_hash[:entries].each do |entry| %>
                   <% if Databank::PublicationState::DRAFT_ARRAY.include?(entry[:publication_state]) %>
                     <% if (can? :manage, @dataset) %>
-                      <tr class = "curator-only">
+                      <tr class = "row curator-only">
                         <td class="text-center"><%= entry[:version] %></td>
-                        <td><a href="<%= @dataset.persistent_url_base %>/<%= entry[:doi] %>"><%= entry[:doi] %></a></td>
+                        <td><a href="<%= IDB_CONFIG[:root_url_text] %>/datasets/<%= entry[:key] %>"><%= entry[:key] %></a></td>
                         <td><%= entry[:version_comment] %></td>
                         <td><%= entry[:publication_date] %></td>
                       </tr>
