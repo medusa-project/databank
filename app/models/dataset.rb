@@ -62,6 +62,7 @@ class Dataset < ApplicationRecord
   before_destroy :destroy_audit
   before_destroy :remove_globus_ingest_dir
   before_destroy :remove_from_globus_download
+  before_destroy :remove_related_reference
 
   searchable do
     text :title,

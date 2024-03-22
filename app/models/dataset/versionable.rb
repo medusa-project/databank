@@ -24,6 +24,10 @@ module Dataset::Versionable
     end
   end
 
+  def remove_related_reference
+    RelatedMaterial.where(uri: identifier).destroy_all
+  end
+
   def copy_version_files
     selected_files = version_files.select(&:selected)
     incomplete_files = selected_files.reject(&:complete?)
