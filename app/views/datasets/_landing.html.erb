@@ -84,7 +84,7 @@
                 <tbody>
 
                 <% @dataset.version_group.group_hash[:entries].each do |entry| %>
-                  <% if entry[:publication_state] == Databank::PublicationState::TempSuppress::VERSION %>
+                  <% if Databank.PublicationState::DRAFT_ARRAY.include?(entry[:publication_state]) %>
                     <% if (can? :manage, @dataset) %>
                       <tr class = "curator-only">
                         <td class="text-center"><%= entry[:version] %></td>

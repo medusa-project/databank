@@ -86,11 +86,11 @@ module Dataset::Versionable
   end
 
   def is_most_recent_version
-    return false if publication_state == Databank::PublicationState::TempSuppress::VERSION
+    return false if Databank::PublicationState::DRAFT_ARRAY.include?(publication_state)
 
     ensure_version_group
     if self.version_group.group_hash[:entries].length > 1
-      if self.version_group.group_hash[:entries][0][:publication_state] == Databank::PublicationState::TempSuppress::VERSION
+      if Databank::PublicationState::DRAFT_ARRAY.include?(self.version_group.group_hash[:entries][0][:publication_state])
         (version_group.group_hash[:entries][1])[:version] == dataset_version.to_i
       else
         (version_group.group_hash[:entries][0])[:version] == dataset_version.to_i
