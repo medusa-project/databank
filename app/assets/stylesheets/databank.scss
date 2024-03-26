@@ -11,6 +11,27 @@ $minibar-height: 50px;
   text-align: center !important;
 }
 
+/* unvisited link */
+a.intense:link {
+  color: $color__orange-red;
+}
+
+/* visited link */
+a.intense:visited {
+  color: $color__orange-red;
+}
+
+/* mouse over link */
+a.intense:hover {
+  color: $color__orange-red;
+  background-color: $color__light_bright_blue;
+}
+
+/* selected link */
+a.intense:active {
+  color: $color__orange-red;
+}
+
 #citedHeading, #relatedHeading {
   background-color: $color__light-grey !important;
   color: black;
