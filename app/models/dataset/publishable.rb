@@ -70,6 +70,10 @@ module Dataset::Publishable
       else
         send_publication_notice
       end
+      if self.previous_idb_dataset
+        Sunspot.index [self.previous_idb_dataset]
+        Sunspot.commit
+      end
       {status: "ok", old_publication_state: old_publication_state}
     else
       self.publication_state = old_publication_state
