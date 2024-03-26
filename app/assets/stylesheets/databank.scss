@@ -24,6 +24,7 @@ a.intense:visited {
 /* mouse over link */
 a.intense:hover {
   color: $color__orange-red;
+  text-weight: bold;
   background-color: $color__light_bright_blue;
 }
 
