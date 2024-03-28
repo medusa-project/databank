@@ -33,7 +33,7 @@
   <% if @dataset.has_newer_version? %>
     <div class="selected-version boxed-alert">
       A newer version of this dataset is available.
-      <a href="<%= @dataset.latest_published_version.databank_url %>">View the latest version.</a>
+      <a href="<%= @dataset.version_group.latest_published_version.databank_url %>">View the latest version.</a>
     </div>
   <% end %>
   <% if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION &&

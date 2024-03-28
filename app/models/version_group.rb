@@ -40,10 +40,10 @@ class VersionGroup
     end
     (group_hash[:entries].sort_by! {|k| k[:version] }).reverse!
 
-    if Databank::PublicationState::DRAFT_ARRAY.include?(version_group.group_hash[:entries][0][:publication_state])
-      Dataset.find_by(key: self.latest_published_version = version_group.group_hash[:entries][1][:key])
+    if Databank::PublicationState::DRAFT_ARRAY.include?(self.group_hash[:entries][0][:publication_state])
+      self.latest_published_version = Dataset.find_by(key: self.latest_published_version = self.group_hash[:entries][1][:key])
     else
-      Dataset.find_by(key: self.latest_published_version = version_group.group_hash[:entries][0][:key])
+      self.latest_published_version = Dataset.find_by(key: self.latest_published_version = self.group_hash[:entries][0][:key])
     end
   end
 end
