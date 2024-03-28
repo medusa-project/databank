@@ -2,7 +2,7 @@
 
 class VersionGroup
 
-  attr_accessor :dataset, :group_hash
+  attr_accessor :dataset, :group_hash, :latest_published_version
 
   def initialize(dataset)
     self.dataset = dataset
@@ -39,6 +39,11 @@ class VersionGroup
       current_dataset = next_dataset
     end
     (group_hash[:entries].sort_by! {|k| k[:version] }).reverse!
-  end
 
+    if Databank::PublicationState::DRAFT_ARRAY.include?(version_group.group_hash[:entries][0][:publication_state])
+      Dataset.find_by(key: self.latest_published_version = version_group.group_hash[:entries][1][:key])
+    else
+      Dataset.find_by(key: self.latest_published_version = version_group.group_hash[:entries][0][:key])
+    end
+  end
 end
