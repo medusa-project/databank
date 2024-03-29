@@ -1,7 +1,6 @@
 article1:
   id: 2
   material_type: "Article"
-  availability: nil
   link: "http://arxiv.org/abs/1507.06011"
   uri: "1507.06011"
   uri_type: "arXiv"
@@ -17,10 +16,9 @@ article1:
 dataset1:
   id: 8
   material_type: "Dataset"
-  availability: nil
   link: "https://doi.org/10.13012/B2IDB-4900670_V1"
   uri: "10.13012/B2IDB-4900670_V1"
-  uri_type: ""
+  uri_type: "DOI"
   citation:
       "Donovan Brian; Mori Alec; Agrawal Nimit; Meng Yalan; Lee Jong; Work Daniel (2016): New York City Hourly Traffic Estimates (2010-2013). University of Illinois at Urbana-Champaign. https://doi.org/10.13012/B2IDB-4900670_V1"
   dataset_id: 13
@@ -31,7 +29,6 @@ dataset1:
 thesis1:
   id: 9
   material_type: "Thesis"
-  availability: nil
   link: "http://purl.stanford.edu/bz752gf4249"
   uri: "http://purl.stanford.edu/bz752gf4249"
   uri_type: "PURL"
@@ -45,7 +42,6 @@ thesis1:
 article2:
   id: 59
   material_type: "Article"
-  availability: nil
   link: "http://doi.org/10.1016/j.trc.2017.03.002"
   uri: "10.1016/j.trc.2017.03.002"
   uri_type: "DOI"
@@ -59,7 +55,6 @@ article2:
 article3:
   id: 22
   material_type: "Article"
-  availability: nil
   link: "http://dx.doi.org/10.1007/s00180-016-0686-y"
   uri: "10.1007/s00180-016-0686-y"
   uri_type: "DOI"
@@ -73,7 +68,6 @@ article3:
 article4:
   id: 25
   material_type: "Article"
-  availability: nil
   link: "http://dx.doi.org/10.1371/journal.pone.0167267"
   uri: "10.1371/journal.pone.0167267"
   uri_type: "DOI"
@@ -87,11 +81,7 @@ article4:
 code1:
   id: 3
   material_type: "Code"
-  availability: nil
   link: "https://github.com/Lab-Work/gpsresilience"
-  uri: ""
-  uri_type: ""
-  citation: ""
   dataset_id: 13
   created_at: Thu 19 May 2016 19:49:47.226333000 UTC +00:00
   updated_at: Thu 15 Sep 2022 15:59:48.875378000 UTC +00:00
@@ -100,7 +90,6 @@ code1:
 article5:
   id: 60
   material_type: "Article"
-  availability: nil
   link: "http://dx.doi.org/10.1109/GlobalSIP.2016.7906046"
   uri: "10.1109/GlobalSIP.2016.7906046"
   uri_type: "DOI"
@@ -114,7 +103,6 @@ article5:
 article6:
   id: 65
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1016/j.dss.2017.05.008"
   uri: "10.1016/j.dss.2017.05.008"
   uri_type: "DOI"
@@ -128,7 +116,6 @@ article6:
 article7:
   id: 61
   material_type: "Article"
-  availability: nil
   link: "http://dx.doi.org/10.1007/s00180-016-0686-y"
   uri: "10.1007/s00180-016-0686-y"
   uri_type: "DOI"
@@ -141,12 +128,11 @@ article7:
 article8:
   id: 67
   material_type: "Article"
-  availability: nil
   link: "http://dx.doi.org/10.1145/3070607.3075961"
   uri: "10.1145/3070607.3075961"
   uri_type: "DOI"
   citation:
-      "\r\nExport Formats\r\nBibTeX | EndNote | ACM Ref\r\n\r\nJacek Sroka Artur Leśniewski Mirosław Kowaluk Krzysztof Stencel and Jerzy Tyszkiewicz. 2017. Towards minimal algorithms for big data analytics with spreadsheets. In Proceedings of the 4th Algorithms and Systems on MapReduce and Beyond (BeyondMR'17). ACM New York NY USA Article 1 4 pages. DOI: https://doi.org/10.1145/3070607.3075961"
+      "Jacek Sroka Artur Leśniewski Mirosław Kowaluk Krzysztof Stencel and Jerzy Tyszkiewicz. 2017. Towards minimal algorithms for big data analytics with spreadsheets. In Proceedings of the 4th Algorithms and Systems on MapReduce and Beyond (BeyondMR'17). ACM New York NY USA Article 1 4 pages. DOI: https://doi.org/10.1145/3070607.3075961"
   dataset_id: 13
   created_at: Thu 15 Jun 2017 14:55:26.618408000 UTC +00:00
   updated_at: Thu 15 Jun 2017 14:55:26.618408000 UTC +00:00
@@ -155,7 +141,6 @@ article8:
 article9:
   id: 129
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1016/j.trc.2017.12.017"
   uri: "10.1016/j.trc.2017.12.017"
   uri_type: "DOI"
@@ -169,7 +154,6 @@ article9:
 article10:
   id: 214
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1145/3219819.3220055"
   uri: "10.1145/3219819.3220055"
   uri_type: "DOI"
@@ -183,7 +167,6 @@ article10:
 article11:
   id: 659
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1016/j.cor.2020.105065"
   uri: "10.1016/j.cor.2020.105065"
   uri_type: "DOI"
@@ -197,7 +180,6 @@ article11:
 article12:
   id: 672
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1109/FUZZ48607.2020.9177668"
   uri: "10.1109/FUZZ48607.2020.9177668"
   uri_type: "DOI"
@@ -211,7 +193,6 @@ article12:
 article13:
   id: 256
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1016/j.seps.2018.08.001"
   uri: "10.1016/j.seps.2018.08.001"
   uri_type: "DOI"
@@ -225,7 +206,6 @@ article13:
 article14:
   id: 261
   material_type: "Article"
-  availability: nil
   link: "http://alonsomora.com/docs/18-wallar-iros.pdf"
   uri: "http://alonsomora.com/docs/18-wallar-iros.pdf"
   uri_type: "URL"
@@ -239,7 +219,6 @@ article14:
 paper1:
   id: 333
   material_type: "Conference paper"
-  availability: nil
   link: "http://wallar.me/publications/wallar-icra-fleet-2019.pdf"
   uri: "http://wallar.me/publications/wallar-icra-fleet-2019.pdf"
   uri_type: "URL"
@@ -252,7 +231,6 @@ paper1:
 paper2:
   id: 375
   material_type: "Conference paper"
-  availability: nil
   link: "https://doi.org/10.1145/3308558.3313465"
   uri: "10.1145/3308558.3313465"
   uri_type: "DOI"
@@ -265,7 +243,6 @@ paper2:
 article15:
   id: 376
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1016/j.trb.2019.05.005"
   uri: "10.1016/j.trb.2019.05.005"
   uri_type: "DOI"
@@ -279,7 +256,6 @@ article15:
 article16:
   id: 396
   material_type: "Article"
-  availability: nil
   link: "http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-384588"
   uri: "http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-384588"
   uri_type: "URL"
@@ -293,7 +269,6 @@ article16:
 article17:
   id: 481
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1016/j.trc.2019.09.020"
   uri: "10.1016/j.trc.2019.09.020"
   uri_type: "DOI"
@@ -307,7 +282,6 @@ article17:
 article18:
   id: 499
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1109/ITSC.2019.8916904"
   uri: "10.1109/ITSC.2019.8916904"
   uri_type: "DOI"
@@ -321,7 +295,6 @@ article18:
 article19:
   id: 520
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1016/j.trc.2019.12.020"
   uri: "10.1016/j.trc.2019.12.020"
   uri_type: "DOI"
@@ -335,7 +308,6 @@ article19:
 article20:
   id: 572
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1016/j.jtte.2019.07.002"
   uri: "10.1016/j.jtte.2019.07.002"
   uri_type: "DOI"
@@ -349,7 +321,6 @@ article20:
 article21:
   id: 729
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1109/TITS.2020.3029141"
   uri: "10.1109/TITS.2020.3029141"
   uri_type: "DOI"
@@ -363,7 +334,6 @@ article21:
 article22:
   id: 789
   material_type: "Article"
-  availability: nil
   link: "https://cs.haifa.ac.il/~dkeren/ICDE2021_Reducing_Communication_Bandwidth_in_Geometric_Monitoring.pdf"
   uri: "https://cs.haifa.ac.il/~dkeren/ICDE2021_Reducing_Communication_Bandwidth_in_Geometric_Monitoring.pdf"
   uri_type: "URL"
@@ -377,7 +347,6 @@ article22:
 thesis2:
   id: 820
   material_type: "Thesis"
-  availability: nil
   link: "https://research.tue.nl/en/studentTheses/continuous-dynamic-time-warping-for-clustering-curves"
   uri: "https://research.tue.nl/en/studentTheses/continuous-dynamic-time-warping-for-clustering-curves"
   uri_type: "URL"
@@ -391,7 +360,6 @@ thesis2:
 article23:
   id: 1010
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1016/j.cie.2022.108187"
   uri: "10.1016/j.cie.2022.108187"
   uri_type: "DOI"
@@ -405,7 +373,6 @@ article23:
 article24:
   id: 881
   material_type: "Article"
-  availability: nil
   link: "https://arxiv.org/abs/2106.14827"
   uri: "abs/2106.14827"
   uri_type: "arXiv"
@@ -419,7 +386,6 @@ article24:
 article25:
   id: 837
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1109/TFUZZ.2021.3076265"
   uri: "10.1109/TFUZZ.2021.3076265"
   uri_type: "DOI"
@@ -433,7 +399,6 @@ article25:
 article26:
   id: 884
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1145/3449726.3459433"
   uri: "10.1145/3449726.3459433"
   uri_type: "DOI"
@@ -446,8 +411,7 @@ article26:
   datacite_list: "IsCitedBy"
 unknown1:
   id: 888
-  material_type: ""
-  availability: nil
+  material_type: "Article"
   link: "https://doi.org/10.1287/trsc.2021.1068"
   uri: "10.1287/trsc.2021.1068"
   uri_type: "DOI"
@@ -461,7 +425,6 @@ unknown1:
 article27:
   id: 900
   material_type: "Article"
-  availability: nil
   link: "https://my.ece.msstate.edu/faculty/skhan/pub/K_K_2021_IC2E.pdf"
   uri: "https://my.ece.msstate.edu/faculty/skhan/pub/K_K_2021_IC2E.pdf"
   uri_type: "URL"
@@ -475,7 +438,6 @@ article27:
 article28:
   id: 911
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1007/978-3-030-86383-8_49"
   uri: "10.1007/978-3-030-86383-8_49"
   uri_type: "DOI"
@@ -489,7 +451,6 @@ article28:
 article29:
   id: 912
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1145/3474717.3484209"
   uri: "10.1145/3474717.3484209"
   uri_type: "DOI"
@@ -503,7 +464,6 @@ article29:
 article30:
   id: 28
   material_type: "Article"
-  availability: nil
   link: "http://www2.cs.uic.edu/~urbcomp2013/urbcomp2016/papers/Reducing.pdf"
   uri: "http://www2.cs.uic.edu/~urbcomp2013/urbcomp2016/papers/Reducing.pdf"
   uri_type: "URL"
@@ -517,7 +477,6 @@ article30:
 article31:
   id: 1044
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1016/j.joep.2022.102535"
   uri: "10.1016/j.joep.2022.102535"
   uri_type: "DOI"
@@ -531,7 +490,6 @@ article31:
 article32:
   id: 1078
   material_type: "Article"
-  availability: nil
   link: " https://doi.org/10.48550/arXiv.2207.14440"
   uri: "10.48550/arXiv.2207.14440"
   uri_type: "DOI"
@@ -545,7 +503,6 @@ article32:
 article33:
   id: 1099
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.3390/su141710648"
   uri: "10.3390/su141710648"
   uri_type: "DOI"
@@ -559,7 +516,6 @@ article33:
 article34:
   id: 1100
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1109/FUZZ-IEEE55066.2022.9882567"
   uri: "10.1109/FUZZ-IEEE55066.2022.9882567"
   uri_type: "DOI"
@@ -573,7 +529,6 @@ article34:
 article35:
   id: 1233
   material_type: "Article"
-  availability: nil
   link: "https://doi.org/10.1049/itr2.12376"
   uri: "10.1049/itr2.12376"
   uri_type: "DOI"

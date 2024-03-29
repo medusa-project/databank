@@ -70,6 +70,17 @@ class DatasetsController < ApplicationController
 
   # enable zipline
   include Zipline
+  def cancel_version
+    @dataset = Dataset.find_by(key: params[:id])
+    authorize! :edit, @dataset
+    @previous = @dataset.previous_idb_dataset
+    render "edit" and return if @previous.nil?
+
+    relationship_from_previous_dataset = @previous.related_materials.find_by(datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF)
+    relationship_from_previous_dataset&.destroy!
+    @dataset.destroy!
+    redirect_to dataset_path(@previous.key)
+  end
 
   def share
     @dataset.create_share_code(id: @dataset.id) unless @dataset.current_share_code
@@ -90,14 +101,26 @@ collaborators to access the data files while the dataset is not public.</li>
   end
 
   def copy_version_files
-    files_to_copy = @dataset.version_files.where(selected: true, initiated: false)
-    raise("No files selected for copy.") unless files_to_copy.count.positive?
-
-    @dataset.mark_version_files_initiated(files_to_copy: files_to_copy)
-    @dataset.copy_version_files
-    respond_to do |format|
-      format.html { render :copy_version_files, notice: "File copy process initiated." }
-      format.json { render json: {notice: "File copy process initiated"}, status: :ok }
+    if @dataset.update(dataset_params)
+      files_to_copy = @dataset.version_files.where(selected: true, initiated: false)
+      unless files_to_copy.count.positive?
+        respond_to do |format|
+          format.html { render :edit, alert: "No files selected for copy." }
+          format.json { render json: {error: "No files selected for copy."}, status: :unprocessable_entity }
+        end
+        return
+      end
+      @dataset.mark_version_files_initiated(files_to_copy: files_to_copy)
+      @dataset.copy_version_files
+      respond_to do |format|
+        format.html { render :copy_version_files, notice: "File copy process initiated." }
+        format.json { render json: {notice: "File copy process initiated"}, status: :ok }
+      end
+    else
+      respond_to do |format|
+        format.html { render :edit, alert: "Error attempting to copy files." }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -428,7 +451,7 @@ collaborators to access the data files while the dataset is not public.</li>
             end
             @dataset.save
             # send_dataset_to_medusa only sends metadata files unless old_publication_state is draft
-            MedusaIngest.send_dataset_to_medusa(@dataset) if Rails.env.demo? || Rails.env.production?
+            MedusaIngest.send_dataset_to_medusa(@dataset) if Application.server_envs.include?(Rails.env)
             if @dataset.is_test? || Rails.env.test? || Rails.env.development? || @dataset.update_doi
               format.html { redirect_to dataset_path(@dataset.key) }
               format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
@@ -500,7 +523,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def remove_sharing_link
     respond_to do |format|
-      if @dataset.share_code && @dataset.share_code.destroy!
+      if @dataset.share_code&.destroy!
         format.html { redirect_to dataset_path(@dataset.key), notice: "Private Sharing Link has been removed." }
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
@@ -648,6 +671,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.hold_state = Databank::PublicationState::TempSuppress::NONE
     respond_to do |format|
       if @dataset.save
+        @dataset.send_approve_version
         format.html {
           redirect_to dataset_path(@dataset.key), notice: %(Dataset released for pre-publication review.)
         }
@@ -661,8 +685,10 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def version_to_draft
     @dataset.publication_state = Databank::PublicationState::DRAFT
+    @dataset.hold_state = Databank::PublicationState::TempSuppress::NONE
     respond_to do |format|
       if @dataset.save
+        @dataset.send_approve_version
         format.html {
           redirect_to dataset_path(@dataset.key), notice: %(Dataset designated as standard draft.)
         }

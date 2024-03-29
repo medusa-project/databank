@@ -79,7 +79,7 @@
                 .label.label-danger
                   pre-publication review
                 &nbsp;
-              -if @dataset.share_code
+              -if(can? :edit, @dataset) && @dataset.share_code && @dataset.publication_state != Databank::PublicationState::RELEASED
                 .label.label-success
                   has sharing link
                 &nbsp;

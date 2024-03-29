@@ -10,7 +10,7 @@ default: &default
 # Do not set this db to the same as development or production.
 test: &test
   <<: *default
-  database: databank
+  database: databank_test
   username: postgres
   password: postgres
   host: postgres
@@ -31,12 +31,26 @@ production:
   password: <%= Rails.env.production? ? Rails.application.credentials[:primary_db][:password] : "password" %>
   host: <%= Rails.env.production? ? Rails.application.credentials[:primary_db][:host] : "host" %>
 
+prod-rocky:
+  <<: *default
+  database: databank
+  username: <%= (Rails.env == "prod-rocky") ? Rails.application.credentials[:primary_db][:username] : "username" %>
+  password: <%= (Rails.env == "prod-rocky") ? Rails.application.credentials[:primary_db][:password] : "password" %>
+  host: <%= (Rails.env == "prod-rocky") ? Rails.application.credentials[:primary_db][:host] : "host" %>
+
 demo:
   <<: *default
   database: databank
   username: <%= Rails.env.demo? ? Rails.application.credentials[:primary_db][:username] : "username" %>
   password: <%= Rails.env.demo? ? Rails.application.credentials[:primary_db][:password] : "password" %>
   host: <%= Rails.env.demo? ? Rails.application.credentials[:primary_db][:host] : "host" %>
+
+demo-rocky:
+  <<: *default
+  database: databank
+  username: <%= (Rails.env == "demo-rocky") ? Rails.application.credentials[:primary_db][:username] : "username" %>
+  password: <%= (Rails.env == "demo-rocky") ? Rails.application.credentials[:primary_db][:password] : "password" %>
+  host: <%= (Rails.env == "demo-rocky") ? Rails.application.credentials[:primary_db][:host] : "host" %>
 
 cucumber:
   <<: *test

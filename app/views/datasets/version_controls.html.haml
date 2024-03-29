@@ -3,72 +3,64 @@
   %em No previous version found for this dataset.
 -else
   %hr/
-  %h3 Version Control Curator Guidance
-  %p
-    Lorem ipsum dolor sit amet, secundo consectetur adipiscing elit. Sed ipsum sapien, finibus sed eros eget,
-    euismod malesuada quam. Morbi id nunc eget purus dapibus vestibulum ac et magna. Vestibulum condimentum
-    molestie libero sed ullamcorper. Integer interdum iaculis lectus, ut consequat dui pulvinar ut.
-    Aenean vitae lacus justo. Mauris nunc purus, cursus non odio id, egestas tempus est. Sed suscipit mattis
-    ex quis fermentum. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-    Suspendisse potenti. Curabitur rutrum lorem eu tempus ornare. Duis eget pharetra orci.
-    Vestibulum vel dapibus orci.
-    =form_for(@dataset, :url => {action: 'copy_version_files'}, html: {role: "form", class: "input-append dataset-form" }) do |f|
-      .panel-group(id="vFiles" role="tablist" aria-multiselectable="true")
-        .panel.panel-default
-          .panel-heading(role="tab" id="vFilesHeading")
-            %h4(class="panel-title")
-              %a(role="button" data-toggle="collapse" data-parent="#access" href="#vFilesPanel" aria-expanded="false" aria-controls="vFilesPanel" class="accordion-toggle" )
-                %span( class="metadata-label" ) File Copy Selection
-          .panel-collapse.collapse.in(id="vFilesPanel" role="tabpanel" aria-labelledby="vFilesHeading" )
-            .panel-body
-              %table.table#versionfiles
-                %tbody
-                  %tr.row
-                    %td
-                      %input#checkAllVFiles{type: "checkbox"}
-                        Select all
-                        =surround "(", ")" do
-                          %span#datafilesCount
-                            = @dataset.version_files.count
-                  -@dataset.version_files.each do |version_file|
-                    = f.fields_for :version_files, version_file do |vf|
-                      %tr.row
-                        %td.col-md-2
-                          = vf.check_box :selected, class: 'checkVFile checkVFileGroup', disabled: version_file.initiated
-                        %td.col-md-4
-                          = version_file.source_datafile.bytestream_name
-                        %td.col-md-2
-                          = number_to_human_size(version_file.source_datafile.bytestream_size)
-                        %td.col-md-2
-                          -if version_file.initiated
-                            %span.label.label-warning
-                              Copy Initiated
-                          -else
-                            %span.label.label-info
-                              Copy Not Initiated
-                        %td.col-md-2
-                          -if version_file.complete?
-                            %span.label.label-success
-                              Copy Complete
-                          -elsif version_file.initiated
-                            %span.label.label-info
-                              Copy In Progress
-                      .row
-                  %tr.row
-                    %td.col-md-2
-                    %td.col-md-4
-                    %td.col-md-2
-                    %td.col-md-4{colspan: "2"}
-                      -if @dataset.version_copies_complete?
-                        %span.label.label-success
-                          Version Copies Complete
-                      -elsif @dataset.version_copies_initiated?
-                        %span.label.label-default
-                          Version Copies Initiated
-                      -else
-                        %button#copyFilesBtn.btn.btn-lg.btn-primary.btn-block{type: "submit", disabled: false}
-                          %span.glyphicon.glyphicon-duplicate
-                          Copy Selected Files to Version
+  %h3 List of files as selected by user. Curator makes adjustment as needed.
+  =form_for(@dataset, :url => {action: 'copy_version_files'}, html: {role: "form", class: "input-append dataset-form" }) do |f|
+    .panel-group(id="vFiles" role="tablist" aria-multiselectable="true")
+      .panel.panel-default
+        .panel-heading(role="tab" id="vFilesHeading")
+          %h4(class="panel-title")
+            %a(role="button" data-toggle="collapse" data-parent="#access" href="#vFilesPanel" aria-expanded="false" aria-controls="vFilesPanel" class="accordion-toggle" )
+              %span( class="metadata-label" ) File Copy Selection
+        .panel-collapse.collapse.in(id="vFilesPanel" role="tabpanel" aria-labelledby="vFilesHeading" )
+          .panel-body
+            %table.table#versionfiles
+              %tbody
+                %tr.row
+                  %td
+                    %input#checkAllVFiles{type: "checkbox"}
+                      Select all
+                      =surround "(", ")" do
+                        %span#datafilesCount
+                          = @dataset.version_files.count
+                -@dataset.version_files.each do |version_file|
+                  = f.fields_for :version_files, version_file do |vf|
+                    %tr.row
+                      %td.col-md-2
+                        = vf.check_box :selected, class: 'checkVFile checkVFileGroup', disabled: version_file.initiated
+                      %td.col-md-4
+                        = version_file.source_datafile.bytestream_name
+                      %td.col-md-2
+                        = number_to_human_size(version_file.source_datafile.bytestream_size)
+                      %td.col-md-2
+                        -if version_file.initiated
+                          %span.label.label-warning
+                            Copy Initiated
+                        -else
+                          %span.label.label-info
+                            Copy Not Initiated
+                      %td.col-md-2
+                        -if version_file.complete?
+                          %span.label.label-success
+                            Copy Complete
+                        -elsif version_file.initiated
+                          %span.label.label-info
+                            Copy In Progress
+                    .row
+                %tr.row
+                  %td.col-md-2
+                  %td.col-md-4
+                  %td.col-md-2
+                  %td.col-md-4{colspan: "2"}
+                    -if @dataset.version_copies_complete?
+                      %span.label.label-success
+                        Version Copies Complete
+                    -elsif @dataset.version_copies_initiated?
+                      %span.label.label-default
+                        Version Copies Initiated
+                    -else
+                      %button#copyFilesBtn.btn.btn-lg.btn-primary.btn-block{type: "submit", disabled: false}
+                        %span.glyphicon.glyphicon-duplicate
+                        Copy Selected Files to Version
 
   .panel-group(id="report" role="tablist" aria-multiselectable="true")
     .panel.panel-default

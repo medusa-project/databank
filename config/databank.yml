@@ -49,9 +49,9 @@
 :reserve_doi_netid: <%= Rails.application.credentials[:reserve_doi_netid] %>
 :reserve_doi_role: <%= Rails.application.credentials[:reserve_doi_role] %>
 :aws:
- :s3_mode: <%= Rails.application.credentials[:aws][:s3_mode] %>
- :queue_mode: <%= Rails.application.credentials[:aws][:queue_mode] %>
- :region: us-east-2
+  :s3_mode: <%= Rails.application.credentials[:aws][:s3_mode] %>
+  :queue_mode: <%= Rails.application.credentials[:aws][:queue_mode] %>
+  :region: us-east-2
 :storage_tmpdir: <%= Rails.application.credentials[:storage][:tmp_path] %>
 :rabbit_or_sqs: <%= Rails.application.credentials[:rabbit_or_sqs] %>
 :queues:

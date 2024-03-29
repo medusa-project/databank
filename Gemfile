@@ -8,8 +8,8 @@ gem 'rails', '~> 7.0'
 gem "pg"
 # Use SCSS for stylesheets
 gem "sass-rails"
-# Use uglifier as compressor for JavaScript assets
-gem "uglifier"
+# Use terser as compressor for JavaScript assets
+gem "terser"
 # Use CoffeeScript for .coffee assets and views
 #gem "coffee-rails"
 # See https://github.com/rails/execjs#readme for more supported runtimes
@@ -109,8 +109,8 @@ gem "rest-client"
 # gem 'httpclient', git: 'git://github.com/medusa-project/httpclient.git'
 
 gem "equivalent-xml"
-gem "nokogiri"
-gem "nokogiri-diff"
+gem "nokogiri", force_ruby_platform: true
+gem "nokogiri-diff", force_ruby_platform: true
 
 # use sunspot for searching
 gem "progress_bar"
@@ -125,7 +125,7 @@ gem "will_paginate-bootstrap"
 gem "bcrypt"
 
 # Use Passenger standalone
-gem "passenger", require: "phusion_passenger/rack_handler"
+gem "passenger"
 
 # Use email validator for model
 gem "valid_email"

@@ -65,7 +65,11 @@ module Dataset::Stringable
         end
 
       end
-      processed_description = description.squish.to_json.delete_prefix('"').delete_suffix('"')
+      processed_description = if description && description != ""
+        description.squish.to_json.delete_prefix('"').delete_suffix('"')
+      else
+        ""
+                              end
       return_string += %(, "description":"#{processed_description}") if description
       return_string += %(, "version":"#{dataset_version}")
       return_string += %(, "url":"#{persistent_url}")

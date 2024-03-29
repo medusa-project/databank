@@ -26,8 +26,8 @@ class Dataset < ApplicationRecord
   audited except: %i[creator_text key complete is_test is_import updated_at embargo], allow_mass_assignment: true
   has_associated_audits
 
-  attr_accessor :featured_related_materials,
-                :not_featured_related_materials,
+  attr_accessor :materials_related,
+                :materials_cited_by,
                 :num_external_relationships
 
   MIN_FILES = 1
@@ -62,6 +62,7 @@ class Dataset < ApplicationRecord
   before_destroy :destroy_audit
   before_destroy :remove_globus_ingest_dir
   before_destroy :remove_from_globus_download
+  before_destroy :remove_related_reference
 
   searchable do
     text :title,
@@ -107,6 +108,12 @@ class Dataset < ApplicationRecord
     key
   end
 
+  def updated_date
+    return updated_at.to_date.iso8601 if nested_updated_at.nil?
+
+    [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
+  end
+
   def ok_to_publish?
     # metadata-only embargo datasets are ok to publish, which removes the embargo
     return true if (publication_state != Databank::PublicationState::DRAFT) &&
@@ -125,27 +132,32 @@ class Dataset < ApplicationRecord
 
   def handle_related_materials
     self.num_external_relationships = 0
-    if related_materials.count.zero?
-      self.featured_related_materials = self.not_featured_related_materials = []
-    else
-      self.featured_related_materials = self.related_materials.where(feature: true)
-      not_featured_materials_set = Set.new
+    self.materials_related = self.materials_cited_by = []
+    tmp_related = Set.new
+    tmp_cited = Set.new
+    tmp_external = Set.new
+    if related_materials.count.positive?
       related_materials.each do |material|
         datacite_arr = []
         datacite_arr = material.datacite_list.split(",") if material.datacite_list && material.datacite_list != ""
         datacite_arr.each do |relationship|
-          if %w[IsPreviousVersionOf IsNewVersionOf].exclude?(relationship)
-            self.num_external_relationships += 1
-            not_featured_materials_set.add(material) unless material.feature == true
+          if [Databank::Relationship::NEW_VERSION_OF, Databank::Relationship::PREVIOUS_VERSION_OF].exclude?(relationship)
+            tmp_external.add(material)
           end
+          if [Databank::Relationship::SUPPLEMENT_TO, Databank::Relationship::SUPPLEMENTED_BY].include?(relationship)
+            tmp_related.add(material)
+          end
+          tmp_cited.add(material) if relationship == Databank::Relationship::CITED_BY
         end
-        self.not_featured_related_materials = not_featured_materials_set.to_a
       end
     end
+    self.materials_related = tmp_related.to_a
+    self.materials_cited_by = tmp_cited.to_a
+    self.num_external_relationships = tmp_external.count
   end
 
   def add_version_metadata_copy(previous:)
-    return true if self.title == previous.title
+    return true if title == previous.title
 
     previous_version_number = previous.dataset_version.to_i
     version_number = previous_version_number + 1
@@ -226,9 +238,16 @@ class Dataset < ApplicationRecord
              Databank::PublicationState::PermSuppress::FILE].include?(hold_state))
   end
 
+  def draft?
+    publication_state == Databank::PublicationState::DRAFT
+  end
   def files_public?
     (publication_state == Databank::PublicationState::RELEASED) &&
       ((hold_state.nil? || (hold_state == Databank::PublicationState::TempSuppress::NONE)))
+  end
+
+  def embargoed_with_valid_date?
+    Databank::PublicationState::EMBARGO_ARRAY.include?(embargo) && release_date && release_date > Time.current
   end
 
   def self.all_with_public_metadata
@@ -247,8 +266,8 @@ class Dataset < ApplicationRecord
 
     return true if release_date <= Time.current
 
-    self.publication_state = self.embargo
-    self.save!
+    self.publication_state = embargo
+    save!
   end
 
   def ensure_creator_editors
@@ -447,6 +466,11 @@ class Dataset < ApplicationRecord
     "#{dirname}/system/deposit_agreement.txt"
   end
 
+  def send_approve_version
+    notification = DatabankMailer.approve_version(dataset_key: self.key)
+    notification.deliver_now
+  end
+
   def send_incomplete_1m
     notification = DatabankMailer.dataset_incomplete_1m(self.key)
     notification.deliver_now
@@ -568,7 +592,7 @@ class Dataset < ApplicationRecord
   end
 
   def in_pre_publication_review?
-    Databank::PublicationState::DRAFT_ARRAY.include?(self.publication_state) && self.has_review_request?
+    Databank::PublicationState::DRAFT_ARRAY.include?(publication_state) && has_review_request?
   end
 
   def show_publish_only?

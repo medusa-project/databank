@@ -2,7 +2,7 @@
 
 class VersionGroup
 
-  attr_accessor :dataset, :group_hash
+  attr_accessor :dataset, :group_hash, :latest_published_version
 
   def initialize(dataset)
     self.dataset = dataset
@@ -33,14 +33,17 @@ class VersionGroup
       next_dataset = current_dataset.next_idb_dataset
       break if next_dataset.nil? || next_dataset == current_dataset
 
-      unless next_dataset.is_unconfirmed_version?
-        current_group_count += 1
-        group_hash[:entries] << next_dataset.related_version_entry_hash
-      end
+      current_group_count += 1
+      group_hash[:entries] << next_dataset.related_version_entry_hash
       # go to next, if it exists, else set control to nil and break
       current_dataset = next_dataset
     end
     (group_hash[:entries].sort_by! {|k| k[:version] }).reverse!
-  end
 
+    if Databank::PublicationState::DRAFT_ARRAY.include?(self.group_hash[:entries][0][:publication_state])
+      self.latest_published_version = Dataset.find_by(key: self.latest_published_version = self.group_hash[:entries][1][:key])
+    else
+      self.latest_published_version = Dataset.find_by(key: self.latest_published_version = self.group_hash[:entries][0][:key])
+    end
+  end
 end

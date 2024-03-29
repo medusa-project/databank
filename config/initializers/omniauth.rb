@@ -2,8 +2,6 @@ shib_opts = YAML.load_file(File.join(Rails.root, 'config', 'shibboleth.yml'))[Ra
 
 Rails.application.config.middleware.use OmniAuth::Builder do
 
-  # provider :developer unless Rails.env.production?
-
   provider :identity,
            :fields => [:email, :name],
            :on_failed_registration => WelcomeController.action(:on_failed_registration)

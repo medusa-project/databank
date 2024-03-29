@@ -155,16 +155,7 @@ legend.metadata-border {
 
 .curator-only {
   padding: 5px;
-  border: 1px solid black;
   background-color: $color__highlight-orange;
-}
-
-.featured-material {
-  background-color: $color__lightest_blue;
-}
-
-.featured-material :any-link {
-  font-size: 20px;
 }
 
 #creator_table {

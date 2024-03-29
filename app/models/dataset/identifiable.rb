@@ -295,7 +295,7 @@ module Dataset::Identifiable
     root_string = %(<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" )
     root_string += %(xmlns="http://datacite.org/schema/kernel-4" )
     root_string += %(xsi:schemaLocation="http://datacite.org/schema/kernel-4 )
-    root_string += %(http://schema.datacite.org/meta/kernel-4.3/metadata.xsd">)
+    root_string += %(http://schema.datacite.org/meta/kernel-4.5/metadata.xsd">)
     root_string + %(</resource>)
   end
 

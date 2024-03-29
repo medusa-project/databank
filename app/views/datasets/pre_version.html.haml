@@ -16,7 +16,7 @@
 %p
   %strong
     To save you time and effort, your request will be reviewed by a curator who will ensure that a new version is the best way to make changes to your dataset.
-  If approved, the Illinois Data Bank will create a new version draft using information from your existing publication. A curator will email you within 1-2 business days with instructions for editingyour new version draft and submitting it for publication. If a new version isn’t the right solution for your dataset, a curator will work with you to find the best approach.
+  If approved, the Illinois Data Bank will create a draft of the new version using information from your existing published dataset. A curator will email you within 1-2 business days with instructions for editing the new draft version and submitting it for publication. If a new version isn’t the right solution for your dataset, a curator will work with you to find the best approach.
 %h3 Common Questions about Versioning
 -# files
 .panel-group(id="files" role="tablist" aria-multiselectable="true")
@@ -28,7 +28,7 @@
     .panel-collapse.collapse(id="filesPanel" role="tabpanel" aria-labelledby="filesHeading" )
       .panel-body
         %p
-          You can update the descriptive information about your dataset that appears on the Illinois Data Bank website (e.g., Dataset Description, Keywords, etc.) without creating a newversion. To get started, navigate back to your data publication and click the green ‘Edit’ button in the upper right.
+          You can update the descriptive information about your dataset that appears on the Illinois Data Bank website (e.g., Dataset Description, Keywords, etc.) without creating a new version. To get started, navigate back to your data publication and click the green ‘Edit’ button in the upper right.
 -# time
 .panel-group(id="time" role="tablist" aria-multiselectable="true")
   .panel.panel-default
@@ -38,7 +38,12 @@
           %span( class="metadata-label" ) How long does it take to publish a new version? (click to expand)
     .panel-collapse.collapse(id="timePanel" role="tabpanel" aria-labelledby="timeHeading" )
       .panel-body
-        %p It takes 1-2 business days to approve your request and create a new version draft. After that, you will be able to make any necessary edits and submit it for pre-publication review.A curator will review your draft and make sure that all versions of your data are connected to each other correctly. This typically only takes a few business days.
+        %p
+          It takes 1-2 business days to approve your request and create a new version draft. After that, you will be able to make any necessary edits and submit it for pre-publication review. A curator will review your draft and make sure that all versions of your data are connected to each other correctly. This typically only takes a few business days. If your request is urgent, please
+          %a.bright(href="#{IDB_CONFIG[:root_url_text]}/contact")
+            %span(class="glyphicon glyphicon-envelope" )
+            contact the Research Data Service team
+          immediately, and we can suppress the current published version of your dataset from public view while the new version is being created.
 -# old
 .panel-group(id="old" role="tablist" aria-multiselectable="true")
   .panel.panel-default
@@ -49,7 +54,22 @@
     .panel-collapse.collapse(id="oldPanel" role="tabpanel" aria-labelledby="oldHeading" )
       .panel-body
         %p
-          Yes, any old versions of your dataset will remain available in the Illinois Data Bank. Any links or citations to your existing publications will continue to work after you publish a new version.
+          Yes, any old versions of your dataset will remain available in the Illinois Data Bank. While we retain these versions for sake of provenance, old versions can be suppressed from public view if necessary (see below). Either way, any links or citations to your existing publications will continue to work after you publish a new version.
+-# remove
+.panel-group(id="remove" role="tablist" aria-multiselectable="true")
+  .panel.panel-default
+    .panel-heading(role="tab" id="removeHeading")
+      %h4(class="panel-title")
+        %a( role="button" data-toggle="collapse" data-parent="#remove" href="#removePanel" aria-expanded="false" aria-controls="removePanel" class="accordion-toggle collapsed" )
+          %span( class="metadata-label" ) What if I need to remove an old version? (click to expand)
+    .panel-collapse.collapse(id="removePanel" role="tabpanel" aria-labelledby="removeHeading" )
+      .panel-body
+        %p
+          In rare and extenuating circumstances, the Illinois Data Bank can suppress harmful or sensitive data that was published by by mistake. If that’s the case,
+          %a.bright(href="#{IDB_CONFIG[:root_url_text]}/contact")
+            %span(class="glyphicon glyphicon-envelope" )
+            contact the Research Data Service team
+          immediately.
 -# doi
 .panel-group(id="doi" role="tablist" aria-multiselectable="true")
   .panel.panel-default
@@ -70,7 +90,7 @@
           %span( class="metadata-label" ) Can I change my published data without getting a new DOI? (click to expand)
     .panel-collapse.collapse(id="identifierPanel" role="tabpanel" aria-labelledby="identifierHeading" )
       .panel-body
-        %p Sorry, no. Once your data is published, there’s no taking it back. People may have already downloaded and used your data, and it’s important that the Illinois Data Bank maintainsan accurate record of that publication.
+        %p The version number must change in the DOI, although the rest remains the same. This is because people may have already downloaded and used your data, so using the exact same DOI would mean there's no way for them or others to know if the old or the new dataset was accessed or referenced.
 -# newest
 .panel-group(id="newest" role="tablist" aria-multiselectable="true")
   .panel.panel-default
@@ -81,31 +101,15 @@
     .panel-collapse.collapse(id="newestPanel" role="tabpanel" aria-labelledby="newestHeading" )
       .panel-body
         %p
-          Each version of your dataset gets its own record in the Illinois Data Bank with a Versions section that clearly lists all versions from newest to oldest and includes: the versionnumber, DOI, publication date, and a comment summarizing the differences between versions
+          Each version of your dataset gets its own record in the Illinois Data Bank, and a versions section clearly lists all versions from newest to oldest, including: the version number, DOI, publication date, and a comment summarizing the difference between versions
           =surround '(', ').' do
-            %a(href="https://doi.org/10.13012/B2IDB-0852856_V2") see example
-          When you access an old version, a banner will appear at the top of the page saying a newer version of the dataset is available and linking to the latest version.
--# remove
-.panel-group(id="remove" role="tablist" aria-multiselectable="true")
-  .panel.panel-default
-    .panel-heading(role="tab" id="removeHeading")
-      %h4(class="panel-title")
-        %a( role="button" data-toggle="collapse" data-parent="#remove" href="#removePanel" aria-expanded="false" aria-controls="removePanel" class="accordion-toggle collapsed" )
-          %span( class="metadata-label" ) What if I need to remove an old version? (click to expand)
-    .panel-collapse.collapse(id="removePanel" role="tabpanel" aria-labelledby="removeHeading" )
-      .panel-body
-        %p
-          In rare and extenuating circumstances, the Illinois Data Bank can suppress harmful or sensitive data that was published by by stake. If that’s the case,
-          %a(href="#{IDB_CONFIG[:root_url_text]}/contact")
-            %span(class="glyphicon glyphicon-envelope" )
-            contact the Research Data Service team
-          immediately.
-%br
+            %a(href="https://databank.illinois.edu/datasets/IDB-5547365") see example
+          When an old version is accessed, a banner will appear at the top of the page directing users to the newest version of the dataset available.
 .indent
   %p
     If you need immediate assistance or have additional questions, please
     =succeed "." do
-      %a(href="#{IDB_CONFIG[:root_url_text]}/contact")
+      %a.bright(href="#{IDB_CONFIG[:root_url_text]}/contact")
         %span(class="glyphicon glyphicon-envelope" )
         contact the Research Data Service team
     We would love to talk about your data.

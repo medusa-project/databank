@@ -262,3 +262,51 @@ text1:
   storage_key: "7d41357d5f2f232a22ab1cad67c6f341"
   mime_type: "text/plain"
   task_id: nil
+image1b:
+  id: 9494
+  description: nil
+  binary: nil
+  web_id: "vdx0b"
+  dataset_id: 13
+  created_at: Fri, 23 Jun 2023 13:46:30.179458000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:30.179458000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "escher_lego.png"
+  binary_size: 718560
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "medusa"
+  storage_prefix: nil
+  storage_key: "661d48445cce654a6b3865d9041553bb"
+  mime_type: "image/png"
+  task_id: nil
+text1b:
+  id: 9504
+  description: nil
+  binary: nil
+  web_id: "hn55b"
+  dataset_id: 6
+  created_at: Fri, 23 Jun 2023 13:46:31.383301000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:31.383301000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "sample.txt"
+  binary_size: 16
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "draft"
+  storage_prefix: nil
+  storage_key: "7d41357d5f2f232a22ab1cad67c6f34b"
+  mime_type: "text/plain"
+  task_id: nil

@@ -224,13 +224,13 @@
           .panel-collapse.collapse(id="funderPanel" role="tabpanel" aria-labelledby="funderHeading" )
             .panel-body
               = render partial: 'funders_subform', locals: {f: f}
-      .panel-group(id="related" role="tablist" aria-multiselectable="true")
+      .panel-group(id="materials" role="tablist" aria-multiselectable="true")
         .panel.panel-default
-          .panel-heading(role="tab" id="relatedHeading")
+          .panel-heading(role="tab" id="materialsHeading")
             %h4(class="panel-title")
-              %a(role="button" data-toggle="collapse" data-parent="#related" href="#relatedPanel" aria-expanded="false" aria-controls="relatedPanel" class="accordion-toggle collapsed" )
+              %a(role="button" data-toggle="collapse" data-parent="#materials" href="#materialsPanel" aria-expanded="false" aria-controls="materialsPanel" class="accordion-toggle collapsed" )
                 %span( class="metadata-label" ) Relationships with articles, code, other datasets, and other resources
-          .panel-collapse.collapse(id="relatedPanel" role="tabpanel" aria-labelledby="relatedHeading" )
+          .panel-collapse.collapse(id="materialsPanel" role="tabpanel" aria-labelledby="materialsHeading" )
             .panel-body
               = render partial: 'materials_subform', locals: {f: f}
       = render partial: 'datafiles_subform', locals: {f: f}
