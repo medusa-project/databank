@@ -68,6 +68,8 @@ module Dataset::Versionable
 
   def has_newer_version?
     ensure_version_group
+    return false if self.version_group.latest_published_version.nil?
+
     return false if self.version_group.group_hash[:entries].length < 2
 
     return false unless self.dataset_version&.to_i&.positive?

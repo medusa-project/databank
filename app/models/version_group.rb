@@ -39,13 +39,18 @@ class VersionGroup
       current_dataset = next_dataset
     end
     (group_hash[:entries].sort_by! {|k| k[:version] }).reverse!
-
-    if self.group_hash.length == 1
-      self.latest_published_version = self.group_hash[:entries][0][:key]
-    elsif Databank::PublicationState::DRAFT_ARRAY.include?(self.group_hash[:entries][0][:publication_state])
-      self.latest_published_version = Dataset.find_by(key: self.latest_published_version = self.group_hash[:entries][1][:key])
-    else
-      self.latest_published_version = Dataset.find_by(key: self.latest_published_version = self.group_hash[:entries][0][:key])
+    # set latest published version
+    # if there is only one entry, and it is published, it is the latest published version
+    # if there is only one entry, and it is a draft, there is no latest published version
+    # if there are more than one entry, and the first is published, the first is the latest published version
+    # if there are more than one entry, and the first is a draft, the second is the latest published version
+    self.latest_published_version = nil
+    group_hash[:entries].each do |entry|
+      candidate_dataset = Dataset.find_by(key: entry[:key])
+      if candidate_dataset.metadata_public?
+        self.latest_published_version = candidate_dataset
+        break
+      end
     end
   end
 end
