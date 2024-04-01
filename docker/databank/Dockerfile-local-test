@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install -y \
     libmagic-dev \
     yarn \
     postgresql-client \
-    memcached
+    memcached \
+    emacs-nox
 
 EXPOSE 3000
 
@@ -22,8 +23,8 @@ WORKDIR /app
 COPY Gemfile /tmp
 COPY Gemfile.lock /tmp
 RUN cd /tmp \
-    && gem install bundler \
-    && bundle install \
+    && RAILS_ENV=test gem install bundler \
+    && RAILS_ENV=test bundle install \
     && cd /app
 
 # Everything else has to be done in the entry command because /app will be

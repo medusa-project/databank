@@ -11,24 +11,26 @@
             %span(class="glyphicon glyphicon-search" aria-hidden="true" )
           %button(type="button" class="btn btn-danger" onclick="clearSearchTerm()" )
             %span(class="glyphicon glyphicon-remove" aria-hidden="true" )
-    .col-md-2
-      - sr = @search.results
-      %span.label.label-default.align-middle
-        = "Displaying #{sr.offset + 1} - #{sr.offset + sr.length} of #{sr.total_entries} in total"
-    .col-md-5
-      = will_paginate @search.results, previous_label: "<".html_safe, next_label: ">".html_safe, renderer: BootstrapPagination::Rails
+    -if @search && @search.total.positive?
+      .col-md-2
+        - sr = @search.results
+        %span.label.label-default.align-middle
+          = "Displaying #{sr.offset + 1} - #{sr.offset + sr.length} of #{sr.total_entries} in total"
 
-    .col-md-1
-      = select_tag :per_page, options_for_select([['25 per page', '25'], ['50 per page', '50'], ['Show All', '500']], params[:per_page]), onchange: 'set_per_page()', class: "form-control search-control"
+      .col-md-5
+        = will_paginate @search.results, previous_label: "<".html_safe, next_label: ">".html_safe, renderer: BootstrapPagination::Rails
+
+      .col-md-1
+        = select_tag :per_page, options_for_select([['25 per page', '25'], ['50 per page', '50'], ['Show All', '500']], params[:per_page]), onchange: 'set_per_page()', class: "form-control search-control"
 
   .row
     .col-md-4
       %button(type="button" class="btn btn-success" onclick="clearFilters()")
         Clear Filters
-      -if @search && @search.total > 0
+      -if @search && @search.total.positive?
         %button(type="button" class="btn btn-primary" onclick="generateReport()" )
           Generate Report from Search Results
-      -if @search.total < 1
+      -if @search && @search.total < 1
         .indent
           %em no results found
       -else
