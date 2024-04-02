@@ -21,10 +21,7 @@ class DatasetDepositTest < ActionDispatch::IntegrationTest
 
   def create_dataset
     assert_difference "Dataset.count" do
-      post datasets_path, params: { dataset: { title: "Dataset for the measurements of the cosmic microwave background from the South Pole",
-                                               creator_text: nil,
-                                               publisher: "University of Illinois at Urbana-Champaign",
-                                               description: "This dataset contains measurements of the cosmic microwave background from the South Pole. The data was collected using the South Pole Telescope and the BICEP/Keck telescopes. The data was collected by the University of Illinois at Urbana-Champaign.",
+      post datasets_path, params: { dataset: { publisher: "University of Illinois at Urbana-Champaign",
                                                resource_type: "Dataset",
                                                license: "CC01",
                                                depositor_name: "researcher1",
@@ -49,7 +46,7 @@ class DatasetDepositTest < ActionDispatch::IntegrationTest
                                                data_curation_network: false } }
     end
     @dataset = Dataset.order(created_at: :desc).limit(1).first
-    assert_redirected_to show_dataset_path(@dataset)
+    assert_redirected_to edit_dataset_path(@dataset)
 
     # Check the dataset
     # has an id
