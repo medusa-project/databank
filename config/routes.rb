@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   get '/contact', to: 'welcome#contact'
   post '/contact_mail', to: 'welcome#contact_mail'
   resources :contributors
+  draw :creator
   draw :data_curation_network
   draw :datafile
   draw :dataset
