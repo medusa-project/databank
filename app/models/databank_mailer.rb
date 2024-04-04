@@ -9,7 +9,7 @@ class DatabankMailer < ActionMailer::Base
 
   def approve_version(dataset_key:)
     @dataset = Dataset.find_by(key: dataset_key)
-    subject_base = "New Version Request Approved"
+    subject_base = "Illinois Data Bank] New Version Request Approved"
     subject = prepend_system_code(subject_base)
     mail(to: @dataset.depositor_email,
          cc: IDB_CONFIG[:admin][:contact_email],
@@ -18,7 +18,7 @@ class DatabankMailer < ActionMailer::Base
 
   def request_version(dataset_key:)
     @dataset = Dataset.find_by(key: dataset_key)
-    subject_base = "Version Request"
+    subject_base = "Illinois Data Bank] Version Request"
     subject = prepend_system_code(subject_base)
     mail(to:      IDB_CONFIG[:admin][:contact_email],
          subject: subject)
@@ -26,7 +26,7 @@ class DatabankMailer < ActionMailer::Base
 
   def notify_version_copy_complete(dataset_key:)
     @dataset = Dataset.find_by(key: dataset_key)
-    subject_base = "Version Copy Complete"
+    subject_base = "Illinois Data Bank] Version Copy Complete"
     subject = prepend_system_code(subject_base)
     mail(to:      IDB_CONFIG[:admin][:contact_email],
          subject: subject)
@@ -34,7 +34,7 @@ class DatabankMailer < ActionMailer::Base
 
   def acknowledge_request_version(dataset_key:)
     @dataset = Dataset.find_by(key: dataset_key)
-    subject_base = "Version Request Acknowledgement"
+    subject_base = "Illinois Data Bank] Version Request Acknowledgement"
     subject = prepend_system_code(subject_base)
     mail(to:      @dataset.depositor_email,
          cc:      IDB_CONFIG[:admin][:contact_email],

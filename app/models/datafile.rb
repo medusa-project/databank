@@ -342,7 +342,9 @@ class Datafile < ApplicationRecord
   def record_download(request_ip)
     return nil if Robot.exists?(address: request_ip)
 
-    return nil if dataset.publication_state == Databank::PublicationState::DRAFT
+    return nil if Databank::PublicationState::DRAFT_ARRAY.include?(dataset.publication_state)
+
+    return nil if dataset.release_date.nil?
 
     return nil if Date.current < dataset.release_date
 
