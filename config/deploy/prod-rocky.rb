@@ -80,7 +80,6 @@ namespace :deploy do
       execute_rake "databank:rails_cache:clear"
       execute_rake "sunspot:reindex"
       execute_rake "experts:generate_doc"
-      execute_rake "experts:fetch_demo_doc"
     end
   end
 
