@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
-require "net-ldap"
+##
+# Concern to check if a dataset is complete
+# This module is included in the Dataset model.
 
 module Dataset::Complete
   extend ActiveSupport::Concern
 
+  # completion_check is an instance method so it can be used by controller before save
+  # returns a string with error messages if dataset is incomplete
+  # returns "ok" if dataset is complete
   def valid_change2published(new_params:)
     dataset = self
     params = new_params
@@ -36,8 +41,7 @@ module Dataset::Complete
       validation_error_message += ", " if i.positive?
       validation_error_message += m
     end
-    validation_error_message += "."
-    validation_error_message
+     validation_error_message += "."
   end
 
   class_methods do
@@ -70,18 +74,19 @@ module Dataset::Complete
       validation_error_message
     end
 
+    # helper methods for completion_check
+    # these methods are used to check for specific errors
+    # they are called by completion_check
+    # they return an array of error messages
+    # if there are no errors, they return an empty array
+    # if there are errors, they return an array of error messages
+    # the error messages are used to build the validation_error_message
+    # which is returned by completion_check
+
     def creator_email_errors(dataset)
       e_arr = []
       dataset.creators.each do |creator|
         return ["an email address for all creators"] unless creator.email && creator.email != ""
-
-        next unless creator.email.include?("@illinois.edu")
-
-        next unless creator.type_of == Databank::CreatorType::PERSON
-
-        netid = creator.email.split("@").first
-        # check to see if netid is found, to prevent email system errors
-        e_arr << "correct netid in email for #{creator.given_name} #{creator.family_name}" unless valid_netid(netid)
       end
       e_arr
     end
@@ -90,6 +95,8 @@ module Dataset::Complete
       return nil if !dataset.license || dataset.license != "license.txt"
 
       has_file = false
+
+      # check if dataset has a license file any case variation of "license.txt"
       dataset.datafiles&.each do |datafile|
         has_file = true if datafile.bytestream_name&.casecmp("license.txt")&.zero?
       end
@@ -164,46 +171,6 @@ module Dataset::Complete
       end
 
       []
-    end
-
-    def valid_netid(netid)
-
-      true
-
-      # return false unless netid&.respond_to?(:to_str)
-      #
-      # netid = netid.to_str unless netid.class == String
-      #
-      # treebase = "ou=people,dc=ad,dc=uillinois,dc=edu"
-      #
-      # attrs = %w[uiucEduRegistryInactiveDate uiucEduUserEmailAddr]
-      #
-      # filter = "(cn=#{netid})"
-      #
-      # entries = Application.ldap.search(base:       treebase,
-      #                                   filter:     filter,
-      #                                   attributes: attrs)
-      #
-      # return false unless entries.length.positive?
-      #
-      # ldap_hash = to_ldap_hash(entries)
-      #
-      # return false if ldap_hash.has_key?("uiuceduregistryinactivedate")
-      #
-      # return false unless ldap_hash.has_key?("uiuceduuseremailaddr")
-      #
-      # true
-    end
-
-    # expects result of ldap search, an array of entries
-    def to_ldap_hash(entries)
-      ldap_hash = {}
-      entries.each do |entry|
-        entry.each do |attribute, values|
-          ldap_hash[attribute.to_s] = values
-        end
-      end
-      ldap_hash
     end
 
     def has_primary_contact?(creator_params:)

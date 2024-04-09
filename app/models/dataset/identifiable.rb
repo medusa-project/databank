@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+##
+# This module provides methods for interacting with DataCite to reserve, register, and manage identifiers
+# This module is included in the Dataset model
+
 require "uri"
 require "net/http"
 require "base64"

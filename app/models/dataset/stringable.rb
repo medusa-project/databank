@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+##
+# This module supports string generation from dataset objects.
+# It is used to generate plain text citations and structured data for google indexing.
+# It is included in the Dataset model.
+
+
 module Dataset::Stringable
   extend ActiveSupport::Concern
 

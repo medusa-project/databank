@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+##
+# This module provides methods for indexing datasets in Solr.
+# It is included in the Dataset model.
+
 module Dataset::Indexable
   extend ActiveSupport::Concern
 

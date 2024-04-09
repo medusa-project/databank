@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+##
+# This module is responsible for the publication of datasets.
+# It is included in the Dataset model.
+
 module Dataset::Publishable
   extend ActiveSupport::Concern
 

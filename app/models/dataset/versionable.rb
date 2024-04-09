@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+##
+# This module is used to manage the versioning of datasets.
+# It is used in the Dataset model.
+
 module Dataset::Versionable
   extend ActiveSupport::Concern
   attr_accessor :version_group

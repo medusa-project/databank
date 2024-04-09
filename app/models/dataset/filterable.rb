@@ -1,8 +1,30 @@
 # frozen_string_literal: true
 
+##
+# Supports searching and filtering datasets
+# for different user roles
+#
+# This module is included in the Dataset model
+#
+# The filtered_list method is the main entry point
+# for searching and filtering datasets
+#
+# The method takes a user role, a user object, and a params hash
+#
+# The user role is one of the Databank::UserRole constants
+#
+# The user object is the current user
+#
+# The params hash is the search parameters
+#
+# The method returns a list of datasets
+#
+# The method uses the Dataset.search method from the Sunspot gem
+# to search the Solr index
+# This module is included in the Dataset model.
+
 module Dataset::Filterable
   extend ActiveSupport::Concern
-
 
   class_methods do
     def filtered_list(user_role: Databank::UserRole::GUEST, user: nil, params: {})
