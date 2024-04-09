@@ -1,4 +1,8 @@
-- if (@dataset.publication_state != Databank::PublicationState::DRAFT) || (can? :read, @dataset) || @shared_by_link
+- if can? :manage, @dataset
+  = render partial: 'landing'
+- elsif can?(:view_version_acknowledgement, @dataset)
+  = render partial: 'version_acknowledge'
+- elsif @dataset.metadata_public? || (can? :read, @dataset) || @shared_by_link
   = render partial: 'landing'
 - else
   = render partial: 'welcome/welcome'
@@ -6,7 +10,7 @@
     .modal-dialog
       .modal-content
         .modal-header
-          %h4.modal-title(id = "prompt-title")
+          %h4.modal-title#prompt-title
             Log in required to view restricted dataset
         .modal-body.container-fluid
           .row

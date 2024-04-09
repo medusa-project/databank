@@ -1,6 +1,6 @@
 %form(action="/datasets" id="searchForm" accept-charset="UTF-8" method="get" )
   .row
-    .col-md-5
+    .col-md-4
       .input-group.search-control
         -if params.has_key?('q') && params['q'] && params['q'].length > 0
           %input(type="text" class="form-control q" name="q" aria-label="search input box" value="#{params['q']}" )
@@ -11,28 +11,26 @@
             %span(class="glyphicon glyphicon-search" aria-hidden="true" )
           %button(type="button" class="btn btn-danger" onclick="clearSearchTerm()" )
             %span(class="glyphicon glyphicon-remove" aria-hidden="true" )
-    .col-md-5
-      = will_paginate @search.results, previous_label: "<".html_safe, next_label: ">".html_safe, renderer: BootstrapPagination::Rails
+    -if @search && @search.total.positive?
+      .col-md-2
+        - sr = @search.results
+        %span.label.label-default.align-middle
+          = "Displaying #{sr.offset + 1} - #{sr.offset + sr.length} of #{sr.total_entries} in total"
 
-    .col-md-2
-      = select_tag :per_page, options_for_select([['25 per page', '25'], ['50 per page', '50'], ['Show All', '500']], params[:per_page]), onchange: 'set_per_page()', class: "form-control search-control"
+      .col-md-5
+        = will_paginate @search.results, previous_label: "<".html_safe, next_label: ">".html_safe, renderer: BootstrapPagination::Rails
+
+      .col-md-1
+        = select_tag :per_page, options_for_select([['25 per page', '25'], ['50 per page', '50'], ['Show All', '500']], params[:per_page]), onchange: 'set_per_page()', class: "form-control search-control"
 
   .row
-    .col-md-7.col-md-offset-5
-      -# page_entries_info stopped working ~2021-04
-      -#=page_entries_info(@search.results)
-      -sr = @search.results
-      = "Displaying datasets #{sr.offset + 1} - #{sr.offset + sr.length} of #{sr.total_entries} in total"
-
-  .row
-    .col-md-5
-
+    .col-md-4
       %button(type="button" class="btn btn-success" onclick="clearFilters()")
         Clear Filters
-      -if @search && @search.total > 0
+      -if @search && @search.total.positive?
         %button(type="button" class="btn btn-primary" onclick="generateReport()" )
           Generate Report from Search Results
-      -if @search.total < 1
+      -if @search && @search.total < 1
         .indent
           %em no results found
       -else
@@ -68,8 +66,6 @@
                           %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
                           = Dataset.visibility_name_from_code(row.value)
                           ="(#{row.count})"
-
-
         -if current_user && current_user.role == 'admin'
 
           .panel-group
@@ -190,6 +186,7 @@
                         = Dataset.visibility_name_from_code(row.value)
                         ="(#{row.count})"
 
-    .col-md-7
+    .col-md-8
+      %h1 Datasets
       -@search.each_hit_with_result do |hit, dataset|
         = render 'brief_record', dataset:dataset

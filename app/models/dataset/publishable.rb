@@ -16,6 +16,8 @@ module Dataset::Publishable
     false
   end
 
+
+
   def publish(user)
 
     self.destroy_incomplete_uploads
@@ -42,7 +44,7 @@ module Dataset::Publishable
                                Databank::PublicationState::RELEASED
                              end
 
-    if old_publication_state == Databank::PublicationState::DRAFT &&
+    if Databank::PublicationState::DRAFT_ARRAY.include?(old_publication_state) &&
       self.publication_state == Databank::PublicationState::RELEASED && !is_import
       self.release_date = Date.current
     end
@@ -68,6 +70,10 @@ module Dataset::Publishable
       else
         send_publication_notice
       end
+      if self.previous_idb_dataset
+        Sunspot.index [self.previous_idb_dataset]
+        Sunspot.commit
+      end
       {status: "ok", old_publication_state: old_publication_state}
     else
       self.publication_state = old_publication_state
@@ -77,6 +83,18 @@ module Dataset::Publishable
       notification.deliver_now
       error_hash("Error in publishing dataset has been logged for review by the Research Data Service.")
     end
+  end
+
+  def has_review_request?
+    ReviewRequest.exists?(dataset_key: key)
+  end
+
+  def review_requests
+    ReviewRequest.where(dataset_key: key)
+  end
+
+  def destroy_review_requests
+    review_requests.destroy_all
   end
 
   def destroy_incomplete_uploads

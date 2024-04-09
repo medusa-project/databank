@@ -1,6 +1,6 @@
 curator1:
   id: 1
-  email: $LABEL@mailinator.com,
+  email: $LABEL@mailinator.com
   role: admin
   expires_at: <%= Time.zone.now + 1.years %>
   created_at: <%= 6.day.ago.to_fs(:db) %>

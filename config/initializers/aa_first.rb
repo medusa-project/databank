@@ -1,4 +1,4 @@
-# # LICENSE INFO
+Application.server_envs=["production", "demo", "demo-rocky", "prod-rocky"]
 
 class LicenseInfo < Struct.new(:code, :name, :external_info_url, :full_text_url )
 end

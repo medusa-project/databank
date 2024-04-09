@@ -11,23 +11,58 @@ require "openssl"
 
 class Dataset < ApplicationRecord
   include ActiveModel::Serialization
-  include Dataset::Recoverable
-  include Dataset::MessageText
-  include Dataset::Indexable
-  include Dataset::Stringable
   include Dataset::Complete
-  include Dataset::Versionable
-  include Dataset::Publishable
   include Dataset::Exportable
-  include Dataset::Identifiable
+  include Dataset::Filterable
   include Dataset::Globusable
+  include Dataset::Identifiable
+  include Dataset::Indexable
+  include Dataset::MessageText
+  include Dataset::Publishable
+  include Dataset::Recoverable
+  include Dataset::Stringable
+  include Dataset::Versionable
 
   audited except: %i[creator_text key complete is_test is_import updated_at embargo], allow_mass_assignment: true
   has_associated_audits
 
-  attr_accessor :featured_related_materials,
-                :not_featured_related_materials,
+  attr_accessor :materials_related,
+                :materials_cited_by,
                 :num_external_relationships
+
+  MIN_FILES = 1
+  MAX_FILES = 10_000
+
+  validates :dataset_version, presence: true
+
+  has_many :datafiles, dependent: :destroy
+  has_many :version_files, dependent: :destroy
+  has_many :creators, dependent: :destroy
+  has_many :contributors, dependent: :destroy
+  has_many :funders, dependent: :destroy
+  has_many :related_materials, dependent: :destroy
+  has_many :system_files, dependent: :destroy
+  has_many :notes, dependent: :destroy
+  has_one :share_code, dependent: :destroy
+
+  accepts_nested_attributes_for :datafiles, reject_if: :all_blank, allow_destroy: true
+  accepts_nested_attributes_for :creators, reject_if: :invalid_name, allow_destroy: true
+  accepts_nested_attributes_for :contributors, reject_if: :invalid_name, allow_destroy: true
+  accepts_nested_attributes_for :funders, reject_if:     proc {|attributes| attributes["name"].blank? },
+                                          allow_destroy: true
+  accepts_nested_attributes_for :related_materials, reject_if: :invalid_material, allow_destroy: true
+  accepts_nested_attributes_for :version_files, allow_destroy: true
+
+  before_create :set_key
+  after_create :store_agreement
+  after_create :ensure_globus_ingest_dir
+  before_save :set_primary_contact
+  before_destroy :destroy_review_requests
+  before_destroy :remove_system_files
+  before_destroy :destroy_audit
+  before_destroy :remove_globus_ingest_dir
+  before_destroy :remove_from_globus_download
+  before_destroy :remove_related_reference
 
   searchable do
     text :title,
@@ -50,12 +85,13 @@ class Dataset < ApplicationRecord
     string :depositor_email
     string :visibility_code
     string :dataset_version
-    string :internal_view_netids, multiple: true
+    string :view_emails, multiple: true
+    string :draft_viewer_emails, multiple: true
     string :funder_codes, multiple: true
     string :grant_numbers, multiple: true
     string :creator_names, multiple: true
     string :filenames, multiple: true
-    string :internal_editor_netids, multiple: true
+    string :editor_emails, multiple: true
     string :datafile_extensions, multiple: true
     string :hold_state
     string :publication_state
@@ -67,63 +103,97 @@ class Dataset < ApplicationRecord
     time :updated_at
   end
 
-  MIN_FILES = 1
-  MAX_FILES = 10_000
-
-  validates :dataset_version, presence: true
-
-  has_many :datafiles, dependent: :destroy
-  has_many :creators, dependent: :destroy
-  has_many :contributors, dependent: :destroy
-  has_many :funders, dependent: :destroy
-  has_many :related_materials, dependent: :destroy
-  has_many :system_files, dependent: :destroy
-  has_many :notes, dependent: :destroy
-  has_one :share_code, dependent: :destroy
-
-  accepts_nested_attributes_for :datafiles, reject_if: :all_blank, allow_destroy: true
-  accepts_nested_attributes_for :creators, reject_if: :invalid_name, allow_destroy: true
-  accepts_nested_attributes_for :contributors, reject_if: :invalid_name, allow_destroy: true
-  accepts_nested_attributes_for :funders, reject_if:     proc {|attributes| attributes["name"].blank? },
-                                          allow_destroy: true
-  accepts_nested_attributes_for :related_materials, reject_if: :invalid_material, allow_destroy: true
-
-  before_create :set_key
-  after_create :store_agreement
-  after_create :ensure_globus_ingest_dir
-  before_save :set_primary_contact
-  before_destroy :remove_system_files
-  before_destroy :destroy_audit
-  before_destroy :remove_globus_ingest_dir
-  before_destroy :remove_from_globus_download
 
   def to_param
     key
   end
 
-  #   :featured_related_materials,
-  #   :not_featured_related_materials,
-  #   :num_external_relationships
-  def handle_related_material
+  def updated_date
+    return updated_at.to_date.iso8601 if nested_updated_at.nil?
+
+    [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
+  end
+
+  def ok_to_publish?
+    # metadata-only embargo datasets are ok to publish, which removes the embargo
+    return true if (publication_state != Databank::PublicationState::DRAFT) &&
+      (publication_state != Databank::PublicationState::Embargo::METADATA) &&
+      (embargo == Databank::PublicationState::Embargo::METADATA)
+
+    # draft datasets are ok to publish
+    return true if publication_state == Databank::PublicationState::DRAFT
+
+    # file-embargoed datasets are ok to publish, which removes the embargo
+    return true if publication_state == Databank::PublicationState::Embargo::METADATA &&
+      embargo != Databank::PublicationState::Embargo::METADATA
+
+    false
+  end
+
+  def handle_related_materials
     self.num_external_relationships = 0
-    if related_materials.count.zero?
-      self.featured_related_materials = self.not_featured_related_materials = []
-    else
-      self.featured_related_materials = self.related_materials.where(feature: true)
-      external_related_materials_set = Set.new
-      not_featured_materials_set = Set.new
+    self.materials_related = self.materials_cited_by = []
+    tmp_related = Set.new
+    tmp_cited = Set.new
+    tmp_external = Set.new
+    if related_materials.count.positive?
       related_materials.each do |material|
         datacite_arr = []
         datacite_arr = material.datacite_list.split(",") if material.datacite_list && material.datacite_list != ""
         datacite_arr.each do |relationship|
-          if %w[IsPreviousVersionOf IsNewVersionOf].exclude?(relationship)
-            self.num_external_relationships += 1
-            not_featured_materials_set.add(material) unless material.feature == true
+          if [Databank::Relationship::NEW_VERSION_OF, Databank::Relationship::PREVIOUS_VERSION_OF].exclude?(relationship)
+            tmp_external.add(material)
           end
+          if [Databank::Relationship::SUPPLEMENT_TO, Databank::Relationship::SUPPLEMENTED_BY].include?(relationship)
+            tmp_related.add(material)
+          end
+          tmp_cited.add(material) if relationship == Databank::Relationship::CITED_BY
         end
-        self.not_featured_related_materials = not_featured_materials_set.to_a
       end
     end
+    self.materials_related = tmp_related.to_a
+    self.materials_cited_by = tmp_cited.to_a
+    self.num_external_relationships = tmp_external.count
+  end
+
+  def add_version_metadata_copy(previous:)
+    return true if title == previous.title
+
+    previous_version_number = previous.dataset_version.to_i
+    version_number = previous_version_number + 1
+    identifier_base = previous.identifier.chop
+    self.title = previous.title
+    self.creator_text = previous.creator_text
+    self.identifier = "#{identifier_base}#{version_number}"
+    self.publisher = previous.publisher
+    self.description = previous.description
+    self.license = previous.license
+    self.corresponding_creator_name = "researcher1"
+    self.corresponding_creator_email = "researcher1@mailinator.com"
+    self.keywords = previous.keywords
+    self.publication_state = Databank::PublicationState::TempSuppress::VERSION
+    self.curator_hold = true
+    self.release_date = nil
+    self.embargo = Databank::PublicationState::Embargo::NONE
+    self.is_test = previous.is_test
+    self.is_import = false
+    self.tombstone_date = nil
+    self.hold_state = Databank::PublicationState::TempSuppress::VERSION
+    self.medusa_dataset_dir = nil
+    self.dataset_version =  version_number.to_s
+    self.suppress_changelog = false
+    self.subject = previous.subject
+    self.org_creators = previous.org_creators
+    self.data_curation_network = false
+    save
+  end
+
+  def nonversion_related_materials
+    relationship_arr = []
+    related_materials.each do |material|
+      relationship_arr << material if material.nonversion_relationships.count.positive?
+    end
+    relationship_arr
   end
 
   def sharing_link
@@ -168,9 +238,16 @@ class Dataset < ApplicationRecord
              Databank::PublicationState::PermSuppress::FILE].include?(hold_state))
   end
 
+  def draft?
+    publication_state == Databank::PublicationState::DRAFT
+  end
   def files_public?
     (publication_state == Databank::PublicationState::RELEASED) &&
       ((hold_state.nil? || (hold_state == Databank::PublicationState::TempSuppress::NONE)))
+  end
+
+  def embargoed_with_valid_date?
+    Databank::PublicationState::EMBARGO_ARRAY.include?(embargo) && release_date && release_date > Time.current
   end
 
   def self.all_with_public_metadata
@@ -189,8 +266,14 @@ class Dataset < ApplicationRecord
 
     return true if release_date <= Time.current
 
-    self.publication_state = self.embargo
-    self.save!
+    self.publication_state = embargo
+    save!
+  end
+
+  def ensure_creator_editors
+    return true unless creators.count.positive?
+
+    creators.each(&:add_editor)
   end
 
   def publication_year
@@ -326,12 +409,12 @@ class Dataset < ApplicationRecord
   end
 
   def sorted_valid_datafiles
-    basic_sorted = valid_datafiles.sort_by(&:bytestream_name)
+    basic_sorted = valid_datafiles.sort_by(&:binary_name)
     basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
   end
 
   def sorted_datafiles
-    basic_sorted = datafiles.sort_by(&:bytestream_name)
+    basic_sorted = datafiles.sort_by(&:binary_name)
     basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
   end
 
@@ -341,14 +424,14 @@ class Dataset < ApplicationRecord
     unsorted = datafiles.select(&:upload_complete?)
     return [] if unsorted.count.zero?
 
-    basic_sorted = unsorted.sort_by(&:bytestream_name)
+    basic_sorted = unsorted.sort_by(&:binary_name)
     basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
   end
 
   def incomplete_datafiles
     return [] if datafiles.count.zero?
 
-    datafiles.reject(&:upload_complete?).sort_by(&:bytestream_name)
+    datafiles.reject(&:upload_complete?).sort_by(&:binary_name)
   end
 
   def medusa_ingests
@@ -381,6 +464,11 @@ class Dataset < ApplicationRecord
 
   def medusa_agreement_key
     "#{dirname}/system/deposit_agreement.txt"
+  end
+
+  def send_approve_version
+    notification = DatabankMailer.approve_version(dataset_key: self.key)
+    notification.deliver_now
   end
 
   def send_incomplete_1m
@@ -503,10 +591,18 @@ class Dataset < ApplicationRecord
     ReviewRequest.where(dataset_key: self.key)
   end
 
-  def in_pre_publication_review
-    publication_state == Databank::PublicationState::DRAFT &&
-        ((identifier && identifier != "") ||
-            review_requests.count.positive?)
+  def in_pre_publication_review?
+    Databank::PublicationState::DRAFT_ARRAY.include?(publication_state) && has_review_request?
+  end
+
+  def show_publish_only?
+    return false unless in_pre_publication_review?
+
+    return false unless [Databank::PublicationState::TempSuppress::NONE, nil].include?(hold_state)
+
+    return false unless Dataset.completion_check(self) == "ok"
+
+    true
   end
 
   def error_hash(message)

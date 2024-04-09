@@ -51,7 +51,16 @@ class DatasetsController < ApplicationController
                                      :suppress_changelog,
                                      :unsuppress,
                                      :permanently_suppress_files,
-                                     :permanently_suppress_metadata
+                                     :permanently_suppress_metadata,
+                                     :version_request,
+                                     :version_confirm,
+                                     :version_acknowledge,
+                                     :version_controls,
+                                     :copy_version_files,
+                                     :unsuppress_review,
+                                     :suppress_review,
+                                     :version_to_draft,
+                                     :draft_to_version
   ]
 
   @@num_box_ingest_deamons = 10
@@ -61,6 +70,17 @@ class DatasetsController < ApplicationController
 
   # enable zipline
   include Zipline
+  def cancel_version
+    @dataset = Dataset.find_by(key: params[:id])
+    authorize! :edit, @dataset
+    @previous = @dataset.previous_idb_dataset
+    render "edit" and return if @previous.nil?
+
+    relationship_from_previous_dataset = @previous.related_materials.find_by(datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF)
+    relationship_from_previous_dataset&.destroy!
+    @dataset.destroy!
+    redirect_to dataset_path(@previous.key)
+  end
 
   def share
     @dataset.create_share_code(id: @dataset.id) unless @dataset.current_share_code
@@ -80,6 +100,30 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
+  def copy_version_files
+    if @dataset.update(dataset_params)
+      files_to_copy = @dataset.version_files.where(selected: true, initiated: false)
+      unless files_to_copy.count.positive?
+        respond_to do |format|
+          format.html { render :edit, alert: "No files selected for copy." }
+          format.json { render json: {error: "No files selected for copy."}, status: :unprocessable_entity }
+        end
+        return
+      end
+      @dataset.mark_version_files_initiated(files_to_copy: files_to_copy)
+      @dataset.copy_version_files
+      respond_to do |format|
+        format.html { render :copy_version_files, notice: "File copy process initiated." }
+        format.json { render json: {notice: "File copy process initiated"}, status: :ok }
+      end
+    else
+      respond_to do |format|
+        format.html { render :edit, alert: "Error attempting to copy files." }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   def import_from_globus
     @dataset.import_from_globus
     render json: {}, status: :ok
@@ -90,565 +134,17 @@ collaborators to access the data files while the dataset is not public.</li>
   # GET /datasets
   # GET /datasets.json
   def index
-    @datasets = Dataset.where(publication_state: [Databank::PublicationState::RELEASED, Databank::PublicationState::Embargo::FILE, Databank::PublicationState::TempSuppress::FILE, Databank::PublicationState::PermSuppress::FILE]).where(is_test: false) # used for json response
-
-    @my_datasets_count = 0
-
-    @search = nil
-    search_get_facets = nil
-
-    per_page = if params.has_key?(:per_page)
-                 params[:per_page].to_i
-               else
-                 25
-               end
-
-    if current_user&.role
-
-      case current_user.role
-      when "admin"
-
-        search_get_facets = Dataset.search do
-          without(:depositor, "error")
-          with(:is_most_recent_version, true)
-          keywords(params[:q])
-          facet(:license_code)
-          facet(:funder_codes)
-          facet(:depositor)
-          facet(:subject_text)
-          facet(:visibility_code)
-          facet(:hold_state)
-          facet(:datafile_extensions)
-          facet(:publication_year)
-        end
-
-        @search = Dataset.search do
-          without(:depositor, "error")
-
-          if params.has_key?("license_codes")
-            any_of do
-              params["license_codes"].each do |license_code|
-                with :license_code, license_code
-              end
-            end
-          end
-
-          if params.has_key?("subjects")
-            any_of do
-              params["subjects"].each do |subject|
-                with :subject_text, subject
-              end
-            end
-          end
-
-          if params.has_key?("depositors")
-            any_of do
-              params["depositors"].each do |depositor_netid|
-                with :depositor_netid, depositor_netid
-              end
-            end
-          end
-
-          if params.has_key?("funder_codes")
-            any_of do
-              params["funder_codes"].each do |funder_code|
-                with :funder_codes, funder_code
-              end
-            end
-          end
-
-          if params.has_key?("visibility_codes")
-            any_of do
-              params["visibility_codes"].each do |visibility_code|
-                with :visibility_code, visibility_code
-              end
-            end
-          end
-
-          if params.has_key?("publication_years")
-            any_of do
-              params["publication_years"].each do |publication_year|
-                with :publication_year, publication_year
-              end
-            end
-          end
-
-          keywords(params[:q])
-
-          if params.has_key?("sort_by")
-            case params["sort_by"]
-            when "sort_updated_asc"
-              order_by :updated_at, :asc
-            when "sort_released_asc"
-              order_by :release_datetime, :asc
-            when "sort_released_desc"
-              order_by :release_datetime, :desc
-            when "sort_ingested_asc"
-              order_by :ingest_datetime, :asc
-            when "sort_ingested_desc"
-              order_by :ingest_datetime, :desc
-            else
-              order_by :updated_at, :desc
-            end
-          else
-            order_by :updated_at, :desc
-          end
-
-          facet(:license_code)
-          facet(:funder_codes)
-          facet(:depositor)
-          facet(:subject_text)
-          facet(:visibility_code)
-          facet(:hold_state)
-          facet(:datafile_extensions)
-          facet(:publication_year)
-
-          paginate(page: params[:page] || 1, per_page: per_page)
-        end
-
-        # this makes a row for each category, even if the current search does not have any results in a category
-        # these facets are only for admins
-
-        search_get_facets.facet(:visibility_code).rows.each do |outer_row|
-          has_this_row = false
-          @search.facet(:visibility_code).rows.each do |inner_row|
-            has_this_row = true if inner_row.value == outer_row.value
-          end
-          @search.facet(:visibility_code).rows << Placeholder_FacetRow.new(outer_row.value, 0) unless has_this_row
-        end
-
-        search_get_facets.facet(:depositor).rows.each do |outer_row|
-          has_this_row = false
-
-          @search.facet(:depositor).rows.each do |inner_row|
-            has_this_row = true if inner_row.value == outer_row.value
-          end
-          @search.facet(:depositor).rows << Placeholder_FacetRow.new(outer_row.value, 0) unless has_this_row
-        end
-
-      when "depositor"
-
-        current_netid = current_user.email.split("@").first
-
-        search_get_my_facets = Dataset.search do
-          all_of do
-            without(:depositor, "error")
-            any_of do
-              with :depositor_email, current_user.email
-              with :internal_view_netids, current_netid
-              with :internal_editor_netids, current_netid
-            end
-            with(:is_most_recent_version, true)
-            with :is_test, false
-            any_of do
-              with :publication_state, Databank::PublicationState::DRAFT
-              with :publication_state, Databank::PublicationState::RELEASED
-              with :publication_state, Databank::PublicationState::Embargo::FILE
-              with :publication_state, Databank::PublicationState::TempSuppress::FILE
-              with :publication_state, Databank::PublicationState::TempSuppress::METADATA
-              with :publication_state, Databank::PublicationState::PermSuppress::FILE
-            end
-          end
-          keywords(params[:q])
-          facet(:visibility_code)
-        end
-
-        search_get_facets = Dataset.search do
-          all_of do
-            without(:depositor, "error")
-            with(:is_test, false)
-            any_of do
-              with :depositor_email, current_user.email
-              with :internal_view_netids, current_netid
-              with :internal_editor_netids, current_netid
-              with :publication_state, Databank::PublicationState::RELEASED
-              with :publication_state, Databank::PublicationState::Embargo::FILE
-              with :publication_state, Databank::PublicationState::TempSuppress::FILE
-              with :publication_state, Databank::PublicationState::PermSuppress::FILE
-              all_of do
-                with :depositor_email, current_user.email
-                with :publication_state, Databank::PublicationState::TempSuppress::METADATA
-              end
-            end
-          end
-
-          keywords(params[:q])
-          facet(:license_code)
-          facet(:funder_codes)
-          facet(:creator_names)
-          facet(:subject_text)
-          facet(:depositor)
-          facet(:visibility_code)
-          facet(:hold_state)
-          facet(:datafile_extensions)
-          facet(:publication_year)
-        end
-
-        @search = Dataset.search do
-          all_of do
-            without(:depositor, "error")
-            with :is_test, false
-            any_of do
-              with :depositor_email, current_user.email
-              with :internal_view_netids, current_netid
-              with :internal_editor_netids, current_netid
-              with :publication_state, Databank::PublicationState::RELEASED
-              with :publication_state, Databank::PublicationState::Embargo::FILE
-              with :publication_state, Databank::PublicationState::TempSuppress::FILE
-              with :publication_state, Databank::PublicationState::PermSuppress::FILE
-            end
-
-            if params.has_key?("depositors")
-              any_of do
-                params["depositors"].each do |depositor_netid|
-                  with :depositor_netid, depositor_netid
-                end
-              end
-            end
-
-            if params.has_key?("editor")
-              any_of do
-                with :internal_editor_netids, params["editor"]
-                with :depositor_netid, params["editor"]
-              end
-            end
-
-            if params.has_key?("subjects")
-              any_of do
-                params["subjects"].each do |subject|
-                  with :subject_text, subject
-                end
-              end
-            end
-
-            if params.has_key?("license_codes")
-              any_of do
-                params["license_codes"].each do |license_code|
-                  with :license_code, license_code
-                end
-              end
-            end
-
-            if params.has_key?("funder_codes")
-              any_of do
-                params["funder_codes"].each do |funder_code|
-                  with :funder_codes, funder_code
-                end
-              end
-            end
-
-            if params.has_key?("visibility_codes")
-              any_of do
-                params["visibility_codes"].each do |visibility_code|
-                  with :visibility_code, visibility_code
-                end
-              end
-            end
-
-            if params.has_key?("publication_years")
-              any_of do
-                params["publication_years"].each do |publication_year|
-                  with :publication_year, publication_year
-                end
-              end
-            end
-          end
-
-          keywords(params[:q])
-          if params.has_key?("sort_by")
-            case params["sort_by"]
-            when "sort_updated_asc"
-              order_by :updated_at, :asc
-            when "sort_released_asc"
-              order_by :release_datetime, :asc
-            when "sort_released_desc"
-              order_by :release_datetime, :desc
-            when "sort_ingested_asc"
-              order_by :ingest_datetime, :asc
-            when "sort_ingested_desc"
-              order_by :ingest_datetime, :desc
-            else
-              order_by :updated_at, :desc
-            end
-          else
-            order_by :updated_at, :desc
-          end
-          facet(:license_code)
-          facet(:funder_codes)
-          facet(:subject_text)
-          facet(:depositor)
-          facet(:visibility_code)
-          facet(:hold_state)
-          facet(:datafile_extensions)
-          facet(:publication_year)
-
-          paginate(page: params[:page] || 1, per_page: per_page)
-        end
-
-        # this gets all categories for facets, even if current results do not have any instances
-
-        search_get_my_facets.facet(:visibility_code).rows.each do |outer_row|
-          has_this_row = false
-          @search.facet(:visibility_code).rows.each do |inner_row|
-            has_this_row = true if inner_row.value == outer_row.value
-          end
-          @search.facet(:visibility_code).rows << Placeholder_FacetRow.new(outer_row.value, 0) unless has_this_row
-        end
-      else
-
-        search_get_facets = Dataset.search do
-          all_of do
-            without(:depositor, "error")
-            with(:is_most_recent_version, true)
-            with :is_test, false
-            without :hold_state, Databank::PublicationState::TempSuppress::METADATA
-            any_of do
-              with :publication_state, Databank::PublicationState::RELEASED
-              with :publication_state, Databank::PublicationState::Embargo::FILE
-              with :publication_state, Databank::PublicationState::TempSuppress::FILE
-              with :publication_state, Databank::PublicationState::PermSuppress::FILE
-            end
-          end
-
-          keywords(params[:q])
-          facet(:license_code)
-          facet(:funder_codes)
-          facet(:creator_names)
-          facet(:subject_text)
-          facet(:depositor)
-          facet(:visibility_code)
-          facet(:hold_state)
-          facet(:datafile_extensions)
-          facet(:publication_year)
-        end
-
-        @search = Dataset.search do
-          all_of do
-            without(:depositor, "error")
-            with(:is_test, false)
-            any_of do
-              with :publication_state, Databank::PublicationState::RELEASED
-              with :publication_state, Databank::PublicationState::Embargo::FILE
-              with :publication_state, Databank::PublicationState::TempSuppress::FILE
-            end
-
-            if params.has_key?("depositors")
-              any_of do
-                params["depositors"].each do |depositor|
-                  with :depositor, depositor
-                end
-              end
-            end
-
-            if params.has_key?("subjects")
-              any_of do
-                params["subjects"].each do |subject|
-                  with :subject_text, subject
-                end
-              end
-            end
-
-            if params.has_key?("publication_years")
-              any_of do
-                params["publication_years"].each do |publication_year|
-                  with :publication_year, publication_year
-                end
-              end
-            end
-
-            if params.has_key?("license_codes")
-              any_of do
-                params["license_codes"].each do |license_code|
-                  with :license_code, license_code
-                end
-              end
-            end
-
-            if params.has_key?("funder_codes")
-              any_of do
-                params["funder_codes"].each do |funder_code|
-                  with :funder_codes, funder_code
-                end
-              end
-            end
-          end
-
-          keywords(params[:q])
-          if params.has_key?("sort_by")
-            case params["sort_by"]
-            when "sort_updated_asc"
-              order_by :updated_at, :asc
-            when "sort_released_asc"
-              order_by :release_datetime, :asc
-            when "sort_released_desc"
-              order_by :release_datetime, :desc
-            when "sort_ingested_asc"
-              order_by :ingest_datetime, :asc
-            when "sort_ingested_desc"
-              order_by :ingest_datetime, :desc
-            else
-              order_by :updated_at, :desc
-            end
-          else
-            order_by :updated_at, :desc
-          end
-          facet(:license_code)
-          facet(:funder_codes)
-          facet(:creator_names)
-          facet(:subject_text)
-          facet(:depositor)
-          facet(:visibility_code)
-          facet(:hold_state)
-          facet(:datafile_extensions)
-          facet(:publication_year)
-
-          paginate(page: params[:page] || 1, per_page: per_page)
-        end
-      end
-
+    if current_user
+      user_role = current_user.role
+      user = User::Shibboleth.find_by(email: current_user&.email)
+      user ||= User::Identity.find_by(email: current_user&.email)
     else
-
-      search_get_facets = Dataset.search do
-        all_of do
-          without(:depositor, "error")
-          with(:is_most_recent_version, true)
-          with :is_test, false
-          without :hold_state, Databank::PublicationState::TempSuppress::METADATA
-          any_of do
-            with :publication_state, Databank::PublicationState::RELEASED
-            with :publication_state, Databank::PublicationState::Embargo::FILE
-            with :publication_state, Databank::PublicationState::TempSuppress::FILE
-          end
-        end
-
-        keywords(params[:q])
-        facet(:license_code)
-        facet(:funder_codes)
-        facet(:subject_text)
-        facet(:creator_names)
-        facet(:depositor)
-        facet(:visibility_code)
-        facet(:hold_state)
-        facet(:datafile_extensions)
-        facet(:publication_year)
-      end
-
-      @search = Dataset.search do
-        all_of do
-          without(:depositor, "error")
-          with(:is_most_recent_version, true)
-          with :is_test, false
-          without :hold_state, Databank::PublicationState::TempSuppress::METADATA
-          any_of do
-            with :publication_state, Databank::PublicationState::RELEASED
-            with :publication_state, Databank::PublicationState::Embargo::FILE
-            with :publication_state, Databank::PublicationState::TempSuppress::FILE
-          end
-
-          if params.has_key?("license_codes")
-            any_of do
-              params["license_codes"].each do |license_code|
-                with :license_code, license_code
-              end
-            end
-          end
-
-          if params.has_key?("publication_years")
-            any_of do
-              params["publication_years"].each do |publication_year|
-                with :publication_year, publication_year
-              end
-            end
-          end
-
-          if params.has_key?("subjects") && !params["subjects"].nil?
-            any_of do
-              params["subjects"].each do |subject|
-                with :subject_text, subject
-              end
-            end
-          end
-
-          if params.has_key?("funder_codes")
-            any_of do
-              params["funder_codes"].each do |funder_code|
-                with :funder_codes, funder_code
-              end
-            end
-          end
-        end
-
-        keywords(params[:q])
-        if params.has_key?("sort_by")
-          case params["sort_by"]
-          when "sort_updated_asc"
-            order_by :updated_at, :asc
-          when "sort_released_asc"
-            order_by :release_datetime, :asc
-          when "sort_released_desc"
-            order_by :release_datetime, :desc
-          when "sort_ingested_asc"
-            order_by :ingest_datetime, :asc
-          when "sort_ingested_desc"
-            order_by :ingest_datetime, :desc
-          else
-            order_by :updated_at, :desc
-          end
-        else
-          order_by :updated_at, :desc
-        end
-        facet(:license_code)
-        facet(:funder_codes)
-        facet(:creator_names)
-        facet(:subject_text)
-        facet(:depositor)
-        facet(:visibility_code)
-        facet(:hold_state)
-        facet(:datafile_extensions)
-        facet(:publication_year)
-
-        paginate(page: params[:page] || 1, per_page: per_page)
-      end
-
+      user_role = Databank::UserRole::GUEST
+      user = nil
     end
-
-    # this makes a row for each category, even if the current search does not have any results in a category
-    # these facets are in all searchers
-
-    search_get_facets.facet(:subject_text).rows.each do |outer_row|
-      has_this_row = false
-      @search.facet(:subject_text).rows.each do |inner_row|
-        has_this_row = true if inner_row.value == outer_row.value
-      end
-      @search.facet(:subject_text).rows << Placeholder_FacetRow.new(outer_row.value, 0) unless has_this_row
-    end
-
-    search_get_facets.facet(:publication_year).rows.each do |outer_row|
-      has_this_row = false
-      @search.facet(:publication_year).rows.each do |inner_row|
-        has_this_row = true if inner_row.value == outer_row.value
-      end
-      @search.facet(:publication_year).rows << Placeholder_FacetRow.new(outer_row.value, 0) unless has_this_row
-    end
-
-    search_get_facets.facet(:license_code).rows.each do |outer_row|
-      has_this_row = false
-      @search.facet(:license_code).rows.each do |inner_row|
-        has_this_row = true if inner_row.value == outer_row.value
-      end
-      @search.facet(:license_code).rows << Placeholder_FacetRow.new(outer_row.value, 0) unless has_this_row
-    end
-
-    search_get_facets.facet(:funder_codes).rows.each do |outer_row|
-      has_this_row = false
-      @search.facet(:funder_codes).rows.each do |inner_row|
-        has_this_row = true if inner_row.value == outer_row.value
-      end
-      @search.facet(:funder_codes).rows << Placeholder_FacetRow.new(outer_row.value, 0) unless has_this_row
-    end
-
+    @datasets = Dataset.select(&:metadata_public?) # used for public json response
+    @search = Dataset.filtered_list(user_role: user_role, user: user, params: params)
     @report = Dataset.citation_report(@search, request.original_url, current_user)
-
     send_data @report, filename: "report.txt" if params.has_key?("download") && params["download"] == "now"
   end
 
@@ -661,13 +157,13 @@ collaborators to access the data files while the dataset is not public.</li>
                             end
     @completion_check = Dataset.completion_check(@dataset)
     @dataset.ensure_embargo
+    @dataset.ensure_version_group
     set_file_mode
-    @dataset.handle_related_material
+    @dataset.handle_related_materials
   end
 
   def suppression_action
     authorize! :manage, @dataset
-
     redirect_to action: params[:suppression_action]
   end
 
@@ -678,6 +174,12 @@ collaborators to access the data files while the dataset is not public.</li>
   def suppression_controls
     authorize! :manage, @dataset
   end
+
+  def version_controls
+    authorize! :manage, @dataset
+    @previous = @dataset.previous_idb_dataset
+  end
+
 
   def review_requests
     authorize! :manage, @dataset
@@ -699,9 +201,9 @@ collaborators to access the data files while the dataset is not public.</li>
     else
       @dataset.update_attribute(:data_curation_network, false)
     end
-    reviewer_netids = params[:internal_reviewer] || []
-    editor_netids = params[:internal_editor] || []
-    UserAbility.update_internal_permissions(@dataset.key, reviewer_netids, editor_netids)
+    reviewer_emails = params[:reviewer_emails] || []
+    editor_emails = params[:editor_emails] || []
+    UserAbility.update_permissions(@dataset.key, reviewer_emails, editor_emails)
 
     respond_to do |format|
       if @dataset.save
@@ -803,6 +305,7 @@ collaborators to access the data files while the dataset is not public.</li>
     authorize! :create, Dataset
     @dataset = Dataset.new
     @dataset.publication_state = Databank::PublicationState::DRAFT
+    @previous_key = params["previous"] if params.has_key?("context") && params["context"] == "version"
     @dataset.creators.build
     @dataset.funders.build
     @dataset.related_materials.build
@@ -822,7 +325,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @completion_check = Dataset.completion_check(@dataset)
     @dataset.org_creators = @dataset.org_creators || false
     # set_license(@dataset)
-    @publish_modal_msg = Dataset.publish_modal_msg(@dataset)
+    @publish_modal_msg = Dataset.publish_modal_msg(dataset: @dataset)
     @dataset.embargo ||= Databank::PublicationState::Embargo::NONE
 
     @token = @dataset.current_token
@@ -856,14 +359,45 @@ collaborators to access the data files while the dataset is not public.</li>
   # POST /datasets
   # POST /datasets.json
   def create
+    #Rails.logger.warn params.to_yaml
     authorize! :create, Dataset
     @dataset = Dataset.new(dataset_params)
     respond_to do |format|
       if @dataset.save
+        if params[:dataset].has_key?(:previous_key) && params[:dataset][:previous_key].present?
+          redirect_to action: :version_request, previous_key: params[:dataset][:previous_key], id: @dataset.key
+          return
+        end
+
         format.html { redirect_to edit_dataset_path(@dataset.key) }
         format.json { render :edit, status: :created, location: edit_dataset_path(@dataset.key) }
       else
         format.html { render :new }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def version_request
+    authorize! :update, @dataset
+    @previous = Dataset.find_by(key: params[:previous_key])
+    raise ActiveRecord::RecordNotFound unless @previous
+
+    @dataset.add_version_metadata_copy(previous: @previous)
+    @dataset.add_version_nested_objects(previous: @previous)
+    @dataset.add_version_relationships(previous: @previous)
+    @dataset.add_version_files(previous: @previous)
+  end
+
+  def version_confirm
+    authorize! :update, @dataset
+    respond_to do |format|
+      if @dataset.update(dataset_params)
+        @dataset.send_version_request_emails
+        format.html {redirect_to dataset_path(@dataset.key), notice: "version requested"}
+        format.json {render :show, status: :ok, location: dataset_path(@dataset.key)}
+      else
+        format.html { redirect_to dataset_path(@dataset.previous_key), notice: "error attempting to create version" }
         format.json { render json: @dataset.errors, status: :unprocessable_entity }
       end
     end
@@ -917,8 +451,8 @@ collaborators to access the data files while the dataset is not public.</li>
             end
             @dataset.save
             # send_dataset_to_medusa only sends metadata files unless old_publication_state is draft
-            MedusaIngest.send_dataset_to_medusa(@dataset)
-            if @dataset.is_test? || @dataset.update_doi
+            MedusaIngest.send_dataset_to_medusa(@dataset) if Application.server_envs.include?(Rails.env)
+            if @dataset.is_test? || Rails.env.test? || Rails.env.development? || @dataset.update_doi
               format.html { redirect_to dataset_path(@dataset.key) }
               format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
             else
@@ -978,38 +512,18 @@ collaborators to access the data files while the dataset is not public.</li>
     set_file_mode
   end
 
-  # permit(:medusa_dataset_dir, :title, :identifier, :publisher, :license, :key, :description, :keywords, :depositor_email, :depositor_name, :corresponding_creator_name, :corresponding_creator_email, :embargo, :complete, :search, :dataset_version, :release_date, :is_test, :is_import, :audit_id, :removed_private, :have_permission, :internal_reviewer, :agree, :web_ids, :org_creators, :version_comment, :subject,
-  #        datafiles_attributes:         [:datafile, :description, :attachment, :dataset_id, :id, :_destroy, :_update, :audit_id],
-  #        creators_attributes:          [:dataset_id, :family_name, :given_name, :institution_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
-  #        contributors_attributes:      [:dataset_id, :family_name, :given_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
-  #        funders_attributes:           [:dataset_id, :code, :name, :identifier, :identifier_scheme, :grant, :id, :_destroy, :_update, :audit_id],
-  #        related_materials_attributes: [:material_type, :selected_type, :availability, :link, :uri, :uri_type, :citation, :datacite_list, :dataset_id, :_destroy, :id, :_update, :audit_id])
+  def pre_version
+    @previous = Dataset.find_by(key: params[:id])
+    @previous ||= Dataset.find(params[:dataset_id])
+    raise ActiveRecord::RecordNotFound unless @previous
 
-  # def pre_version
-  #   d = Dataset.find_by(key: params[:id])
-  #   d ||= Dataset.find(params[:dataset_id])
-  #   raise ActiveRecord::RecordNotFound unless d
-  #
-  #   new_version_number_string = (d.dataset_version.to_i + 1).to_s
-  #
-  #   @dataset = Dataset.new(title: d.title,
-  #                          identifier: "#{d.identifier.chomp}#{new_version_number_string}",
-  #                          license: d.license,
-  #                          description: d.description,
-  #                          keywords: d.keywords,
-  #                          dataset_version: new_version_number_string,
-  #                          is_test: d.is_test,
-  #                          is_import: false,
-  #                          internal_reviewer: d.internal_reviewer,
-  #                          org_creators: d.org_creators,
-  #                          subject: d.subject)
-  #
-  #   set_file_mode
-  # end
+    @dataset = Dataset.new
+    set_file_mode
+  end
 
   def remove_sharing_link
     respond_to do |format|
-      if @dataset.share_code && @dataset.share_code.destroy!
+      if @dataset.share_code&.destroy!
         format.html { redirect_to dataset_path(@dataset.key), notice: "Private Sharing Link has been removed." }
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
@@ -1138,6 +652,69 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
+  def suppress_review
+    @dataset.hold_state = Databank::PublicationState::TempSuppress::VERSION
+    respond_to do |format|
+      if @dataset.save
+        format.html {
+          redirect_to dataset_path(@dataset.key), notice: %(Dataset version candidate under curator review.)
+        }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def unsuppress_review
+    @dataset.hold_state = Databank::PublicationState::TempSuppress::NONE
+    respond_to do |format|
+      if @dataset.save
+        @dataset.send_approve_version
+        format.html {
+          redirect_to dataset_path(@dataset.key), notice: %(Dataset released for pre-publication review.)
+        }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def version_to_draft
+    @dataset.publication_state = Databank::PublicationState::DRAFT
+    @dataset.hold_state = Databank::PublicationState::TempSuppress::NONE
+    respond_to do |format|
+      if @dataset.save
+        @dataset.send_approve_version
+        format.html {
+          redirect_to dataset_path(@dataset.key), notice: %(Dataset designated as standard draft.)
+        }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def draft_to_version
+    @dataset.publication_state = Databank::PublicationState::TempSuppress::VERSION
+    respond_to do |format|
+      if @dataset.save
+        format.html {
+          redirect_to dataset_path(@dataset.key), notice: %(Dataset designated as standard draft.)
+        }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   def permanently_suppress_metadata
     authorize! :manage, @dataset
     @dataset.hold_state = Databank::PublicationState::PermSuppress::METADATA
@@ -1179,20 +756,15 @@ collaborators to access the data files while the dataset is not public.</li>
     params["help-topic"] = "Dataset Consultation"
     params["help-dataset"] = "#{request.base_url}#{dataset_path(@dataset.key)}"
     params["help-message"] = "Pre-deposit review request"
-
     shoulder = if @dataset.is_test?
                  IDB_CONFIG[:test_datacite_shoulder]
                else
                  IDB_CONFIG[:datacite][:shoulder]
                end
-
     @dataset.identifier = "#{shoulder}#{@dataset.key}_V1" if !@dataset.identifier || @dataset.identifier == ""
-
     ReviewRequest.create(dataset_key: @dataset.key, requested_at: Time.zone.now)
-
     help_request = DatabankMailer.contact_help(params)
     help_request.deliver_now
-
     respond_to do |format|
       if @dataset.save
         format.html { render :confirm_review }
@@ -1357,7 +929,7 @@ collaborators to access the data files while the dataset is not public.</li>
       proposed_dataset.embargo = new_embargo_state
       proposed_dataset.release_date = params["release_date"] || @dataset.release_date
     end
-    render json: {status: :ok, message: Dataset.publish_modal_msg(proposed_dataset)}
+    render json: {status: :ok, message: Dataset.publish_modal_msg(dataset: proposed_dataset)}
   end
 
   def download_endNote_XML
@@ -1521,6 +1093,7 @@ collaborators to access the data files while the dataset is not public.</li>
                                     creators_attributes:          [:dataset_id, :family_name, :given_name, :institution_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
                                     contributors_attributes:      [:dataset_id, :family_name, :given_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
                                     funders_attributes:           [:dataset_id, :code, :name, :identifier, :identifier_scheme, :grant, :id, :_destroy, :_update, :audit_id],
-                                    related_materials_attributes: [:material_type, :selected_type, :availability, :link, :uri, :uri_type, :citation, :datacite_list, :dataset_id, :_destroy, :id, :_update, :audit_id, :feature, :note])
+                                    related_materials_attributes: [:material_type, :selected_type, :availability, :link, :uri, :uri_type, :citation, :datacite_list, :dataset_id, :_destroy, :id, :_update, :audit_id, :feature, :note],
+                                    version_files_attributes:     [:id, :dataset_id, :datafile_id, :selected])
   end
 end

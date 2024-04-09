@@ -25,6 +25,10 @@ module Dataset::Indexable
         "Metadata and Files Withdrawn"
       when "withdrawn_f"
         "Metadata Published, Files Withdrawn"
+      when "suppressed_v"
+        "Version Candidate Draft Pending Approval"
+      when "approved_v"
+        "Version Candidate Draft Approved"
       else
         "Error: publication state not found"
       end
@@ -34,7 +38,7 @@ module Dataset::Indexable
       if %w[unselected custom].include?(code)
         code
       else
-        licenses = LICENSE_INFO_ARR.select {|license| license.code == code }
+        licenses = LICENSE_INFO_ARR.select { |license| license.code == code }
         return code if licenses.blank?
 
         licenses[0].name
@@ -45,7 +49,7 @@ module Dataset::Indexable
       if code == "other"
         "Other"
       else
-        funders = FUNDER_INFO_ARR.select {|funder| funder.code == code }
+        funders = FUNDER_INFO_ARR.select { |funder| funder.code == code }
         return "funder not found" if funders.blank?
 
         funders[0].name
@@ -133,14 +137,16 @@ module Dataset::Indexable
                         "Metadata Published, Files Publication Delayed (Embargoed)"
                       when Databank::PublicationState::Embargo::METADATA
                         "Metadata and Files Publication Delayed (Embargoed)"
-                       when Databank::PublicationState::TempSuppress::FILE
-                         "Metadata Published, Files Suppressed"
-                       when Databank::PublicationState::TempSuppress::METADATA
-                         "Metadata and Files Suppressed"
-                       when Databank::PublicationState::PermSuppress::FILE
+                      when Databank::PublicationState::TempSuppress::FILE
+                        "Metadata Published, Files Suppressed"
+                      when Databank::PublicationState::TempSuppress::METADATA
+                        "Metadata and Files Suppressed"
+                      when Databank::PublicationState::PermSuppress::FILE
                         "Metadata Published, Files Withdrawn"
-                       when Databank::PublicationState::PermSuppress::METADATA
+                      when Databank::PublicationState::PermSuppress::METADATA
                         "Metadata and Files Withdrawn"
+                      when Databank::PublicationState::TempSuppress::VERSION
+                        "Metadata and Files Suppressed"
                       else
                         # should never get here
                         "Unknown, please contact the Research Data Service"
@@ -171,7 +177,8 @@ module Dataset::Indexable
                       else
                         "suppressed_f"
                       end
-
+                    when Databank::PublicationState::TempSuppress::VERSION
+                      "suppressed_v"
                     else
                       case publication_state
                       when Databank::PublicationState::DRAFT
@@ -190,6 +197,8 @@ module Dataset::Indexable
                         "withdrawn_f"
                       when Databank::PublicationState::PermSuppress::METADATA
                         "withdrawn_mf"
+                      when Databank::PublicationState::TempSuppress::VERSION
+                        "approved_v"
                       else
                         # should never get here
                         "unknown"
@@ -209,42 +218,26 @@ module Dataset::Indexable
     Funder.where(dataset_id: id).pluck(:code)
   end
 
+  def draft_viewer_emails
+    (view_emails + [depositor_email]).uniq
+  end
+
   def funder_names_fulltext
     funder_names.join(" ").to_s
   end
 
-  def internal_view_netids
-    internal_reviewer_netids + internal_editor_netids
+  def view_emails
+    (reviewer_emails + editor_emails).uniq
   end
 
-  def internal_reviewer_netids
-    uids = UserAbility.where(user_provider: "shibboleth",
-                             resource_type: "Dataset",
-                             ability:       "view_files",
-                             'resource_id': id).pluck(:user_uid)
-    net_ids = []
-
-    uids.each do |uid|
-      uid_parts = uid.split("@")
-      net_ids << uid_parts[0]
-    end
-
-    net_ids.uniq - internal_editor_netids
+  def reviewer_emails
+    UserAbility.where(resource_type: "Dataset",
+                      ability:       "view_files",
+                      'resource_id': id).pluck(:user_uid).uniq
   end
 
-  def internal_editor_netids
-    uids = UserAbility.where(user_provider: "shibboleth",
-                             resource_type: "Dataset",
-                             ability:       "update",
-                             'resource_id': id).pluck(:user_uid)
-    net_ids = []
-
-    uids.each do |uid|
-      uid_parts = uid.split("@")
-      net_ids << uid_parts[0]
-    end
-
-    net_ids.uniq
+  def editor_emails
+    UserAbility.where(resource_type: "Dataset", ability: "update", 'resource_id': id).pluck(:user_uid).uniq
   end
 
   def grant_numbers

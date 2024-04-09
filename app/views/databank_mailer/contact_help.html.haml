@@ -11,7 +11,8 @@
     %br/
     - if @params.has_key?('help-dataset')
       Dataset:
-      %a{:href => "#{@params['help-dataset']}"}= @params['help-dataset']
+      %a{:href => "#{@params['help-dataset']}"}
+        = @params['help-dataset']
     %hr/
     %blockquote
       = @params['help-message']

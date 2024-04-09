@@ -1,1 +1,1 @@
-json.array! @datafiles, partial: 'metrics/datafile', as: :datafile
+json.array! @datafiles, partial: 'metric.rb/datafile', as: :datafile

@@ -69,21 +69,6 @@ class WelcomeController < ApplicationController
     end
   end
 
-  def help_transition_admin
-    help = ["Help", Databank::HelpTransitionState::HELP]
-    guide = ["Guides", Databank::HelpTransitionState::GUIDE]
-    both = ["Both", Databank::HelpTransitionState::BOTH]
-    @possible_states = [help, guide, both]
-  end
-
-  def update_help_transition
-    if params.has_key?("state") && params["state"] != Application.help_transition_state
-      File.open(IDB_CONFIG[:help_transition_filepath], "w") { |file| file.write(params["state"]) }
-      Application.help_transition_state = params["state"]
-    end
-    redirect_to action: "help_transition_admin"
-  end
-
   def robots
     # Don't forget to delete /public/robots.txt
     respond_to :text

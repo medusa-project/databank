@@ -40,6 +40,9 @@ ready = function () {
         window.location.href = "/datasets/" + dataset_key + "/request_review"
 
     });
+    $("#review-version-btn").click(function () {
+        window.location.href = "/datasets/" + dataset_key + "/request_review"
+    });
 
     $(".choose_review_block_v").click(function () {
         $('#choose_review_v').trigger("click");
@@ -149,6 +152,10 @@ ready = function () {
         $(".checkFileSelectedCount").html("(" + numChecked + ")");
     });
 
+    $("#checkAllVFiles").click(function () {
+        $(".checkVFileGroup").prop('checked', $(this).prop('checked'));
+    });
+
     $('#term-supports').tooltip();
 
     $('#cancel-button').click(function () {
@@ -182,18 +189,13 @@ ready = function () {
     });
 
     $('#update-save-button').click(function () {
-
-
         if ($(".invalid-name").length > 0) {
             alert("All names must be complete.");
             $(".invalid-name > input").first().focus();
             return
         }
-
         if ($(".progress-bar").length == 0) {
-
             window.onbeforeunload = null;
-
             $("[id^=edit_dataset]").submit();
         } else {
             alert("UPLOADS IN PROGRESS. Try again once uploads are complete.")
@@ -431,7 +433,7 @@ function handleAgreeModal(email, name) {
 function handlePrivateYes() {
     if ($('#private-yes').is(':checked')) {
         $('#dataset_removed_private').val('yes');
-        $('#review_link').html('<a href="/review_deposit_agreement?removed=yes" target="_blank">Review Deposit Agreement</a>');
+        $('#review_link').html('<a href="/datasets/review_deposit_agreement?removed=yes" target="_blank">Review Deposit Agreement</a>');
         $('#private-na').attr('checked', false);
         $('#private-no').attr('checked', false);
         if (agree_answers_all_yes()) {
@@ -449,7 +451,7 @@ function handlePrivateYes() {
 function handlePrivateNA() {
 
     if ($('#private-na').is(':checked')) {
-        $('#review_link').html('<a href="/review_deposit_agreement?removed=na" target="_blank">Review Deposit Agreement</a>');
+        $('#review_link').html('<a href="/datasets/review_deposit_agreement?removed=na" target="_blank">Review Deposit Agreement</a>');
         $('#dataset_removed_private').val('na');
         $('#private-yes').attr('checked', false);
         $('#private-no').attr('checked', false);
@@ -647,7 +649,6 @@ function unsuppressChangelog() {
 }
 
 function tmpSuppressFiles() {
-
     if (window.confirm("Are you sure?")) {
         $('#suppression_action').val("temporarily_suppress_files");
         $('#suppression_form').submit();
@@ -657,6 +658,33 @@ function tmpSuppressFiles() {
 function tmpSuppressMetadata() {
     if (window.confirm("Are you sure?")) {
         $('#suppression_action').val("temporarily_suppress_metadata");
+        $('#suppression_form').submit();
+    }
+}
+
+function unsuppressReview() {
+    if (window.confirm("Are you sure?")) {
+        $('#suppression_action').val("unsuppress_review");
+        $('#suppression_form').submit();
+    }
+}
+function suppressReview() {
+    if (window.confirm("Are you sure?")) {
+        $('#suppression_action').val("suppress_review");
+        $('#suppression_form').submit();
+    }
+}
+
+function version2draft() {
+    if (window.confirm("Are you sure?")) {
+        $('#suppression_action').val("version_to_draft");
+        $('#suppression_form').submit();
+    }
+}
+
+function draft2version() {
+    if (window.confirm("Are you sure?")) {
+        $('#suppression_action').val("draft_to_version");
         $('#suppression_form').submit();
     }
 }
@@ -710,7 +738,7 @@ function confirm_update() {
         datatype: 'json',
         success: function (data) {
 
-            if (data.message == "ok") {
+            if (data.message === "ok") {
                 reset_confirm_msg();
                 $('#deposit').modal('show');
             } else {
@@ -848,17 +876,17 @@ function setOrgCreators(dataset_id, new_value) {
     }
 }
 
-function addInternalReviewerRow(){
-    var netid = $("#newInternalReviewer").val();
-    var reviewerRow ="<div class='row'><div class='col-md-1'><div class='pull-right'><input name='internal_reviewer[]' type='checkbox' value='" + netid + "' checked='checked'></div></div><div class='col-md-3'>"+ netid +"</div>"
-    $(reviewerRow).prependTo("#newInternalReviewersDiv");
-    $("#newInternalReviewer").val("");
+function addReviewerRow(){
+    var email = $("#newReviewer").val();
+    var reviewerRow ="<div class='row'><div class='col-md-1'><div class='pull-right'><input name='reviewer_emails[]' type='checkbox' value='" + email + "' checked='checked'></div></div><div class='col-md-3'>"+ email +"</div>"
+    $(reviewerRow).prependTo("#newReviewersDiv");
+    $("#newReviewer").val("");
 }
 
 function addInternalEditorRow(){
     var netid = $("#newInternalEditor").val();
     var reviewerRow ="<div class='row'><div class='col-md-1'><div class='pull-right'><input name='internal_editor[]' type='checkbox' value='" + netid + "' checked='checked'></div></div><div class='col-md-3'>"+ netid +"</div>"
-    $(reviewerRow).prependTo("#newInternalEditorsDiv");
+    $(reviewerRow).prependTo("#newEditorsDiv");
     $("#newInternalEditor").val("");
 }
 

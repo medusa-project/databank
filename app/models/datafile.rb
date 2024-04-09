@@ -20,7 +20,9 @@ class Datafile < ApplicationRecord
   ALLOWED_DISPLAY_BYTES = ALLOWED_CHAR_NUM * 8
   before_create { self.web_id ||= generate_web_id }
   after_create :handle_peek
-
+  after_create :set_dataset_nested_updated_at
+  after_update :set_dataset_nested_updated_at
+  before_destroy :set_dataset_nested_updated_at
   before_destroy :destroy_job
   before_destroy :remove_binary
 
@@ -30,6 +32,10 @@ class Datafile < ApplicationRecord
 
   def as_json(_options={})
     super(only: %i[web_id binary_name binary_size medusa_id storage_root storage_key created_at updated_at])
+  end
+
+  def set_dataset_nested_updated_at
+    dataset.update_attribute(:nested_updated_at, Time.now.utc)
   end
 
   def extractor_task
@@ -218,6 +224,22 @@ class Datafile < ApplicationRecord
     end
   end
 
+  def copy_to_dataset(dataset:)
+    if Datafile.exists?(dataset_id: dataset.id, binary_name: binary_name)
+      raise StandardError.new "file with name #{binary_name} already exists in dataset: #{dataset.key}"
+    end
+
+    datafile = Datafile.create(dataset_id: dataset.id, binary_name: binary_name)
+
+    StorageManager.instance.draft_root.copy_content_to("#{dataset.key}/#{datafile.binary_name}",
+                                                       current_root,
+                                                       storage_key)
+    datafile.storage_root = "draft"
+    datafile.storage_key = "#{dataset.key}/#{datafile.binary_name}"
+    datafile.binary_size = StorageManager.instance.draft_root.size(datafile.storage_key)
+    datafile.save
+  end
+
   def remove_from_tmpfs
     return true unless tmpfs_root.exist?(tmpfs_key)
 
@@ -320,7 +342,9 @@ class Datafile < ApplicationRecord
   def record_download(request_ip)
     return nil if Robot.exists?(address: request_ip)
 
-    return nil if dataset.publication_state == Databank::PublicationState::DRAFT
+    return nil if Databank::PublicationState::DRAFT_ARRAY.include?(dataset.publication_state)
+
+    return nil if dataset.release_date.nil?
 
     return nil if Date.current < dataset.release_date
 
@@ -416,10 +440,10 @@ class Datafile < ApplicationRecord
   def temp_placeholder(temp_dataset_id:)
     Datafile.create(dataset_id:   temp_dataset_id,
                     web_id:       "#{self.web_id}_tmp",
-                    storage_root: self.storage_root,
-                    storage_key:  self.storage_key,
-                    binary_name:  self.binary_name,
-                    binary_size:  self.binary_size)
+                    storage_root: storage_root,
+                    storage_key:  storage_key,
+                    binary_name:  binary_name,
+                    binary_size:  binary_size)
   end
 
   def download_link
@@ -528,7 +552,7 @@ class Datafile < ApplicationRecord
   end
 
   def initiate_processing_task
-    return nil unless Rails.env.production? || Rails.env.demo? || Rails.env.development?
+    return nil if Rails.env.test?
 
     extractor_task = ExtractorTask.create(web_id:)
     update_attribute(:task_id, extractor_task.id) if extractor_task

@@ -7,13 +7,20 @@ class Creator < ApplicationRecord
   include ActiveModel::Serialization
   belongs_to :dataset
   validate :name?
-  after_create :add_internal_editor
-  after_update :add_internal_editor
-  before_destroy :remove_internal_editor
+  after_create :add_editor
+  after_update :add_editor
+  after_create :set_dataset_nested_updated_at
+  after_update :set_dataset_nested_updated_at
+  before_destroy :set_dataset_nested_updated_at
+  before_destroy :remove_editor
 
   audited except: [:row_order, :type_of, :identifier_scheme, :dataset_id, :institution_name], associated_with: :dataset
 
   default_scope { order(:row_position) }
+
+  def set_dataset_nested_updated_at
+    dataset.update_attribute(:nested_updated_at, Time.now.utc)
+  end
 
   def self.orcid_identifier(family_name: nil, given_names: nil)
     query_string = Creator.orcid_query_string(family_name: family_name, given_names: given_names)
@@ -28,6 +35,10 @@ class Creator < ApplicationRecord
       result << {"orcid-identifier" => identifier_node.text}
     end
     {"num-found" => num_found_nodeset[0].value.to_i, "result" => result}
+  end
+
+  def display_info
+    "#{display_name}, #{email}, #{identifier}"
   end
 
   def self.orcid_person(orcid:)
@@ -56,24 +67,14 @@ class Creator < ApplicationRecord
     "search?q=family-name:#{family_name}+AND+given-names:#{given_names}*"
   end
 
-  def add_internal_editor
-    return false unless at_illinois?
-
-    netid = email.split("@").first
-    editor_netids = dataset.internal_editor_netids || []
-    return true if editor_netids.include?(netid)
-
-    UserAbility.add_to_internal_editors(dataset: dataset, netid: netid)
+  def add_editor
+    UserAbility.add_to_editors(dataset: dataset, email: email)
+    Sunspot.index! [dataset]
   end
 
-  def remove_internal_editor
-    return false unless at_illinois?
-
-    netid = email.split("@").first
-    editor_netids = dataset.internal_editor_netids || []
-    return true unless editor_netids.include?(netid)
-
-    UserAbility.remove_from_internal_editors(dataset: dataset, netid: netid)
+  def remove_editor
+    UserAbility.remove_from_editors(dataset: dataset, email: email)
+    Sunspot.index! [dataset]
   end
 
   def as_json(*)
@@ -102,12 +103,9 @@ class Creator < ApplicationRecord
   end
 
   def at_illinois?
-    if type_of && type_of == Databank::CreatorType::PERSON && email && !email.empty?
-      email_parts = email.split("@")
-      email_parts.length > 1 && email_parts[1] == "illinois.edu"
-    else
-      false
-    end
+    return false unless type_of && type_of == Databank::CreatorType::PERSON && email && !email.empty?
+
+    email[-12..] == "illinois.edu"
   end
 
   private

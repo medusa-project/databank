@@ -153,14 +153,11 @@ namespace :testing do
   desc "hit quest directory service"
   task blast_directory: :environment do
     Creator.all.each do |creator|
-      puts creator.email
-
       next if creator.email.nil?
 
-      email_parts = creator.email.split("@")
-      next unless email_parts.last == "illinois.edu"
+      next unless creator.email[-12..] == "illinois.edu"
 
-      netid = email_parts.first
+      netid = creator.email.split("@").first
       begin
         puts "checking #{netid}"
         open("https://iisdev1.library.illinois.edu/Directory/ed/person/#{netid}").read

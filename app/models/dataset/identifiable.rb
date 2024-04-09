@@ -44,6 +44,8 @@ module Dataset::Identifiable
   end
 
   def create_draft_doi
+    return {status: "ok"} if Rails.env.development? || Rails.env.test?
+
     self.identifier ||= default_identifier
     save!
 
@@ -65,6 +67,8 @@ module Dataset::Identifiable
   # publish - Triggers a state move to findable
   # should not be done for datasets with embargoed metadata
   def publish_doi
+    return {status: "ok"} if Rails.env.development? || Rails.env.test?
+
     return error_hash("no identifier present") unless identifier_present?
 
     return error_hash("Cannot make dataset findable if metadata can not be public.") unless metadata_public?
@@ -291,7 +295,7 @@ module Dataset::Identifiable
     root_string = %(<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" )
     root_string += %(xmlns="http://datacite.org/schema/kernel-4" )
     root_string += %(xsi:schemaLocation="http://datacite.org/schema/kernel-4 )
-    root_string += %(http://schema.datacite.org/meta/kernel-4.3/metadata.xsd">)
+    root_string += %(http://schema.datacite.org/meta/kernel-4.5/metadata.xsd">)
     root_string + %(</resource>)
   end
 
@@ -398,7 +402,7 @@ module Dataset::Identifiable
           creator_identifier_node.content = creator.identifier.to_s
           creator_identifier_node.parent = creator_node
         end
-        if creator.email.split("@").last == "illinois.edu"
+        if creator.email[-12..] == "illinois.edu"
           affiliation_node = doc.create_element("affiliation")
           affiliation_node["affiliationIdentifier"] = "https://ror.org/047426m28"
           affiliation_node["affiliationIdentifierScheme"] = "ROR"

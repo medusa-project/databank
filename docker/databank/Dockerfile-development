@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install -y \
     libmagic-dev \
     yarn \
     postgresql-client \
-    memcached
+    memcached \
+    emacs-nox
 
 EXPOSE 3000
 

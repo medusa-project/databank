@@ -31,6 +31,7 @@ module Databank
     end
     PUB_ARRAY = [Databank::PublicationState::RELEASED, Databank::PublicationState::Embargo::FILE, Databank::PublicationState::Embargo::METADATA]
     EMBARGO_ARRAY = [Databank::PublicationState::Embargo::FILE, Databank::PublicationState::Embargo::METADATA]
+    DRAFT_ARRAY = [Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION]
   end
 
   class FileMode
@@ -142,8 +143,6 @@ module Databank
 
     attr_accessor :file_mode
 
-    attr_accessor :help_transition_state
-
     attr_accessor :settings
 
     attr_accessor :ldap
@@ -153,6 +152,8 @@ module Databank
     attr_accessor :aws_signer
 
     attr_accessor :aws_client
+
+    attr_accessor :server_envs
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers

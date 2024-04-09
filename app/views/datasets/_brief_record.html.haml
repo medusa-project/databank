@@ -30,26 +30,36 @@
           =dataset.subject
         -else
           Uncategorized
-
-      -if !dataset.hold_state.nil? && dataset.hold_state != 'none'
-        &nbsp;
-        .label.label-danger
-          suppressed by curator
       &nbsp;
       .label.label-default
         = pluralize(dataset.notes.count, 'note')
-  - is_draft = (dataset.publication_state == Databank::PublicationState::DRAFT)
-  - has_identifier = (dataset.identifier && dataset.identifier != '')
-  -if((can? :read, dataset) && is_draft && has_identifier)
+      &nbsp;
+  - if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+    .label.label-danger
+      version candidate under review
+    &nbsp;
+  - elsif dataset.in_pre_publication_review?
     .label.label-danger
       pre-publication review
     &nbsp;
-  -if dataset.share_code
+  - elsif dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
+    .label.label-success
+      version candidate eligible to be submitted for pre-publication review
+    &nbsp;
+  -elsif !dataset.hold_state.nil? && dataset.hold_state != 'none'
+    .label.label-danger
+      suppressed by curator
+    &nbsp;
+  -if(can? :edit, dataset) && dataset.share_code && dataset.publication_state != Databank::PublicationState::RELEASED
     .label.label-success
       has sharing link
     &nbsp;
+  -if(can? :edit, dataset) && dataset.publication_state == Databank::PublicationState::DRAFT
+    .label.label-default
+      draft
+    &nbsp;
   -if(can? :read, dataset) && dataset.release_date && dataset.metadata_public?
-    .label.label-info
+    .label.label-primary
       -if dataset.release_date > Date.current()
         planned publication date:
       -elsif dataset.publication_state == Databank::PublicationState::RELEASED

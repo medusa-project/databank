@@ -155,16 +155,7 @@ legend.metadata-border {
 
 .curator-only {
   padding: 5px;
-  border: 1px solid black;
   background-color: $color__highlight-orange;
-}
-
-.featured-material {
-  background-color: $color__lightest_blue;
-}
-
-.featured-material :any-link {
-  font-size: 20px;
 }
 
 #creator_table {
@@ -430,4 +421,15 @@ a.morelink {
   padding: 3px;
   border: 1px solid $color__burnt-orange;
 }
+tr.category, td.category {
+  font-weight: bold;
+  background-color: $color__lightest-grey;
+}
 
+tr.different {
+    background-color: $color__yellow-background;
+}
+
+#differnce_report td:not(:last-child) {
+  border-right: 1px solid $color__lightest-grey;
+}

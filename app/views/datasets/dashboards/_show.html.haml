@@ -9,6 +9,26 @@
         .col-md-8
           -if (can? :manage, @dataset)
             .curator-only
+              -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+                &nbsp;
+                .label.label-danger
+                  version candidate under review
+                &nbsp;
+              -elsif @dataset.in_pre_publication_review?
+                &nbsp;
+                .label.label-danger
+                  pre-publication review
+                &nbsp;
+              - elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
+                &nbsp;
+                .label.label-success
+                  version candidate eligible to be submitted for pre-publication review
+                &nbsp;
+              -elsif !@dataset.hold_state.nil? && @dataset.hold_state != 'none'
+                &nbsp;
+                .label.label-danger
+                  suppressed by curator
+                &nbsp;
               .label.label-default
                 ="updated: #{@dataset.updated_at.to_date.iso8601}"
               &nbsp;
@@ -54,12 +74,12 @@
           .row
             .col-md-6
               = @dataset.visibility
-              -if @dataset.in_pre_publication_review
+              -if @dataset.in_pre_publication_review?
                 &nbsp;
                 .label.label-danger
                   pre-publication review
                 &nbsp;
-              -if @dataset.share_code
+              -if(can? :edit, @dataset) && @dataset.share_code && @dataset.publication_state != Databank::PublicationState::RELEASED
                 .label.label-success
                   has sharing link
                 &nbsp;
@@ -85,25 +105,13 @@
                       class: "btn idb btn-danger remove-share-btn") do
                         %span(class="glyphicon glyphicon-trash")
         .col-md-4
-          - if @completion_check == 'ok' && @dataset.in_pre_publication_review
+          - if @dataset.show_publish_only?
             %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
               Continue
               %span(class="glyphicon glyphicon-triangle-right" )
-
           - elsif @completion_check == 'ok'
-            -# confirm button conditional complex, so broken into three statements
-            -if ((can? :manage, @dataset) && (@dataset.publication_state != Databank::PublicationState::DRAFT) && (@dataset.publication_state != Databank::PublicationState::Embargo::METADATA) && (@dataset.embargo == Databank::PublicationState::Embargo::METADATA))
+            -if (can? :edit, @dataset) && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
               =render partial: 'datasets/offer_review_btn'
-              -#=render partial: 'datasets/confirm_btn'
-
-            -elsif (@dataset.publication_state == Databank::PublicationState::DRAFT)
-              =render partial: 'datasets/offer_review_btn'
-              -#=render partial: 'datasets/confirm_btn'
-
-            -elsif @dataset.publication_state == Databank::PublicationState::Embargo::METADATA && @dataset.embargo != Databank::PublicationState::Embargo::METADATA
-              =render partial: 'datasets/offer_review_btn'
-              -#=render partial: 'datasets/confirm_btn'
-
           -else
             %button(type="button" id="show-confirm-modal-link" class="btn btn-default btn-block" data-toggle="modal" data-target="#incomplete")
               Confirm
@@ -123,11 +131,11 @@
             %button(type="button" class="btn btn-info btn-block" name="cancel" onclick='window.location = "/datasets?q=editor=%5B%5D==#{current_user.name}&context=exit_doi"' )
               %span(class="glyphicon glyphicon-pushpin" )
               Exit this saved dataset
-          - if @dataset.publication_state == Databank::PublicationState::DRAFT
+          - if [Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)
             = link_to(dataset_path(@dataset.key), method: :delete, data: {confirm: 'Are you sure? This removes all files and metadata.'}, class: "btn idb btn-danger btn-block") do
               %span(class="glyphicon glyphicon-trash" )
               Delete
-          -# - if @dataset.publication_state != Databank::PublicationState::DRAFT && @dataset.is_most_recent_version
-          -#   = link_to(version_dataset_path(@dataset.key), :class => "btn idb btn-primary btn-block") do
-          -#     %span(class="glyphicon glyphicon-plus-sign" )
-          -#     Create a version of this published dataset
+          - if @dataset.eligible_for_version?
+            = link_to(version_dataset_path(@dataset.key), :class => "btn idb btn-primary btn-block") do
+              %span(class="glyphicon glyphicon-plus-sign" )
+              Create a version of this published dataset
