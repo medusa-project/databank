@@ -8,6 +8,50 @@ module Dataset::Versionable
   extend ActiveSupport::Concern
   attr_accessor :version_group
 
+  ##
+  # Adds version metadata copy
+  # This method sets the metadata based on the previous version of the dataset
+  # It then saves the dataset
+  # @param [Dataset] previous the previous version of the dataset
+  def add_version_metadata_copy(previous:)
+    return true if title == previous.title
+
+    previous_version_number = previous.dataset_version.to_i
+    version_number = previous_version_number + 1
+    identifier_base = previous.identifier.chop
+    self.title = previous.title
+    self.creator_text = previous.creator_text
+    self.identifier = "#{identifier_base}#{version_number}"
+    self.publisher = previous.publisher
+    self.description = previous.description
+    self.license = previous.license
+    self.corresponding_creator_name = "researcher1"
+    self.corresponding_creator_email = "researcher1@mailinator.com"
+    self.keywords = previous.keywords
+    self.publication_state = Databank::PublicationState::TempSuppress::VERSION
+    self.curator_hold = true
+    self.release_date = nil
+    self.embargo = Databank::PublicationState::Embargo::NONE
+    self.is_test = previous.is_test
+    self.is_import = false
+    self.tombstone_date = nil
+    self.hold_state = Databank::PublicationState::TempSuppress::VERSION
+    self.medusa_dataset_dir = nil
+    self.dataset_version =  version_number.to_s
+    self.suppress_changelog = false
+    self.subject = previous.subject
+    self.org_creators = previous.org_creators
+    self.data_curation_network = false
+    save
+  end
+
+  ##
+  # send email to notify depositor that dataset version is approved
+  def send_approve_version
+    notification = DatabankMailer.approve_version(dataset_key: self.key)
+    notification.deliver_now
+  end
+
   def version_copies_complete?
     version_files.each do |version_file|
       return false unless version_file.complete?

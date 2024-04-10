@@ -20,7 +20,25 @@ module Dataset::Publishable
     false
   end
 
+  ##
+  # Returns whether the dataset is ok to publish
+  # This method checks the publication state and embargo status of the dataset
+  # @return [Boolean] true if the dataset is ok to publish, false otherwise
+  def ok_to_publish?
+    # metadata-only embargo datasets are ok to publish, which removes the embargo
+    return true if (publication_state != Databank::PublicationState::DRAFT) &&
+      (publication_state != Databank::PublicationState::Embargo::METADATA) &&
+      (embargo == Databank::PublicationState::Embargo::METADATA)
 
+    # draft datasets are ok to publish
+    return true if publication_state == Databank::PublicationState::DRAFT
+
+    # file-embargoed datasets are ok to publish, which removes the embargo
+    return true if publication_state == Databank::PublicationState::Embargo::METADATA &&
+      embargo != Databank::PublicationState::Embargo::METADATA
+
+    false
+  end
 
   def publish(user)
 
@@ -107,4 +125,19 @@ module Dataset::Publishable
     invalid_web_ids = datafile_web_ids - valid_web_ids
     self.datafiles.where(web_id: invalid_web_ids).destroy_all
   end
+
+  def in_pre_publication_review?
+    Databank::PublicationState::DRAFT_ARRAY.include?(publication_state) && has_review_request?
+  end
+
+  def show_publish_only?
+    return false unless in_pre_publication_review?
+
+    return false unless [Databank::PublicationState::TempSuppress::NONE, nil].include?(hold_state)
+
+    return false unless Dataset.completion_check(self) == "ok"
+
+    true
+  end
+
 end

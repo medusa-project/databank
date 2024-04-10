@@ -606,6 +606,13 @@ module Dataset::Identifiable
     doc.to_xml(save_with: Nokogiri::XML::Node::SaveOptions::AS_XML)
   end
 
+  ##
+  # @return [String] the DataCite XML for the dataset
+  # @note this method is used to generate the DataCite XML for the dataset
+  def to_datacite_raw_xml
+    Nokogiri::XML::Document.parse(to_datacite_xml).to_xml
+  end
+
   def doi_infohash
     response = doi_info_from_datacite
 

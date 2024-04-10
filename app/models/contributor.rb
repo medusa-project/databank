@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Deprecated - removed from UI for simplicity and no one missed it
 # represents a contributor as defined in DataCite metadata schema
 class Contributor < ApplicationRecord
   include ActiveModel::Serialization

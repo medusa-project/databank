@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+##
+# Datafile model
+# Represents a file in a dataset
+
 require "zip"
 require "seven_zip_ruby"
 require "filemagic"
@@ -26,6 +30,10 @@ class Datafile < ApplicationRecord
   before_destroy :destroy_job
   before_destroy :remove_binary
 
+  ##
+  # Returns the datafile web_id as the parameter for the datafile
+  #
+  # @return [String] the datafile web_id
   def to_param
     self.web_id
   end
