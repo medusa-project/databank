@@ -18,10 +18,22 @@ class Creator < ApplicationRecord
 
   default_scope { order(:row_position) }
 
+  ##
+  # Set the nested_updated_at attribute of the dataset to the current time
   def set_dataset_nested_updated_at
     dataset.update_attribute(:nested_updated_at, Time.now.utc)
   end
 
+  ##
+  # Find an ORCID identifier for a creator
+  # @param [String] family_name
+  # @param [String] given_names
+  # @return [Hash] with keys "num-found" and "result"
+  # "num-found" is the number of ORCID identifiers found
+  # "result" is an array of hashes with key "orcid-identifier"
+  # @example
+  #  Creator.orcid_identifier(family_name: "Smith", given_names: "John")
+  # => {"num-found"=>1, "result"=>[{"orcid-identifier"=>"0000-0002-1825-0097"}]}
   def self.orcid_identifier(family_name: nil, given_names: nil)
     query_string = Creator.orcid_query_string(family_name: family_name, given_names: given_names)
     url = URI("#{IDB_CONFIG[:orcid][:endpoint_base]}#{query_string}")
@@ -37,6 +49,12 @@ class Creator < ApplicationRecord
     {"num-found" => num_found_nodeset[0].value.to_i, "result" => result}
   end
 
+  ##
+  # Display information about a creator
+  # @return [String] with family_name, given_name, and identifier
+  # @example
+  # creator.display_info
+  # => "Smith, John, 0000-0002-1825-0097"
   def display_info
     "#{display_name}, #{email}, #{identifier}"
   end
@@ -57,6 +75,11 @@ class Creator < ApplicationRecord
     {family_name: family_name, given_names: given_names, affiliation: affiliation}
   end
 
+  ##
+  # Query string for ORCID search
+  # @param [String] family_name
+  # @param [String] given_names
+  # @return [String] query string
   def self.orcid_query_string(family_name: nil, given_names: nil)
     raise ArgumentError.new("requires at least one of family_name, given_names") if family_name.nil? && given_names.nil?
 
@@ -67,16 +90,22 @@ class Creator < ApplicationRecord
     "search?q=family-name:#{family_name}+AND+given-names:#{given_names}*"
   end
 
+  ##
+  # Add this creator as an editor to the dataset this creator belongs to
   def add_editor
     UserAbility.add_to_editors(dataset: dataset, email: email)
     Sunspot.index! [dataset]
   end
 
+  ##
+  # Remove this creator as an editor from the dataset this creator belongs to
   def remove_editor
     UserAbility.remove_from_editors(dataset: dataset, email: email)
     Sunspot.index! [dataset]
   end
 
+  ##
+  # JSON representation of a creator
   def as_json(*)
     if institution_name && institution_name != ""
       super(only: [:institution_name, :identifier, :is_contact, :row_position, :created_at, :updated_at])
@@ -85,6 +114,9 @@ class Creator < ApplicationRecord
     end
   end
 
+  ##
+  # Display name for a creator
+  # @return [String] with institution_name or family_name and given_name
   def display_name
     if type_of == Databank::CreatorType::INSTITUTION
       institution_name.to_s
@@ -93,7 +125,8 @@ class Creator < ApplicationRecord
     end
   end
 
-  # text for the name when used in a list
+  ##
+  # @return [String] with family_name, given_name, or institution_name
   def list_name
     if type_of == Databank::CreatorType::INSTITUTION
       institution_name.to_s
@@ -102,6 +135,8 @@ class Creator < ApplicationRecord
     end
   end
 
+  ##
+  # @return [Boolean] true if the creator is at the University of Illinois
   def at_illinois?
     return false unless type_of && type_of == Databank::CreatorType::PERSON && email && !email.empty?
 
@@ -110,7 +145,9 @@ class Creator < ApplicationRecord
 
   private
 
+  ##
   # validation
+  # @return [Boolean] true if the creator has a valid name, either as an institution or an individual
   def name?
     has_institution_name = institution_name && institution_name != ""
     has_individual_name = given_name && given_name != "" && family_name && family_name != ""

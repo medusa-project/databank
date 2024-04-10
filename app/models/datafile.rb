@@ -38,20 +38,31 @@ class Datafile < ApplicationRecord
     self.web_id
   end
 
+  ##
+  # Returns a JSON representation of the datafile
+  # @param [Hash] _options the options to pass to the JSON generator
+  # @return [Hash] the JSON representation of the datafile
   def as_json(_options={})
     super(only: %i[web_id binary_name binary_size medusa_id storage_root storage_key created_at updated_at])
   end
 
+  ##
+  # Sets the nested_updated_at attribute of this datafile's dataset to the current time
   def set_dataset_nested_updated_at
     dataset.update_attribute(:nested_updated_at, Time.now.utc)
   end
 
+  ##
+  # Returns the datafile's ExtractorTask, if any
   def extractor_task
     return nil unless task_id
 
     ExtractorTask.find_by(id: task_id)
   end
 
+  ##
+  # Returns whether any imports from box or html (controlled by a delayed job) are complete
+  # @return [Boolean] whether any uploads controlled by delayed job are complete
   def upload_complete?
     return false if job_status == :processing
 
@@ -66,6 +77,8 @@ class Datafile < ApplicationRecord
     bytestream?
   end
 
+  ##
+  # Sets the datafile's preview type and text, based on the datafile's mime type
   def handle_peek
     markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
     raise StandardError.new("no binary_name for datafile id: #{id}") unless binary_name
@@ -107,18 +120,26 @@ class Datafile < ApplicationRecord
     true
   end
 
+  ##
+  # @return [ActiveRecord::Relation] the FileDownloadTally records for this datafile
   def file_download_tallies
     FileDownloadTally.where(file_web_id: self.web_id)
   end
 
+  ##
+  # @return [ActiveRecord::Relation] the DayFileDownload records for this datafile
   def total_downloads
     FileDownloadTally.where(file_web_id: self.web_id).sum :tally
   end
 
+  ##
+  # @return [String] the datafile's name
   def bytestream_name
     binary_name
   end
 
+  ##
+  # @return [Integer] the datafile's size in bytes
   def bytestream_size
     if binary_size
       binary_size
@@ -132,18 +153,26 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
+  # @return [MedusaStorageRoot] the datafile's storage root
   def current_root
     StorageManager.instance.root_set.at(storage_root)
   end
 
+  ##
+  # @return [MedusaStorageRoot] the StorageManager's temporary filesystem root
   def tmpfs_root
     StorageManager.instance.tmpfs_root
   end
 
+  ##
+  # @return [String] the name of the datafile's storage root bucket
   def storage_root_bucket
     current_root.bucket if IDB_CONFIG[:aws][:s3_mode]
   end
 
+  ##
+  # @return [String] the datafile's storage key with the root's prefix
   def storage_key_with_prefix
     if IDB_CONFIG[:aws][:s3_mode]
       "#{current_root.prefix}#{storage_key}"
@@ -152,6 +181,8 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
+  # @return [String] the datafile's storage path if the storage root is a filesystem root
   def storage_root_path
     if IDB_CONFIG[:aws][:s3_mode]
       nil
@@ -160,7 +191,9 @@ class Datafile < ApplicationRecord
     end
   end
 
-  # within the context of the databank server mounts
+  ##
+  # If the datafile is in a filesystem root, returns the full path to the datafile
+  # @return [String] the datafile's full path
   def filepath
     base = storage_root_path
     if base
@@ -170,9 +203,11 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
   # Set this up so that we use local storage for small files, for some definition of small
   # might want to extract this elsewhere so that is generally available and easy to make
   # robust for whatever application.
+  # @return [String] the datafile's mime type
   def tmpdir_for_with_input_file
     expected_size = binary_size || current_root.size(storage_key)
     if expected_size > 500.megabytes
@@ -182,6 +217,7 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
   # wrap the storage root's ability to yield an io on the content
   def with_input_io
     current_root.with_input_io(storage_key) do |io|
@@ -189,6 +225,7 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
   # wrap the storage root's ability to yield a file path having the appropriate content in it
   def with_input_file
     current_root.with_input_file(storage_key, tmp_dir: tmpdir_for_with_input_file) do |file|
@@ -196,34 +233,50 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
+  # @return [Boolean] whether the datafile exists on its storage root
   def exists_on_storage?
     return false unless storage_key
 
     current_root.exist?(storage_key)
   end
 
+  ##
+  # Remove the datafile from its storage root
   def remove_from_storage
     current_root.delete_content(storage_key) if exists_on_storage?
   end
 
+  ##
+  # @return [AWS::S3::Object] the datafile's S3 object, if it exists
   def s3_object
     return nil unless exists_on_storage?
 
     current_root.s3_object(storage_key)
   end
 
+  ##
+  # @return [String] the datafile's S3 object's etag
   def etag
     s3_object&.etag
   end
 
+  ##
+  # @return [String] the datafile's name
   def name
     binary_name
   end
 
+  ##
+  # @return [String] a key to use for temporary storage of the datafile
+  # derived from the dataset's key and the datafile's name
   def tmpfs_key
     File.join(dataset.key, name)
   end
 
+  ##
+  # copy the datafile to the temporary filesystem storage
+  # could be used for staging small files for download
   def copy_to_tmpfs
     raise StandardError.new "file at #{tmpfs_key} already exists" if tmpfs_root.exist?(tmpfs_key)
 
@@ -232,6 +285,9 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
+  # Create a copy of this datafile in the given dataset
+  # @param [Dataset] the dataset to copy the datafile to
   def copy_to_dataset(dataset:)
     if Datafile.exists?(dataset_id: dataset.id, binary_name: binary_name)
       raise StandardError.new "file with name #{binary_name} already exists in dataset: #{dataset.key}"
@@ -248,14 +304,18 @@ class Datafile < ApplicationRecord
     datafile.save
   end
 
+  ##
+  # Remove the datafile from the temporary filesystem storage
   def remove_from_tmpfs
     return true unless tmpfs_root.exist?(tmpfs_key)
 
     tmpfs_root.delete_content(tmpfs_key)
     tmpfs_root.delete_tree(dataset.key) if Dir.empty?(File.join(tmpfs_root.real_path, dataset.key))
   end
-
+  ##
+  # Path for iiif server to use in UI previews on landing page
   # medusa mounts are different on iiif server
+  # @return [String] the path to the datafile on the iiif server
   def iiif_bytestream_path
     case storage_root
     when "draft"
@@ -267,6 +327,8 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
+  # @return [String] the datafile's file extension
   def file_extension
     return "" unless bytestream_name
 
@@ -276,6 +338,9 @@ class Datafile < ApplicationRecord
     filename_split.last
   end
 
+  ##
+  # @param [String] a request ip
+  # @return [Boolean] whether the datafile has been downloaded by the given ip today
   def ip_downloaded_file_today(request_ip)
     DayFileDownload.where(["ip_address = ? and file_web_id = ? and download_date = ?",
                            request_ip,
@@ -285,12 +350,18 @@ class Datafile < ApplicationRecord
 
   delegate :key, to: :dataset, prefix: true
 
+  ##
+  # @return [String] the datafile's storage key in the target root for use in Medusa Ingests
   def target_key
     "#{dataset.dirname}/dataset_files/#{binary_name}"
   end
 
-  # has side-effect of updating record if the bytestream is in medusa, but the record did not indicate
+  ##
+  # Whether the datafile is in Medusa
+  # Actually checks the storage, not just the database records
+  # has side-effect of updating record if the bytestream is in Medusa, but the record did not indicate
   # if bytestream is found the same in draft and medusa roots, the draft bytestream is deleted
+  # @return [Boolean] whether the datafile is in Medusa
   def in_medusa
 
     Rails.logger.warn("dataset not found for datafile #{self.web_id} :in_medusa") unless dataset
@@ -339,6 +410,9 @@ class Datafile < ApplicationRecord
     datafile_in_medusa
   end
 
+  ##
+  # Does this dataset have a stored binary object?
+  # @return [Boolean] whether the datafile object bytestream is in the draft storage root
   def bytestream?
     storage_root &&
         storage_root != "" &&
@@ -347,6 +421,9 @@ class Datafile < ApplicationRecord
         current_root.exist?(storage_key)
   end
 
+  ##
+  # Record a download of the datafile
+  # @param [String] the request ip
   def record_download(request_ip)
     return nil if Robot.exists?(address: request_ip)
 
@@ -407,6 +484,8 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
+  # Removes the datafile's binary object from the draft storage root
   def remove_binary
     return nil unless storage_key
 
@@ -419,16 +498,26 @@ class Datafile < ApplicationRecord
     StorageManager.instance.draft_root.delete_content("#{storage_key}.info")
   end
 
+  ##
+  # The delayed job controlling the datafile's upload from Box or HTML, if any
+  # @return [Delayed::Job] the datafile's delayed job, if any
   def job
     Delayed::Job.find_by(id: job_id) if job_id
   end
 
+  ##
+  # @return [Boolean] whether the datafile is a readme file
   def readme?
     return false if binary_name.nil?
 
     binary_name.downcase.include?("readme")
   end
 
+  ##
+  # @return [Symbol] the status of the datafile's delayed job, if any
+  # :pending if the job is waiting to be processed
+  # :processing if the job is currently being processed
+  # :complete if the job has been processed
   def job_status
     if job
       if job.locked_by
@@ -441,19 +530,14 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
+  # Destroy the datafile's delayed job, if any
   def destroy_job
     job&.destroy
   end
 
-  def temp_placeholder(temp_dataset_id:)
-    Datafile.create(dataset_id:   temp_dataset_id,
-                    web_id:       "#{self.web_id}_tmp",
-                    storage_root: storage_root,
-                    storage_key:  storage_key,
-                    binary_name:  binary_name,
-                    binary_size:  binary_size)
-  end
-
+  ##
+  # @return [String] the datafile's download link
   def download_link
     case cfs_file.storage_root.root_type
     when :filesystem
@@ -467,6 +551,11 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
+  # Return the datafiles peek type based on its mime type and size
+  # @param [String] mime_type the datafile's mime type
+  # @param [Integer] num_bytes the number of bytes in the binary object
+  # @return [String] the datafile's peek type
   def self.peek_type_from_mime(mime_type, num_bytes)
     return Databank::PeekType::NONE unless num_bytes && mime_type && !mime_type.empty?
 
@@ -529,6 +618,8 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
+  # @return [String] the datafile's preview text, used when the whole text would be too large
   def part_text_peek
     return "file not found" unless current_root.exist?(storage_key)
 
@@ -542,6 +633,8 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
+  # @return [String] the datafile's full text to use as a preview
   def all_text_peek
     return "file not found" unless current_root.exist?(storage_key)
 
@@ -555,28 +648,21 @@ class Datafile < ApplicationRecord
     end
   end
 
+  ##
+  # @param [Integer] peek_bytes the number of bytes to read from the datafile for the preview
+  # @return [String] the datafile's text preview based on the number of bytes allowed
   def self.peek_string(peek_bytes:)
     peek_bytes.string
   end
 
+  ##
+  # Initiate a task to process the datafile for inspecting and recording its contents
+  # To be used for archive type files, such as .zip, .tar, .gz, .7z, etc.
   def initiate_processing_task
     return nil if Rails.env.test?
 
     extractor_task = ExtractorTask.create(web_id:)
     update_attribute(:task_id, extractor_task.id) if extractor_task
-  end
-
-  def self.generate_placeholder(dataset:)
-    return nil unless Dataset.exists?(dataset.id)
-
-    root = StorageManager.instance.draft_root
-    datafile = Datafile.create(dataset_id: dataset.id, binary_name: "placeholder")
-    datafile.binary_name = "#{web_id}_placeholder"
-    storage_key = File.join(dataset.key, datafile.binary_name)
-    root.write_string_to(storage_key, "#{web_id} placeholder")
-    datafile.storage_key = storage_key
-    datafile.binary_size = root.size(storage_key)
-    datafile.save
   end
 
   ##
