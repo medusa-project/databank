@@ -884,7 +884,9 @@ collaborators to access the data files while the dataset is not public.</li>
       end
       web_ids.each(&:strip!)
       parametrized_doi = @dataset.identifier.parameterize
-      download_hash = DownloaderClient.datafiles_download_hash(@dataset, web_ids, "DOI-#{parametrized_doi}")
+      download_hash = DownloaderClient.datafiles_download_hash(dataset:  @dataset,
+                                                               web_ids:  web_ids,
+                                                               zip_name: "DOI-#{parametrized_doi}")
       if download_hash
         if download_hash["status"] == "ok"
           web_ids.each do |web_id|

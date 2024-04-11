@@ -111,7 +111,7 @@ module Dataset::Stringable
     end
   end
 
-  def recordtext
+  def record_text
     return "Method not valid for draft dataset." if !identifier || identifier == ""
 
     content = "##########################################################################################\n"
