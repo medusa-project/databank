@@ -32,8 +32,6 @@ class DownloaderClient
     download_hash
   end
 
-  private
-
   ##
   # targets_arr
   # -----------
