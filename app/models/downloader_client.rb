@@ -70,7 +70,7 @@ class DownloaderClient
       client.headers = {"Content-Type": "application/json"}
       client.perform
       response_hash = JSON.parse(client.body_str)
-      return {"status": "error", "error": client.body_str} unless response_hash.has_key("download_url")
+      return {"status": "error", "error": client.body_str} unless response_hash.has_key?("download_url")
 
       {"status": "ok", "download_url": response_hash["download_url"], "status_url": response_hash["status_url"]}
     rescue StandardError => e
