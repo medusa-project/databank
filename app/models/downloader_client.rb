@@ -47,7 +47,7 @@ class DownloaderClient
         df = dataset.datafiles.find_by(web_id: web_id)
         targets_arr.push({"type": "file", "path": df.storage_key.to_s, "size": df.bytestream_size})
       end
-      targets_arr.push({"type": "literal", "name": "dataset_info.txt", "content": dataset.record_text})
+      targets_arr.push({"type": "literal", "name": "dataset_info.txt", "content": dataset.record_text}, "size": dataset.record_text.bytesize)
       targets_arr
     end
 
