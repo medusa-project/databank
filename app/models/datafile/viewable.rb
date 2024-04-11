@@ -12,13 +12,86 @@
 module Datafile::Viewable
   extend ActiveSupport::Concern
 
+  class_methods do
+    ##
+    # Return the datafiles peek type based on its mime type and size
+    # @param [String] mime_type the datafile's mime type
+    # @param [Integer] num_bytes the number of bytes in the binary object
+    # @return [String] the datafile's peek type
+    def peek_type_from_mime(mime_type, num_bytes)
+      return Databank::PeekType::NONE unless num_bytes && mime_type && !mime_type.empty?
+
+      mime_parts = mime_type.split("/")
+      return Databank::PeekType::NONE unless mime_parts.length == 2
+
+      return Databank::PeekType::MARKDOWN if mime_parts[0] == "markdown"
+
+      text_subtypes = ["csv", "xml", "x-sh", "x-javascript", "json", "r", "rb"]
+      supported_image_subtypes = ["jp2", "jpeg", "dicom", "gif", "png", "bmp"]
+      listing_subtypes = ["x-zip-compressed",
+                          "zip",
+                          "x-7z-compressed",
+                          "x-rar-compressed",
+                          "x-tar",
+                          "x-xz",
+                          "x-gzip",
+                          "gzip",
+                          "x-rar",
+                          "x-gtar"]
+      pdf_subtypes = ["pdf", "x-pdf"]
+      microsoft_subtypes = ["msword",
+                            "vnd.openxmlformats-officedocument.wordprocessingml.document",
+                            "vnd.openxmlformats-officedocument.wordprocessingml.template",
+                            "vnd.ms-word.document.macroEnabled.12",
+                            "vnd.ms-word.template.macroEnabled.12",
+                            "vnd.ms-excel",
+                            "vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            "vnd.openxmlformats-officedocument.spreadsheetml.template",
+                            "vnd.ms-excel.sheet.macroEnabled.12",
+                            "vnd.ms-excel.template.macroEnabled.12",
+                            "vnd.ms-excel.addin.macroEnabled.12",
+                            "vnd.ms-excel.sheet.binary.macroEnabled.12",
+                            "vnd.ms-powerpoint",
+                            "vnd.openxmlformats-officedocument.presentationml.presentation",
+                            "vnd.openxmlformats-officedocument.presentationml.template",
+                            "vnd.openxmlformats-officedocument.presentationml.slideshow",
+                            "vnd.ms-powerpoint.addin.macroEnabled.12",
+                            "vnd.ms-powerpoint.presentation.macroEnabled.12",
+                            "vnd.ms-powerpoint.template.macroEnabled.12",
+                            "vnd.ms-powerpoint.slideshow.macroEnabled.12"]
+      subtype = mime_parts[1].downcase
+      if mime_parts[0] == "text" || text_subtypes.include?(subtype)
+
+        return Databank::PeekType::ALL_TEXT unless num_bytes > ALLOWED_DISPLAY_BYTES
+
+        Databank::PeekType::PART_TEXT
+      elsif mime_parts[0] == "image"
+        return Databank::PeekType::NONE unless supported_image_subtypes.include?(subtype)
+
+        Databank::PeekType::IMAGE
+      elsif microsoft_subtypes.include?(subtype)
+        Databank::PeekType::MICROSOFT
+      elsif pdf_subtypes.include?(subtype)
+        Databank::PeekType::PDF
+      elsif listing_subtypes.include?(subtype)
+        Databank::PeekType::LISTING
+      else
+        Databank::PeekType::NONE
+      end
+    end
+  end
+
+  # instance methods:
+
   ##
   # Sets the datafile's preview type and text, based on the datafile's mime type
   # @return [Boolean] true if the preview was successfully set
+  # @note: side effect: sets the datafile's peek_type and peek_text attributes
   # Logs but does not raise exceptions, because the preview is not critical to the datafile's functionality
   def handle_peek
     markdown_extensions = ["md", "MD", "mdown", "mkdn", "mkd", "markdown"]
-    raise StandardError.new("no binary_name for datafile id: #{id}") unless binary_name
+    Rails.logger.warn "no binary_name for datafile id: #{id}" unless binary_name
+    return false unless binary_name
 
     file_parts = binary_name.split(".")
     if file_parts && markdown_extensions.include?(file_parts.last)
@@ -34,9 +107,11 @@ module Datafile::Viewable
     when Databank::PeekType::ALL_TEXT
       self.peek_type = initial_peek_type
       self.peek_text = all_text_peek
+      true
     when Databank::PeekType::PART_TEXT
       self.peek_type = initial_peek_type
       self.peek_text = part_text_peek
+      true
     when Databank::PeekType::LISTING
       initiate_processing_task
     else
@@ -44,13 +119,13 @@ module Datafile::Viewable
     end
   rescue ActiveRecord::StatementInvalid
     self.update_attributes(peek_type: Databank::PeekType::NONE, peek_text: "")
-    true
+    false
   rescue StandardError => error
+    self.update_attributes(peek_type: Databank::PeekType::NONE, peek_text: "")
     Rails.logger.warn "unexpected problem in handling peek for datafile id: #{id} in dataset: #{dataset.key}."
     Rails.logger.warn error.class
     Rails.logger.warn error.message
-    Rails.logger.warn "current user: #{current_user.email}" if current_user
-    true
+    false
   end
 
   ##
@@ -88,73 +163,6 @@ module Datafile::Viewable
   # @return [String] the datafile's text preview based on the number of bytes allowed
   def self.peek_string(peek_bytes:)
     peek_bytes.string
-  end
-
-  ##
-  # Return the datafiles peek type based on its mime type and size
-  # @param [String] mime_type the datafile's mime type
-  # @param [Integer] num_bytes the number of bytes in the binary object
-  # @return [String] the datafile's peek type
-  def self.peek_type_from_mime(mime_type, num_bytes)
-    return Databank::PeekType::NONE unless num_bytes && mime_type && !mime_type.empty?
-
-    mime_parts = mime_type.split("/")
-    return Databank::PeekType::NONE unless mime_parts.length == 2
-
-    return Databank::PeekType::MARKDOWN if mime_parts[0] == "markdown"
-
-    text_subtypes = ["csv", "xml", "x-sh", "x-javascript", "json", "r", "rb"]
-    supported_image_subtypes = ["jp2", "jpeg", "dicom", "gif", "png", "bmp"]
-    listing_subtypes = ["x-zip-compressed",
-                        "zip",
-                        "x-7z-compressed",
-                        "x-rar-compressed",
-                        "x-tar",
-                        "x-xz",
-                        "x-gzip",
-                        "gzip",
-                        "x-rar",
-                        "x-gtar"]
-    pdf_subtypes = ["pdf", "x-pdf"]
-    microsoft_subtypes = ["msword",
-                          "vnd.openxmlformats-officedocument.wordprocessingml.document",
-                          "vnd.openxmlformats-officedocument.wordprocessingml.template",
-                          "vnd.ms-word.document.macroEnabled.12",
-                          "vnd.ms-word.template.macroEnabled.12",
-                          "vnd.ms-excel",
-                          "vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                          "vnd.openxmlformats-officedocument.spreadsheetml.template",
-                          "vnd.ms-excel.sheet.macroEnabled.12",
-                          "vnd.ms-excel.template.macroEnabled.12",
-                          "vnd.ms-excel.addin.macroEnabled.12",
-                          "vnd.ms-excel.sheet.binary.macroEnabled.12",
-                          "vnd.ms-powerpoint",
-                          "vnd.openxmlformats-officedocument.presentationml.presentation",
-                          "vnd.openxmlformats-officedocument.presentationml.template",
-                          "vnd.openxmlformats-officedocument.presentationml.slideshow",
-                          "vnd.ms-powerpoint.addin.macroEnabled.12",
-                          "vnd.ms-powerpoint.presentation.macroEnabled.12",
-                          "vnd.ms-powerpoint.template.macroEnabled.12",
-                          "vnd.ms-powerpoint.slideshow.macroEnabled.12"]
-    subtype = mime_parts[1].downcase
-    if mime_parts[0] == "text" || text_subtypes.include?(subtype)
-
-      return Databank::PeekType::ALL_TEXT unless num_bytes > ALLOWED_DISPLAY_BYTES
-
-      Databank::PeekType::PART_TEXT
-    elsif mime_parts[0] == "image"
-      return Databank::PeekType::NONE unless supported_image_subtypes.include?(subtype)
-
-      Databank::PeekType::IMAGE
-    elsif microsoft_subtypes.include?(subtype)
-      Databank::PeekType::MICROSOFT
-    elsif pdf_subtypes.include?(subtype)
-      Databank::PeekType::PDF
-    elsif listing_subtypes.include?(subtype)
-      Databank::PeekType::LISTING
-    else
-      Databank::PeekType::NONE
-    end
   end
 
 
