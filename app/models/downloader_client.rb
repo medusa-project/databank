@@ -21,16 +21,20 @@ class DownloaderClient
     def datafiles_download_hash(dataset:, web_ids:, zip_name:)
       begin
         targets_arr = targets_arr(dataset: dataset, web_ids: web_ids)
-        Rails.logger.warn "error in datafiles_download_hash for dataset #{dataset.id} and web_ids #{web_ids}"
-        return {"status": "error", "error": "internal error no valid files found"} unless targets_arr.count.positive?
+        Rails.logger.warn "targets_arr: #{targets_arr}"
+        unless targets_arr.count.positive?
+          Rails.logger.warn "error in datafiles_download_hash for dataset #{dataset.id} and web_ids #{web_ids}"
+          return {"status": "error", "error": "internal error no valid files found"}
+        end
       rescue StandardError => e
-        Rails.logger.warn "error in datafiles_download_hash: #{e}"
+        Rails.logger.warn "error in datafiles_download_hash: #{e.message}"
         return {"status": "error", "error": "internal error file path not found"}
       end
 
       medusa_request_json = {"root": "idb", "zip_name": zip_name.to_s, "targets": targets_arr}.to_json
       download_hash = request_download_hash(medusa_request_json: medusa_request_json)
       download_hash[:total_size] = total_size(targets_arr: targets_arr) if download_hash[:status] == "ok"
+      Rails.logger.warn "download_hash: #{download_hash}"
       download_hash
     end
 
@@ -69,9 +73,11 @@ class DownloaderClient
       client.post_body = medusa_request_json
       client.post
       client.headers = {"Content-Type": "application/json"}
+      Rails.logger.warn "client: #{client.to_yaml}"
       client.perform
       response_hash = JSON.parse(client.body_str)
-      Rails.logger.warn "error #{client.body_str}" unless response_hash.has_key?("download_url")
+      Rails.logger.warn "client body string: #{client.body_str}"
+      Rails.logger.warn "response_hash: #{response_hash}"
       return {"status": "error", "error": client.body_str} unless response_hash.has_key?("download_url")
 
       {"status": "ok", "download_url": response_hash["download_url"], "status_url": response_hash["status_url"]}
