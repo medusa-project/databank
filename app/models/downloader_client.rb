@@ -33,7 +33,7 @@ class DownloaderClient
 
       medusa_request_json = {"root": "idb", "zip_name": zip_name.to_s, "targets": targets_arr}.to_json
       download_hash = request_download_hash(medusa_request_json: medusa_request_json)
-      download_hash[:total_size] = total_size(targets_arr: targets_arr) if download_hash[:status] == "ok"
+      download_hash[:total_size] = total_size(dataset: dataset, web_ids: web_ids) if download_hash[:status] == "ok"
       Rails.logger.warn "download_hash: #{download_hash}"
       download_hash
     end
@@ -50,9 +50,9 @@ class DownloaderClient
       targets_arr = []
       web_ids.each do |web_id|
         df = dataset.datafiles.find_by(web_id: web_id)
-        targets_arr.push({"type": "file", "path": df.storage_key.to_s, "size": df.bytestream_size})
+        targets_arr.push({"type": "file", "path": df.storage_key.to_s})
       end
-      targets_arr.push({"type": "literal", "name": "dataset_info.txt", "content": dataset.record_text}, "size": dataset.record_text.bytesize)
+      targets_arr.push({"type": "literal", "name": "dataset_info.txt", "content": dataset.record_text})
       targets_arr
     end
 
@@ -90,14 +90,16 @@ class DownloaderClient
     ##
     # total_size
     # ----------
-    # @param targets_arr [Array] The array of files to download
+    # @param dataset [Dataset] The dataset containing the datafiles to download
+    # @param web_ids [Array] The array of web_ids for datafiles to download
     # @return [Integer] The total size of the files to download
-    def total_size(targets_arr:)
+    def total_size(dataset:, web_ids:)
       total_size = 0
-      targets_arr.each do |target|
-        total_size += target["size"]
+      web_ids.each do |web_id|
+        df = Datafile.find_by(web_id: web_id)
+        total_size += df.bytestream_size
       end
-      total_size
+      total_size += dataset.record_text.bytesize
     end
   end
 end
