@@ -73,16 +73,17 @@ class DownloaderClient
       client.post_body = medusa_request_json
       client.post
       client.headers = {"Content-Type": "application/json"}
-      Rails.logger.warn "client: #{client.to_yaml}"
       client.perform
       response_hash = JSON.parse(client.body_str)
-      Rails.logger.warn "client body string: #{client.body_str}"
+      Rails.logger.warn "medusa_request_json: #{medusa_request_json}"
       Rails.logger.warn "response_hash: #{response_hash}"
-      return {"status": "error", "error": client.body_str} unless response_hash.has_key?("download_url")
+      unless response_hash.has_key?("download_url")
+        return {"status": "error", "error": "invalid response from downloader service"}
+      end
 
       {"status": "ok", "download_url": response_hash["download_url"], "status_url": response_hash["status_url"]}
     rescue StandardError => e
-      Rails.logger.warn "error in request_download_hash: #{e}"
+      Rails.logger.warn "error interacting with medusa-downloader: #{e.class} #{e.message}"
       {"status": "error", "error": "internal error downloading files"}
     end
 
