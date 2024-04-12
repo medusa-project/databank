@@ -33,7 +33,6 @@ class DownloaderClient
       medusa_request_json = {"root": "idb", "zip_name": zip_name.to_s, "targets": targets_arr}.to_json
       download_hash = request_download_hash(medusa_request_json: medusa_request_json)
       download_hash[:total_size] = total_size(dataset: dataset, web_ids: web_ids) if download_hash[:status] == "ok"
-      Rails.logger.warn "download_hash: #{download_hash}"
       download_hash
     end
 

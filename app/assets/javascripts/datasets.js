@@ -589,25 +589,25 @@ function offerDownloadLink() {
     var zip64_threshold = 4000000000;
 
     $.each(selected_files, function (index, value) {
-        if (web_id_string != "") {
+        if (web_id_string !== "") {
             web_id_string = web_id_string + "~";
         }
         web_id_string = web_id_string + $(value).val();
     });
-    if (web_id_string != "") {
+    if (web_id_string !== "") {
         $.ajax({
             url: "/datasets/" + dataset_key + "/download_link?",
             data: {"web_ids": web_id_string},
             dataType: 'json',
             success: function (result) {
-                console.log(result);
-                if (result.status == 'ok') {
+                if (result.status === 'ok') {
                     $('.download-link').html("<h2><a href='" + result.url + "' target='_blank'>Download</a></h2>");
                     if (Number(result.total_size) > zip64_threshold) {
                         $('.download-help').html("<p>For selections of files larger than 4GB, the zip file will be in zip64 format. To open a zip64 formatted file on OS X (Mac) requires additional software not built into the operating system since version 10.11. Options include 7zX and The Unarchiver. If a Windows system has trouble opening the zip file, 7-Zip can be used.</p>")
                     }
                     $('#downloadLinkModal').modal('show');
                 } else {
+                    console.log(result);
                     $('.download-link').html("An unexpected error occurred.<br/>Details have been logged for review.<br/><a href='/help' target='_blank'>Contact the Research Data Service Team</a> with any questions.");
                     $('#downloadLinkModal').modal('show');
                 }
@@ -623,7 +623,6 @@ function offerDownloadLink() {
             //context: document.body
         }).done(function () {
             console.log("done");
-
         });
     }
 }
