@@ -21,6 +21,7 @@ class DownloaderClient
     def datafiles_download_hash(dataset:, web_ids:, zip_name:)
       begin
         targets_arr = targets_arr(dataset: dataset, web_ids: web_ids)
+        Rails.logger.warn "error in datafiles_download_hash for dataset #{dataset.id} and web_ids #{web_ids}"
         return {"status": "error", "error": "internal error no valid files found"} unless targets_arr.count.positive?
       rescue StandardError => e
         Rails.logger.warn "error in datafiles_download_hash: #{e}"
@@ -70,6 +71,7 @@ class DownloaderClient
       client.headers = {"Content-Type": "application/json"}
       client.perform
       response_hash = JSON.parse(client.body_str)
+      Rails.logger.warn "error #{client.body_str}" unless response_hash.has_key?("download_url")
       return {"status": "error", "error": client.body_str} unless response_hash.has_key?("download_url")
 
       {"status": "ok", "download_url": response_hash["download_url"], "status_url": response_hash["status_url"]}
