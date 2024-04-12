@@ -21,7 +21,6 @@ class DownloaderClient
     def datafiles_download_hash(dataset:, web_ids:, zip_name:)
       begin
         targets_arr = targets_arr(dataset: dataset, web_ids: web_ids)
-        Rails.logger.warn "targets_arr: #{targets_arr}"
         unless targets_arr.count.positive?
           Rails.logger.warn "error in datafiles_download_hash for dataset #{dataset.id} and web_ids #{web_ids}"
           return {"status": "error", "error": "internal error no valid files found"}
@@ -75,8 +74,6 @@ class DownloaderClient
       client.headers = {"Content-Type": "application/json"}
       client.perform
       response_hash = JSON.parse(client.body_str)
-      Rails.logger.warn "medusa_request_json: #{medusa_request_json}"
-      Rails.logger.warn "response_hash: #{response_hash}"
       unless response_hash.has_key?("download_url")
         return {"status": "error", "error": "invalid response from downloader service"}
       end

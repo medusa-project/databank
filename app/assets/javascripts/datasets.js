@@ -600,6 +600,7 @@ function offerDownloadLink() {
             data: {"web_ids": web_id_string},
             dataType: 'json',
             success: function (result) {
+                console.log(result);
                 if (result.status == 'ok') {
                     $('.download-link').html("<h2><a href='" + result.url + "' target='_blank'>Download</a></h2>");
                     if (Number(result.total_size) > zip64_threshold) {
@@ -612,6 +613,7 @@ function offerDownloadLink() {
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
+                console.log("error in offering download link");
                 console.log(xhr.status);
                 console.log(thrownError);
                 $('.download-link').html("An unexpected error occurred.<br/>Details have been logged for review.<br/><a href='/help' target='_blank'>Contact the Research Data Service Team</a> with any questions.");
