@@ -1,10 +1,21 @@
 # frozen_string_literal: true
 
+##
+# MedusaInfo
+# ------------
+# This class is responsible for getting information from Medusa, such as path in Medusa and Medusa mime type.
+# It is a bulk method to get info for all files for reports.
+
 require "net/http"
 require "net/https"
 require "uri"
 
 class MedusaInfo
+
+  ##
+  # content_type_manifest (class method)
+  # This class method is used to get the content type manifest from Medusa
+  # @return [Hash] the content type manifest
   def self.content_type_manifest
     user = IDB_CONFIG["medusa_info"]["user"]
     password = IDB_CONFIG["medusa_info"]["password"]
@@ -30,6 +41,10 @@ class MedusaInfo
     end
   end
 
+  ##
+  # doi_filename_mimetype (class method)
+  # This class method is used to get the doi, filename, and mimetype from the content type manifest
+  # @return [Hash] the doi, filename, and mimetype
   def self.doi_filename_mimetype
     content_type_manifest = MedusaInfo.content_type_manifest
 

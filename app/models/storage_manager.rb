@@ -1,5 +1,33 @@
 # frozen_string_literal: true
 
+##
+# StorageManager
+# ---------------
+# Singleton class that manages storage locations for the application.
+# ---------------
+# Attributes
+# ---------------
+# draft_root: MedusaStorage::Root, required
+# medusa_root: MedusaStorage::Root, required
+# message_root: MedusaStorage::Root, required
+# tmpfs_root: MedusaStorage::Root, required
+# globus_download_root: MedusaStorage::Root, optional
+# globus_ingest_root: MedusaStorage::Root, optional
+# root_set: MedusaStorage::RootSet, required
+# tmpdir: string, required
+# resource: Aws::S3::Resource, required
+# ---------------
+# Methods
+# ---------------
+# initialize: Initializes the object
+# initialize_tmpdir: Initializes the temporary directory
+# ensure_local_buckets: Ensures that local buckets exist
+# empty_local_buckets: Empties local buckets
+# setup_bucket: Sets up a bucket
+# bucket_exists?: Checks to see whether an Amazon Simple Storage Service (Amazon S3) bucket exists
+# delete_objects: Deletes objects from a bucket
+# client_options: Returns the client options
+# ---------------
 require "singleton"
 
 class StorageManager
@@ -14,6 +42,9 @@ class StorageManager
                 :tmpdir,
                 :resource
 
+  ##
+  # initialize
+  # Initializes the object
   def initialize
     storage_config = STORAGE_CONFIG[:storage].map(&:to_h)
     self.root_set = MedusaStorage::RootSet.new(storage_config)
@@ -29,11 +60,19 @@ class StorageManager
     initialize_tmpdir
   end
 
+  ##
+  # initialize_tmpdir
+  # Initializes the temporary directory
   def initialize_tmpdir
     self.tmpdir = IDB_CONFIG[:storage_tmpdir]
   end
 
+  ############################################################
   # methods to support local development and testing
+  ##########################################################
+  ##
+  # ensure_local_buckets
+  # Ensures that local buckets exist
   def ensure_local_buckets
     return false unless Rails.env.development? || Rails.env.test?
 
@@ -46,6 +85,9 @@ class StorageManager
     end
   end
 
+  ##
+  # empty_local_buckets
+  # Empties local buckets
   def empty_local_buckets
     return false unless Rails.env.development? || Rails.env.test?
 
@@ -58,6 +100,10 @@ class StorageManager
     end
   end
 
+  ##
+  # setup_bucket
+  # Sets up a bucket
+  # @param bucket_name [String] The name of the bucket.
   def setup_bucket(bucket_name:)
     return false unless Rails.env.development? || Rails.env.test?
 
@@ -86,13 +132,14 @@ class StorageManager
     delete_objects(bucket: bucket_name)
   end
 
+  ##
+  # bucket_exists?
   # Checks to see whether an Amazon Simple Storage Service
-  #   (Amazon S3) bucket exists.
+  # (Amazon S3) bucket exists.
   #
   # @param s3_client [Aws::S3::Client] An initialized S3 client.
   # @param bucket_name [String] The name of the bucket.
   # @return [Boolean] true if the bucket exists; otherwise, false.
-  #
   def bucket_exists?(s3_client:, bucket_name:)
     response = s3_client.list_buckets
     response.buckets.each do |bucket|
@@ -104,11 +151,20 @@ class StorageManager
     false
   end
 
+  ##
+  # delete_objects
+  # Deletes objects from a bucket
+  # @param bucket [String] The name of the bucket.
+  # @param key_prefix [String] The prefix of the keys to delete.
   def delete_objects(bucket:, key_prefix: "")
     bucket = resource.bucket(bucket)
     bucket.objects(prefix: key_prefix).each(&:delete)
   end
 
+  ##
+  # client_options
+  # Returns the client options for use in creating the S3 client.
+  # @return [Hash] the client options
   def client_options
     opts = {region: IDB_CONFIG[:aws][:region]}
     if Rails.env.development? || Rails.env.test?

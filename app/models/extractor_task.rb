@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+# ExtractorTask model
+# This model is used to represent the tasks that are sent to the extractor
+# The Illinois Data Bank Archive Extractor is a microservice that extracts metadata
+# from archive-type files such as zip, tar, and tar.gz
+# https://wiki.library.illinois.edu/scars/Production_Services/Illinois_Data_Bank_Archive_Extractor
+
 class ExtractorTask < ApplicationRecord
 
   has_one :extractor_response, dependent: :destroy
