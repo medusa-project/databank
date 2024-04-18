@@ -26,8 +26,10 @@ module Dataset::Relatable
     if related_materials.count.positive?
       related_materials.each do |material|
         datacite_arr = []
+        material.strip_trailing_whitespace
         datacite_arr = material.datacite_list.split(",") if material.datacite_list && material.datacite_list != ""
         datacite_arr.each do |relationship|
+          relationship = relationship.strip
           if [Databank::Relationship::NEW_VERSION_OF, Databank::Relationship::PREVIOUS_VERSION_OF].exclude?(relationship)
             tmp_external.add(material)
           end

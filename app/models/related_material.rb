@@ -53,6 +53,7 @@ class RelatedMaterial < ApplicationRecord
   belongs_to :dataset
   audited associated_with: :dataset
   after_create :set_dataset_nested_updated_at
+  before_update :strip_trailing_whitespace
   after_update :set_dataset_nested_updated_at
   before_destroy :set_dataset_nested_updated_at
 
@@ -79,7 +80,8 @@ class RelatedMaterial < ApplicationRecord
   # @return [Array] an array of relationships
   def relationship_arr
     if datacite_list && datacite_list != ""
-      datacite_list.split(",")
+      relationship_array = datacite_list.split(",")
+      relationship_array.map(&:strip)
     else
       []
     end
@@ -181,5 +183,13 @@ class RelatedMaterial < ApplicationRecord
     "invalid or unresponsive"
   else
     "ok"
+  end
+
+  ##
+  # strip trailing whitespace from datacite_list
+  # If the last character of datacite_list is a space, it strips the space
+  # @return [String] the datacite_list without trailing whitespace
+  def strip_trailing_whitespace
+    self.update_attribute("datacite_list", datacite_list.strip) if datacite_list && datacite_list[-1] == " "
   end
 end

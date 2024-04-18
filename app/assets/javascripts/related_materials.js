@@ -94,7 +94,7 @@ function add_material_row() {
             '<input type="hidden" name="dataset[related_materials_attributes][' + newId + '][datacite_list]" id="dataset_related_materials_attributes_' + newId + '_datacite_list" />' +
             '<input name="datacite_relation" type="checkbox" value="IsSupplementTo" class="material_checkbox_' + newId + '" onchange="handle_relationship_box(' + newId + ')"> IsSupplementTo </input>' +
             '<br/>' +
-            '<input name="datacite_relation" type="checkbox" value="IsSupplementedBy " class="material_checkbox_' + newId + '" onchange="handle_relationship_box(' + newId + ')"> IsSupplementedBy  </input>' +
+            '<input name="datacite_relation" type="checkbox" value="IsSupplementedBy" class="material_checkbox_' + newId + '" onchange="handle_relationship_box(' + newId + ')"> IsSupplementedBy  </input>' +
             '<br/>' +
             '<input name="datacite_relation" type="checkbox" value="IsCitedBy" class="material_checkbox_' + newId + '" onchange="handle_relationship_box(' + newId + ')"> IsCitedBy </input>' +
             '<br/>' +
