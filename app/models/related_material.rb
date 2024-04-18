@@ -164,6 +164,14 @@ class RelatedMaterial < ApplicationRecord
     report += "</table>"
   end
 
+  ##
+  # strip trailing whitespace from datacite_list
+  # If the last character of datacite_list is a space, it strips the space
+  # @return [String] the datacite_list without trailing whitespace
+  def strip_trailing_whitespace
+    self.update_attribute("datacite_list", datacite_list.strip) if datacite_list && datacite_list[-1] == " "
+  end
+
   private
 
   ##
@@ -185,11 +193,4 @@ class RelatedMaterial < ApplicationRecord
     "ok"
   end
 
-  ##
-  # strip trailing whitespace from datacite_list
-  # If the last character of datacite_list is a space, it strips the space
-  # @return [String] the datacite_list without trailing whitespace
-  def strip_trailing_whitespace
-    self.update_attribute("datacite_list", datacite_list.strip) if datacite_list && datacite_list[-1] == " "
-  end
 end
