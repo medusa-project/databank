@@ -53,7 +53,6 @@ class RelatedMaterial < ApplicationRecord
   belongs_to :dataset
   audited associated_with: :dataset
   after_create :set_dataset_nested_updated_at
-  before_update :strip_trailing_whitespace
   after_update :set_dataset_nested_updated_at
   before_destroy :set_dataset_nested_updated_at
 
@@ -162,14 +161,6 @@ class RelatedMaterial < ApplicationRecord
       end
     end
     report += "</table>"
-  end
-
-  ##
-  # strip trailing whitespace from datacite_list
-  # If the last character of datacite_list is a space, it strips the space
-  # @return [String] the datacite_list without trailing whitespace
-  def strip_trailing_whitespace
-    self.update_attribute("datacite_list", datacite_list.strip) if datacite_list && datacite_list[-1] == " "
   end
 
   private
