@@ -118,13 +118,15 @@ module Datafile::Viewable
       true
     end
   rescue ActiveRecord::StatementInvalid
-    self.update_attributes(peek_type: Databank::PeekType::NONE, peek_text: "")
+    self.update_attribute("peek_type", Databank::PeekType::NONE)
+    self.update_attribute("peek_text", "")
     false
   rescue StandardError => error
-    self.update_attributes(peek_type: Databank::PeekType::NONE, peek_text: "")
     Rails.logger.warn "unexpected problem in handling peek for datafile id: #{id} in dataset: #{dataset.key}."
     Rails.logger.warn error.class
     Rails.logger.warn error.message
+    self.update_attribute("peek_type", Databank::PeekType::NONE)
+    self.update_attribute("peek_text", "")
     false
   end
 
