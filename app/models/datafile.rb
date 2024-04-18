@@ -26,8 +26,7 @@ class Datafile < ApplicationRecord
 
   WEB_ID_LENGTH = 5
 
-  ALLOWED_CHAR_NUM = 1024 * 8
-  ALLOWED_DISPLAY_BYTES = ALLOWED_CHAR_NUM * 8
+
   before_create { self.web_id ||= generate_web_id }
   after_create :handle_peek
   after_create :set_dataset_nested_updated_at

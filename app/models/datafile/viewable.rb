@@ -11,6 +11,8 @@
 
 module Datafile::Viewable
   extend ActiveSupport::Concern
+  ALLOWED_DISPLAY_BYTES = ALLOWED_CHAR_NUM * 8
+  ALLOWED_CHAR_NUM = 1024 * 8
 
   class_methods do
     ##
