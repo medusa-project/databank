@@ -104,6 +104,8 @@ module Datafile::Viewable
     Rails.logger.warn "no binary_name for datafile id: #{id}" unless binary_name
     return false unless binary_name
 
+    self.ensure_mime_type
+
     file_parts = binary_name.split(".")
     if file_parts && markdown_extensions.include?(file_parts.last)
       markdown_text = Application.markdown.render(all_text_peek)
@@ -142,6 +144,27 @@ module Datafile::Viewable
   end
 
   ##
+  # mime_type_from_name
+  # This method returns the mime type of the datafile based on its name
+  # @return [String] the mime type of the datafile
+  # Logs but does not raise exceptions, because the mime type is not critical to the datafile's functionality
+  def mime_type_from_name
+    return nil unless binary_name
+
+    file_parts = binary_name.split(".")
+    return nil unless file_parts
+
+    extension = file_parts.last
+    mime_type = MIME::Types.type_for(extension).first&.content_type
+    mime_type
+  rescue StandardError => error
+    Rails.logger.warn "unexpected problem deriving mime type for datafile id: #{id} in dataset: #{dataset.key}."
+    Rails.logger.warn error.class
+    Rails.logger.warn error.message
+    "application/octet-stream"
+  end
+
+  ##
   # @return [String] the datafile's preview text, used when the whole text would be too large
   def part_text_peek
     return "file not found" unless current_root.exist?(storage_key)
@@ -170,8 +193,6 @@ module Datafile::Viewable
       return  file.read
     end
   end
-
-
 
   ##
   # Path for iiif server to use in UI previews on landing page

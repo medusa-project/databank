@@ -28,8 +28,8 @@ class Datafile < ApplicationRecord
 
 
   before_create { self.web_id ||= generate_web_id }
-  after_create :handle_peek
   after_create :set_dataset_nested_updated_at
+  after_create :handle_peek
   after_update :set_dataset_nested_updated_at
   before_destroy :set_dataset_nested_updated_at
   before_destroy :destroy_job
@@ -98,6 +98,13 @@ class Datafile < ApplicationRecord
     binary_name
   end
 
+  ##
+  # ensure_mime_type
+  # This method ensures that the mime type is set
+  # It sets the mime type to the mime type from the name if the mime type is not set
+  def ensure_mime_type
+    self.update_attribute('mime_type', self.mime_type_from_name) unless mime_type
+  end
   ##
   # @return [Boolean] whether the datafile is a readme file
   def readme?
