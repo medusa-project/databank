@@ -81,9 +81,18 @@ module Datafile::Viewable
         Databank::PeekType::NONE
       end
     end
+
+    ##
+    # @param [Integer] peek_bytes the number of bytes to read from the datafile for the preview
+    # @return [String] the datafile's text preview based on the number of bytes allowed
+    def peek_string(peek_bytes:)
+      peek_bytes.string
+    end
   end
 
+  ############################################################
   # instance methods:
+  # #########################################################
 
   ##
   # Sets the datafile's preview type and text, based on the datafile's mime type
@@ -162,12 +171,7 @@ module Datafile::Viewable
     end
   end
 
-  ##
-  # @param [Integer] peek_bytes the number of bytes to read from the datafile for the preview
-  # @return [String] the datafile's text preview based on the number of bytes allowed
-  def self.peek_string(peek_bytes:)
-    peek_bytes.string
-  end
+
 
   ##
   # Path for iiif server to use in UI previews on landing page

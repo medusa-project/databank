@@ -155,9 +155,7 @@
                 License
             .panel-body
               -@search.facet(:license_code).rows.each do |row|
-
                 - if row.value != ""
-
                   .facet
                     -if params.has_key?('license_codes') && params['license_codes'].include?(row.value)
                       %input(type="checkbox" class="checkFacet checkFacetGroup license_facet" name="license_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
@@ -168,7 +166,6 @@
                         = Dataset.license_name_from_code(row.value)
                         ="(#{row.count})"
 
-
         -if current_user && current_user.role == 'admin'
           .panel-group
             .panel.panel-default
@@ -177,14 +174,11 @@
                   Visibility
               .panel-body
                 -for row in @search.facet(:visibility_code).rows
-                  =debug row
                   .facet
                     -if params.has_key?('visibility_codes') && params['visibility_codes'].include?(row.value)
                       %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
                       = Dataset.visibility_name_from_code(row.value)
                       ="(#{row.count})"
-                    - elsif Dataset.visibility_name_from_code(row.value) == 'Unknown'
-                      next
                     -else
                       %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
                         = Dataset.visibility_name_from_code(row.value)
