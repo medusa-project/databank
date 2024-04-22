@@ -456,10 +456,10 @@ module Dataset::Filterable
     def list_with_facet(list:, search_get_facets:, facet:)
       search_get_facets.facet(facet).rows.each do |outer_row|
         has_this_row = false
-        list.facet(:visibility_code).rows.each do |inner_row|
+        list.facet(facet).rows.each do |inner_row|
           has_this_row = true if inner_row.value == outer_row.value
         end
-        list.facet(:visibility_code).rows << Placeholder_FacetRow.new(outer_row.value, 0) unless has_this_row
+        list.facet(facet).rows << Placeholder_FacetRow.new(outer_row.value, 0) unless has_this_row
       end
       list
     end
