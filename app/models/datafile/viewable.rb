@@ -169,7 +169,6 @@ module Datafile::Viewable
     peek_bytes.string
   end
 
-
   ##
   # Path for iiif server to use in UI previews on landing page
   # medusa mounts are different on iiif server

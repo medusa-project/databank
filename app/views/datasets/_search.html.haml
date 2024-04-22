@@ -58,6 +58,7 @@
 
                     -for row in @search.facet(:visibility_code).rows
                       .facet
+
                         -if params.has_key?('visibility_codes') && params['visibility_codes'].include?(row.value)
                           %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
                           = Dataset.visibility_name_from_code(row.value)
