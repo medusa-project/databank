@@ -73,7 +73,7 @@ resources :datasets do
       get 'reset_upload'
       get 'preview'
       get 'view'
-      get 'viewtext', to: 'datafiles#peek_text', defaults: { format: 'json' }
+      get 'viewtext', defaults: { format: 'json' }
       get 'refresh_preview'
     end
     collection do

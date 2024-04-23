@@ -247,7 +247,7 @@ class DatafilesController < ApplicationController
     end
   end
 
-  def peek_text
+  def viewtext
     render json: {peek_text: @datafile.peek_text}
   end
 

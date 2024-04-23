@@ -407,6 +407,7 @@ collaborators to access the data files while the dataset is not public.</li>
   # PATCH/PUT /datasets/1.json
   def update
     authorize! :update, @dataset
+    @dataset.ensure_previews
     old_publication_state = @dataset.publication_state
     old_creator_state = @dataset.org_creators || false
     @dataset.release_date ||= Date.current

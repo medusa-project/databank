@@ -199,9 +199,7 @@ ready = function () {
             $("[id^=edit_dataset]").submit();
         } else {
             alert("UPLOADS IN PROGRESS. Try again once uploads are complete.")
-            return
         }
-
     });
 
     $('#update-confirm').prop('disabled', true);

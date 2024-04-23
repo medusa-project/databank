@@ -77,4 +77,21 @@ module Dataset::Filesetable
     datafiles.reject(&:upload_complete?).sort_by(&:binary_name)
   end
 
+  ##
+  # ensure that all datafiles have previews
+  def ensure_previews
+    datafiles.each do |datafile|
+      next if datafile.peek_text && datafile.peek_text.length.positive?
+
+      if datafile.peek_type.nil?
+        datafile.handle_peek
+        next
+      end
+
+      next if datafile.peek_type == Databank::PeekType::LISTING
+
+      datafile.handle_peek if datafile.peek_type == Databank::PeekType::NONE
+    end
+  end
+
 end
