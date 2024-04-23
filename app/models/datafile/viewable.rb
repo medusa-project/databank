@@ -259,13 +259,13 @@ module Datafile::Viewable
   ##
   # @return [Boolean] true if the datafile is a microsoft file that can be previewed in the browser
   def microsoft?
-    peek_type == "microsoft"
+    peek_type == Databank::PeekType::MICROSOFT
   end
 
   ##
   # @return [Boolean] true if the datafile is a pdf file that can be previewed in the browser
   def pdf?
-    peek_type == "pdf"
+    peek_type == Databank::PeekType::PDF
   end
 
   ##
