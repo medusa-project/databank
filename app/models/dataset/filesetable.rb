@@ -81,6 +81,7 @@ module Dataset::Filesetable
   # ensure that all datafiles have previews
   def ensure_previews
     datafiles.each do |datafile|
+      datafile.ensure_mime_type
       next if datafile.peek_text && datafile.peek_text.length.positive?
 
       if datafile.peek_type.nil?

@@ -104,11 +104,6 @@ module Datafile::Viewable
     Rails.logger.warn "no binary_name for datafile id: #{id}" unless binary_name
     return false unless binary_name
 
-    unless self.mime_type
-      self.mime_type = self.mime_type_from_name
-      self.save
-    end
-
     file_parts = binary_name.split(".")
     if file_parts && markdown_extensions.include?(file_parts.last)
       markdown_text = Application.markdown.render(all_text_peek)
