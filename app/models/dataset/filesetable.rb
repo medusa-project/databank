@@ -81,9 +81,17 @@ module Dataset::Filesetable
   # ensure that all datafiles have previews
   def ensure_previews
     datafiles.each do |datafile|
-      datafile.ensure_mime_type
       next if datafile.peek_text && datafile.peek_text.length.positive?
 
+      begin
+        datafile.ensure_mime_type
+      rescue Exception => e
+        # log the error and continue
+        # the peek_text will be nil and the datafile will be skipped
+        # Yes, I want Exception here because this should catch everything, even runtime errors
+        Rails.logger.warn("error ensuring mime type for datafile #{datafile.web_id}: #{e.message}")
+        next
+      end
       if datafile.peek_type.nil?
         datafile.handle_peek
         next
