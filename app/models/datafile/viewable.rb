@@ -133,7 +133,14 @@ module Datafile::Viewable
     self.update_attribute("peek_text", "")
     false
   rescue StandardError => error
-    Rails.logger.warn "unexpected problem in handling peek for datafile id: #{id} in dataset: #{dataset.key}."
+    Rails.logger.warn "unexpected Standard Error in handling peek for datafile id: #{id} in dataset: #{dataset.key}."
+    Rails.logger.warn error.class
+    Rails.logger.warn error.message
+    self.update_attribute("peek_type", Databank::PeekType::NONE)
+    self.update_attribute("peek_text", "")
+    false
+  rescue Exception => error
+    Rails.logger.warn "unexpected Exception in handling peek for datafile: #{web_id} in dataset: #{dataset.key}."
     Rails.logger.warn error.class
     Rails.logger.warn error.message
     self.update_attribute("peek_type", Databank::PeekType::NONE)
