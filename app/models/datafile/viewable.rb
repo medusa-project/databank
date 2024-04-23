@@ -107,8 +107,9 @@ module Datafile::Viewable
     file_parts = binary_name.split(".")
     if file_parts && markdown_extensions.include?(file_parts.last)
       markdown_text = Application.markdown.render(all_text_peek)
-      self.update_attributes(peek_type: Databank::PeekType::MARKDOWN, peek_text: markdown_text)
-      return true
+      self.peek_type = Databank::PeekType::MARKDOWN
+      self.peek_text = markdown_text
+      return self.save
     end
 
     initial_peek_type = Datafile.peek_type_from_mime(mime_type, binary_size)
@@ -118,15 +119,16 @@ module Datafile::Viewable
     when Databank::PeekType::ALL_TEXT
       self.peek_type = initial_peek_type
       self.peek_text = all_text_peek
-      true
+      self.save
     when Databank::PeekType::PART_TEXT
       self.peek_type = initial_peek_type
       self.peek_text = part_text_peek
-      true
+      self.save
     when Databank::PeekType::LISTING
       initiate_processing_task
     else
-      true
+      self.peek_type = initial_peek_type
+      self.save
     end
   rescue ActiveRecord::StatementInvalid
     self.update_attribute("peek_type", Databank::PeekType::NONE)
