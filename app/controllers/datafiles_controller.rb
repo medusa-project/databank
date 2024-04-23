@@ -9,7 +9,7 @@ class DatafilesController < ApplicationController
 
   before_action :set_datafile, only: [:show, :edit, :update, :destroy, :download, :record_download, :download_no_record, :download_url,
                                       :upload, :do_upload, :reset_upload, :resume_upload, :update_status, :bucket_and_key,
-                                      :view, :peek_text, :filepath, :iiif_filepath, :refresh_preview]
+                                      :view, :viewtext, :filepath, :iiif_filepath, :refresh_preview]
 
   before_action :set_dataset, only: [:index, :show, :edit, :new, :add, :create, :destroy, :upload, :do_upload]
 
