@@ -86,7 +86,7 @@ module Datafile::Viewable
     # @param [Integer] peek_bytes the number of bytes to read from the datafile for the preview
     # @return [String] the datafile's text preview based on the number of bytes allowed
     def peek_string(peek_bytes:)
-      peek_bytes.read.encode("UTF-8", invalid: :replace, replace: "?")
+      peek_bytes.read.encode("UTF-8", invalid: :replace, replace: "?").delete("\u0000")
     end
   end
 
@@ -130,10 +130,6 @@ module Datafile::Viewable
       self.peek_type = initial_peek_type
       self.save
     end
-  rescue ActiveRecord::StatementInvalid
-    self.update_attribute("peek_type", Databank::PeekType::NONE)
-    self.update_attribute("peek_text", "")
-    false
   rescue StandardError => error
     Rails.logger.warn "unexpected Standard Error in handling peek for datafile id: #{id} in dataset: #{dataset.key}."
     Rails.logger.warn error.class
