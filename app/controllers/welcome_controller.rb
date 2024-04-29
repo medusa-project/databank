@@ -4,6 +4,11 @@ class WelcomeController < ApplicationController
     if active_featured_researchers.count.positive?
       @featured_researcher = active_featured_researchers.order(Arel.sql("RANDOM()")).first
     end
+    respond_to do |format|
+      format.html
+      format.json {render json: @featured_researcher}
+      format.xml {render xml: Robot.blank_stare_xml}
+    end
   end
 
   def contact

@@ -262,7 +262,7 @@ module Dataset::Filterable
             with :publication_state, Databank::PublicationState::TempSuppress::FILE
           end
 
-          if params.has_key?("depositors")
+          if params.has_key?("depositors") && params["depositors"].present?
             any_of do
               params["depositors"].each do |depositor|
                 with :depositor, depositor
@@ -270,7 +270,7 @@ module Dataset::Filterable
             end
           end
 
-          if params.has_key?("subjects")
+          if params.has_key?("subjects") && params["subjects"].present?
             any_of do
               params["subjects"].each do |subject|
                 with :subject_text, subject
@@ -278,7 +278,7 @@ module Dataset::Filterable
             end
           end
 
-          if params.has_key?("publication_years")
+          if params.has_key?("publication_years") && params["publication_years"].present?
             any_of do
               params["publication_years"].each do |publication_year|
                 with :publication_year, publication_year
@@ -286,7 +286,7 @@ module Dataset::Filterable
             end
           end
 
-          if params.has_key?("license_codes")
+          if params.has_key?("license_codes") && params["license_codes"].present?
             any_of do
               params["license_codes"].each do |license_code|
                 with :license_code, license_code
@@ -294,7 +294,7 @@ module Dataset::Filterable
             end
           end
 
-          if params.has_key?("funder_codes")
+          if params.has_key?("funder_codes") && params["funder_codes"].present?
             any_of do
               params["funder_codes"].each do |funder_code|
                 with :funder_codes, funder_code

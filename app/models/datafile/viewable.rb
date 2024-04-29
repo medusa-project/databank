@@ -85,6 +85,8 @@ module Datafile::Viewable
     ##
     # @param [Integer] peek_bytes the number of bytes to read from the datafile for the preview
     # @return [String] the datafile's text preview based on the number of bytes allowed
+    # @note: this method reads the first peek_bytes from the datafile and returns the text
+    # It encodes the text as UTF-8, replaces invalid characters with "?", and deletes null characters
     def peek_string(peek_bytes:)
       peek_bytes.read.encode("UTF-8", invalid: :replace, replace: "?").delete("\u0000")
     end
