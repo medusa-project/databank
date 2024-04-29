@@ -1,20 +1,16 @@
 # frozen_string_literal: true
 
 ##
-# Funder model
-# This model is used to store the funders
-# Every funder belongs to a dataset
-# Every funder has a name, identifier, identifier_scheme, and grant
-# The list of funders is displayed in the dataset show page
-# The most common funders can be selected from a dropdown list
-# The dropdown list is populated from the FUNDER_INFO_ARR array in the aa_first.rb initializer
-# The identifier and identifier_scheme for all the listed funders are DOI-based
-# The grant identifier is optional, but when it is provided, it is displayed in the dataset show page
-# Attributes:
-# - name: string, the name of the funder
-# - identifier: string, the identifier of the funder, usually from CrossRef Funder Registry
-# - identifier_scheme: string, the scheme for the identifier, usually DOI
-# - grant: string, the grant identifier
+# Represents a funder for a dataset
+#
+# == Attributes
+#
+# * +name+ - the name of the funder
+# * +identifier+ - the identifier of the funder
+# * +identifier_scheme+ - the identifier scheme of the funder
+# * +grant+ - the grant number of the funder
+# * +dataset_id+ - the id of the dataset the funder belongs to
+# * +code+ - the code of the funder, for use in the dataset form
 
 class Funder < ApplicationRecord
   include ActiveModel::Serialization
@@ -26,22 +22,18 @@ class Funder < ApplicationRecord
   before_destroy :set_dataset_nested_updated_at
 
   ##
-  # as_json
-  # This method is used to return a hash of the funder object
+  # @return [Hash] the funder as a hash
   def as_json(_options={})
     super(only: %i[name identifier identifier_scheme grant created_at updated_at])
   end
 
   ##
-  # set_dataset_nested_updated_at
-  # This method is used to update the nested_updated_at attribute of the dataset
+  # updates the nested_updated_at attribute of the associated Dataset for use when this funder is updated
   def set_dataset_nested_updated_at
     dataset.update_attribute(:nested_updated_at, Time.now.utc)
   end
 
   ##
-  # display_info
-  # This instance method is used to return the display information for the funder for the dataset show page
   # @return [String] the display information for the funder
   # If the grant is present, the display information is the name of the funder followed by the grant
   def display_info

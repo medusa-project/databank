@@ -1,16 +1,13 @@
 # frozen_string_literal: true
 
 ##
-# Metric
-# ------------
-# This class is responsible for reports offered on the metrics page.
+# Encapsulates handling reports offered on the metrics page.
 
 class Metric
   class << self
 
     ##
-    # refresh_all
-    # This method is used to refresh all the metrics
+    # refresh all the metrics
     def refresh_all
       Metric.write_dataset_downloads_json
       Metric.write_datafile_downloads_json
@@ -20,8 +17,6 @@ class Metric
     end
 
     ##
-    # modified_times
-    # This method is used to get the modified times of the metrics
     # @return [Hash] the modified times of the metrics
     def modified_times
       write_dataset_downloads_json unless File.exist?(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
@@ -55,8 +50,7 @@ class Metric
     end
 
     ##
-    # write_datasets_tsv
-    # This method is used to write the datasets tsv
+    # write the datasets tsv
     def write_datasets_tsv
       target_path = METRICS_CONFIG[:datasets_tsv][:relative_path]
       datasets = Dataset.all_with_public_metadata
@@ -94,8 +88,7 @@ class Metric
     end
 
     ##
-    # write_dataset_downloads_json
-    # This method is used to write the dataset downloads json
+    # write the dataset downloads json
     def write_dataset_downloads_json
       target_path = METRICS_CONFIG[:dataset_downloads_json][:relative_path]
       File.open(target_path, "w") do |f|
@@ -111,8 +104,7 @@ class Metric
     end
 
     ##
-    # write_datafile_downloads_json
-    # This method is used to write the datafile downloads json
+    # write the datafile downloads json
     def write_datafile_downloads_json
       target_path = METRICS_CONFIG[:datafile_downloads_json][:relative_path]
       File.open(target_path, "w") do |f|
@@ -128,8 +120,7 @@ class Metric
     end
 
     ##
-    # write_datafiles_csv
-    # This method is used to write the datafiles csv
+    # write the datafiles csv
     def write_datafiles_csv
       doi_filename_mimetype = MedusaInfo.doi_filename_mimetype
       render(json: { error: "mimetype map not found", status: 500 }) && (return nil) unless doi_filename_mimetype
@@ -150,13 +141,11 @@ class Metric
     end
 
     ##
-    # write_datafile_csv_datafile_batch
-    # This method is used to write the datafile csv datafile batch
+    # write the datafile csv datafile batch
     # @param target_path [String] the target path
     # @param dataset [Dataset] the dataset
     # @param datafiles [Array] the datafiles
     # @param doi_filename_mimetype [Hash] the doi, filename, and mimetype
-    # @return [CSV] the report
     def write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype)
 
       File.open(target_path, "a") do |f|

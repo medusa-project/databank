@@ -1,10 +1,46 @@
 # frozen_string_literal: true
 
 ##
-# Dataset model
+# Represents a dataset in the application.
 # @note Dataset is the primary model for the application.
 # It is the core model that holds all the metadata information for a dataset.
-# It includes methods for interacting with the metadata and files of a dataset.
+#
+# == Attributes
+#
+# * +key+ - the unique identifier for the dataset
+# * +title+ - the title of the dataset
+# * +creator_text+ - the list of creators of the dataset, no value is stored (could be removed from the table)
+# * +identifier+ - the identifier of the dataset
+# * +publisher+ - the publisher of the dataset
+# * +description+ - the description of the dataset
+# * +license+ - the license of the dataset
+# * +depositor_name+ - the name of the depositor of the dataset
+# * +depositor_email+ - the email of the depositor of the dataset
+# * +complete+ - true if the dataset is complete
+# * +corresponding_creator_name+ - the name of the corresponding creator of the dataset
+# * +corresponding_creator_email+ - the email of the corresponding creator of the dataset
+# * +keywords+ - the keywords of the dataset
+# * +publication_state+ - the publication state of the dataset
+# * +curator_hold+ - true if the dataset is on hold by the curator
+# * +release_date+ - the release date of the dataset
+# * +embargo+ - the embargo of the dataset
+# * +is_test+ - true if the dataset is a test dataset
+# * +is_import+ - true if the dataset is an import
+# * +tombstone_date+ - the tombstone date of the dataset
+# * +have_permission+ - assertion that depositor has permission to deposit this dataset, one of "yes", "no", or "unknown"
+# * +removed_private+ - assertion that private files have been removed, one of "yes", "no", or "na"
+# * +agree+ - assertion that the depositor agrees to the terms of deposit, one of "yes", "no", or "unknown"
+# * +hold_state+ - the hold state of the dataset
+# * +medusa_dataset_dir+ - the medusa dataset directory of the dataset
+# * +dataset_version+ - the version of the dataset
+# * +suppress_changelog+ - true if the changelog is suppressed
+# * +version_comment+ - the version comment of the dataset
+# * +subject+ - the subject of the dataset
+# * +org_creators+ - true if the creators are organizations
+# * +data_curation_network+ - true if the dataset is part of the data curation network
+# * +nested_updated_at+ - the nested updated at of the dataset
+#
+# Includes methods for interacting with the metadata and files of a dataset.
 # Methods not concerned with computed attributes are included in the Dataset modules.
 
 require "fileutils"
@@ -129,8 +165,6 @@ class Dataset < ApplicationRecord
   end
 
   ##
-  # Metadata public
-  # This method returns whether the metadata is public
   # @return [Boolean] true if the dataset meets all criteria:
   # - is not a test dataset
   # - the publication state is released, embargoed, or suppressed
@@ -149,7 +183,6 @@ class Dataset < ApplicationRecord
   end
 
   ##
-  # This method returns whether the dataset is a draft
   # @return [Boolean] true if the publication state is draft
   # Otherwise, it returns false
   def draft?
@@ -157,7 +190,6 @@ class Dataset < ApplicationRecord
   end
 
   ##
-  # This method returns whether the files are public
   # @return [Boolean] true the publication state is released and the hold state is nil or file-only suppressed
   # Otherwise, it returns false
   def files_public?
@@ -259,9 +291,8 @@ class Dataset < ApplicationRecord
   end
 
   ##
-  # Returns the updated date of the dataset, including consideration of nested objects
-  # The nested_updated_at attribute is set when any nested objects are updated
   # @return [String] the updated date of the dataset in ISO8601 format
+  # @note The nested_updated_at attribute is set when any nested objects are updated
   def updated_date
     return updated_at.to_date.iso8601 if nested_updated_at.nil?
 
@@ -269,7 +300,7 @@ class Dataset < ApplicationRecord
   end
 
 
-  # utility method that could probably be refactored to somewhere else
+  # utility method that could probably be refactored to somewhere else more central
   def error_hash(message)
     {status: "error", error_text: message}
   end
@@ -283,7 +314,7 @@ class Dataset < ApplicationRecord
   end
 
   ##
-  # Generates a guaranteed-unique key, of which there are
+  # generates a guaranteed-unique key, of which there are
   # 36^KEY_LENGTH available.
   def generate_key
     proposed_key = nil
@@ -297,14 +328,14 @@ class Dataset < ApplicationRecord
   end
 
   ##
-  # Destorys all audit records associated with the dataset, only for use when the dataset is destroyed
+  # destroys all audit records associated with the dataset, only for use when the dataset is destroyed
   def destroy_audit
     associated_audits.each(&:destroy)
     audits.each(&:destroy)
   end
 
   ##
-  # Destroys all system files associated with the dataset, only for use when the dataset is destroyed
+  # destroys all system files associated with the dataset, only for use when the dataset is destroyed
   def remove_system_files
     root = StorageManager.instance.draft_root
     system_files.each do |system_file|

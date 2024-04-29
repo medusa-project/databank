@@ -1,9 +1,18 @@
 # frozen_string_literal: true
 
-# defines which users have permission to perform which actions
+##
+# Defines user permissions for the application.
+#
+# The Ability class is a CanCanCan class that defines the permissions for the application.
+#
+# The class is initialized with a user object and defines the permissions for the user based on the user's role.
+
 class Ability
   include CanCan::Ability
-
+  ##
+  # Initializes the Ability class with the user object.
+  # @param [User] user the user object
+  # @return [Ability] the initialized Ability object
   def initialize(user)
     # cancancan automatically adds read, create, update
     # alias_action :index, :show, :to => :read

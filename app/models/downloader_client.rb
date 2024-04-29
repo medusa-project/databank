@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 ##
-# DownloaderClient model
-# @note: This model is used to download files from Medusa
+# Encapsulates client functionality for the Medusa downloader service
 
 require "json"
 require "curb"
@@ -13,8 +12,6 @@ class DownloaderClient
   # all methods are class methods
   class << self
     ##
-    # datafiles_download_hash
-    # ----------------------
     # @param dataset [Dataset] The dataset the files belong to
     # @param web_ids [Array] The web_ids of the files to download
     # @param zip_name [String] The name of the zip file to create
@@ -39,8 +36,6 @@ class DownloaderClient
     private
 
     ##
-    # targets_arr
-    # -----------
     # @param dataset [Dataset] The dataset the files belong to
     # @param web_ids [Array] The web_ids of the files to download
     # @return [Array] The array of files to download
@@ -55,8 +50,6 @@ class DownloaderClient
     end
 
     ##
-    # request_download_hash
-    # ---------------------
     # @param medusa_request_json [String] The JSON string to send to the downloader
     # @return [Hash] The response hash from the downloader
     # @note: This method sends a request to the downloader to download the files
@@ -84,8 +77,6 @@ class DownloaderClient
     end
 
     ##
-    # total_size
-    # ----------
     # @param dataset [Dataset] The dataset containing the datafiles to download
     # @param web_ids [Array] The array of web_ids for datafiles to download
     # @return [Integer] The total size of the files to download

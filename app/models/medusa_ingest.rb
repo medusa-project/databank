@@ -1,16 +1,26 @@
 # frozen_string_literal: true
 
 ##
-# MedusaIngest
-# ------------
+# Represents a Medusa Ingest
 # This class is responsible for sending data to Medusa and receiving responses from Medusa
 # to initiate ingest into the Medusa Collection Registry.
 # Draft files are kept in the draft bucket until they are confirmed as successfully ingested into Medusa.
+#
+# == Attributes
+#
+# * +idb_class+ - the class of the object being ingested
+# * +idb_identifier+ - the identifier of the object being ingested
+# * +staging_key+ - the key of the object in the draft storage system
+# * +target_key+ - the key of the object in the medusa storage system
+# * +medusa_path+ - the path of the object in the medusa storage system
+# * +medusa_uuid+ - the uuid of the object in the medusa storage system
+# * +request_status+ - the status of the request
+# * +error_text+ - the error text of the request
+# * +response_time+ - the time of the response
 
 class MedusaIngest < ApplicationRecord
 
   ##
-  # dataset_key
   # @return [String] the key of the dataset associated with this ingest
   def dataset_key
     if idb_class == "datafile"
@@ -25,7 +35,6 @@ class MedusaIngest < ApplicationRecord
   end
 
   ##
-  # datafile_web_id
   # @return [String] the web_id of the datafile associated with this ingest, if it is a datafile ingest
   def datafile_web_id
     return nil unless idb_class == "datafile"
@@ -37,7 +46,6 @@ class MedusaIngest < ApplicationRecord
   end
 
   ##
-  # draft_obj_exist?
   # @return [Boolean] true if the object exists in the draft storage system
   def draft_obj_exist?
     return false unless staging_key
@@ -46,7 +54,6 @@ class MedusaIngest < ApplicationRecord
   end
 
   ##
-  # medusa_obj_exist?
   # @return [Boolean] true if the object exists in the medusa storage system
   def medusa_obj_exist?
     return false unless target_key
@@ -55,28 +62,24 @@ class MedusaIngest < ApplicationRecord
   end
 
   ##
-  # incoming_queue (class method)
   # @return [String] the name of the incoming queue (from config)
   def self.incoming_queue
     IDB_CONFIG["medusa"]["incoming_queue"]
   end
 
   ##
-  # outgoing_queue (class method)
   # @return [String] the name of the outgoing queue (from config)
   def self.outgoing_queue
     IDB_CONFIG["medusa"]["outgoing_queue"]
   end
 
   ##
-  # on_medusa_message (class method)
-  # @param response [String] the response from Medusa
-  # This class method is used to process the response from Medusa
-  # and take appropriate action based on the response.
+  # processes a message from Medusa
   # The response is parsed as JSON and checked for validity.
   # If the response is valid, the response is saved in the IngestResponse table.
   #   # If the response is successful, the object is moved from the draft storage system to the medusa storage system.
   #   # If the response is unsuccessful, an error notification is sent.
+  # @param response [String] the response from Medusa
   # @return [Boolean] true if the response is valid, false otherwise
   def self.on_medusa_message(response)
     response_hash = JSON.parse(response)
@@ -97,11 +100,10 @@ class MedusaIngest < ApplicationRecord
   end
 
   ##
-  # message_valid? (class method)
-  # @param response [String] the response from Medusa
-  # This class method is used to check if the response from Medusa is valid.
+  # check if the response from Medusa is valid
   # The response is parsed as JSON and checked for the presence of a status key with a value of "ok" or "error".
   # If the response is invalid, an error notification is sent.
+  # @param response [String] the response from Medusa
   # @return [Boolean] true if the response is valid, false otherwise
   def self.message_valid?(response)
     response_hash = JSON.parse(response)
@@ -116,14 +118,13 @@ class MedusaIngest < ApplicationRecord
   end
 
   ##
-  # send_dataset_to_medusa (class method)
-  # @param dataset [Dataset] the dataset to send to Medusa
-  # This class method is used to send a dataset to Medusa.
+  # send a dataset to Medusa Collection Registry
   # The dataset is serialized as XML and sent to Medusa.
   # The dataset is also serialized as JSON and sent to Medusa.
   # A changelog is generated and sent to Medusa.
   # A deposit agreement is generated and sent to Medusa.
   # The dataset files are sent to Medusa.
+  # @param dataset [Dataset] the dataset to send to Medusa
   # @return [String] the ingest record URL
   def self.send_dataset_to_medusa(dataset)
     ### skip datafiles already ingested, but send new system files ###
@@ -230,6 +231,9 @@ class MedusaIngest < ApplicationRecord
     end
   end
 
+  ##
+  # send a datafile to Medusa Collection Registry
+  # @param datafile_web_id [String] the web_id of the datafile to send to Medusa
   def self.send_datafile_to_medusa(datafile_web_id)
     datafile = Datafile.find_by(web_id: datafile_web_id)
 
@@ -250,6 +254,10 @@ class MedusaIngest < ApplicationRecord
     medusa_ingest.send_medusa_ingest_message
   end
 
+  ##
+  # handles a successful message from Medusa
+  # @param response_hash [Hash] the response from Medusa
+  # @return [Boolean] true if the response is handled, false otherwise
   def self.on_medusa_succeeded_message(response_hash)
     draft_root = StorageManager.instance.draft_root
     medusa_root = StorageManager.instance.medusa_root
@@ -364,13 +372,9 @@ class MedusaIngest < ApplicationRecord
   end
 
   ##
-  # on_medusa_failed_message (class method)
+  # handles a failed message from Medusa
   # @param response_hash [Hash] the response from Medusa
-  # This class method is used to process the response from Medusa
-  # when the response is a failure.
-  # The response is saved in the IngestResponse table.
-  # An error notification is sent.
-  # @return [Boolean] true if the response is valid, false otherwise
+  # @return [Boolean] true if the response is handled, false otherwise
   def self.on_medusa_failed_message(response_hash)
     error_string = "Problem ingesting #{response_hash.to_yaml} into Medusa."
 
@@ -422,8 +426,7 @@ class MedusaIngest < ApplicationRecord
   end
 
   ##
-  # send_medusa_ingest_message
-  # This instance method is used to send the ingest message to Medusa
+  # sends the ingest message to Medusa
   def send_medusa_ingest_message
     if Application.server_envs.include?(Rails.env)
       if IDB_CONFIG[:rabbit_or_sqs] == "rabbit"
@@ -437,8 +440,7 @@ class MedusaIngest < ApplicationRecord
   end
 
   ##
-  # medusa_ingest_message
-  # This instance method is used to create the ingest message for Medusa
+  # create the ingest message for Medusa
   # @return [Hash] the ingest message
   def medusa_ingest_message
     {operation:    "ingest",

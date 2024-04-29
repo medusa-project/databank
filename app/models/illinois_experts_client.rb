@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 ##
-# IllinoisExpertsClient model
-# This model is used to interact with the Illinois Experts API
+# Represents a client used to interact with the Illinois Experts API
 # Used to generate a document consumed by the Illinois Experts System
 # Gets information about a person from the Illinois Experts System
 
@@ -19,10 +18,8 @@ class IllinoisExpertsClient
   private_constant :KEY
 
   ##
-  # person_xml_doc (class method)
-  # This class method is used to get the person XML document from the Illinois Experts System
   # @param email [String] the email address of the person
-  # @return [Nokogiri::XML::Document] the person XML document
+  # @return [Nokogiri::XML::Document] the person XML document from the Illinois Experts System
   def self.person_xml_doc(email)
     raise ArgumentError.new("must provide email address string") unless email
 
@@ -58,9 +55,7 @@ class IllinoisExpertsClient
   end
 
   ##
-  # @example (class method)
-  # This class method is used to get an example from the Illinois Experts System
-  # @return [String] the example
+  # @return [String] the example from the Illinois Experts System
   def self.example
     uri = URI.parse("#{ENDPOINT}/datasets")
 

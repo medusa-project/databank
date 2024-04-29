@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
 ##
-# DatabankMailer
-# ===============
-# This class defines and sends email notifications for the Illinois Data Bank application.
+# Defines and sends email notifications for the Illinois Data Bank application.
 # It is used to send email notifications to users and administrators.
-
 require "open-uri"
 require "open_uri_redirections"
 
@@ -13,9 +10,7 @@ class DatabankMailer < ActionMailer::Base
   default from: IDB_CONFIG[:admin][:contact_email]
 
   ##
-  # approve_version
-  # ---------------
-  # Sends an email to the depositor and the curators when a new version is approved.
+  # Sends an email to the depositor and the curators for use when a new version is approved.
   # The email is sent to the depositor and the admin.
   # @param dataset_key [String] the key of the dataset
   def approve_version(dataset_key:)
@@ -28,9 +23,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # request_version
-  # ---------------
-  # Sends an email to the curators when a new version is requested.
+  # Sends an email to the curators for use when a new version is requested.
   # @param dataset_key [String] the key of the dataset
   def request_version(dataset_key:)
     @dataset = Dataset.find_by(key: dataset_key)
@@ -41,9 +34,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # notify_version_copy_complete
-  # ----------------------------
-  # Sends an email to the curators when requested files for a new version is copied.
+  # Sends an email to the curators for use when requested files for a new version is copied.
   # @param dataset_key [String] the key of the dataset
   def notify_version_copy_complete(dataset_key:)
     @dataset = Dataset.find_by(key: dataset_key)
@@ -54,9 +45,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # acknowledge_request_version
-  # ---------------------------
-  # Sends an email to the depositor (and copies curators) when a new version is requested.
+  # Sends an email to the depositor (and copies curators) for use when a new version is requested.
   # @param dataset_key [String] the key of the dataset
   def acknowledge_request_version(dataset_key:)
     @dataset = Dataset.find_by(key: dataset_key)
@@ -68,9 +57,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # confirm_deposit
-  # ---------------
-  # Sends an email to the depositor, creators, and curators when a dataset is deposited.
+  # Sends an email to the depositor, creators, and curators for use when a dataset is deposited.
   # @param dataset_key [String] the key of the dataset
   def confirm_deposit(dataset_key)
     @dataset = Dataset.find_by(key: dataset_key)
@@ -91,9 +78,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # confirm_deposit_update
-  # ----------------------
-  # Sends an email to the curators when a dataset is updated.
+  # Sends an email to the curators for use when a dataset is updated.
   def confirm_deposit_update(dataset_key)
     @dataset = Dataset.find_by(key: dataset_key)
     if @dataset
@@ -106,9 +91,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # contact_help
-  # ------------
-  # Sends an email to the curators when a user requests help.
+  # Sends an email to the curators for use when a user requests help.
   # @param params [Hash] the parameters of the help request
   # params hash has two keys:
   #  "help-email" [String] the email of the user requesting help
@@ -132,9 +115,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # valid_email?
-  # ------------
-  # Checks if an email address is valid.
+  # Checks if an email address is valid in terms of format.
   # @param address [String] the email address to check
   # @return [Boolean] true if the email address is valid, false otherwise
   def valid_email?(address:)
@@ -143,9 +124,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # dataset_incomplete_1m
-  # ---------------------
-  # Sends an email to the depositor when a dataset is incomplete for 1 month.
+  # Sends an email to the depositor for use when a dataset is incomplete for 1 month.
   # @param dataset_key [String] the key of the dataset
   def dataset_incomplete_1m(dataset_key)
     subject_base = "Illinois Data Bank] Incomplete dataset deposit"
@@ -161,9 +140,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # embargo_approaching_1m
-  # ----------------------
-  # Sends an email to the depositor when the embargo is approaching in 1 month.
+  # Sends an email to the depositor for use when the embargo is approaching in 1 month.
   # @param dataset_key [String] the key of the dataset
   def embargo_approaching_1m(dataset_key)
     subject_base = "Illinois Data Bank] Dataset release date approaching"
@@ -179,9 +156,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # embargo_approaching_1w
-  # ----------------------
-  # Sends an email to the depositor when the embargo is approaching in 1 week.
+  # Sends an email to the depositor for use when the embargo is approaching in 1 week.
   # @param dataset_key [String] the key of the dataset
   def embargo_approaching_1w(dataset_key)
     subject_base = "Illinois Data Bank] Dataset release date approaching"
@@ -197,9 +172,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # error
-  # -----
-  # Sends an email to the tech team when an error occurs.
+  # Sends an email to the tech team for use when an error occurs.
   # @param error_text [String] the error message
   def error(error_text)
     @error_text = error_text
@@ -208,9 +181,7 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # confirmation_not_sent
-  # ---------------------
-  # Sends an email to the tech team when a confirmation email is not sent.
+  # Sends an email to the tech team for use when a confirmation email is not sent.
   # @param dataset_key [String] the key of the dataset
   # @param err [String] the error message
   def confirmation_not_sent(dataset_key, err)
@@ -227,9 +198,7 @@ because dataset not found for key: #{dataset_key}."
   end
 
   ##
-  # account_activation
-  # -----------------
-  # Sends an email to the user when an account is activated.
+  # Sends an email to the user for use when an account is activated.
   # @param identity [Identity] the identity of the user
   def account_activation(identity)
     @identity = identity
@@ -237,9 +206,7 @@ because dataset not found for key: #{dataset_key}."
   end
 
   ##
-  # password_reset
-  # -------------
-  # Sends an email to the user when a password is reset.
+  # Sends an email to the user for use when a password is reset.
   # @param identity [Identity] the identity of the user
   def password_reset(identity)
     @identity = identity
@@ -247,8 +214,6 @@ because dataset not found for key: #{dataset_key}."
   end
 
   ##
-  # link_report
-  # -----------
   # Sends an email to the admin with a report of the related materials links.
   # The report includes the status of the links.
   def link_report
@@ -259,8 +224,6 @@ because dataset not found for key: #{dataset_key}."
   end
 
   ##
-  # prepend_system_code
-  # -------------------
   # Prepends a system code to the subject of an email.
   # @param subject [String] the subject of the email
   # @return [String] the subject with the system code prepended

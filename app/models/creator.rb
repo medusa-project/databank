@@ -2,7 +2,24 @@
 
 require "open-uri"
 
-# represents a creator as defined in DataCite metadata schema
+##
+# Represents a creator as defined in DataCite metadata schema.
+# A creator is a person or organization responsible for creating the resource.
+#
+# == Attributes
+#
+# * +dataset_id+ - foreign key for the dataset the creator belongs to
+# * +type_of+ - type of creator, either "person" or "institution"
+# * +email+ - email address of the creator, for a person or institution
+# * +family_name+ - family name of the creator, for a person
+# * +given_name+ - given name of the creator, for a person
+# * +institution_name+ - name of the institution, for an institution
+# * +identifier+ - ORCID identifier of the creator
+# * +identifier_scheme+ - scheme of the identifier, always "ORCID"
+# * +is_contact+ - true if the creator is the contact person for the dataset
+# * +row_position+ - position of the creator in the list of creators, used in interface and citation
+# * +row_order+ - order of the creator in the list of creators, not used
+
 class Creator < ApplicationRecord
   include ActiveModel::Serialization
   belongs_to :dataset

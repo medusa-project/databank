@@ -1,9 +1,31 @@
 # frozen_string_literal: true
 
 ##
-# Datafile model
 # Represents a file in a dataset
-# Methods not concerned with computed attributes are included in the Datafile modules.
+#
+# == Attributes
+#
+# * +description+ - description of the file
+# * +binary+ - deprecated (was used to store the file using paperclip gem)
+# * +web_id+ - web_id of the file, a unique identifier
+# * +dataset_id+ - id of the dataset that the file belongs to
+# * +job_id+ - id of the job used to upload the file, if any
+# * +box_filename+ - filename of the file in Box, for use in import-from-Box feature
+# * +box_filesize_display+ - size of the file in Box, for use in import-from-Box feature
+# * +medusa_id+ - The id of the file in Medusa
+# * +medusa_path+ - The path of the file in Medusa, if stored on a filesystem
+# * +binary_name+ - The name of the file
+# * +binary_size+ - The size of the file in bytes
+# * +upload_file_size+ - The size of the file when uploaded, in bytes, reported by the client
+# * +upload_status+ - The status of the upload, one of "pending", "uploading", "uploaded", "error"
+# * +peek_type+ - The type of peek, one of "text", "image", "pdf", "audio", "video", "unknown" for preview
+# * +peek_text+ - The text of the peek, for use in preview
+# * +storage_root+ - The root of the storage location, for use with MedusaStorage gem
+# * +storage_prefix+ - The prefix of the storage location, for use with MedusaStorage gem
+# * +storage_key+ - The key of the storage location, for use with MedusaStorage gem
+# * +mime_type+ - The mime type of the file
+# * +task_id+ - The id of the task used to extract features from an archive type file, if any
+# Methods not concerned with derived attributes are included in the Datafile modules.
 
 require "zip"
 require "seven_zip_ruby"
@@ -25,7 +47,6 @@ class Datafile < ApplicationRecord
   has_many :nested_items, dependent: :destroy
 
   WEB_ID_LENGTH = 5
-
 
   before_create { self.web_id ||= generate_web_id }
   after_create :set_dataset_nested_updated_at

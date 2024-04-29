@@ -1,13 +1,19 @@
 # frozen_string_literal: true
 
 ##
-# FileDownloadTally model
-# This model is used to store the file download tallies
+# Represents the file download tallies
+#
+# == Attributes
+#
+# * +file_web_id+ - the web id of the downloaded file
+# * +filename+ - the name of the downloaded file
+# * +tally+ - the number of downloads
+# * +download_date+ - the date of the download
+# * +dataset_key+ - the key of the associated dataset
+# * +doi+ - the doi of the associated dataset
 
 class FileDownloadTally < ApplicationRecord
   ##
-  # should_be_public?
-  # This instance method is used to check if the file download tally should be public
   # @return [Boolean] true if the file download tally should be public, false otherwise
   def should_be_public?
 
@@ -27,8 +33,7 @@ class FileDownloadTally < ApplicationRecord
   end
 
   ##
-  # public_tallies
-  # This class method is used to get all the public tallies
+  # @return [Array<FileDownloadTally>] the public file download tallies
   def self.public_tallies
     FileDownloadTally.all.select(&:should_be_public?)
   end
