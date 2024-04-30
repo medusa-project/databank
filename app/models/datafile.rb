@@ -50,7 +50,6 @@ class Datafile < ApplicationRecord
 
   before_create { self.web_id ||= generate_web_id }
   after_create :set_dataset_nested_updated_at
-  after_update :set_dataset_nested_updated_at
   before_destroy :set_dataset_nested_updated_at
   before_destroy :destroy_job
   before_destroy :remove_binary
