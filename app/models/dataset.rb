@@ -52,7 +52,6 @@ require "action_pack"
 require "openssl"
 
 class Dataset < ApplicationRecord
-  attr_accessor :changelog_array
   include ActiveModel::Serialization
   include Dataset::Authorable
   include Dataset::Complete
@@ -151,21 +150,15 @@ class Dataset < ApplicationRecord
     time :updated_at
   end
 
-  ##
-  # @return [Dataset] the dataset
-  def initialize
-    super
-    self.changelog_array = display_changelog
-  end
-
   def updated_datetime
-    if Databank::PublicationState::DRAFT_ARRAY.include?(publication_state)
-      nested_updated_at
-    elsif changelog_array.empty?
-      max[ingest_datetime, release_datetime]
-    else
-      self.changelog_array[0][:created_at]
-    end
+    return nested_updated_at if is_draft?
+
+    changelog_array = self.display_changelog
+    return nested_updated_at unless changelog_array
+
+    return max[ingest_datetime, release_datetime] if changelog_array.empty?
+
+    changelog_array[0][:created_at]
   end
 
   ##
