@@ -1,6 +1,6 @@
 %table.table.table-striped
 
-  -@dataset.changelog_array.each do |change|
+  -@dataset.display_changelog.each do |change|
     %tr.row
       %td
         ="#{change.auditable_type}"
