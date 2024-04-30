@@ -74,7 +74,7 @@ class Dataset < ApplicationRecord
   include Dataset::Versionable
 
   # audit trail is used to track changes to the dataset and to compute milestone dates such as release date
-  audited except: %i[creator_text key complete is_test is_import updated_at embargo], allow_mass_assignment: true
+  audited except: %i[creator_text key complete is_test is_import updated_at embargo nested_updated_at], allow_mass_assignment: true
   has_associated_audits
 
   MIN_FILES = 1
