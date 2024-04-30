@@ -151,14 +151,24 @@ class Dataset < ApplicationRecord
   end
 
   def updated_datetime
-    return nested_updated_at if is_draft?
+    return nested_updated_at.to_date.iso8601 if draft?
 
-    changelog_array = self.display_changelog
-    return nested_updated_at unless changelog_array
+    changelog_array = display_changelog
+    unless changelog_array
+      return updated_at.to_date.iso8601 if nested_updated_at.nil?
 
-    return max[ingest_datetime, release_datetime] if changelog_array.empty?
+      return [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
+    end
 
-    changelog_array[0][:created_at]
+    if changelog_array.empty?
+      return release_datetime.to_date.iso8601 if release_datetime > Time.zone.now
+
+      return updated_at.to_date.iso8601 if ingest_datetime.nil?
+
+      return ingest_datetime.to_date.iso8601
+    end
+
+    changelog_array[0][:created_at].to_date.iso8601
   end
 
   ##
@@ -300,15 +310,6 @@ class Dataset < ApplicationRecord
       "not_mine"
     end
   end
-
-  ##
-  # @return [String] the updated date of the dataset in ISO8601 format
-  # @note The nested_updated_at attribute is set when any nested objects are updated
-  def updated_date
-    return updated_at.to_date.iso8601 if nested_updated_at.nil?
-    [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
-  end
-
 
   # utility method that could probably be refactored to somewhere else more central
   def error_hash(message)
