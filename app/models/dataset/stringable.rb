@@ -241,15 +241,17 @@ module Dataset::Stringable
   end
 
   def display_changelog
-    system_changes_arr = []
+    main_exclude = []
+    associated_exclude = []
     publication = nil
 
     begin
       audits.each do |change|
         if change.audited_changes.has_key?("medusa_uuid") ||
           change.audited_changes.has_key?("binary_name") ||
-          change.audited_changes.has_key?("medusa_dataset_dir")
-          system_changes_arr << change.id
+          change.audited_changes.has_key?("medusa_dataset_dir") ||
+          change.audited_changes[0].value == [nil, ""]
+          main_exclude << change.id
         end
 
         next unless change.audited_changes.has_key?("publication_state")
@@ -257,16 +259,20 @@ module Dataset::Stringable
         pub_change = change.audited_changes["publication_state"]
         if pub_change.class == Array && pub_change[0] == Databank::PublicationState::DRAFT
           publication = change.created_at
-          system_changes_arr << change.id
+          main_exclude << change.id
         end
       end
     rescue StandardError => e
       raise e unless e.message.include?("BinaryUploader")
     end
 
+    associated_audits.each do |change|
+      associated_exclude << change.id if change.audited_changes[0].value == [nil, ""]
+    end
+
     if publication
-      changes = audits.where("created_at >= ?", publication).where.not(id: system_changes_arr)
-      associated_changes = associated_audits.where("created_at >= ?", publication).where.not(id: system_changes_arr)
+      changes = audits.where("created_at >= ?", publication).where.not(id: main_exclude)
+      associated_changes = associated_audits.where("created_at >= ?", publication).where.not(id: associated_exclude)
       combined = changes + associated_changes
       sorted = combined.sort_by(&:created_at).reverse
       sorted
