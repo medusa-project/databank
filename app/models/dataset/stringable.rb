@@ -241,7 +241,7 @@ module Dataset::Stringable
   end
 
   def display_changelog
-    medusa_changes_arr = []
+    system_changes_arr = []
     publication = nil
 
     begin
@@ -249,7 +249,7 @@ module Dataset::Stringable
         if change.audited_changes.has_key?("medusa_uuid") ||
           change.audited_changes.has_key?("binary_name") ||
           change.audited_changes.has_key?("medusa_dataset_dir")
-          medusa_changes_arr << change.id
+          system_changes_arr << change.id
         end
 
         next unless change.audited_changes.has_key?("publication_state")
@@ -257,7 +257,7 @@ module Dataset::Stringable
         pub_change = change.audited_changes["publication_state"]
         if pub_change.class == Array && pub_change[0] == Databank::PublicationState::DRAFT
           publication = change.created_at
-          medusa_changes_arr << change.id
+          system_changes_arr << change.id
         end
       end
     rescue StandardError => e
@@ -265,7 +265,9 @@ module Dataset::Stringable
     end
 
     if publication
-      changes = audits.where("created_at >= ?", publication).where.not(id: medusa_changes_arr)
+      changes = audits.where("created_at >= ?", publication).where.not(id: system_changes_arr)
+      associated_changes = associated_audits.where("created_at >= ?", publication).where.not(id: system_changes_arr)
+      changes = changes + associated_changes
       changes.reorder("created_at DESC")
     else
       #Rails.logger.warn "no changes found for dataset #{attributes[:dataset_id]}"
