@@ -267,10 +267,9 @@ module Dataset::Stringable
     if publication
       changes = audits.where("created_at >= ?", publication).where.not(id: system_changes_arr)
       associated_changes = associated_audits.where("created_at >= ?", publication).where.not(id: system_changes_arr)
-      Rails.logger.warn "changes class: #{changes.class} associated_changes class: #{associated_changes.class}"
       combined = changes + associated_changes
-      Rails.logger.warn "combined class: #{combined.class}"
-      changes.reorder("created_at DESC")
+      sorted = combined.sort_by(&:created_at).reverse
+      sorted
     else
       #Rails.logger.warn "no changes found for dataset #{attributes[:dataset_id]}"
       {}
