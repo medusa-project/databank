@@ -52,6 +52,7 @@ require "action_pack"
 require "openssl"
 
 class Dataset < ApplicationRecord
+  attr_accessor :changelog_array
   include ActiveModel::Serialization
   include Dataset::Authorable
   include Dataset::Complete
@@ -148,6 +149,23 @@ class Dataset < ApplicationRecord
     time :release_date
     time :created_at
     time :updated_at
+  end
+
+  ##
+  # @return [Dataset] the dataset
+  def initialize
+    super
+    self.changelog_array = display_changelog
+  end
+
+  def updated_datetime
+    if Databank::PublicationState::DRAFT_ARRAY.include?(publication_state)
+      nested_updated_at
+    elsif changelog_array.empty?
+      max[ingest_datetime, release_datetime]
+    else
+      self.changelog_array[0][:created_at]
+    end
   end
 
   ##
@@ -295,7 +313,6 @@ class Dataset < ApplicationRecord
   # @note The nested_updated_at attribute is set when any nested objects are updated
   def updated_date
     return updated_at.to_date.iso8601 if nested_updated_at.nil?
-
     [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
   end
 

@@ -30,7 +30,7 @@
                   suppressed by curator
                 &nbsp;
               .label.label-default
-                ="updated: #{@dataset.updated_at.to_date.iso8601}"
+                ="updated: #{@dataset.updated_datetime.to_date.iso8601}"
               &nbsp;
               -if @dataset.ingest_datetime
                 .label.label-default

@@ -3,7 +3,7 @@
   -if(can? :manage, dataset)
     .curator-only
       .label.label-default
-        ="updated: #{dataset.updated_at.to_date.iso8601}"
+        ="updated: #{dataset.updated_datetime.to_date.iso8601}"
       &nbsp;
       .label.label-default
         ="created: #{dataset.created_at.to_date.iso8601}"
