@@ -151,8 +151,12 @@ class Dataset < ApplicationRecord
   end
 
   def updated_datetime
-    return nested_updated_at.to_date.iso8601 if draft?
+    if draft?
+      return updated_at.to_date.iso8601 if nested_updated_at.nil?
 
+      return [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
+    end
+    # not a draft
     changelog_array = display_changelog
     unless changelog_array
       return updated_at.to_date.iso8601 if nested_updated_at.nil?
