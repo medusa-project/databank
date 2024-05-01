@@ -249,8 +249,7 @@ module Dataset::Stringable
       audits.each do |change|
         if change.audited_changes.has_key?("medusa_uuid") ||
           change.audited_changes.has_key?("binary_name") ||
-          change.audited_changes.has_key?("medusa_dataset_dir") ||
-          change.audited_changes[0].value == [nil, ""]
+          change.audited_changes.has_key?("medusa_dataset_dir")
           main_exclude << change.id
         end
 
@@ -264,10 +263,6 @@ module Dataset::Stringable
       end
     rescue StandardError => e
       raise e unless e.message.include?("BinaryUploader")
-    end
-
-    associated_audits.each do |change|
-      associated_exclude << change.id if change.audited_changes[0].value == [nil, ""]
     end
 
     if publication
