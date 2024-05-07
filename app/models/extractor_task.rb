@@ -27,13 +27,20 @@ class ExtractorTask < ApplicationRecord
   ##
   # Send a task to the extractor
   def initiate_task
-    if Rails.env.development?
+    resp = nil
+    if Rails.env.development? || Rails.env.test?
       network = "databank_default"
       docker_container = "ghcr.io/medusa-project/databank-archive-extractor:local"
-      resp =  `docker run --network #{network} #{docker_container} ruby -r ./lib/extractor.rb -e "#{command_string}"`
+      resp = `docker run --network #{network} #{docker_container} ruby -r ./lib/extractor.rb -e "#{command_string}"`
 
     else
       client = ECS_CLIENT
+      command = command_string
+      unless command
+        Rails.logger.warn "error generating command in Extractor Task for #{web_id}"
+        return nil
+      end
+
       task = {
         cluster:               CLUSTER,
         count:                 1,
@@ -53,7 +60,7 @@ class ExtractorTask < ApplicationRecord
                         "-r",
                         "./lib/extractor.rb",
                         "-e",
-                        command_string]
+                        command]
             }
           ]
         },
@@ -61,17 +68,22 @@ class ExtractorTask < ApplicationRecord
         task_definition:       IDB_CONFIG[:extractor][:task_definition]
       }
       resp = client.run_task(task)
-      failure_count = resp[:failures].count
-      raise StandardError.new("error in Extractor Task for #{web_id}: #{resp}") unless failure_count.zero?
     end
 
-
+    failure_count = resp[:failures].count
+    unless failure_count.zero?
+      Rails.logger.warn "error in Extractor Task for #{web_id}: #{resp}"
+      return nil
+    end
     update(sent_at: Time.current)
   end
 
   ##
   # @return [String] the command string to be executed by the extractor
   def command_string
+    datafile = Datafile.find_by(web_id: web_id)
+    return nil unless datafile
+
     str_arr = ["Extractor.extract '",
                datafile.storage_root_bucket,
                "', '",
