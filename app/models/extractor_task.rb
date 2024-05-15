@@ -111,6 +111,7 @@ class ExtractorTask < ApplicationRecord
     unsent = ExtractorTask.where(sent_at: nil)
     return nil unless unsent.count.positive?
 
+    unsent.each {|t| t.destroy unless t.datafile }
     current_task_count = Rails.env.development? ? `docker ps | wc -l`.strip.to_i : ExtractorTask.current_tasks.count
     return nil unless current_task_count < MAX_TASK_COUNT
 
