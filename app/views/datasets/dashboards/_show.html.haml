@@ -48,8 +48,9 @@
               &nbsp;
               = " | "
               -if Databank::PublicationState::PUB_ARRAY.include? @dataset.publication_state
-                %button(id="resendPubnoteBtn" type="btn" class="btn btn-primary" onclick="sendPublicationNotice()" )
-                  Send Publication Notice
+                =button_to('Send Publication Notice',
+                {controller: "datasets", action: "send_publication_notice", method: :post, params: {id: @dataset.key}},
+                {class: 'btn btn-primary'})
             %br
 
           - if @completion_check == 'ok'

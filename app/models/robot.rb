@@ -4,11 +4,11 @@
 # Robot model
 # ---------------
 # Represents a robot that can be excluded from download counts.
-# ---------------
-# Attributes
-# ---------------
-# name: string, required
-# description: text, optional
+
+# == Attributes
+#
+# * +source+ - the source of information basis for excluding the robot
+# * +address+ - the ip address of the robot
 
 class Robot < ApplicationRecord
   def self.blank_stare_xml

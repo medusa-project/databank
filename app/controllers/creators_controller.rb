@@ -4,26 +4,26 @@ require 'nokogiri'
 class CreatorsController < ApplicationController
   before_action :set_creator, only: [:show, :edit, :update, :destroy]
 
-  # GET /creators
-  # GET /creators.json
+  # Responds to `GET /creators`
+  # Responds to `GET /creators.json`
   def index
     @creators = Creator.all
   end
 
-  # GET /creators/1
-  # GET /creators/1.json
+  # Responds to `GET /creators/1`
+  # Responds to `GET /creators/1.json`
   def show; end
 
-  # GET /creators/new
+  # Responds to `GET /creators/new`
   def new
     @creator = Creator.new
   end
 
-  # GET /creators/1/edit
+  # Responds to `GET /creators/1/edit`
   def edit; end
 
-  # POST /creators
-  # POST /creators.json
+  # Responds to `POST /creators`
+  # Responds to `POST /creators.json`
   def create
     @creator = Creator.new(creator_params)
 
@@ -38,8 +38,8 @@ class CreatorsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /creators/1
-  # PATCH/PUT /creators/1.json
+  # Responds to `PATCH/PUT /creators/1`
+  # Responds to `PATCH/PUT /creators/1.json`
   def update
     respond_to do |format|
       if @creator.update(creator_params)
@@ -52,8 +52,8 @@ class CreatorsController < ApplicationController
     end
   end
 
-  # DELETE /creators/1
-  # DELETE /creators/1.json
+  # Responds to `DELETE /creators/1`
+  # Responds to `DELETE /creators/1.json`
   def destroy
     @creator.destroy
     respond_to do |format|
@@ -62,6 +62,7 @@ class CreatorsController < ApplicationController
     end
   end
 
+  # Responds to `POST /creators/update_row_order`
   def update_row_order
     @creator = Creator.find(creator_params[:creator_id])
     row_order_position_integer = Integer(creator_params[:row_order_position])
@@ -70,13 +71,14 @@ class CreatorsController < ApplicationController
     render nothing: true # this is a POST action, updates sent via AJAX, no view rendered
 
   end
-
+  # Responds to `POST /creators/create_for_form`
   def create_for_form
     @dataset = Dataset.find_by(key: params[:dataset_key])
     @creator = Creator.new(dataset_id: @dataset.id, is_contact: false)
     render(json: {creator_id: @creator.id}, content_type: request.format, layout: false)
   end
 
+  # Responds to `GET /creators/orcid_search`
   def orcid_search
     authorize! :search_orcid, Creator
     begin
@@ -89,6 +91,7 @@ class CreatorsController < ApplicationController
     render(json: result, status: :ok)
   end
 
+  # Responds to `GET /creators/orcid_person`
   def orcid_person
     authorize! :search_orcid, Creator
     Rails.logger.warn "params: #{params.to_yaml}"

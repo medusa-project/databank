@@ -4,36 +4,11 @@
 # ReviewRequest model
 # ---------------
 # Represents a request for a dataset review.
-# ---------------
-# Attributes
-# ---------------
-# dataset_key: string, required
-# requestor_email: string, required
-# requestor_name: string, required
-# requestor_institution: string, required
-# requestor_position: string, required
-# requestor_phone: string, required
-# requestor_reason: text, required
-# requestor_comments: text, optional
-# ---------------
-# Associations
-# ---------------
-# None
-# ---------------
-# Validations
-# ---------------
-# validates :dataset_key, presence: true
-# validates :requestor_email, presence: true
-# validates :requestor_name, presence: true
-# validates :requestor_institution, presence: true
-# validates :requestor_position, presence: true
-# validates :requestor_phone, presence: true
-# validates :requestor_reason, presence: true
-# ---------------
-# Methods
-# ---------------
-# dataset: Returns the dataset associated with the review request
-# ---------------
+#
+# == Attributes
+#
+# * +dataset_key+ - the key of the dataset the review request is for
+# * +requested_at+ - the time the review request was made
 
 class ReviewRequest < ApplicationRecord
   ##
@@ -43,4 +18,5 @@ class ReviewRequest < ApplicationRecord
   def dataset
     Dataset.find_by(key: dataset_key)
   end
+
 end

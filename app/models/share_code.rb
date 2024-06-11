@@ -1,3 +1,15 @@
+# frozen_string_literal: true
+
+##
+# ShareCode
+# A ShareCode is a unique code that can be used to access a dataset without
+# needing to be logged in. ShareCodes are generated automatically when a dataset
+# is shared, and can be revoked at any time.
+#
+# # == Attributes
+# * +code+ - the unique code that can be used to access the dataset
+# * +dataset_id+ - the id of the dataset the code is associated with
+
 class ShareCode < ApplicationRecord
   belongs_to :dataset
   before_create :set_code

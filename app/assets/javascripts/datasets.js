@@ -889,19 +889,6 @@ function addInternalEditorRow(){
     $("#newInternalEditor").val("");
 }
 
-function sendPublicationNotice(){
-    $.ajax({
-        dataType: "json",
-        url: "/datasets/" + dataset_key + "/send_publication_notice"
-    }).done(function(data, textStatus, jqXHR) {
-        $('#message').html("<div class='alert alert-alert'><p>Publication notification sent.</p></div>");
-    }).fail(function (xhr, textStatus, errorThrown) {
-        $('#message').html("<div class='alert alert-alert'><p>Problem sending notification. " +  xhr.responseText + "</p></div>");
-        console.log("error" + textStatus);
-        console.log(xhr.responseText);
-    });
-}
-
 function importFromGlobus(){
     $.ajax({
         dataType: "json",

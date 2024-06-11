@@ -9,41 +9,20 @@
 # The curators actualized this change of policy by changing the values in the interface
 # Future development possibility: if each related material has exactly one relationship,
 # the list/hash could be eliminated for streamlined processing.
-# ---------------
-# Attributes
-# ---------------
-# material_type: string, required
-# availability: string, optional
-# link: string, optional
-# uri: string, optional
-# uri_type: string, optional
-# citation: string, optional
-# dataset_id: integer, required
-# created_at: datetime, required
-# updated_at: datetime, required
-# ---------------
-# Associations
-# ---------------
-# belongs_to :dataset
-# audited associated_with: :dataset
-# ---------------
-# Validations
-# ---------------
-# validates :material_type, presence: true
-# validates :dataset_id, presence: true
-# ---------------
-# Methods
-# ---------------
-# as_json: Overrides the default as_json method to return only the necessary attributes
-# relationship_arr: Returns an array of relationships for this material
-# display_info: Returns a string of the material's information
-# nonversion_relationships: Returns an array of relationships that are not version-related
-# link_status: Returns the status of the link, if it exists
-# report_row: Returns a string of the material's information for the link report
-# set_dataset_nested_updated_at: Updates the dataset's nested_updated_at attribute
-# link_report: Returns an html string of the link report table
-# link_attempt_status: Returns the status of the link attempt
-# ---------------
+# == Attributes
+#
+# * +material_type+ - the type of the related material
+# * +availability+ - the availability of the related material
+# * +link+ - the link to the related material
+# * +uri+ - the URI of the related material
+# * +uri_type+ - the type of the URI
+# * +citation+ - the citation of the related material
+# * +dataset_id+ - the id of the dataset to which the related material belongs
+# * +datacite_list+ - a list of relationships for the related material
+# * +selected_type+ - the selected type of the related material
+# * +note+ - a note about the related material
+# * +feature+ - a boolean indicating whether the related material should be featured (deprecated)
+#
 
 require "rest-client"
 require "uri"
@@ -59,16 +38,17 @@ class RelatedMaterial < ApplicationRecord
   ##
   # as_json
   # Overrides the default as_json method to return only the necessary attributes
+  # @return [Hash] a hash of the material's attributes
   def as_json(*)
-    super(only: %i[material_type
-                   availability
-                   link
-                   uri
-                   uri_type
-                   citation
-                   dataset_id
-                   created_at
-                   updated_at])
+    super(only: [:material_type,
+                 :availability,
+                 :link,
+                 :uri,
+                 :uri_type,
+                 :citation,
+                 :dataset_id,
+                 :created_at,
+                 :updated_at])
   end
 
   ##

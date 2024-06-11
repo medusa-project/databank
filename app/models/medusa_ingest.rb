@@ -330,22 +330,9 @@ class MedusaIngest < ApplicationRecord
 
       # dataset found - do things with dataset and ingest response
       exists_in_draft = draft_root.exist?(response_hash["staging_key"])
-
       exists_in_medusa = medusa_root.exist?(response_hash["medusa_key"])
       if exists_in_medusa
-        if exists_in_draft
-          draft_size = draft_root.size(response_hash["staging_key"])
-          medusa_size = medusa_root.size(response_hash["medusa_key"])
-          if draft_size == medusa_size
-            draft_root.delete_content(response_hash["staging_key"])
-            info_key = "#{response_hash['staging_key']}.info"
-            draft_root.delete_contant(info_key) if draft_root.exist?(info_key)
-          else
-            notification = DatabankMailer.error("file exists in both draft and medusa, but not same size #{response_hash.to_yaml}")
-            notification.deliver_now
-          end
-        end
-
+        handle_exists_in_both_draft_and_medusa(response_hash: response_hash) if exists_in_draft
         system_files = SystemFile.where(dataset_id: dataset.id, storage_key: response_hash["staging_key"])
         system_file = nil
         if system_files.count == 1
@@ -368,6 +355,23 @@ class MedusaIngest < ApplicationRecord
         notification.deliver_now
         false
       end
+    end
+  end
+
+  ##
+  # handles a file that exists in both the draft and medusa storage systems
+  # @param response_hash [Hash] the response from Medusa
+  # @return [Boolean] true if the response is handled, false otherwise
+  def handle_exists_in_both_draft_and_medusa(response_hash:)
+    draft_size = draft_root.size(response_hash["staging_key"])
+    medusa_size = medusa_root.size(response_hash["medusa_key"])
+    if draft_size == medusa_size
+      draft_root.delete_content(response_hash["staging_key"])
+      info_key = "#{response_hash['staging_key']}.info"
+      draft_root.delete_contant(info_key) if draft_root.exist?(info_key)
+    else
+      notification = DatabankMailer.error("file exists in both draft and medusa, but not same size #{response_hash.to_yaml}")
+      notification.deliver_now
     end
   end
 

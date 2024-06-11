@@ -4,30 +4,54 @@
 # StorageManager
 # ---------------
 # Singleton class that manages storage locations for the application.
-# ---------------
-# Attributes
-# ---------------
-# draft_root: MedusaStorage::Root, required
-# medusa_root: MedusaStorage::Root, required
-# message_root: MedusaStorage::Root, required
-# tmpfs_root: MedusaStorage::Root, required
-# globus_download_root: MedusaStorage::Root, optional
-# globus_ingest_root: MedusaStorage::Root, optional
-# root_set: MedusaStorage::RootSet, required
-# tmpdir: string, required
-# resource: Aws::S3::Resource, required
-# ---------------
-# Methods
-# ---------------
-# initialize: Initializes the object
-# initialize_tmpdir: Initializes the temporary directory
-# ensure_local_buckets: Ensures that local buckets exist
-# empty_local_buckets: Empties local buckets
-# setup_bucket: Sets up a bucket
-# bucket_exists?: Checks to see whether an Amazon Simple Storage Service (Amazon S3) bucket exists
-# delete_objects: Deletes objects from a bucket
-# client_options: Returns the client options
-# ---------------
+#
+# The StorageManager is a singleton class that manages the storage locations
+# used by the application. It provides access to the root directories for
+# draft storage, Medusa storage, message storage, and temporary file storage.
+# It also provides access to the root directories for Globus download and ingest
+# storage, but only in certain server environments.
+#
+# The StorageManager is initialized with the root directories for draft, Medusa,
+# and message storage, as well as the temporary directory used for temporary
+# file storage. It also initializes an S3 resource object for use in interacting
+# with S3 storage.
+#
+# The StorageManager provides methods for ensuring that local buckets exist,
+# emptying local buckets, setting up a bucket, checking whether a bucket exists,
+# and deleting objects from a bucket. It also provides a method for returning
+# the client options for use in creating the S3 client.
+#
+# The StorageManager is a singleton class, so there is only one instance of it
+# in the application.
+#
+# == Attributes
+# * +draft_root+ - the root directory for draft storage
+# * +medusa_root+ - the root directory for Medusa storage
+# * +message_root+ - the root directory for message storage
+# * +tmpfs_root+ - the root directory for temporary file storage
+# * +globus_download_root+ - the root directory for Globus download storage
+# * +globus_ingest_root+ - the root directory for Globus ingest storage
+# * +root_set+ - the root set object that contains the root directories
+# * +tmpdir+ - the temporary directory used for temporary file storage
+# * +resource+ - the S3 resource object used for interacting with S3 storage
+#
+# # frozen_string_literal: true
+#
+# ##
+# # StorageManager
+# # ---------------
+# # Singleton class that manages storage locations for the application.
+# #
+# # The StorageManager is a singleton class that manages the storage locations
+# # used by the application. It provides access to the root directories for
+# # draft storage, Medusa storage, message storage, and temporary file storage.
+# # It also provides access to the root directories for Globus download and ingest
+# # storage, but only in certain server environments.
+# #
+# # The StorageManager is initialized with the root directories for draft, Medusa,
+# # and message storage, as well as the temporary directory used for temporary
+# # file storage. It also initializes an S3 resource object for use in interacting
+# # with S3 storage.
 require "singleton"
 
 class StorageManager

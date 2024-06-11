@@ -5,7 +5,7 @@ resources :datasets do
     get "citation_text", defaults: {format: 'json'}
     get "confirmation_message", defaults: {format: 'json'}
     get 'confirm_review'
-    match 'copy_version_files', via: [:get, :post, :patch]
+    post 'copy_version_files'
     get 'download_BibTeX'
     get 'download_box_file/:box_file_id', to: 'datasets#download_box_file'
     get 'download_endNote_XML'
@@ -31,7 +31,7 @@ resources :datasets do
     get 'reserve_doi', defaults: {format: 'json'}
     get 'review_deposit_agreement'
     get 'review_requests'
-    match 'send_publication_notice', via: [:get, :post]
+    post 'send_publication_notice'
     post 'send_to_medusa', defaults: { format: 'json' }
     get "serialization", defaults: {format: 'json'}
     get 'share'

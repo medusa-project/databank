@@ -117,6 +117,7 @@ class ApplicationController < ActionController::Base
 
   private
 
+  # @return [User::Shibboleth, User::Identity] the current user
   def current_user
     if session[:user_id]
       @current_user = User::Shibboleth.find(session[:user_id]) || User::Identity.find(session[:user_id])
@@ -125,20 +126,34 @@ class ApplicationController < ActionController::Base
     session[:user_id] = nil
   end
 
+  ##
+  # sets the current user
+  # @param [User::Shibboleth, User::Identity] user
+  # @return [User::Shibboleth, User::Identity] the current user
   def set_current_user(user)
     @current_user = user
     session[:current_user_id] = user.id
   end
 
+  ##
+  # unsets the current user
+  # @return [nil]
   def unset_current_user
     @current_user = nil
     session[:current_user_id] = nil
   end
 
+  ##
+  # checks if a user is logged in
+  # @return [Boolean] true if a user is logged in
   def logged_in?
     current_user.present?
   end
 
+  ##
+  # requires a user to be logged in
+  # @return [nil]
+  # @raise [ActionController::InvalidCrossOriginRequest] if the request is not from the same origin
   def require_logged_in
     unless logged_in?
       session[:login_return_uri] = request.env["REQUEST_URI"]

@@ -82,6 +82,7 @@ class DatasetsController < ApplicationController
     redirect_to dataset_path(@previous.key)
   end
 
+  # Responds to `GET /datasets/:id/share`
   def share
     @dataset.create_share_code(id: @dataset.id) unless @dataset.current_share_code
     share_notice = %Q(<h3>&#9432;&nbsp;&nbsp;About this Private Sharing Link</h3><ul><li>Anybody with this link can access to your private dataset
@@ -100,6 +101,7 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
+  # Responds to `POST /datasets/:id/copy_version_files`
   def copy_version_files
     if @dataset.update(dataset_params)
       files_to_copy = @dataset.version_files.where(selected: true, initiated: false)
@@ -812,6 +814,7 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
+  # Responds to `POST /datasets/:id/send_publication_notice`
   def send_publication_notice
     authorize! :manage, @dataset
     if @dataset.send_publication_notice
@@ -821,7 +824,7 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
-  # post '/datasets/:dataset_id/send_to_medusa', to: 'datasets#send_to_medusa'
+  # post '/datasets/:id/send_to_medusa', to: 'datasets#send_to_medusa'
   def send_to_medusa
     authorize! :update, @dataset
     ingest_record_url = MedusaIngest.send_dataset_to_medusa(@dataset)
