@@ -3,17 +3,17 @@
 class InviteesController < ApplicationController
   before_action :set_invitee, only: %i[show edit update destroy]
 
-  # GET /invitees
-  # GET /invitees.json
+  # Responds to `GET /invitees`
+  # Responds to `GET /invitees.json`
   def index
     @invitees = Invitee.all
   end
 
-  # GET /invitees/1
-  # GET /invitees/1.json
+  # Responds to `GET /invitees/1`
+  # Responds to `GET /invitees/1.json`
   def show; end
 
-  # GET /invitees/new
+  # Responds to `GET /invitees/new`
   def new
     @invitee = Invitee.new
     @role_arr = Array.new
@@ -22,7 +22,7 @@ class InviteesController < ApplicationController
     @role_arr.push(Databank::UserRole::CREATOR)
   end
 
-  # GET /invitees/1/edit
+  # Responds to `GET /invitees/1/edit`
   def edit
     @role_arr = Array.new
     @role_arr.push(Databank::UserRole::NETWORK_REVIEWER)
@@ -30,8 +30,8 @@ class InviteesController < ApplicationController
     @role_arr.push(Databank::UserRole::CREATOR)
   end
 
-  # POST /invitees
-  # POST /invitees.json
+  # Responds to `POST /invitees`
+  # Responds to `POST /invitees.json`
   def create
     @invitee = Invitee.new(invitee_params)
 
@@ -56,8 +56,8 @@ class InviteesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /invitees/1
-  # PATCH/PUT /invitees/1.json
+  # Responds to `PATCH/PUT /invitees/1`
+  # Responds to `PATCH/PUT /invitees/1.json`
   def update
     authorize! :manage, @invitee
 
@@ -81,8 +81,8 @@ class InviteesController < ApplicationController
     end
   end
 
-  # DELETE /invitees/1
-  # DELETE /invitees/1.json
+  # Responds to `DELETE /invitees/1`
+  # Responds to `DELETE /invitees/1.json`
   def destroy
     authorize! :manage, @invitee
     @invitee.destroy

@@ -8,7 +8,6 @@ Rails.application.routes.draw do
   post 'api/dataset/:dataset_key/datafile', to: 'api_dataset#datafile', defaults: {format: 'json'}
   draw :auth
   get '/contact', to: 'welcome#contact'
-  post '/contact_mail', to: 'welcome#contact_mail'
   resources :contributors
   draw :creator
   draw :data_curation_network
@@ -28,6 +27,7 @@ Rails.application.routes.draw do
   draw :medusa_ingest
   draw :metric
   resources :nested_items
+  draw :password_reset
   get '/policies', to: 'policies#index', :as => :policies
   resources :related_materials
   get '/researcher_spotlights', to: 'featured_researchers#index'

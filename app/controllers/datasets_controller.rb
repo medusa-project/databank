@@ -824,13 +824,14 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
-  # post '/datasets/:id/send_to_medusa', to: 'datasets#send_to_medusa'
+  # Responds to `Post /datasets/:id/send_to_medusa'
   def send_to_medusa
     authorize! :update, @dataset
     ingest_record_url = MedusaIngest.send_dataset_to_medusa(@dataset)
     render json: {result: ingest_record_url || "error", status: :ok}
   end
 
+  # Responds to `Get /datasets/:id/review_deposit_agreement' and `Get /datasets/review_deposit_agreement'
   def review_deposit_agreement
     set_dataset if params.has_key?(:id)
 
@@ -847,6 +848,7 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
+  # Responds to `Get /datasets/:id/open_in_globus'
   def open_in_globus
     @dataset.datafiles.each do |datafile|
       datafile.record_download(request.remote_ip)
@@ -854,6 +856,9 @@ collaborators to access the data files while the dataset is not public.</li>
     redirect_to @dataset.globus_download_dir
   end
 
+  # @deprecated
+  # Was used before Medusa Download was implemented
+  # Could get overwhemled by large datasets
   def zip_and_download_selected
     if @dataset.identifier.present? && @dataset.publication_state != Databank::PublicationState::DRAFT
       @dataset.complete_datafiles.each do |datafile|
@@ -876,6 +881,7 @@ collaborators to access the data files while the dataset is not public.</li>
     zipline(file_mappings, file_name)
   end
 
+  # Responds to `Get /datasets/:id/download_link`
   # precondition: all valid web_ids in medusa
   def download_link
     return_hash = {}
@@ -923,6 +929,7 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
+  # Responds to `Get /datasets/:id/confirmation_message`
   def confirmation_message
     proposed_dataset = @dataset
     if params.has_key?("new_embargo_state")
@@ -940,6 +947,7 @@ collaborators to access the data files while the dataset is not public.</li>
     render json: {status: :ok, message: Dataset.publish_modal_msg(dataset: proposed_dataset)}
   end
 
+  # Responds to `Get /datasets/:id/download_endNote_XML`
   def download_endNote_XML
     t = Tempfile.new("#{@dataset.key}_endNote")
 
@@ -1009,6 +1017,7 @@ collaborators to access the data files while the dataset is not public.</li>
     t.close
   end
 
+  # Responds to `Get /datasets/:id/download_RIS`
   def download_RIS
     @dataset.identifier = @dataset.key unless @dataset.identifier
 
@@ -1026,6 +1035,7 @@ collaborators to access the data files while the dataset is not public.</li>
     t.close
   end
 
+  # Responds to `Get /datasets/:id/download_plaintext_citation`
   def download_plaintext_citation
     t = Tempfile.new("#{@dataset.key}_citation")
 
@@ -1038,11 +1048,11 @@ collaborators to access the data files while the dataset is not public.</li>
     t.close
   end
 
+  # Responds to `Get /datasets/:id/download_BibTeX`
   def download_BibTeX
     @dataset.identifier = @dataset.default_identifier unless @dataset.identifier
 
     t = Tempfile.new("#{@dataset.key}_endNote")
-    # citekey = SecureRandom.uuid
     citekey = "illinoisdatabank#{@dataset.key}"
 
     t.write("@data{#{citekey},\ndoi = {#{@dataset.identifier}},\nurl = {#{@dataset.persistent_url_base}/#{@dataset.identifier}},\nauthor = {#{@dataset.bibtex_creator_list}},\npublisher = {#{@dataset.publisher}},\ntitle = {#{@dataset.title}},\nyear = {#{@dataset.publication_year}}
@@ -1055,10 +1065,12 @@ collaborators to access the data files while the dataset is not public.</li>
     t.close
   end
 
+  # Responds to `Get /datasets/:id/citation_text`
   def citation_text
     render json: {"citation" => @dataset.plain_text_citation}
   end
 
+  # Responds to `Get /datasets/:id/serialization`
   def serialization
     @serialization_json = recovery_serialization.to_json
     respond_to do |format|
@@ -1067,16 +1079,13 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
+  # Responds to `Get /datasets/:id/download_metrics`
   def download_metrics; end
 
-  def recordtext; end
+  # Responds to `Get /datasets/:id/record_text`
+  def record_text; end
 
-  def temporary_error; end
-
-  def medusa_info_list
-    @datasets = Dataset.all
-  end
-
+  # Responds to `Get /datasets/:id/confirm_review`
   def confirm_review; end
 
   private
@@ -1088,13 +1097,12 @@ collaborators to access the data files while the dataset is not public.</li>
     raise ActiveRecord::RecordNotFound unless @dataset
   end
 
+  # Non-default modes are used when the storage system is not available for writing
   def set_file_mode(mode=Databank::FileMode::WRITE_READ)
     Application.file_mode = mode
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
-  # def dataset_params
-
   def dataset_params
     params.require(:dataset).permit(:medusa_dataset_dir, :title, :identifier, :publisher, :license, :key, :description, :keywords, :depositor_email, :depositor_name, :corresponding_creator_name, :corresponding_creator_email, :embargo, :complete, :search, :dataset_version, :release_date, :is_test, :is_import, :audit_id, :removed_private, :have_permission, :internal_reviewer, :agree, :web_ids, :org_creators, :version_comment, :subject,
                                     datafiles_attributes:         [:datafile, :description, :attachment, :dataset_id, :id, :_destroy, :_update, :audit_id],

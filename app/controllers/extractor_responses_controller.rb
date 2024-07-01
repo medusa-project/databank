@@ -1,25 +1,25 @@
+# frozen_string_literal: true
+
 class ExtractorResponsesController < ApplicationController
   before_action :set_extractor_response, only: %i[ show edit update destroy ]
 
-  # GET /extractor_responses or /extractor_responses.json
+  # Responds to `GET /extractor_responses or /extractor_responses.json
   def index
     @extractor_responses = ExtractorResponse.all
   end
 
-  # GET /extractor_responses/1 or /extractor_responses/1.json
-  def show
-  end
+  # Responds to `GET /extractor_responses/1 or /extractor_responses/1.json
+  def show; end
 
-  # GET /extractor_responses/new
+  # Responds to `GET /extractor_responses/new
   def new
     @extractor_response = ExtractorResponse.new
   end
 
-  # GET /extractor_responses/1/edit
-  def edit
-  end
+  # Responds to `GET /extractor_responses/1/edit
+  def edit; end
 
-  # POST /extractor_responses or /extractor_responses.json
+  # Responds to `POST /extractor_responses or /extractor_responses.json
   def create
     @extractor_response = ExtractorResponse.new(extractor_response_params)
 
@@ -34,7 +34,7 @@ class ExtractorResponsesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /extractor_responses/1 or /extractor_responses/1.json
+  # Responds to `PATCH/PUT /extractor_responses/1 or /extractor_responses/1.json
   def update
     respond_to do |format|
       if @extractor_response.update(extractor_response_params)
@@ -47,7 +47,7 @@ class ExtractorResponsesController < ApplicationController
     end
   end
 
-  # DELETE /extractor_responses/1 or /extractor_responses/1.json
+  # Responds to `DELETE /extractor_responses/1 or /extractor_responses/1.json
   def destroy
     @extractor_response.destroy
     respond_to do |format|
@@ -57,13 +57,13 @@ class ExtractorResponsesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_extractor_response
-      @extractor_response = ExtractorResponse.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_extractor_response
+    @extractor_response = ExtractorResponse.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def extractor_response_params
-      params.require(:extractor_response).permit(:extractor_task_id, :web_id, :status, :peek_type, :peek_text)
-    end
+  # Only allow a list of trusted parameters through.
+  def extractor_response_params
+    params.require(:extractor_response).permit(:extractor_task_id, :web_id, :status, :peek_type, :peek_text)
+  end
 end

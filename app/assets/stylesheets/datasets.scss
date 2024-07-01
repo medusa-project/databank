@@ -18,6 +18,10 @@ ul.dashed > li:before {
   text-indent: -5px;
 }
 
+#publicationNoticeButton {
+  display: inline !important;
+}
+
 .info-box {
   background-color: $color__lightest-grey;
 }
