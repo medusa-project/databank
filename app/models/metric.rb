@@ -54,6 +54,7 @@ class Metric
     def write_datasets_tsv
       target_path = METRICS_CONFIG[:datasets_tsv][:relative_path]
       datasets = Dataset.all_with_public_metadata
+      download_tally_hash = public_tally_count_by_dataset_key
       headings = ["doi",
                   "ingest_date",
                   "release_date",
@@ -68,12 +69,13 @@ class Metric
       values_rows = []
       datasets.each do |dataset|
         dataset.handle_related_materials
+        download_tally_hash[dataset.key] = 0 if download_tally_hash[dataset.key].nil?
         values = [dataset.identifier.to_s,
                   dataset.ingest_datetime.to_date.iso8601.to_s,
                   dataset.release_date.iso8601.to_s,
                   dataset.datafiles.count.to_s,
                   dataset.total_filesize.to_s,
-                  dataset.total_downloads.to_s,
+                  download_tally_hash[dataset.key].to_s,
                   dataset.num_external_relationships.to_s,
                   dataset.creators.count.to_s,
                   dataset.subject.to_s,
@@ -131,11 +133,12 @@ class Metric
           report << ["doi", "pub_date", "filename", "file_format", "num_bytes", "total_downloads"]
         end
       end
+      public_downloads_by_web_id = FileDownloadTally.public_downloads_by_web_id
       datasets.each do |dataset|
         # divide into batches of 1000
         # write each batch to the file
         dataset.datafiles.each_slice(1000) do |datafiles|
-          write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype)
+          write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype, public_downloads_by_web_id)
         end
       end
     end
@@ -146,18 +149,18 @@ class Metric
     # @param dataset [Dataset] the dataset
     # @param datafiles [Array] the datafiles
     # @param doi_filename_mimetype [Hash] the doi, filename, and mimetype
-    def write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype)
-
+    def write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype, public_downloads_by_web_id)
       File.open(target_path, "a") do |f|
         CSV.open(f, "a") do |report|
           datafiles.each do |datafile|
             doi_filename = "#{dataset.identifier}_#{datafile.bytestream_name}".downcase
+            public_downloads_by_web_id[datafile.web_id] = 0 if public_downloads_by_web_id[datafile.web_id].nil?
             report << [dataset.identifier.to_s,
                        dataset.release_date.iso8601.to_s,
                        datafile.bytestream_name.to_s,
                        (doi_filename_mimetype[doi_filename]).to_s,
                        datafile.bytestream_size.to_s,
-                       datafile.total_downloads.to_s]
+                       public_downloads_by_web_id[datafile.web_id].to_s]
           end
         end
       end

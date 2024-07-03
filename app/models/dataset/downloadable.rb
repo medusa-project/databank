@@ -21,6 +21,12 @@ module Dataset::Downloadable
   end
 
   ##
+  # @return [Integer] the total number of downloads for the dataset that should be public
+  def public_downloads
+    DatasetDownloadTally.public_dataset_download_tallies(self.key).sum :tally
+  end
+
+  ##
   # @return [Integer] the total number of downloads for the dataset today
   def dataset_download_tallies
     DatasetDownloadTally.where(dataset_key: key)
