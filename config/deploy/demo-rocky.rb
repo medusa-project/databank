@@ -83,7 +83,7 @@ namespace :deploy do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
       execute_rake "databank:rails_cache:clear"
       execute_rake "sunspot:reindex"
-      execute_rake "experts:generate_doc"
+      # execute_rake "experts:generate_doc"
     end
   end
 
