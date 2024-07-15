@@ -5,6 +5,18 @@
 
 class Metric
   class << self
+    ##
+    # write csv of dataset download metrics derived from the dataset_downloads.json
+    def datasets_downloads_json_to_csv
+      dataset_downloads_json = JSON.parse(File.read(METRICS_CONFIG[:dataset_downloads_json][:relative_path]))
+      dataset_downloads_csv = "#{Rails.root}/public/dataset_downloads.csv"
+      CSV.open(dataset_downloads_csv, "w") do |csv|
+        csv << ["doi", "date", "tally"]
+        dataset_downloads_json["dataset_downloads"].each do |row|
+          csv << [row["doi"], row["date"], row["tally"]]
+        end
+      end
+    end
 
     ##
     # refresh all the metrics

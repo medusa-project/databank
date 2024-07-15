@@ -10,6 +10,13 @@ class MetricsController < ApplicationController
     @modified_times = Metric.modified_times
   end
 
+  # Responds to `GET /metrics/downloads`
+  def downloads
+    datasets_downloads_json_to_csv
+    @dataset_downloads_csv_path = "#{Rails.root}/public/dataset_downloads.csv"
+    @dataset_overview_tsv_path = "#{Rails.root}/public/datasets.tsv"
+  end
+
   # Responds to `GET /metrics/dataset_downloads`
   def dataset_downloads
     render "public/dataset_downloads.json", layout: false
