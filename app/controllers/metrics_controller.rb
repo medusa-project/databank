@@ -12,7 +12,7 @@ class MetricsController < ApplicationController
 
   # Responds to `GET /metrics/downloads`
   def downloads
-    Metrics.datasets_downloads_json_to_csv
+    Metric.datasets_downloads_json_to_csv
     @dataset_downloads_csv_path = "#{Rails.root}/public/dataset_downloads.csv"
     @dataset_overview_tsv_path = "#{Rails.root}/public/datasets.tsv"
   end
