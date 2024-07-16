@@ -5,38 +5,6 @@
 
 class Metric
   class << self
-    ##
-    # write csv of dataset download metrics derived from the dataset_downloads.json
-    def datasets_downloads_json_to_csv
-      tally_hash = {}
-      json_path = METRICS_CONFIG[:dataset_downloads_json][:relative_path]
-      File.foreach(json_path) do |line|
-        parsed = JSON.parse(line)
-        if tally_hash.key?(parsed["doi"])
-          tally_hash[parsed["doi"]] += parsed["tally"]
-        else
-          tally_hash[parsed["doi"]] = parsed["tally"]
-        end
-      end
-
-
-      dataset_downloads_json = JSON.parse(File.read(METRICS_CONFIG[:dataset_downloads_json][:relative_path]))
-      dataset_downloads_csv = "#{Rails.root}/public/dataset_downloads.csv"
-      downloads_hash = {}
-      dataset_downloads_json["dataset_downloads"].each do |row|
-        if downloads_hash.key?(row["doi"])
-          downloads_hash[row["doi"]] += row["tally"]
-        else
-          downloads_hash[row["doi"]] = row["tally"]
-        end
-      end
-      CSV.open(dataset_downloads_csv, "w") do |csv|
-        csv << ["doi", "date", "tally"]
-        downloads_hash.each do |doi, tally|
-          csv << [doi, tally]
-        end
-      end
-    end
 
     ##
     # refresh all the metrics
@@ -146,6 +114,7 @@ class Metric
         f.puts "doi,tally"
         doi_totals_hash.each do |doi, tally|
           f.puts "#{doi},#{tally}"
+        end
       end
     end
 
