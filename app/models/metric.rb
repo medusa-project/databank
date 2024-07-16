@@ -8,6 +8,18 @@ class Metric
     ##
     # write csv of dataset download metrics derived from the dataset_downloads.json
     def datasets_downloads_json_to_csv
+      tally_hash = {}
+      json_path = METRICS_CONFIG[:dataset_downloads_json][:relative_path]
+      File.foreach(json_path) do |line|
+        parsed = JSON.parse(line)
+        if tally_hash.key?(parsed["doi"])
+          tally_hash[parsed["doi"]] += parsed["tally"]
+        else
+          tally_hash[parsed["doi"]] = parsed["tally"]
+        end
+      end
+
+
       dataset_downloads_json = JSON.parse(File.read(METRICS_CONFIG[:dataset_downloads_json][:relative_path]))
       dataset_downloads_csv = "#{Rails.root}/public/dataset_downloads.csv"
       downloads_hash = {}
@@ -113,15 +125,27 @@ class Metric
     # write the dataset downloads json
     def write_dataset_downloads_json
       target_path = METRICS_CONFIG[:dataset_downloads_json][:relative_path]
+      doi_totals_hash = {}
       File.open(target_path, "w") do |f|
         f.print %({"dataset_downloads":[)
         dataset_download_tallies = DatasetDownloadTally.public_tallies
         dataset_download_tallies.each_with_index do |row, i|
           row_json = { doi: row.doi, date: row.download_date, tally: row.tally }.to_json
+          if doi_totals_hash.key?(row.doi)
+            doi_totals_hash[row.doi] += row.tally
+          else
+            doi_totals_hash[row.doi] = row.tally
+          end
           f.print "," unless i.zero?
           f.print row_json
           f.puts "]}" if i == (dataset_download_tallies.count - 1)
         end
+      end
+      totals_path = target_path.split(".json").first + "_totals.csv"
+      File.open(totals_path, "w") do |f|
+        f.puts "doi,tally"
+        doi_totals_hash.each do |doi, tally|
+          f.puts "#{doi},#{tally}"
       end
     end
 
