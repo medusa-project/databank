@@ -10,10 +10,18 @@ class Metric
     def datasets_downloads_json_to_csv
       dataset_downloads_json = JSON.parse(File.read(METRICS_CONFIG[:dataset_downloads_json][:relative_path]))
       dataset_downloads_csv = "#{Rails.root}/public/dataset_downloads.csv"
+      downloads_hash = {}
+      dataset_downloads_json["dataset_downloads"].each do |row|
+        if downloads_hash.key?(row["doi"])
+          downloads_hash[row["doi"]] += row["tally"]
+        else
+          downloads_hash[row["doi"]] = row["tally"]
+        end
+      end
       CSV.open(dataset_downloads_csv, "w") do |csv|
         csv << ["doi", "date", "tally"]
-        dataset_downloads_json["dataset_downloads"].each do |row|
-          csv << [row["doi"], row["date"], row["tally"]]
+        downloads_hash.each do |doi, tally|
+          csv << [doi, tally]
         end
       end
     end
