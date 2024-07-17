@@ -126,7 +126,7 @@
             %td.resource-label
               %span.metadata-label Downloaded
             %td
-              = pluralize(dataset.total_downloads, 'time')
+              = pluralize(dataset.public_downloads, 'time')
         %tr.row
           %td(colspan="2" )
             -if dataset.materials_related.length.positive?
