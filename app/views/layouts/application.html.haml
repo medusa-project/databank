@@ -1,5 +1,5 @@
 !!!
-%html, lang: "en"
+%html{lang: "en"}
   %head
     -# Google Tag Manager
     - if Rails.env.production? || Rails.env.prod_rocky?
@@ -47,7 +47,7 @@
     = render partial: 'shared/mini_navbar'
     = render partial: 'shared/library_header'
     = render partial: 'shared/header_navbar'
-    #main-content{"aria-label" => "Accessibility Note: Research Data Service staff at databank@library.illinois.edu are happy to assist with data deposit or access."}
+    #main-content
       - flash.each do |key, value|
         %div{class: "alert alert-#{key}"}
           = sanitize(value)
