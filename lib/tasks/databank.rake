@@ -43,7 +43,6 @@ namespace :databank do
 
   end
 
-  #TODO: complete
   desc 'update sitemap'
   task :update_sitemap => :environment do
 
