@@ -17,13 +17,13 @@ module Dataset::Downloadable
   ##
   # @return [Integer] the total number of downloads for the dataset
   def total_downloads
-    DatasetDownloadTally.where(dataset_key: key).sum :tally
+    DatasetDownloadTally.where(dataset_key: key).sum(&:tally)
   end
 
   ##
   # @return [Integer] the total number of downloads for the dataset that should be public
   def public_downloads
-    DatasetDownloadTally.public_dataset_download_tallies(self.key).sum :tally
+    DatasetDownloadTally.public_dataset_download_tallies(self.key).sum(&:tally)
   end
 
   ##
