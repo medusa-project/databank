@@ -30,7 +30,7 @@ class DatasetDownloadTally < ApplicationRecord
 
     return false unless dataset
 
-    return false unless dataset.metadata_public?
+    # return false unless dataset.metadata_public?
 
     return false if dataset.is_test
 

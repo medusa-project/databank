@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_03_155405) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_19_193402) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -106,6 +106,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_03_155405) do
     t.integer "tally"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["dataset_key"], name: "index_dataset_download_tallies_on_dataset_key"
   end
 
   create_table "datasets", id: :serial, force: :cascade do |t|
@@ -459,5 +460,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_03_155405) do
     t.index ["dataset_id"], name: "index_version_files_on_dataset_id"
   end
 
+  add_foreign_key "dataset_download_tallies", "datasets", column: "dataset_key", primary_key: "key"
   add_foreign_key "version_files", "datasets"
 end

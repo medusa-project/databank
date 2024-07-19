@@ -60,7 +60,7 @@ class Metric
                   "release_date",
                   "num_files",
                   "num_bytes",
-                  "public_downloads",
+                  "total_downloads",
                   "num_relationships",
                   "num_creators",
                   "subject",
@@ -75,7 +75,7 @@ class Metric
                   dataset.release_date.iso8601.to_s,
                   dataset.datafiles.count.to_s,
                   dataset.total_filesize.to_s,
-                  dataset.public_downloads.to_s,
+                  dataset.total_downloads.to_s,
                   dataset.num_external_relationships.to_s,
                   dataset.creators.count.to_s,
                   dataset.subject.to_s,
@@ -143,7 +143,7 @@ class Metric
       target_path = METRICS_CONFIG[:datafiles_csv][:relative_path]
       File.open(target_path, "w") do |f|
         CSV.open(f, "w") do |report|
-          report << ["doi", "pub_date", "filename", "file_format", "num_bytes", "public_downloads"]
+          report << ["doi", "pub_date", "filename", "file_format", "num_bytes", "total_downloads"]
         end
       end
       public_downloads_by_web_id = FileDownloadTally.public_downloads_by_web_id

@@ -121,12 +121,13 @@
               %span.metadata-label Depositor Email:
             %td
               = dataset.depositor_email
-        -if dataset.public_downloads > 0
+
+        -if dataset.total_downloads > 0
           %tr.row
             %td.resource-label
               %span.metadata-label Downloaded
             %td
-              = pluralize(dataset.public_downloads, 'time')
+              = pluralize(dataset.total_downloads, 'time')
         %tr.row
           %td(colspan="2" )
             -if dataset.materials_related.length.positive?
