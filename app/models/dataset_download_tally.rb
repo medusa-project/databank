@@ -30,9 +30,9 @@ class DatasetDownloadTally < ApplicationRecord
 
     return false unless dataset
 
-    # return false unless dataset.metadata_public?
-
     return false if dataset.is_test
+
+    return false unless dataset.release_datetime
 
     return false unless created_at > dataset.release_datetime
 

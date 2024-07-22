@@ -23,7 +23,7 @@ class FileDownloadTally < ApplicationRecord
     dataset = datafile.dataset
     return false unless dataset
 
-    return false unless dataset.metadata_public?
+    return false unless dataset.release_datetime
 
     return false if dataset.is_test
 
