@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_19_193402) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_22_182758) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -233,6 +233,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_19_193402) do
     t.integer "tally"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["dataset_key"], name: "index_file_download_tallies_on_dataset_key"
+    t.index ["file_web_id"], name: "index_file_download_tallies_on_file_web_id"
   end
 
   create_table "funders", id: :serial, force: :cascade do |t|
