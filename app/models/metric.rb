@@ -96,7 +96,8 @@ class Metric
       doi_totals_hash = {}
       File.open(target_path, "w") do |f|
         f.print %({"dataset_downloads":[)
-        dataset_download_tallies = DatasetDownloadTally.public_tallies
+        #dataset_download_tallies = DatasetDownloadTally.public_tallies
+        dataset_download_tallies = DatasetDownloadTally.all
         dataset_download_tallies.each_with_index do |row, i|
           row_json = { doi: row.doi, date: row.download_date, tally: row.tally }.to_json
           if doi_totals_hash.key?(row.doi)
@@ -124,12 +125,12 @@ class Metric
       target_path = METRICS_CONFIG[:datafile_downloads_json][:relative_path]
       File.open(target_path, "w") do |f|
         f.print %({"datafile_downloads":[)
-        file_public_tallies = FileDownloadTally.public_tallies
-        file_public_tallies.each_with_index do |row, i|
+        total_file_tallies = FileDownloadTally.all
+        total_file_tallies.each_with_index do |row, i|
           row_json = { doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally }.to_json
           f.print "," unless i.zero?
           f.print row_json
-          f.puts "]}" if i == (file_public_tallies.count - 1)
+          f.puts "]}" if i == (total_file_tallies.count - 1)
         end
       end
     end
