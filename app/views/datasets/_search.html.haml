@@ -121,12 +121,10 @@
                 .facet
                   -if params.has_key?('funder_codes') && params['funder_codes'].include?(row.value)
                     %input(type="checkbox" class="checkFacet checkFacetGroup funder_facet" name="funder_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
-                    %label(for="funder_codes[]")
                       = Dataset.funder_name_from_code(row.value)
                       ="(#{row.count})"
                   -else
                     %input(type="checkbox" class="checkFacet checkFacetGroup funder_facet" name="funder_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
-                    %label(for="funder_codes[]")
                       = Dataset.funder_name_from_code(row.value)
                       ="(#{row.count})"
         .panel-group
@@ -142,12 +140,10 @@
                   .facet
                     -if params.has_key?('publication_years') && params['publication_years'].include?(row.value)
                       %input(type="checkbox" class="checkFacet checkFacetGroup publication_year_facet" name="publication_years[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
-                      %label(for="publication_years[]" )
                         = row.value
                         ="(#{row.count})"
                     -else
                       %input(type="checkbox" class="checkFacet checkFacetGroup publication_year_facet" name="publication_years[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
-                      %label(for="publication_years[]")
                         = row.value
                         ="(#{row.count})"
 
@@ -163,12 +159,10 @@
                   .facet
                     -if params.has_key?('license_codes') && params['license_codes'].include?(row.value)
                       %input(type="checkbox" class="checkFacet checkFacetGroup license_facet" name="license_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
-                      %label(for="license_codes[]")
                         = Dataset.license_name_from_code(row.value)
                         ="(#{row.count})"
                     -else
                       %input(type="checkbox" class="checkFacet checkFacetGroup license_facet" name="license_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
-                      %label(for="license_codes[]")
                         = Dataset.license_name_from_code(row.value)
                         ="(#{row.count})"
 
@@ -183,12 +177,10 @@
                   .facet
                     -if params.has_key?('visibility_codes') && params['visibility_codes'].include?(row.value)
                       %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
-                      %label(for="visibility_codes[]")
-                      = Dataset.visibility_name_from_code(row.value)
-                      ="(#{row.count})"
+                        = Dataset.visibility_name_from_code(row.value)
+                        ="(#{row.count})"
                     -else
                       %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
-                      %label(for="visibility_codes[]")
                         = Dataset.visibility_name_from_code(row.value)
                         ="(#{row.count})"
 
