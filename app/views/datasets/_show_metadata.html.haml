@@ -13,7 +13,7 @@
                 %span(class="glyphicon glyphicon-list")
                 Export Citation
                 %span(class="caret")
-              %ul(class="dropdown-menu pull-right text-left" role="menu")
+              %ul(class="dropdown-menu pull-right text-left")
                 %li
                   %a(id="datasetForm:endNoteLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_endNote_XML"')
                     EndNote XML
@@ -48,9 +48,10 @@
         %thead
           %tr.row
             %th.col-lg-2.col-md-3.col-sm-4
-              %span(aria-label="metadata field" )
+              %span.metadata-label
+                Metadata field
             %th.col-lg-10.col-md-9.col-sm-8
-              %span(aria-label="metadata value" )
+              Metadata value
         %tbody>
         -if dataset.description && dataset.description != ''
           %tr.row
