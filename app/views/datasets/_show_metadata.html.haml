@@ -36,7 +36,7 @@
             .input-group.clipboard-control.persistent-url
               %input(type="text" id="persistent-url" class="form-control" name="persistent-url" value="#{dataset.persistent_url}" )
               %span(class="input-group-btn" )
-                %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#persistent-url')
+                %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#persistent-url' aria-label="copy persistent url to clipboard")
                   %span(class="glyphicon glyphicon-copy")
           .col-md-6
             - if dataset.publication_state == Databank::PublicationState::DRAFT
@@ -48,7 +48,9 @@
         %thead
           %tr.row
             %th.col-lg-2.col-md-3.col-sm-4
+              %span(aria-label="metadata field" )
             %th.col-lg-10.col-md-9.col-sm-8
+              %span(aria-label="metadata value" )
         %tbody>
         -if dataset.description && dataset.description != ''
           %tr.row
