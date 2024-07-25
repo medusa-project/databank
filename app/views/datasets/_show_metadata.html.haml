@@ -29,7 +29,7 @@
         .citation-example
           =dataset.plain_text_citation
       - if dataset.identifier && dataset.identifier != ""
-        = label_tag "persistent-url"
+        %label(for="persistent-url" )
           Use this persistent URL to link to this dataset:
         .row
           .col-md-6
