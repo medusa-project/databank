@@ -29,7 +29,7 @@
                                   %span.checkFileSelectedCount
                             .col-md-8
                               -if dataset.globus_downloadable?
-                                =link_to "#{image_tag("globus.png", size: "24x18")} Open in Globus File Manager".html_safe, "/datasets/#{dataset.key}/open_in_globus", target: "_blank",
+                                =link_to "#{image_tag("globus.png", size: "24x18", "aria-hidden": true)} Open in Globus File Manager".html_safe, "/datasets/#{dataset.key}/open_in_globus", target: "_blank",
                                 class: "btn btn-primary idb"
                                 %a(href="/guides#upload_globus" target="_blank" )
                                   %span(class="far fa-question-circle")
