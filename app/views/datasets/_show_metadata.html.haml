@@ -47,11 +47,8 @@
       %table(class="table borderless")
         %thead
           %tr.row
-            %th.col-lg-2.col-md-3.col-sm-4
-              %span.metadata-label
-                Metadata field
-            %th.col-lg-10.col-md-9.col-sm-8
-              Metadata value
+            %th.col-lg-2.col-md-3.col-sm-4(aria-label="Metadata field" )
+            %th.col-lg-10.col-md-9.col-sm-8(aria-label="Metadata value" )
         %tbody>
         -if dataset.description && dataset.description != ''
           %tr.row
@@ -138,7 +135,7 @@
               .panel-group(id="related" role="tablist" aria-multiselectable="true")
                 .panel.panel-default
                   .panel-heading.subdued-heading(role="tab" id="relatedHeading")
-                    %h4(class="panel-title")
+                    .panel-title
                       %a( role="button" data-toggle="collapse" data-parent="#related" href="#relatedPanel" aria-expanded="false" aria-controls="relatedPanel" class="accordion-toggle collapsed" )
                         %span( class="metadata-label" )
                           = "Related Materials (#{dataset.materials_related.length})"
@@ -151,7 +148,7 @@
                 .panel-group(id="cited" role="tablist" aria-multiselectable="true")
                   .panel.panel-default
                     .panel-heading.subdued-heading(role="tab" id="citedHeading")
-                      %h4(class="panel-title")
+                      .panel-title
                         %a( role="button" data-toggle="collapse" data-parent="#cited" href="#citedPanel" aria-expanded="false" aria-controls="citedPanel" class="accordion-toggle collapsed" )
                           %span( class="metadata-label" )
                             = "Cited By (#{dataset.materials_cited_by.length})"

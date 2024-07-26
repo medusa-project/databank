@@ -51,8 +51,7 @@
     <div class="panel-group" id="versionGroup" role="tablist" aria-multiselectable="true">
       <div class="panel panel-default">
         <div class="panel-heading" role="tab" id="versionGroupHeading">
-          <h4 class="panel-title">
-
+          <div class="panel-title">
             <% if @dataset.version_group.group_hash[:entries].length > 1 %>
               <a role="button" data-toggle="collapse" data-parent="#versionGroup" href="#versionGroupPanel" aria-expanded="true" aria-controls="versionGroupPanel" class="accordion-toggle">
                 <span class="metadata-label">Versions in Illinois Data Bank</span>
@@ -62,7 +61,7 @@
                 <span class="metadata-label">Versions</span>
               </a>
             <% end %>
-          </h4>
+          </div>
         </div>
         <div class="panel-collapse collapse
         <% if @dataset.version_group.group_hash[:entries].length > 1 %> in
@@ -131,11 +130,11 @@
       <div class="panel-group" id="changelog" role="tablist" aria-multiselectable="true">
         <div class="panel panel-default">
           <div class="panel-heading" role="tab" id="changelogHeading">
-            <h4 class="panel-title">
+            <div class="panel-title">
               <a role="button" data-toggle="collapse" data-parent="#changelog" href="#changelogPanel" aria-expanded="false" aria-controls="changelogPanel" class="accordion-toggle collapsed">
                 <span class="metadata-label">Change Log</span>
               </a>
-            </h4>
+            </div>
           </div>
           <div class="panel-collapse collapse" id="changelogPanel" role="tabpanel" aria-labelledby="changelogHeading">
             <div class="panel-body">
