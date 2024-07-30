@@ -140,19 +140,18 @@ class Metric
     def write_datafiles_csv
       doi_filename_mimetype = MedusaInfo.doi_filename_mimetype
       render(json: { error: "mimetype map not found", status: 500 }) && (return nil) unless doi_filename_mimetype
-      datasets = Dataset.select(&:metadata_public?)
+      datasets = Dataset.all_with_public_metadata
       target_path = METRICS_CONFIG[:datafiles_csv][:relative_path]
       File.open(target_path, "w") do |f|
         CSV.open(f, "w") do |report|
           report << ["doi", "pub_date", "filename", "file_format", "num_bytes", "total_downloads"]
         end
       end
-      public_downloads_by_web_id = FileDownloadTally.public_downloads_by_web_id
       datasets.each do |dataset|
         # divide into batches of 1000
         # write each batch to the file
         dataset.datafiles.each_slice(1000) do |datafiles|
-          write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype, public_downloads_by_web_id)
+          write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype)
         end
       end
     end
@@ -163,7 +162,7 @@ class Metric
     # @param dataset [Dataset] the dataset
     # @param datafiles [Array] the datafiles
     # @param doi_filename_mimetype [Hash] the doi, filename, and mimetype
-    def write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype, public_downloads_by_web_id)
+    def write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype)
       File.open(target_path, "a") do |f|
         CSV.open(f, "a") do |report|
           datafiles.each do |datafile|
@@ -174,7 +173,7 @@ class Metric
                        datafile.bytestream_name.to_s,
                        (doi_filename_mimetype[doi_filename]).to_s,
                        datafile.bytestream_size.to_s,
-                       public_downloads_by_web_id[datafile.web_id].to_s]
+                       datafile.total_downloads.to_s]
           end
         end
       end

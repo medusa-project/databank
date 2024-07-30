@@ -32,4 +32,17 @@ class DatasetSearchTest < ActionDispatch::IntegrationTest
     assert expected_keys & actual_keys == expected_keys
   end
 
+  test "default listing for curator" do
+    Dataset.all.each(&:ensure_creator_editors)
+    @user = user_identities :curator1
+    log_in_as(@user)
+    get datasets_path
+    assert_response :success
+    @search = Dataset.filtered_list(user_role: Databank::UserRole::ADMIN, user: @user, params: {})
+    expected_keys = @user.datasets_user_can_view(user: @user).map(&:key)
+    actual_keys = @search.results.map(&:key)
+    # puts "expected_keys: #{expected_keys.to_yaml}"
+    # puts "actual_keys: #{actual_keys.to_yaml}"
+    assert expected_keys & actual_keys == expected_keys
+  end
 end
