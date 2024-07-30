@@ -54,7 +54,6 @@ class Metric
     def write_datasets_tsv
       target_path = METRICS_CONFIG[:datasets_tsv][:relative_path]
       datasets = Dataset.all_with_public_metadata
-      download_tally_hash = DatasetDownloadTally.public_tally_count_by_dataset_key
       headings = ["doi",
                   "ingest_date",
                   "release_date",
@@ -69,7 +68,6 @@ class Metric
       values_rows = []
       datasets.each do |dataset|
         dataset.handle_related_materials
-        download_tally_hash[dataset.key] = 0 if download_tally_hash[dataset.key].nil?
         values = [dataset.identifier.to_s,
                   dataset.ingest_datetime.to_date.iso8601.to_s,
                   dataset.release_date.iso8601.to_s,
