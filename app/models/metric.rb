@@ -165,7 +165,6 @@ class Metric
         CSV.open(f, "a") do |report|
           datafiles.each do |datafile|
             doi_filename = "#{dataset.identifier}_#{datafile.bytestream_name}".downcase
-            public_downloads_by_web_id[datafile.web_id] = 0 if public_downloads_by_web_id[datafile.web_id].nil?
             report << [dataset.identifier.to_s,
                        dataset.release_date.iso8601.to_s,
                        datafile.bytestream_name.to_s,
