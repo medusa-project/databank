@@ -437,3 +437,6 @@ tr.different {
 #differnce_report td:not(:last-child) {
   border-right: 1px solid $color__lightest-grey;
 }
+.facet_label{
+    font-weight: normal;
+}
