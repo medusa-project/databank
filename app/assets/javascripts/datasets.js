@@ -85,8 +85,8 @@ ready = function () {
     // dynamically hide/show long description text
     var showChar = 140;
     var ellipsestext = "...";
-    var moretext = "more";
-    var lesstext = "less";
+    var moretext = "more description";
+    var lesstext = "less description";
     $('.more').each(function () {
         var content = $(this).html();
 
