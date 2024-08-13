@@ -23,7 +23,7 @@
         .input-group.search-control
           = select_tag :per_page, options_for_select([['25 per page', '25'], ['50 per page', '50'], ['Show All', '500']], params[:per_page]), class: "form-control"
           %span(class="input-group-btn" )
-            %button(type="button" class="btn btn-primary" onclick="changePerPage()" aria-label="change per page" )
+            %button(class="btn btn-primary" aria-label="change per page" )
               Go
 
   .row
