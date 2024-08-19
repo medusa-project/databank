@@ -13,7 +13,7 @@
             %span(class="glyphicon glyphicon-remove" aria-hidden="true" )
     -if @search && @search.total.positive?
       - sr = @search.results
-      .col-md-2.alert.alert-info
+      .col-md-2.search-count(aria-live="polite")
         = "Displaying #{sr.offset + 1} - #{sr.offset + sr.length} of #{sr.total_entries} in total"
 
       .col-md-4
@@ -21,9 +21,9 @@
 
       .col-md-2
         .input-group.search-control
-          = select_tag :per_page, options_for_select([['25 per page', '25'], ['50 per page', '50'], ['Show All', '500']], params[:per_page]), class: "form-control"
+          = select_tag :per_page, options_for_select([['25 per page', '25'], ['50 per page', '50'], ['Show All', '500']], params[:per_page]), class: "form-control", "aria-label": "results per page"
           %span(class="input-group-btn" )
-            %button(class="btn btn-primary" aria-label="change per page" )
+            %button(class="btn btn-primary" aria-label="submit per page" )
               Go
 
   .row
@@ -178,6 +178,9 @@
                           =label_tag "vis_#{row.value}", "#{Dataset.visibility_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
 
     .col-md-8
-      %h1 Datasets
+      %title
+        = "Illinois Data Bank Dataset Search Results"
+      %h1
+        Dataset Search Results
       -@search.each_hit_with_result do |hit, dataset|
         = render 'brief_record', dataset:dataset

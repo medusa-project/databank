@@ -564,3 +564,10 @@ table.deposit-agreement-selection-warning > tbody > tr > td {
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3 { page-break-after: avoid; }
 }
+
+caption.policy-document-history, caption.info-table {
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  background-color: $color__dark-navy;
+}

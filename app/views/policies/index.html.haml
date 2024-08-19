@@ -1,5 +1,5 @@
 .row(id="help-layout")
-  %nav(class="col-xs-3 bs-docs-sidebar")
+  %nav(class="col-xs-3 bs-docs-sidebar" aria-label="policy navigation" )
     %ul(id="sidebar" class="nav nav-stacked" )
       %li
         %a(href="#top" )
@@ -19,6 +19,7 @@
       %li
         %a(href="#preservation_guidelines") Preservation Review Guidelines
   .col-xs-9
+    %title Illinois Data Bank - Policy Framework and Definitions
     %h1 Illinois Data Bank Policy Framework and Definitions
     = render partial: 'framework_and_definitions'
     = render partial: 'access_and_use'

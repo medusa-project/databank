@@ -19,7 +19,7 @@
     / Mobile IE allows us to activate ClearType technology for smoothing fonts for easy reading
     /[if IEMobile]
       <meta http-equiv="cleartype" content="on">
-    %title Illinois Data Bank
+    =# %title Illinois Data Bank
     = favicon_link_tag 'favicon.ico'
     = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
     = javascript_include_tag 'application', 'data-turbolinks-track' => true
@@ -47,7 +47,7 @@
     = render partial: 'shared/mini_navbar'
     = render partial: 'shared/library_header'
     = render partial: 'shared/header_navbar'
-    #main-content
+    %main#main-content
       - flash.each do |key, value|
         %div{class: "alert alert-#{key}"}
           = sanitize(value)
