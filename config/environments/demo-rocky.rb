@@ -1,5 +1,5 @@
-# IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config","databank.yml"))).result)
-# STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config","medusa-storage.yml"))).result)[Rails.env]
+IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config","databank.yml"))).result)
+STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config","medusa-storage.yml"))).result)[Rails.env]
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -96,14 +96,14 @@ Rails.application.configure do
   #email stuff
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :smtp
-  # config.action_mailer.smtp_settings = {
-  #   :address        => "smtp-cx.socketlabs.com",
-  #   :port           => 587,
-  #   :domain         => "library.illinois.edu",
-  #   :authentication => :login,
-  #   :user_name      => IDB_CONFIG[:smtp][:username],
-  #   :password       => IDB_CONFIG[:smtp][:password]
-  # }
+  config.action_mailer.smtp_settings = {
+    :address        => "smtp-cx.socketlabs.com",
+    :port           => 587,
+    :domain         => "library.illinois.edu",
+    :authentication => :login,
+    :user_name      => IDB_CONFIG[:smtp][:username],
+    :password       => IDB_CONFIG[:smtp][:password]
+  }
 
 
   # Ignore bad email addresses and do not raise email delivery errors.
