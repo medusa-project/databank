@@ -7,9 +7,6 @@
   :host: host
 :orcid:
   :endpoint_base: https://pub.orcid.org/v3.0/
-:recaptcha:
-  :site_key: site_key
-  :secret_key: secret_key
 :primary_db:
   :username: postgres
   :password: postgres
@@ -56,7 +53,7 @@
   :shoulder: 10.shoulder/
   :url_base: "https://www.example.org"
   :fabrica_url: "https://www.example.org/"
-:test_datacite:
+:datacite_test:
   :endpoint: endpoint
   :username: username
   :password: password
@@ -76,12 +73,12 @@
 :tmpdir: /tmp
 :system_user_name: "Databank System"
 :system_user_email: "idb@mailinator.edu"
-:iiif_root: http://example.org/
 :reserve_doi_netid: netid
 :reserve_doi_role: role
 :iiif:
   :draft_base: /path/to/draft/base
   :medusa_base: /path/to/medusa/base
+  :preview_root: http://example.org/
 :amqp:
   :fail_if_no_peer_cert: false
   :heartbeat: 10

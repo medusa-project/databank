@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FeaturedResearchersController < ApplicationController
   authorize_resource
   skip_load_and_authorize_resource :only => [:show, :index]

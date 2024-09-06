@@ -94,7 +94,7 @@
                                       View
                                 -elsif datafile.image?
                                   %span(id="preview_img_btn_#{datafile.web_id}")
-                                    %button(type='button' class='btn btn-sm btn-success' onclick='preview_image("#{IDB_CONFIG[:iiif_root]}","#{datafile.web_id}")')
+                                    %button(type='button' class='btn btn-sm btn-success' onclick='preview_image("#{IDB_CONFIG[:iiif][:preview_root]}","#{datafile.web_id}")')
                                       %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
                                       View
                               %span.col-md-2

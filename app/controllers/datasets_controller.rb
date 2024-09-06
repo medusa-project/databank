@@ -761,7 +761,7 @@ collaborators to access the data files while the dataset is not public.</li>
     params["help-dataset"] = "#{request.base_url}#{dataset_path(@dataset.key)}"
     params["help-message"] = "Pre-deposit review request"
     shoulder = if @dataset.is_test?
-                 IDB_CONFIG[:test_datacite_shoulder]
+                 IDB_CONFIG[:datacite_test_shoulder]
                else
                  IDB_CONFIG[:datacite][:shoulder]
                end

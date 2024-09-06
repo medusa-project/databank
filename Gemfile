@@ -30,9 +30,6 @@ gem "browser"
 # Use tus-server to support chunked uploads of large files
 gem "tus-server"
 
-# Use reCAPTCHA API to reduce spam in contact form
-gem "recaptcha"
-
 # Use jquery as the JavaScript library
 gem "jquery-datatables-rails"
 gem "jquery-rails"

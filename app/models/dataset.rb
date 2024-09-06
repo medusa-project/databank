@@ -281,7 +281,7 @@ class Dataset < ApplicationRecord
   # @return [String] the dataset's persistent (DataCite DOI related) URL base
   def persistent_url_base
     if is_test?
-      IDB_CONFIG[:test_datacite][:url_base]
+      IDB_CONFIG[:datacite_test][:url_base]
     else
       IDB_CONFIG[:datacite][:url_base]
     end
