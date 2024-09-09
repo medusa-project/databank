@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class InviteesController < ApplicationController
+  authorize_resource
   before_action :set_invitee, only: %i[show edit update destroy]
 
   # Responds to `GET /invitees`

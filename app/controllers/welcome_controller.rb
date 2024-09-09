@@ -14,6 +14,7 @@ class WelcomeController < ApplicationController
     end
   end
 
+  def admin; end
   # Responds to `GET /contact`
   def contact
     @dataset = Dataset.find_by(key: params["key"]) if params.has_key?("key")

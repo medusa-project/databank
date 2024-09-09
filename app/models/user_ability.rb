@@ -13,6 +13,15 @@
 #
 
 class UserAbility < ApplicationRecord
+
+  def deposit_exception?
+    return false unless resource_id.nil?
+    return false unless resource_type == "Dataset"
+    return false unless ability == "create"
+
+    true
+  end
+
   class << self
     # @param [String] model The type of the resource that the user has permission to access.
     # @param [Integer] model_id The ID of the resource that the user has permission to access.

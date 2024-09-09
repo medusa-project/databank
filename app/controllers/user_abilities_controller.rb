@@ -26,9 +26,12 @@ class UserAbilitiesController < ApplicationController
   # Responds to `POST /user_abilities.json`
   def create
     @user_ability = UserAbility.new(user_ability_params)
-
     respond_to do |format|
       if @user_ability.save
+        if @user_ability.deposit_exception?
+          redirect_to "/deposit_exceptions", notice: 'Deposit exception was successfully created.'
+          return
+        end
         format.html { redirect_to @user_ability, notice: 'User ability was successfully created.' }
         format.json { render :show, status: :created, location: @user_ability }
       else
@@ -43,6 +46,10 @@ class UserAbilitiesController < ApplicationController
   def update
     respond_to do |format|
       if @user_ability.update(user_ability_params)
+        if @user_ability.deposit_exception?
+          redirect_to "/deposit_exceptions", notice: 'Deposit exception was successfully updated.'
+          return
+        end
         format.html { redirect_to @user_ability, notice: 'User ability was successfully updated.' }
         format.json { render :show, status: :ok, location: @user_ability }
       else
@@ -56,6 +63,10 @@ class UserAbilitiesController < ApplicationController
   # Responds to `DELETE /user_abilities/1.json`
   def destroy
     @user_ability.destroy
+    if @user_ability.deposit_exception?
+      redirect_to "/deposit_exceptions", notice: 'Deposit exception was successfully destroyed.'
+      return
+    end
     respond_to do |format|
       format.html { redirect_to user_abilities_url, notice: 'User ability was successfully destroyed.' }
       format.json { head :no_content }

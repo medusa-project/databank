@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   root 'welcome#index'
   get '/', to: 'welcome#index'
   post '/', to: "errors#error404"
+  get '/admin', to: 'welcome#admin'
   post 'api/dataset/:dataset_key/upload', to: 'api_dataset#upload', defaults: {format: 'json'}
   post 'api/dataset/:dataset_key/datafile', to: 'api_dataset#datafile', defaults: {format: 'json'}
   draw :auth
