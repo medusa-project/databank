@@ -11,9 +11,9 @@
 # * +user_uid+ [String] The UID of the user that has permission to access the resource.
 # * +ability+ [String] The ability that the user has to access the resource.
 
-before_save :trim_values
-
 class UserAbility < ApplicationRecord
+
+  before_save :trim_values
 
   def deposit_exception?
     return false unless resource_id.nil?
