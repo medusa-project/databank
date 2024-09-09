@@ -10,7 +10,8 @@
 # * +user_provider+ [String] The provider of the user that has permission to access the resource.
 # * +user_uid+ [String] The UID of the user that has permission to access the resource.
 # * +ability+ [String] The ability that the user has to access the resource.
-#
+
+before_save :trim_values
 
 class UserAbility < ApplicationRecord
 
@@ -20,6 +21,13 @@ class UserAbility < ApplicationRecord
     return false unless ability == "create"
 
     true
+  end
+
+  def trim_values
+    self.resource_type = resource_type.strip if resource_type
+    self.user_provider = user_provider.strip if user_provider
+    self.user_uid = user_uid.strip if user_uid
+    self.ability = ability.strip if ability
   end
 
   class << self
