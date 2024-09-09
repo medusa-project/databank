@@ -109,7 +109,7 @@
                       - if dataset.incomplete_datafiles.count.positive? && (can? :update, dataset)
                         %jumbotron
                         Incomplete files uploads found, please
-                        =link_to("contact", "/help/contact_us")
+                        =link_to("contact", "/contact")
                         the Research Data Service for help if this is unexpected.
                       - if (can? :update, dataset)
                         - dataset.incomplete_datafiles.each do |datafile|
@@ -130,7 +130,7 @@
                     -elsif dataset.datafiles.count > 500
                       %jumbotron
                         Error displaying files because there are more than 500, please
-                        =link_to("contact", "/help/contact_us")
+                        =link_to("contact", "/contact")
                         the Research Data Service
                     -elsif dataset.datafiles.count.zero?
                       %jumbotron

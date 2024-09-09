@@ -21,3 +21,6 @@
       .panel-collapse.collapse(id="serviceMsgPanel" role="tabpanel" aria-labelledby="serviceMsgHeading" )
         .panel-body
           = render partial: 'service_message_form'
+- else
+  %h2 You are not authorized to view this page.
+  = link_to 'Back', root_path, class: 'btn btn-primary idb'
