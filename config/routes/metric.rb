@@ -13,5 +13,6 @@ resources :metrics do
     get 'refresh_datafiles_csv'
     get 'refresh_container_csv'
     get 'related_materials_csv'
+    get 'refresh_datasets_tsv'
   end
 end
