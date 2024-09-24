@@ -203,7 +203,7 @@ class DatafilesController < ApplicationController
         send_file path, filename: @datafile.binary_name, type: safe_content_type(@datafile)
       end
     else
-      redirect_to(datafile_download_link(@datafile))
+      redirect_to(datafile_download_link(@datafile), allow_other_host: true)
     end
   end
 
