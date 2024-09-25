@@ -7,50 +7,49 @@
     .panel-body
       .row
         .col-md-8
-          -if (can? :manage, @dataset)
-            .curator-only
-              -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
-                &nbsp;
-                .label.label-danger
-                  version candidate under review
-                &nbsp;
-              -elsif @dataset.in_pre_publication_review?
-                &nbsp;
-                .label.label-danger
-                  pre-publication review
-                &nbsp;
-              - elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
-                &nbsp;
-                .label.label-success
-                  version candidate eligible to be submitted for pre-publication review
-                &nbsp;
-              -elsif !@dataset.hold_state.nil? && @dataset.hold_state != 'none'
-                &nbsp;
-                .label.label-danger
-                  suppressed by curator
-                &nbsp;
-              .label.label-default
-                ="updated: #{@dataset.updated_at.to_date.iso8601}"
-              &nbsp;
-              -if @dataset.ingest_datetime
-                .label.label-default
-                  ="ingested: #{@dataset.ingest_datetime.to_date.iso8601}"
-              -else
-                .label.label-default
-                  ="ingested: N/A"
-              &nbsp;
-              -if @dataset.release_datetime
-                .label.label-default
-                  ="released: #{@dataset.release_datetime.to_date.iso8601}"
-              -else
-                .label.label-default
-                  ="released: N/A"
-              &nbsp;
-              = " | "
-              -if Databank::PublicationState::PUB_ARRAY.include? @dataset.publication_state
-                %button(id="resendPubnoteBtn" type="btn" class="btn btn-primary" onclick="sendPublicationNotice()" )
-                  Send Publication Notice
-            %br
+          .container
+            .row
+              -if (can? :manage, @dataset)
+                .curator-only
+                  .col-md-4
+                    &nbsp;
+                    -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+                      .label.label-danger
+                        version candidate under review
+                    -elsif @dataset.in_pre_publication_review?
+                      .label.label-danger
+                        pre-publication review
+                    - elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
+                      .label.label-success
+                        version candidate eligible to be submitted for pre-publication review
+                    -elsif !@dataset.hold_state.nil? && @dataset.hold_state != 'none'
+                      .label.label-danger
+                        suppressed by curator
+
+                    .label.label-default
+                      ="updated: #{@dataset.updated_datetime.to_date.iso8601}"
+                    &nbsp;
+                  .col-md-4
+                    -if @dataset.ingest_datetime
+                      .label.label-default
+                        ="ingested: #{@dataset.ingest_datetime.to_date.iso8601}"
+                    -else
+                      .label.label-default
+                        ="ingested: N/A"
+                    &nbsp;
+                  -if @dataset.release_datetime
+                    .label.label-default
+                      ="released: #{@dataset.release_datetime.to_date.iso8601}"
+                  -else
+                    .label.label-default
+                      ="released: N/A"
+                  &nbsp;
+                  = " | "
+                  -if Databank::PublicationState::PUB_ARRAY.include? @dataset.publication_state
+                    =button_to('Send Publication Notice',
+                    {controller: "datasets", action: "send_publication_notice", method: :post, params: {id: @dataset.key}},
+                    {id: 'publicationNoticeButton', class: 'btn btn-primary'})
+                %br
 
           - if @completion_check == 'ok'
             - if ((can? :manage, @dataset) && (@dataset.publication_state != Databank::PublicationState::DRAFT) && (@dataset.publication_state != Databank::PublicationState::Embargo::METADATA) && (@dataset.embargo == Databank::PublicationState::Embargo::METADATA))
@@ -96,7 +95,7 @@
                     .input-group.clipboard-control
                       %input(type="text" id="sharing-link" class="form-control" value="#{@dataset.sharing_link}" )
                       %span(class="input-group-btn" )
-                        %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#sharing-link')
+                        %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#sharing-link' aria-label="copy sharing link to clipboard" )
                           %span(class="glyphicon glyphicon-copy")
                   -if(can? :edit, @dataset)
                     .col-md-1

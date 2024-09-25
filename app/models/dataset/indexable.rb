@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+##
+# This module provides methods for indexing datasets in Solr.
+# It is included in the Dataset model.
+
 module Dataset::Indexable
   extend ActiveSupport::Concern
 
@@ -29,8 +33,11 @@ module Dataset::Indexable
         "Version Candidate Draft Pending Approval"
       when "approved_v"
         "Version Candidate Draft Approved"
+      when "unknown"
+        "Unknown"
       else
-        "Error: publication state not found"
+        Rails.logger.warn "Error: visibility state not found for code: #{code}"
+        "Unknown"
       end
     end
 
@@ -201,6 +208,7 @@ module Dataset::Indexable
                         "approved_v"
                       else
                         # should never get here
+                        Rails.logger.warn "Error: visibility code not found for: #{key}"
                         "unknown"
                       end
                     end

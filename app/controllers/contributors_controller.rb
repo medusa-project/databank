@@ -1,28 +1,31 @@
+# frozen_string_literal: true
+
+# DEPRECATED, not used in the current version of the application
 class ContributorsController < ApplicationController
   before_action :set_contributor, only: [:show, :edit, :update, :destroy]
 
-  # GET /contributors
-  # GET /contributors.json
+  ##
+  # Lists all contributors
+  # Responds to `GET /contributors`
+  # Responds to `GET /contributors.json`
   def index
     @contributors = Contributor.all
   end
 
-  # GET /contributors/1
-  # GET /contributors/1.json
-  def show
-  end
+  # Responds to `GET /contributors/1`
+  # Responds to `GET /contributors/1.json`
+  def show; end
 
-  # GET /contributors/new
+  # Responds to `GET /contributors/new`
   def new
     @contributor = Contributor.new
   end
 
-  # GET /contributors/1/edit
-  def edit
-  end
+  # Responds to `GET /contributors/1/edit`
+  def edit; end
 
-  # POST /contributors
-  # POST /contributors.json
+  # Responds to `POST /contributors`
+  # Responds to `POST /contributors.json`
   def create
     @contributor = Contributor.new(contributor_params)
 
@@ -37,8 +40,8 @@ class ContributorsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /contributors/1
-  # PATCH/PUT /contributors/1.json
+  # Responds to `PATCH/PUT /contributors/1`
+  # Responds to `PATCH/PUT /contributors/1.json`
   def update
     respond_to do |format|
       if @contributor.update(contributor_params)
@@ -51,8 +54,8 @@ class ContributorsController < ApplicationController
     end
   end
 
-  # DELETE /contributors/1
-  # DELETE /contributors/1.json
+  # Responds to `DELETE /contributors/1`
+  # Responds to `DELETE /contributors/1.json`
   def destroy
     @contributor.destroy
     respond_to do |format|
@@ -62,13 +65,14 @@ class ContributorsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_contributor
-      @contributor = Contributor.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def contributor_params
-      params.require(:contributor).permit(:dataset_id, :family_name, :given_name, :institution_name, :identifier, :type_of, :row_order, :email, :row_position, :identifier_scheme)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_contributor
+    @contributor = Contributor.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the allow list through.
+  def contributor_params
+    params.require(:contributor).permit(:dataset_id, :family_name, :given_name, :institution_name, :identifier, :type_of, :row_order, :email, :row_position, :identifier_scheme)
+  end
 end

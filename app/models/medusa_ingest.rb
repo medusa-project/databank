@@ -1,6 +1,27 @@
 # frozen_string_literal: true
 
+##
+# Represents a Medusa Ingest
+# This class is responsible for sending data to Medusa and receiving responses from Medusa
+# to initiate ingest into the Medusa Collection Registry.
+# Draft files are kept in the draft bucket until they are confirmed as successfully ingested into Medusa.
+#
+# == Attributes
+#
+# * +idb_class+ - the class of the object being ingested
+# * +idb_identifier+ - the identifier of the object being ingested
+# * +staging_key+ - the key of the object in the draft storage system
+# * +target_key+ - the key of the object in the medusa storage system
+# * +medusa_path+ - the path of the object in the medusa storage system
+# * +medusa_uuid+ - the uuid of the object in the medusa storage system
+# * +request_status+ - the status of the request
+# * +error_text+ - the error text of the request
+# * +response_time+ - the time of the response
+
 class MedusaIngest < ApplicationRecord
+
+  ##
+  # @return [String] the key of the dataset associated with this ingest
   def dataset_key
     if idb_class == "datafile"
       datafile = Datafile.find_by(web_id: idb_identifier)
@@ -13,6 +34,8 @@ class MedusaIngest < ApplicationRecord
     end
   end
 
+  ##
+  # @return [String] the web_id of the datafile associated with this ingest, if it is a datafile ingest
   def datafile_web_id
     return nil unless idb_class == "datafile"
 
@@ -22,26 +45,42 @@ class MedusaIngest < ApplicationRecord
     datafile.web_id
   end
 
+  ##
+  # @return [Boolean] true if the object exists in the draft storage system
   def draft_obj_exist?
     return false unless staging_key
 
     StorageManager.instance.draft_root.exist?(staging_key)
   end
 
+  ##
+  # @return [Boolean] true if the object exists in the medusa storage system
   def medusa_obj_exist?
     return false unless target_key
 
     StorageManager.instance.medusa_root.exist?(target_key)
   end
 
+  ##
+  # @return [String] the name of the incoming queue (from config)
   def self.incoming_queue
     IDB_CONFIG["medusa"]["incoming_queue"]
   end
 
+  ##
+  # @return [String] the name of the outgoing queue (from config)
   def self.outgoing_queue
     IDB_CONFIG["medusa"]["outgoing_queue"]
   end
 
+  ##
+  # processes a message from Medusa
+  # The response is parsed as JSON and checked for validity.
+  # If the response is valid, the response is saved in the IngestResponse table.
+  #   # If the response is successful, the object is moved from the draft storage system to the medusa storage system.
+  #   # If the response is unsuccessful, an error notification is sent.
+  # @param response [String] the response from Medusa
+  # @return [Boolean] true if the response is valid, false otherwise
   def self.on_medusa_message(response)
     response_hash = JSON.parse(response)
 
@@ -60,6 +99,12 @@ class MedusaIngest < ApplicationRecord
     end
   end
 
+  ##
+  # check if the response from Medusa is valid
+  # The response is parsed as JSON and checked for the presence of a status key with a value of "ok" or "error".
+  # If the response is invalid, an error notification is sent.
+  # @param response [String] the response from Medusa
+  # @return [Boolean] true if the response is valid, false otherwise
   def self.message_valid?(response)
     response_hash = JSON.parse(response)
     if
@@ -72,6 +117,15 @@ class MedusaIngest < ApplicationRecord
     end
   end
 
+  ##
+  # send a dataset to Medusa Collection Registry
+  # The dataset is serialized as XML and sent to Medusa.
+  # The dataset is also serialized as JSON and sent to Medusa.
+  # A changelog is generated and sent to Medusa.
+  # A deposit agreement is generated and sent to Medusa.
+  # The dataset files are sent to Medusa.
+  # @param dataset [Dataset] the dataset to send to Medusa
+  # @return [String] the ingest record URL
   def self.send_dataset_to_medusa(dataset)
     ### skip datafiles already ingested, but send new system files ###
     file_time = Time.now.in_time_zone.strftime("%Y-%m-%d_%H-%M-%S")
@@ -177,6 +231,9 @@ class MedusaIngest < ApplicationRecord
     end
   end
 
+  ##
+  # send a datafile to Medusa Collection Registry
+  # @param datafile_web_id [String] the web_id of the datafile to send to Medusa
   def self.send_datafile_to_medusa(datafile_web_id)
     datafile = Datafile.find_by(web_id: datafile_web_id)
 
@@ -197,6 +254,10 @@ class MedusaIngest < ApplicationRecord
     medusa_ingest.send_medusa_ingest_message
   end
 
+  ##
+  # handles a successful message from Medusa
+  # @param response_hash [Hash] the response from Medusa
+  # @return [Boolean] true if the response is handled, false otherwise
   def self.on_medusa_succeeded_message(response_hash)
     draft_root = StorageManager.instance.draft_root
     medusa_root = StorageManager.instance.medusa_root
@@ -269,22 +330,9 @@ class MedusaIngest < ApplicationRecord
 
       # dataset found - do things with dataset and ingest response
       exists_in_draft = draft_root.exist?(response_hash["staging_key"])
-
       exists_in_medusa = medusa_root.exist?(response_hash["medusa_key"])
       if exists_in_medusa
-        if exists_in_draft
-          draft_size = draft_root.size(response_hash["staging_key"])
-          medusa_size = medusa_root.size(response_hash["medusa_key"])
-          if draft_size == medusa_size
-            draft_root.delete_content(response_hash["staging_key"])
-            info_key = "#{response_hash['staging_key']}.info"
-            draft_root.delete_contant(info_key) if draft_root.exist?(info_key)
-          else
-            notification = DatabankMailer.error("file exists in both draft and medusa, but not same size #{response_hash.to_yaml}")
-            notification.deliver_now
-          end
-        end
-
+        handle_exists_in_both_draft_and_medusa(response_hash: response_hash) if exists_in_draft
         system_files = SystemFile.where(dataset_id: dataset.id, storage_key: response_hash["staging_key"])
         system_file = nil
         if system_files.count == 1
@@ -310,6 +358,27 @@ class MedusaIngest < ApplicationRecord
     end
   end
 
+  ##
+  # handles a file that exists in both the draft and medusa storage systems
+  # @param response_hash [Hash] the response from Medusa
+  # @return [Boolean] true if the response is handled, false otherwise
+  def handle_exists_in_both_draft_and_medusa(response_hash:)
+    draft_size = draft_root.size(response_hash["staging_key"])
+    medusa_size = medusa_root.size(response_hash["medusa_key"])
+    if draft_size == medusa_size
+      draft_root.delete_content(response_hash["staging_key"])
+      info_key = "#{response_hash['staging_key']}.info"
+      draft_root.delete_contant(info_key) if draft_root.exist?(info_key)
+    else
+      notification = DatabankMailer.error("file exists in both draft and medusa, but not same size #{response_hash.to_yaml}")
+      notification.deliver_now
+    end
+  end
+
+  ##
+  # handles a failed message from Medusa
+  # @param response_hash [Hash] the response from Medusa
+  # @return [Boolean] true if the response is handled, false otherwise
   def self.on_medusa_failed_message(response_hash)
     error_string = "Problem ingesting #{response_hash.to_yaml} into Medusa."
 
@@ -360,6 +429,8 @@ class MedusaIngest < ApplicationRecord
     end
   end
 
+  ##
+  # sends the ingest message to Medusa
   def send_medusa_ingest_message
     if Application.server_envs.include?(Rails.env)
       if IDB_CONFIG[:rabbit_or_sqs] == "rabbit"
@@ -372,6 +443,9 @@ class MedusaIngest < ApplicationRecord
     end
   end
 
+  ##
+  # create the ingest message for Medusa
+  # @return [Hash] the ingest message
   def medusa_ingest_message
     {operation:    "ingest",
      staging_key:  staging_key,

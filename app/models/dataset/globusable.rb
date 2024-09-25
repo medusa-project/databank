@@ -1,5 +1,13 @@
 # frozen_string_literal: true
 
+##
+# This module provides methods for checking if a dataset is available for download from Globus,
+# and for importing a dataset from Globus.
+# It also provides methods for removing a dataset from the Globus download directory
+# and for removing the Globus ingest directory.
+# This module is included in the Dataset model.
+
+require "mime/types"
 require "net/http"
 require "aws-sdk-s3"
 

@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
+##
+# Represents information from Medusa, such as path in Medusa and Medusa mime type.
+# It is a bulk method to get info for all files for reports.
+
 require "net/http"
 require "net/https"
 require "uri"
 
 class MedusaInfo
+
+  ##
+  # @return [Hash] the content type manifest
   def self.content_type_manifest
     user = IDB_CONFIG["medusa_info"]["user"]
     password = IDB_CONFIG["medusa_info"]["password"]
@@ -30,6 +37,8 @@ class MedusaInfo
     end
   end
 
+  ##
+  # @return [Hash] the doi, filename, and mimetype
   def self.doi_filename_mimetype
     content_type_manifest = MedusaInfo.content_type_manifest
 

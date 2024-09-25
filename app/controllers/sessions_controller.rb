@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 class SessionsController < ApplicationController
 
   skip_before_action :verify_authenticity_token
 
+  # Responds to `GET /login`
   def new
     session[:login_return_referer] = request.env['HTTP_REFERER']
     redirect_to(shibboleth_login_path(Databank::Application.shibboleth_host))
   end
-
+  # Responds to `POST /auth/:provider/callback`
   def create
-
     auth = request.env["omniauth.auth"]
 
     if auth[:provider] && auth[:provider] == 'shibboleth'
@@ -36,15 +38,18 @@ class SessionsController < ApplicationController
 
   end
 
+  # Responds to `GET /logout`
   def destroy
     session[:user_id] = nil
     redirect_to root_url
   end
 
+  # Responds to `GET /auth/failure`
   def unauthorized
     redirect_to root_url, notice: "The supplied credentials could not be authenciated."
   end
 
+  # Responds to `POST /role_switch`
   def role_switch
     new_role = params['role']
     if ['depositor', 'guest', 'no_deposit'].include?(new_role)

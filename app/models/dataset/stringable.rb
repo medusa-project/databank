@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+##
+# This module supports string generation from dataset objects.
+# It is used to generate plain text citations and structured data for google indexing.
+# It is included in the Dataset model.
+
+
 module Dataset::Stringable
   extend ActiveSupport::Concern
 
@@ -105,7 +111,7 @@ module Dataset::Stringable
     end
   end
 
-  def recordtext
+  def record_text
     return "Method not valid for draft dataset." if !identifier || identifier == ""
 
     content = "##########################################################################################\n"
@@ -235,7 +241,8 @@ module Dataset::Stringable
   end
 
   def display_changelog
-    medusa_changes_arr = []
+    main_exclude = []
+    associated_exclude = []
     publication = nil
 
     begin
@@ -243,7 +250,7 @@ module Dataset::Stringable
         if change.audited_changes.has_key?("medusa_uuid") ||
           change.audited_changes.has_key?("binary_name") ||
           change.audited_changes.has_key?("medusa_dataset_dir")
-          medusa_changes_arr << change.id
+          main_exclude << change.id
         end
 
         next unless change.audited_changes.has_key?("publication_state")
@@ -251,7 +258,7 @@ module Dataset::Stringable
         pub_change = change.audited_changes["publication_state"]
         if pub_change.class == Array && pub_change[0] == Databank::PublicationState::DRAFT
           publication = change.created_at
-          medusa_changes_arr << change.id
+          main_exclude << change.id
         end
       end
     rescue StandardError => e
@@ -259,8 +266,11 @@ module Dataset::Stringable
     end
 
     if publication
-      changes = audits.where("created_at >= ?", publication).where.not(id: medusa_changes_arr)
-      changes.reorder("created_at DESC")
+      changes = audits.where("created_at >= ?", publication).where.not(id: main_exclude)
+      associated_changes = associated_audits.where("created_at >= ?", publication).where.not(id: associated_exclude)
+      combined = changes + associated_changes
+      sorted = combined.sort_by(&:created_at).reverse
+      sorted
     else
       #Rails.logger.warn "no changes found for dataset #{attributes[:dataset_id]}"
       {}

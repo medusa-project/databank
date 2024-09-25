@@ -4,7 +4,7 @@
 -else
   %hr/
   %h3 List of files as selected by user. Curator makes adjustment as needed.
-  =form_for(@dataset, :url => {action: 'copy_version_files'}, html: {role: "form", class: "input-append dataset-form" }) do |f|
+  =form_for(@dataset, :url => {action: 'copy_version_files'}, html: {role: "form", method: :post, class: "input-append dataset-form" }) do |f|
     .panel-group(id="vFiles" role="tablist" aria-multiselectable="true")
       .panel.panel-default
         .panel-heading(role="tab" id="vFilesHeading")

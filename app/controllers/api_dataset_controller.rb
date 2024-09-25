@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 require 'digest/md5'
 
@@ -7,6 +9,9 @@ class ApiDatasetController < ApplicationController
 
   skip_before_action :verify_authenticity_token, only: [:datafile]
 
+  ##
+  # Uploads a datafile to a dataset.
+  # Responds to `POST /api/datasets/:dataset_key/datafile`
   def datafile
 
     @dataset = Dataset.find_by_key(params['dataset_key'])
@@ -33,10 +38,10 @@ class ApiDatasetController < ApplicationController
 
         df.save
 
-        render json: "successfully uploaded #{df.binary_name}\nsee in dataset at #{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key} \n", status: 200
-      rescue Exception => ex
+        render json: "successfully uploaded #{df.binary_name}\nsee in dataset at #{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key} \n", status: :ok
+      rescue StandardError => ex
         Rails.logger.warn ex.message
-        render json: "#{ex.message}\n", status: 500
+        render json: "#{ex.message}\n", status: :internal_server_error
       end
 
     elsif params.has_key?('tus_url') && params.has_key?('filename') && params.has_key?('size')
@@ -54,19 +59,21 @@ class ApiDatasetController < ApplicationController
 
         df.save
 
-        render json: "successfully uploaded #{df.binary_name}\nsee in dataset at #{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key} \n", status: 200
-      rescue Exception => ex
+        render json: "successfully uploaded #{df.binary_name}\nsee in dataset at #{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key} \n", status: :ok
+      rescue StandardError => ex
         Rails.logger.warn ex.message
-        render json: "#{ex.message}\n", status: 500
+        render json: "#{ex.message}\n", status: :internal_server_error
       end
     else
-      render json: "invalid request", status: 500
+      render json: "invalid request", status: :internal_server_error
     end
 
   end
 
   protected
 
+  ##
+  # Authenticates the request using a token.
   def authenticate
     # Rails.logger.warn params
     if params.has_key?(:dataset_key)
@@ -79,6 +86,8 @@ class ApiDatasetController < ApplicationController
     end
   end
 
+  ##
+  # Authenticates the token.
   def authenticate_token
     authenticate_or_request_with_http_token do |token, options|
       identified_tokens = Token.where("identifier = ? AND dataset_key = ?", token, @dataset.key)
@@ -89,15 +98,21 @@ class ApiDatasetController < ApplicationController
     end
   end
 
+  ##
+  # Renders an unauthorized response.
   def render_unauthorized
     self.headers['WWW-Authenticate'] = 'Token realm="Application"'
-    render json: 'Bad credentials', status: 401
+    render json: 'Bad credentials', status: :unauthorized
   end
 
+  ##
+  # Renders a not found response.
   def render_not_found
-    render json: 'Dataset Not Found', status: 404
+    render json: 'Dataset Not Found', status: :not_found
   end
 
+  ##
+  # Calculates the MD5 hash of a file.
   def md5(fname)
     md5 = Digest::MD5.new
     File.open(fname, 'rb') do |f|

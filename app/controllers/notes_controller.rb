@@ -5,8 +5,8 @@ class NotesController < ApplicationController
   before_action :set_note, only: [:show, :edit, :update, :destroy]
   before_action :set_dataset, only: [:index, :show, :new, :create, :edit, :update, :destroy]
 
-  # GET /notes
-  # GET /notes.json
+  # Responds to `GET /notes`
+  # Responds to `GET /notes.json`
   def index
     authorize! :manage, @dataset
     @notes = if @dataset
@@ -16,20 +16,20 @@ class NotesController < ApplicationController
              end
   end
 
-  # GET /notes/1
-  # GET /notes/1.json
+  # Responds to `GET /notes/1`
+  # Responds to `GET /notes/1.json`
   def show; end
 
-  # GET /notes/new
+  # Responds to `GET /notes/new`
   def new
     @note = @dataset.notes.build
   end
 
-  # GET /notes/1/edit
+  # Responds to `GET /notes/1/edit`
   def edit; end
 
-  # POST /notes
-  # POST /notes.json
+  # Responds to `POST /notes`
+  # Responds to `POST /notes.json`
   def create
     @note = Note.new(note_params)
 
@@ -44,8 +44,8 @@ class NotesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /notes/1
-  # PATCH/PUT /notes/1.json
+  # Responds to `PATCH/PUT /notes/1`
+  # Responds to `PATCH/PUT /notes/1.json`
   def update
     respond_to do |format|
       if @note.update(note_params)
@@ -58,8 +58,8 @@ class NotesController < ApplicationController
     end
   end
 
-  # DELETE /notes/1
-  # DELETE /notes/1.json
+  # Responds to `DELETE /notes/1`
+  # Responds to `DELETE /notes/1.json`
   def destroy
     @note.destroy
     respond_to do |format|
@@ -75,6 +75,7 @@ class NotesController < ApplicationController
     @note = Note.find(params[:id])
   end
 
+  # Set the dataset for the note
   def set_dataset
     @dataset = nil
     set_note if !@note && params.has_key?(:id)

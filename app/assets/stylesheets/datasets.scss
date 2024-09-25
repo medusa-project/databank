@@ -18,6 +18,10 @@ ul.dashed > li:before {
   text-indent: -5px;
 }
 
+#publicationNoticeButton {
+  display: inline !important;
+}
+
 .info-box {
   background-color: $color__lightest-grey;
 }
@@ -367,6 +371,10 @@ legend.metadata-border {
   margin-bottom: 20px;
 }
 
+.search-count{
+  background-color: $color__lightest-grey;
+}
+
 //.preview{
 //
 //
@@ -432,4 +440,7 @@ tr.different {
 
 #differnce_report td:not(:last-child) {
   border-right: 1px solid $color__lightest-grey;
+}
+.facet_label{
+    font-weight: normal;
 }

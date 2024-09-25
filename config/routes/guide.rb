@@ -1,4 +1,5 @@
 get '/guides', to: 'guide/sections#guides'
+get '/help', to: 'guide/sections#guides'
 namespace :guide do
   resources :subitems do
     collection do

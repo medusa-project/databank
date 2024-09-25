@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
+##
+# Encapsulates handling reports offered on the metrics page.
+
 class Metric
   class << self
+
+    ##
+    # refresh all the metrics
     def refresh_all
       Metric.write_dataset_downloads_json
       Metric.write_datafile_downloads_json
@@ -10,8 +16,9 @@ class Metric
       Metric.write_container_contents_csv
     end
 
+    ##
+    # @return [Hash] the modified times of the metrics
     def modified_times
-
       write_dataset_downloads_json unless File.exist?(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
       raise StandardError.new("unable to create dataset downloads json") unless File.exist?(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
 
@@ -42,6 +49,8 @@ class Metric
         container_contents_csv: container_csv_time.to_formatted_s(:long) }
     end
 
+    ##
+    # write the datasets tsv
     def write_datasets_tsv
       target_path = METRICS_CONFIG[:datasets_tsv][:relative_path]
       datasets = Dataset.all_with_public_metadata
@@ -78,38 +87,58 @@ class Metric
       end
     end
 
+    ##
+    # write the dataset downloads json
     def write_dataset_downloads_json
       target_path = METRICS_CONFIG[:dataset_downloads_json][:relative_path]
+      doi_totals_hash = {}
       File.open(target_path, "w") do |f|
         f.print %({"dataset_downloads":[)
-        dataset_download_tallies = DatasetDownloadTally.public_tallies
+        #dataset_download_tallies = DatasetDownloadTally.public_tallies
+        dataset_download_tallies = DatasetDownloadTally.all
         dataset_download_tallies.each_with_index do |row, i|
           row_json = { doi: row.doi, date: row.download_date, tally: row.tally }.to_json
+          if doi_totals_hash.key?(row.doi)
+            doi_totals_hash[row.doi] += row.tally
+          else
+            doi_totals_hash[row.doi] = row.tally
+          end
           f.print "," unless i.zero?
           f.print row_json
           f.puts "]}" if i == (dataset_download_tallies.count - 1)
         end
       end
-    end
-
-    def write_datafile_downloads_json
-      target_path = METRICS_CONFIG[:datafile_downloads_json][:relative_path]
-      File.open(target_path, "w") do |f|
-        f.print %({"datafile_downloads":[)
-        file_public_tallies = FileDownloadTally.public_tallies
-        file_public_tallies.each_with_index do |row, i|
-          row_json = { doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally }.to_json
-          f.print "," unless i.zero?
-          f.print row_json
-          f.puts "]}" if i == (file_public_tallies.count - 1)
+      totals_path = target_path.split(".json").first + "_totals.csv"
+      File.open(totals_path, "w") do |f|
+        f.puts "doi,tally"
+        doi_totals_hash.each do |doi, tally|
+          f.puts "#{doi},#{tally}"
         end
       end
     end
 
+    ##
+    # write the datafile downloads json
+    def write_datafile_downloads_json
+      target_path = METRICS_CONFIG[:datafile_downloads_json][:relative_path]
+      File.open(target_path, "w") do |f|
+        f.print %({"datafile_downloads":[)
+        total_file_tallies = FileDownloadTally.all
+        total_file_tallies.each_with_index do |row, i|
+          row_json = { doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally }.to_json
+          f.print "," unless i.zero?
+          f.print row_json
+          f.puts "]}" if i == (total_file_tallies.count - 1)
+        end
+      end
+    end
+
+    ##
+    # write the datafiles csv
     def write_datafiles_csv
       doi_filename_mimetype = MedusaInfo.doi_filename_mimetype
       render(json: { error: "mimetype map not found", status: 500 }) && (return nil) unless doi_filename_mimetype
-      datasets = Dataset.select(&:metadata_public?)
+      datasets = Dataset.all_with_public_metadata
       target_path = METRICS_CONFIG[:datafiles_csv][:relative_path]
       File.open(target_path, "w") do |f|
         CSV.open(f, "w") do |report|
@@ -125,8 +154,13 @@ class Metric
       end
     end
 
+    ##
+    # write the datafile csv datafile batch
+    # @param target_path [String] the target path
+    # @param dataset [Dataset] the dataset
+    # @param datafiles [Array] the datafiles
+    # @param doi_filename_mimetype [Hash] the doi, filename, and mimetype
     def write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype)
-
       File.open(target_path, "a") do |f|
         CSV.open(f, "a") do |report|
           datafiles.each do |datafile|
@@ -142,6 +176,9 @@ class Metric
       end
     end
 
+    ##
+    # write_container_contents_csv
+    # This method is used to write the container contents csv
     def write_container_contents_csv
       datasets = Dataset.all_with_public_metadata
       target_path = METRICS_CONFIG[:container_contents_csv][:relative_path]

@@ -1,6 +1,9 @@
 %p#notice= notice
+%title
+  Illinois Data Bank - Guide
+  = @guide_section.label.titleize
 %h1
-  ="Viewing Section #{@guide_section.label.titleize}"
+  ="Section #{@guide_section.label.titleize}"
 =render partial: 'guide/items/preview', locals: {item: @guide_section}
 .row
   .col-md-3.col-md-offset-9

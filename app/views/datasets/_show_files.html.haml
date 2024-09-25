@@ -2,20 +2,25 @@
   .panel-group(id="files" role="tablist" aria-multiselectable="true")
     .panel.panel-default
       .panel-heading(role="tab" id="headingOne")
-        %h4.panel-title
+        .panel-title
           %a(role="button" data-toggle="collapse" data-parent="#files" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="accordion-toggle")
-            %span(class="metadata-label") Files
+            %span(class="metadata-label" id="files-label") Files
       %div(class="panel-collapse.collapse.in" id="collapseOne" role="tabpanel" aria-labelledby="headingOne")
         .panel-body
 
           =render partial: 'file_restriction_alert', locals: {dataset: dataset}
           - if dataset.publication_state == Databank::PublicationState::RELEASED && globus_only && !dataset.globus_downloadable?
             =render partial: 'globus_delay_alert' , locals: {dataset: dataset}
-
           -if((can? :view_files, dataset) || shared_by_link)
-            %form(role="form" id="select-files-form")
+            %form(role="form" aria-labelledby="files-label" )
               .form-group(id="select-files-form-group")
-                %table(id="show-files-table" class="table table-striped")
+                %table(id="show-files-table" class="table table-striped" aria-label="dataset files" )
+                  %thead
+                    %tr
+                      %th(aria-label="File Name")
+                      %th(aria-label="File Size")
+                      %th(aria-label="Preview")
+                      %th(aria-label="Download")
                   %tbody
                     -if dataset.fileset_preserved? || dataset.globus_downloadable? #|| (dataset.total_filesize && (dataset.total_filesize < Dataset.local_zip_max_size))
                       %tr.row
@@ -27,20 +32,18 @@
                                   %span.glyphicon.glyphicon-download
                                   Get Custom Zip and Download Link for Selected
                                   %span.checkFileSelectedCount
+                                %br
+                                %label(for="checkAllFiles")
+                                  %input(type="checkbox" id="checkAllFiles" value="checkAllFiles")
+                                  Select all
                             .col-md-8
                               -if dataset.globus_downloadable?
-                                =link_to "#{image_tag("globus.png", size: "24x18")} Open in Globus File Manager".html_safe, "/datasets/#{dataset.key}/open_in_globus", target: "_blank",
+                                =link_to "#{image_tag("globus.png", size: "24x18", "aria-hidden": true, "alt": "Globus logo")} Open in Globus File Manager".html_safe, "/datasets/#{dataset.key}/open_in_globus", target: "_blank",
                                 class: "btn btn-primary idb"
-                                %a(href="/help#globus" target="_blank" )
+                                %a(href="/guides#upload_globus" target="_blank" )
                                   %span(class="far fa-question-circle")
                                   %span(class="idb-help-prompt" )
                                     what's this?
-                          -if dataset.fileset_preserved?
-                            .row
-                              .checkbox.col-md-4
-                                %label
-                                  %input(type="checkbox" id="checkAllFiles" value="checkAllFiles")
-                                  Select all
                     -if dataset.datafiles.count > 0 && dataset.datafiles.count <= 500
                       - dataset.complete_datafiles.each do |datafile|
                         %tr.row
@@ -49,8 +52,9 @@
                               %span.col-md-6
                                 -# check globus_only
                                 -if dataset.fileset_preserved?
-                                  %label
-                                    %input(type="checkbox" class="checkFile checkFileGroup" name="selected_files[]" value="#{datafile.web_id}" onchange="handleCheckFileGroupChange()")
+
+                                  %input(type="checkbox" class="checkFile checkFileGroup" id="#{datafile.web_id}_file_name" name="selected_files[]" value="#{datafile.web_id}" onchange="handleCheckFileGroupChange()")
+                                  %label(for="#{datafile.web_id}_file_name")
                                     = datafile.bytestream_name
                                 -else
                                   = datafile.bytestream_name
@@ -90,11 +94,11 @@
                                       View
                                 -elsif datafile.image?
                                   %span(id="preview_img_btn_#{datafile.web_id}")
-                                    %button(type='button' class='btn btn-sm btn-success' onclick='preview_image("#{IDB_CONFIG[:iiif_root]}","#{datafile.web_id}")')
+                                    %button(type='button' class='btn btn-sm btn-success' onclick='preview_image("#{IDB_CONFIG[:iiif][:preview_root]}","#{datafile.web_id}")')
                                       %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
                                       View
                               %span.col-md-2
-                                %a(href="/datafiles/#{datafile.web_id}/download" class="btn btn-primary btn-sm idb" download )
+                                %a(href="/datafiles/#{datafile.web_id}/download" class="btn btn-primary btn-sm idb" aria-label="download #{datafile.bytestream_name}" )
                                   %span.glyphicon.glyphicon-download
                                   File
                             .row
@@ -105,7 +109,7 @@
                       - if dataset.incomplete_datafiles.count.positive? && (can? :update, dataset)
                         %jumbotron
                         Incomplete files uploads found, please
-                        =link_to("contact", "/help/contact_us")
+                        =link_to("contact", "/contact")
                         the Research Data Service for help if this is unexpected.
                       - if (can? :update, dataset)
                         - dataset.incomplete_datafiles.each do |datafile|
@@ -120,13 +124,13 @@
                                   .col-md-2
                                     = number_to_human_size(datafile.bytestream_size)
                                   .col-md-2
-                                    %a.btn.btn-primary.btn-block.idb{href: "#{IDB_CONFIG[:root_url_text]}/datafiles/#{datafile.web_id}/download_no_record"}
+                                    %a.btn.btn-primary.btn-block.idb{href: "#{IDB_CONFIG[:root_url_text]}/datafiles/#{datafile.web_id}/download_no_record", "aria-label": "download #{datafile.bytestream_name}" }
                                       %span{class: "glyphicon glyphicon-download"}
                                       File
                     -elsif dataset.datafiles.count > 500
                       %jumbotron
                         Error displaying files because there are more than 500, please
-                        =link_to("contact", "/help/contact_us")
+                        =link_to("contact", "/contact")
                         the Research Data Service
                     -elsif dataset.datafiles.count.zero?
                       %jumbotron

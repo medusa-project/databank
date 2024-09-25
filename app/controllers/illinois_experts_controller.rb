@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class IllinoisExpertsController < ApplicationController
+  # Responds to `GET /illinois_experts.xml`
   def index
     datasets_xml = Dataset.to_illinois_experts
 
@@ -9,6 +10,7 @@ class IllinoisExpertsController < ApplicationController
     render xml: datasets_xml
   end
 
+  # Responds to `GET /illinois_experts/persons.xml?email=...`
   def persons
     authorize! :manage, IllinoisExpertsClient
 
@@ -23,6 +25,7 @@ class IllinoisExpertsController < ApplicationController
     render xml: person_xml
   end
 
+  # Responds to `GET /illinois_experts/example.xml`
   def example
     authorize! :manage, IllinoisExpertsClient
 

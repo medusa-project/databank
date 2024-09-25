@@ -5,13 +5,12 @@ resources :datasets do
     get "citation_text", defaults: {format: 'json'}
     get "confirmation_message", defaults: {format: 'json'}
     get 'confirm_review'
-    match 'copy_version_files', via: [:get, :post, :patch]
+    post 'copy_version_files'
     get 'download_BibTeX'
     get 'download_box_file/:box_file_id', to: 'datasets#download_box_file'
     get 'download_endNote_XML'
     get "download_link", defaults: {format: 'json'}
     get "download_metrics", defaults: {format: 'json'}
-    get 'download_plaintext_citation'
     get 'download_plaintext_citation'
     get 'download_RIS'
     get 'draft_to_version'
@@ -25,13 +24,13 @@ resources :datasets do
     get 'permanently_suppress_metadata'
     get 'permissions'
     get 'publish'
-    get 'recordtext'
+    get 'record_text'
     delete 'remove_sharing_link'
     get "request_review", defaults: {format: 'html'}
     get 'reserve_doi', defaults: {format: 'json'}
     get 'review_deposit_agreement'
     get 'review_requests'
-    match 'send_publication_notice', via: [:get, :post]
+    post 'send_publication_notice'
     post 'send_to_medusa', defaults: { format: 'json' }
     get "serialization", defaults: {format: 'json'}
     get 'share'
@@ -73,7 +72,7 @@ resources :datasets do
       get 'reset_upload'
       get 'preview'
       get 'view'
-      get 'viewtext', to: 'datafiles#peek_text', defaults: { format: 'json' }
+      get 'viewtext', defaults: { format: 'json' }
       get 'refresh_preview'
     end
     collection do

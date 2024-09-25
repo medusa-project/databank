@@ -85,8 +85,8 @@ ready = function () {
     // dynamically hide/show long description text
     var showChar = 140;
     var ellipsestext = "...";
-    var moretext = "more";
-    var lesstext = "less";
+    var moretext = "more description";
+    var lesstext = "less description";
     $('.more').each(function () {
         var content = $(this).html();
 
@@ -199,9 +199,7 @@ ready = function () {
             $("[id^=edit_dataset]").submit();
         } else {
             alert("UPLOADS IN PROGRESS. Try again once uploads are complete.")
-            return
         }
-
     });
 
     $('#update-confirm').prop('disabled', true);
@@ -589,29 +587,31 @@ function offerDownloadLink() {
     var zip64_threshold = 4000000000;
 
     $.each(selected_files, function (index, value) {
-        if (web_id_string != "") {
+        if (web_id_string !== "") {
             web_id_string = web_id_string + "~";
         }
         web_id_string = web_id_string + $(value).val();
     });
-    if (web_id_string != "") {
+    if (web_id_string !== "") {
         $.ajax({
             url: "/datasets/" + dataset_key + "/download_link?",
             data: {"web_ids": web_id_string},
             dataType: 'json',
             success: function (result) {
-                if (result.status == 'ok') {
+                if (result.status === 'ok') {
                     $('.download-link').html("<h2><a href='" + result.url + "' target='_blank'>Download</a></h2>");
                     if (Number(result.total_size) > zip64_threshold) {
                         $('.download-help').html("<p>For selections of files larger than 4GB, the zip file will be in zip64 format. To open a zip64 formatted file on OS X (Mac) requires additional software not built into the operating system since version 10.11. Options include 7zX and The Unarchiver. If a Windows system has trouble opening the zip file, 7-Zip can be used.</p>")
                     }
                     $('#downloadLinkModal').modal('show');
                 } else {
+                    console.log(result);
                     $('.download-link').html("An unexpected error occurred.<br/>Details have been logged for review.<br/><a href='/help' target='_blank'>Contact the Research Data Service Team</a> with any questions.");
                     $('#downloadLinkModal').modal('show');
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
+                console.log("error in offering download link");
                 console.log(xhr.status);
                 console.log(thrownError);
                 $('.download-link').html("An unexpected error occurred.<br/>Details have been logged for review.<br/><a href='/help' target='_blank'>Contact the Research Data Service Team</a> with any questions.");
@@ -621,7 +621,6 @@ function offerDownloadLink() {
             //context: document.body
         }).done(function () {
             console.log("done");
-
         });
     }
 }
@@ -888,19 +887,6 @@ function addInternalEditorRow(){
     var reviewerRow ="<div class='row'><div class='col-md-1'><div class='pull-right'><input name='internal_editor[]' type='checkbox' value='" + netid + "' checked='checked'></div></div><div class='col-md-3'>"+ netid +"</div>"
     $(reviewerRow).prependTo("#newEditorsDiv");
     $("#newInternalEditor").val("");
-}
-
-function sendPublicationNotice(){
-    $.ajax({
-        dataType: "json",
-        url: "/datasets/" + dataset_key + "/send_publication_notice"
-    }).done(function(data, textStatus, jqXHR) {
-        $('#message').html("<div class='alert alert-alert'><p>Publication notification sent.</p></div>");
-    }).fail(function (xhr, textStatus, errorThrown) {
-        $('#message').html("<div class='alert alert-alert'><p>Problem sending notification. " +  xhr.responseText + "</p></div>");
-        console.log("error" + textStatus);
-        console.log(xhr.responseText);
-    });
 }
 
 function importFromGlobus(){

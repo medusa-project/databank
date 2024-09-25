@@ -1,18 +1,64 @@
 # frozen_string_literal: true
 
+##
+# Represents a dataset in the application.
+# @note Dataset is the primary model for the application.
+# It is the core model that holds all the metadata information for a dataset.
+#
+# == Attributes
+#
+# * +key+ - the unique identifier for the dataset
+# * +title+ - the title of the dataset
+# * +creator_text+ - the list of creators of the dataset, no value is stored (could be removed from the table)
+# * +identifier+ - the identifier of the dataset
+# * +publisher+ - the publisher of the dataset
+# * +description+ - the description of the dataset
+# * +license+ - the license of the dataset
+# * +depositor_name+ - the name of the depositor of the dataset
+# * +depositor_email+ - the email of the depositor of the dataset
+# * +complete+ - true if the dataset is complete
+# * +corresponding_creator_name+ - the name of the corresponding creator of the dataset
+# * +corresponding_creator_email+ - the email of the corresponding creator of the dataset
+# * +keywords+ - the keywords of the dataset
+# * +publication_state+ - the publication state of the dataset
+# * +curator_hold+ - true if the dataset is on hold by the curator
+# * +release_date+ - the release date of the dataset
+# * +embargo+ - the embargo of the dataset
+# * +is_test+ - true if the dataset is a test dataset
+# * +is_import+ - true if the dataset is an import
+# * +tombstone_date+ - the tombstone date of the dataset
+# * +have_permission+ - assertion that depositor has permission to deposit this dataset, one of "yes", "no", or "unknown"
+# * +removed_private+ - assertion that private files have been removed, one of "yes", "no", or "na"
+# * +agree+ - assertion that the depositor agrees to the terms of deposit, one of "yes", "no", or "unknown"
+# * +hold_state+ - the hold state of the dataset
+# * +medusa_dataset_dir+ - the medusa dataset directory of the dataset
+# * +dataset_version+ - the version of the dataset
+# * +suppress_changelog+ - true if the changelog is suppressed
+# * +version_comment+ - the version comment of the dataset
+# * +subject+ - the subject of the dataset
+# * +org_creators+ - true if the creators are organizations
+# * +data_curation_network+ - true if the dataset is part of the data curation network
+# * +nested_updated_at+ - the nested updated at of the dataset
+#
+# Includes methods for interacting with the metadata and files of a dataset.
+# Methods not concerned with computed attributes are included in the Dataset modules.
+
 require "fileutils"
 require "date"
 require "open-uri"
 require "uri"
 require "net/http"
-require "securerandom"
 require "action_pack"
 require "openssl"
 
 class Dataset < ApplicationRecord
   include ActiveModel::Serialization
+  include Dataset::Authorable
   include Dataset::Complete
+  include Dataset::Downloadable
+  include Dataset::Embargoable
   include Dataset::Exportable
+  include Dataset::Filesetable
   include Dataset::Filterable
   include Dataset::Globusable
   include Dataset::Identifiable
@@ -20,15 +66,16 @@ class Dataset < ApplicationRecord
   include Dataset::MessageText
   include Dataset::Publishable
   include Dataset::Recoverable
+  include Dataset::Relatable
+  include Dataset::Sharable
   include Dataset::Stringable
+  include Dataset::Storable
+  include Dataset::Uploadable
   include Dataset::Versionable
 
-  audited except: %i[creator_text key complete is_test is_import updated_at embargo], allow_mass_assignment: true
+  # audit trail is used to track changes to the dataset and to compute milestone dates such as release date
+  audited except: %i[creator_text key complete is_test is_import updated_at embargo nested_updated_at], allow_mass_assignment: true
   has_associated_audits
-
-  attr_accessor :materials_related,
-                :materials_cited_by,
-                :num_external_relationships
 
   MIN_FILES = 1
   MAX_FILES = 10_000
@@ -103,129 +150,51 @@ class Dataset < ApplicationRecord
     time :updated_at
   end
 
+  def updated_datetime
+    if draft?
+      return updated_at.to_date.iso8601 if nested_updated_at.nil?
 
+      return [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
+    end
+    # not a draft
+    changelog_array = display_changelog
+    unless changelog_array
+      return updated_at.to_date.iso8601 if nested_updated_at.nil?
+
+      return [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
+    end
+
+    if changelog_array.empty?
+      return release_datetime.to_date.iso8601 if release_datetime > Time.zone.now
+
+      return updated_at.to_date.iso8601 if ingest_datetime.nil?
+
+      return ingest_datetime.to_date.iso8601
+    end
+
+    changelog_array[0][:created_at].to_date.iso8601
+  end
+
+  ##
+  # @return [ActiveRecord::Relation] all datasets that have public metadata
+  def self.all_with_public_metadata
+    Dataset.all.select(&:metadata_public?)
+  end
+
+  ##
+  # Returns the dataset key as the parameter for the dataset
+  #
+  # @return [String] the dataset key
   def to_param
     key
   end
 
-  def updated_date
-    return updated_at.to_date.iso8601 if nested_updated_at.nil?
-
-    [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
-  end
-
-  def ok_to_publish?
-    # metadata-only embargo datasets are ok to publish, which removes the embargo
-    return true if (publication_state != Databank::PublicationState::DRAFT) &&
-      (publication_state != Databank::PublicationState::Embargo::METADATA) &&
-      (embargo == Databank::PublicationState::Embargo::METADATA)
-
-    # draft datasets are ok to publish
-    return true if publication_state == Databank::PublicationState::DRAFT
-
-    # file-embargoed datasets are ok to publish, which removes the embargo
-    return true if publication_state == Databank::PublicationState::Embargo::METADATA &&
-      embargo != Databank::PublicationState::Embargo::METADATA
-
-    false
-  end
-
-  def handle_related_materials
-    self.num_external_relationships = 0
-    self.materials_related = self.materials_cited_by = []
-    tmp_related = Set.new
-    tmp_cited = Set.new
-    tmp_external = Set.new
-    if related_materials.count.positive?
-      related_materials.each do |material|
-        datacite_arr = []
-        datacite_arr = material.datacite_list.split(",") if material.datacite_list && material.datacite_list != ""
-        datacite_arr.each do |relationship|
-          if [Databank::Relationship::NEW_VERSION_OF, Databank::Relationship::PREVIOUS_VERSION_OF].exclude?(relationship)
-            tmp_external.add(material)
-          end
-          if [Databank::Relationship::SUPPLEMENT_TO, Databank::Relationship::SUPPLEMENTED_BY].include?(relationship)
-            tmp_related.add(material)
-          end
-          tmp_cited.add(material) if relationship == Databank::Relationship::CITED_BY
-        end
-      end
-    end
-    self.materials_related = tmp_related.to_a
-    self.materials_cited_by = tmp_cited.to_a
-    self.num_external_relationships = tmp_external.count
-  end
-
-  def add_version_metadata_copy(previous:)
-    return true if title == previous.title
-
-    previous_version_number = previous.dataset_version.to_i
-    version_number = previous_version_number + 1
-    identifier_base = previous.identifier.chop
-    self.title = previous.title
-    self.creator_text = previous.creator_text
-    self.identifier = "#{identifier_base}#{version_number}"
-    self.publisher = previous.publisher
-    self.description = previous.description
-    self.license = previous.license
-    self.corresponding_creator_name = "researcher1"
-    self.corresponding_creator_email = "researcher1@mailinator.com"
-    self.keywords = previous.keywords
-    self.publication_state = Databank::PublicationState::TempSuppress::VERSION
-    self.curator_hold = true
-    self.release_date = nil
-    self.embargo = Databank::PublicationState::Embargo::NONE
-    self.is_test = previous.is_test
-    self.is_import = false
-    self.tombstone_date = nil
-    self.hold_state = Databank::PublicationState::TempSuppress::VERSION
-    self.medusa_dataset_dir = nil
-    self.dataset_version =  version_number.to_s
-    self.suppress_changelog = false
-    self.subject = previous.subject
-    self.org_creators = previous.org_creators
-    self.data_curation_network = false
-    save
-  end
-
-  def nonversion_related_materials
-    relationship_arr = []
-    related_materials.each do |material|
-      relationship_arr << material if material.nonversion_relationships.count.positive?
-    end
-    relationship_arr
-  end
-
-  def sharing_link
-    return "N/A no current sharing link" unless current_share_code
-
-    "#{IDB_CONFIG[:root_url_text]}/datasets/#{key}?code=#{current_share_code}"
-  end
-
-  def current_share_code
-    share_code.destroy if share_code && share_code.created_at < 1.year.ago
-
-    return nil unless share_code
-
-    share_code.code
-  end
-
-  def storage_key_dirpart
-    raise "Not valid for datasets without identifiers." unless identifier && identifier != ""
-
-    "DOI-#{identifier.parameterize}"
-  end
-
-  def invalid_name(attributes)
-    attributes["family_name"].blank? &&
-        attributes["given_name"].blank? &&
-        attributes["institution_name"].blank?
-  end
-
-  def invalid_material(attributes)
-    attributes["link"].blank? && attributes["citation"].blank?
-  end
-
+  ##
+  # @return [Boolean] true if the dataset meets all criteria:
+  # - is not a test dataset
+  # - the publication state is released, embargoed, or suppressed
+  # - the hold state is nil, none, or only file-only suppressed
+  # Otherwise, it returns false
   def metadata_public?
     is_test == false &&
     [Databank::PublicationState::RELEASED,
@@ -238,44 +207,23 @@ class Dataset < ApplicationRecord
              Databank::PublicationState::PermSuppress::FILE].include?(hold_state))
   end
 
+  ##
+  # @return [Boolean] true if the publication state is draft
+  # Otherwise, it returns false
   def draft?
     publication_state == Databank::PublicationState::DRAFT
   end
+
+  ##
+  # @return [Boolean] true the publication state is released and the hold state is nil or file-only suppressed
+  # Otherwise, it returns false
   def files_public?
     (publication_state == Databank::PublicationState::RELEASED) &&
       ((hold_state.nil? || (hold_state == Databank::PublicationState::TempSuppress::NONE)))
   end
 
-  def embargoed_with_valid_date?
-    Databank::PublicationState::EMBARGO_ARRAY.include?(embargo) && release_date && release_date > Time.current
-  end
-
-  def self.all_with_public_metadata
-    Dataset.all.select(&:metadata_public?)
-  end
-
-  # to work around persistent system bug that shows embargoed content
-  def ensure_embargo
-    return true if publication_state == Databank::PublicationState::DRAFT
-
-    return true if publication_state == embargo
-
-    return true if embargo.nil?
-
-    return true if embargo == Databank::PublicationState::Embargo::NONE
-
-    return true if release_date <= Time.current
-
-    self.publication_state = embargo
-    save!
-  end
-
-  def ensure_creator_editors
-    return true unless creators.count.positive?
-
-    creators.each(&:add_editor)
-  end
-
+  ##
+  # @return [Integer] the year of the publication date, defaults to the current year if no date is set
   def publication_year
     if release_date
       release_date.year || Time.now.in_time_zone.year
@@ -284,39 +232,14 @@ class Dataset < ApplicationRecord
     end
   end
 
-  def today_downloads
-    DayFileDownload.where(dataset_key: key).uniq.pluck(:ip_address).count
-  end
-
-  def total_downloads
-    DatasetDownloadTally.where(dataset_key: key).sum :tally
-  end
-
-  def dataset_download_tallies
-    DatasetDownloadTally.where(dataset_key: key)
-  end
-
-  def ip_downloaded_dataset_today(request_ip)
-    filter = "ip_address = ? and dataset_key = ? and download_date = ?"
-    DayFileDownload.where([filter, request_ip, key, Date.current]).count.positive?
-  end
-
-  def to_datacite_raw_xml
-    Nokogiri::XML::Document.parse(to_datacite_xml).to_xml
-  end
-
-  def individual_creators
-    creators.where(type_of: Databank::CreatorType::PERSON)
-  end
-
-  def institutional_creators
-    creators.where(type_of: Databank::CreatorType::INSTITUTION)
-  end
-
+  ##
+  # @return [DateTime] the release date of the dataset, if it is not a draft and it has a release_date
   def release_datetime
-    release_date.to_datetime if publication_state != Databank::PublicationState::DRAFT && release_date
+    release_date.to_datetime if Databank::PublicationState::DRAFT_ARRAY.exclude?(publication_state) && release_date
   end
 
+  ##
+  # @return [String] the name of the license for the dataset
   def license_name
     license_name = "License not selected"
 
@@ -331,185 +254,47 @@ class Dataset < ApplicationRecord
     license_name
   end
 
+  ##
+  # @return [String] url text for the dataset
   def databank_url
     "#{IDB_CONFIG[:root_url_text]}/datasets/#{key}"
   end
 
-  def set_key
-    self.key ||= generate_key
-  end
-
   ##
-  # Generates a guaranteed-unique key, of which there are
-  # 36^KEY_LENGTH available.
-  #
-  def generate_key
-    proposed_key = nil
-
-    loop do
-      num_part = rand(10**7).to_s.rjust(7, "0")
-      proposed_key = "#{IDB_CONFIG[:key_prefix]}-#{num_part}"
-      break unless self.class.find_by(key: proposed_key)
-    end
-    proposed_key
-  end
-
-  def current_token
-    tokens = Token.where(dataset_key: self.key)
-    return tokens.first if tokens.count == 1
-
-    if tokens.count > 1
-      tokens.destroy_all
-      return new_token
-    end
-    nil
-  end
-
-  def new_token
-    Token.where(dataset_key: key).destroy_all
-    Token.create(dataset_key: key, identifier: generate_auth_token)
-  end
-
-  def set_primary_contact
-    self.corresponding_creator_name = nil
-    self.corresponding_creator_email = nil
-
-    creators.each do |creator|
-      next unless creator.is_contact?
-
-      if creator.type_of == Databank::CreatorType::PERSON
-        self.corresponding_creator_name = "#{creator.given_name} #{creator.family_name}"
-
-      elsif creator.type_of == Databank::CreatorType::INSTITUTION
-        self.corresponding_creator_name = creator.institution_name
-      end
-      self.corresponding_creator_email = creator.email
-    end
-  end
-
-  def total_filesize
-    total = 0
-
-    datafiles.each do |datafile|
-      total += datafile.bytestream_size
-    end
-
-    total
-  end
-
-  def self.local_zip_max_size
-    750_000_000
-  end
-
-  def valid_datafiles
-    datafiles.where.not(storage_root: [nil, ""])
-             .where.not(storage_key: [nil, ""])
-             .where.not(binary_size: nil)
-             .where("binary_size > ?", 0)
-  end
-
-  def sorted_valid_datafiles
-    basic_sorted = valid_datafiles.sort_by(&:binary_name)
-    basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
-  end
-
-  def sorted_datafiles
-    basic_sorted = datafiles.sort_by(&:binary_name)
-    basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
-  end
-
-  def complete_datafiles
-    return [] if datafiles.count.zero?
-
-    unsorted = datafiles.select(&:upload_complete?)
-    return [] if unsorted.count.zero?
-
-    basic_sorted = unsorted.sort_by(&:binary_name)
-    basic_sorted.select(&:readme?) | basic_sorted # put readme files on top
-  end
-
-  def incomplete_datafiles
-    return [] if datafiles.count.zero?
-
-    datafiles.reject(&:upload_complete?).sort_by(&:binary_name)
-  end
-
-  def medusa_ingests
-    MedusaIngest.all.select {|m| m.dataset_key == key }
-  end
-
-  def fileset_preserved?
-    # assume all are preserved unless a file is found that is not preserved
-
-    fileset_preserved = true
-
-    datafiles.each do |df|
-      fileset_preserved = false if df.storage_root != StorageManager.instance.medusa_root.name
-    end
-
-    fileset_preserved
-  end
-
-  def dirname
-    if identifier && identifier != ""
-      "DOI-#{identifier.parameterize}"
-    else
-      "DRAFT-#{self.key}"
-    end
-  end
-
-  def draft_agreement_key
-    "drafts/#{self.key}/deposit_agreement.txt"
-  end
-
-  def medusa_agreement_key
-    "#{dirname}/system/deposit_agreement.txt"
-  end
-
-  def send_approve_version
-    notification = DatabankMailer.approve_version(dataset_key: self.key)
-    notification.deliver_now
-  end
-
-  def send_incomplete_1m
-    notification = DatabankMailer.dataset_incomplete_1m(self.key)
-    notification.deliver_now
-  end
-
-  def send_embargo_approaching_1m
-    notification = DatabankMailer.embargo_approaching_1m(self.key)
-    notification.deliver_now
-  end
-
-  def send_embargo_approaching_1w
-    notification = DatabankMailer.embargo_approaching_1w(self.key)
-    notification.deliver_now
-  end
-
+  # @return [DateTime] when the dataset was ingested, which means when it was first something other than a draft
   def ingest_datetime
+
+    return DateTime.current if Rails.env.test? || Rails.env.development?
+
     audits.each do |change|
       next unless change.audited_changes.has_key?("publication_state")
 
       pub_change = change.audited_changes["publication_state"]
 
-      return change.created_at if pub_change.class == Array && pub_change[0] == Databank::PublicationState::DRAFT
+      return change.created_at if pub_change.class == Array && Databank::PublicationState::DRAFT_ARRAY.include?(pub_change[0])
     end
     # if we get here, there was no change in changelog from draft to another state
     nil
   end
 
+  ##
+  # @return [String] the dataset's persistent (DataCite DOI related) URL base
   def persistent_url_base
     if is_test?
-      IDB_CONFIG[:test_datacite][:url_base]
+      IDB_CONFIG[:datacite_test][:url_base]
     else
       IDB_CONFIG[:datacite][:url_base]
     end
   end
 
+  ##
+  # @return [String] the dataset's persistent (DataCite DOI related) URL
   def persistent_url
     identifier.present? ? "#{persistent_url_base}/#{identifier}" : ""
   end
 
+  ##
+  # @return [String] the dataset's licence code for use in UI elements
   def license_code
     if license && license != ""
       if license.include?(".txt")
@@ -522,33 +307,9 @@ class Dataset < ApplicationRecord
     end
   end
 
-  def contact
-    contact = nil
-    creators.each do |creator|
-      contact = creator if creator.is_contact?
-    end
-    contact
-  end
-
-  def depositor
-    return "unknown|Unknown Depositor" unless depositor_email
-
-    email = depositor_email
-    user = User::Shibboleth.find_by(email: email)
-    return "unknown|Unknown Depositor" unless user
-
-    "#{depositor_netid}|#{user.name}"
-  end
-
-  def depositor_netid
-    return nil unless depositor_email
-
-    user = User::Shibboleth.find_by(email: depositor_email)
-    return user.email.split("@").first if user
-
-    nil
-  end
-
+  ##
+  # @param [String] email_address the email address (from current user) to compare to the depositor's email address
+  # @return [String] a code for use in UI elements indicating whether this dataset is the current user's
   def mine_or_not_mine(email_address)
     if email_address == depositor_email
       "mine"
@@ -557,69 +318,42 @@ class Dataset < ApplicationRecord
     end
   end
 
-  def ind_creators_to_contributors
-    individual_creators.each do |creator|
-      Contributor.create(dataset_id:        creator.dataset_id,
-                         given_name:        creator.given_name,
-                         family_name:       creator.family_name,
-                         email:             creator.email,
-                         identifier:        creator.identifier,
-                         identifier_scheme: creator.identifier_scheme,
-                         row_order:         creator.row_order,
-                         row_position:      creator.row_position,
-                         type_of:           Databank::CreatorType::PERSON)
-      creator.destroy
-    end
-  end
-
-  def contributors_to_ind_creators
-    contributors.each do |contributor|
-      Creator.create(dataset_id:        contributor.dataset_id,
-                     given_name:        contributor.given_name,
-                     family_name:       contributor.family_name,
-                     email:             contributor.email,
-                     identifier:        contributor.identifier,
-                     identifier_scheme: contributor.identifier_scheme,
-                     row_order:         contributor.row_order,
-                     row_position:      contributor.row_position,
-                     type_of:           Databank::CreatorType::PERSON)
-      contributor.destroy
-    end
-  end
-
-  def review_requests
-    ReviewRequest.where(dataset_key: self.key)
-  end
-
-  def in_pre_publication_review?
-    Databank::PublicationState::DRAFT_ARRAY.include?(publication_state) && has_review_request?
-  end
-
-  def show_publish_only?
-    return false unless in_pre_publication_review?
-
-    return false unless [Databank::PublicationState::TempSuppress::NONE, nil].include?(hold_state)
-
-    return false unless Dataset.completion_check(self) == "ok"
-
-    true
-  end
-
+  # utility method that could probably be refactored to somewhere else more central
   def error_hash(message)
     {status: "error", error_text: message}
   end
 
   private
 
-  def generate_auth_token
-    SecureRandom.uuid.delete("-")
+  ##
+  # sets the key for the dataset, generating it if it is not already set
+  def set_key
+    self.key ||= generate_key
   end
 
+  ##
+  # generates a guaranteed-unique key, of which there are
+  # 36^KEY_LENGTH available.
+  def generate_key
+    proposed_key = nil
+
+    loop do
+      num_part = rand(10**7).to_s.rjust(7, "0")
+      proposed_key = "#{IDB_CONFIG[:key_prefix]}-#{num_part}"
+      break unless self.class.find_by(key: proposed_key)
+    end
+    proposed_key
+  end
+
+  ##
+  # destroys all audit records associated with the dataset, only for use when the dataset is destroyed
   def destroy_audit
     associated_audits.each(&:destroy)
     audits.each(&:destroy)
   end
 
+  ##
+  # destroys all system files associated with the dataset, only for use when the dataset is destroyed
   def remove_system_files
     root = StorageManager.instance.draft_root
     system_files.each do |system_file|

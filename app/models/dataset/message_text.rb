@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+##
+# This module provides methods for generating messages to be displayed to users
+# in the UI. The methods are used in the Dataset model.
+
 module Dataset::MessageText
   extend ActiveSupport::Concern
 

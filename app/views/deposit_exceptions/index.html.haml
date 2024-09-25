@@ -1,0 +1,21 @@
+%h1 Deposit Exceptions
+%p
+  People who can log in using their NetId who have been granted exceptions to the normal deposit rules,
+  such as undergraduate students, recent staff, or researchers with multi-institution affiliations.
+
+%ul.no-bullets.container
+  - @user_abilities.each do |user_ability|
+    %li.row.listing
+      %span.col-md-4
+        %span.pull-right
+          = user_ability.user_uid
+      %span.col-md-2
+        =link_to "/deposit_exceptions/#{user_ability.id}/edit", class: "btn btn-success btn-block idb" do
+          %span(class="glyphicon glyphicon-edit" )
+          Edit
+      %span.col-md-2
+        = link_to "/deposit_exceptions/#{user_ability.id}", class: "btn btn-danger btn-block idb", method: :delete, data: { confirm: 'Are you sure?' } do
+          %span(class="glyphicon glyphicon-trash" )
+          Delete
+.text-center
+  = link_to "Add Deposit Exception", "/deposit_exceptions/new", class: "btn btn-primary idb"

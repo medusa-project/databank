@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+##
+# This module is used to recover datasets from Medusa.
+# It is used to recover the serialization and changelog files for a dataset.
+# It is used in the Dataset model.
+
 module Dataset::Recoverable
   extend ActiveSupport::Concern
 

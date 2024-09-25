@@ -1,39 +1,26 @@
+# frozen_string_literal: true
+
 class WelcomeController < ApplicationController
+  # Responds to `GET /`
   def index
     active_featured_researchers = FeaturedResearcher.where(is_active: true)
     if active_featured_researchers.count.positive?
       @featured_researcher = active_featured_researchers.order(Arel.sql("RANDOM()")).first
     end
+    respond_to do |format|
+      format.html
+      format.json {render json: @featured_researcher}
+      format.xml {render xml: Robot.blank_stare_xml}
+    end
   end
 
+  def admin; end
+  # Responds to `GET /contact`
   def contact
     @dataset = Dataset.find_by(key: params["key"]) if params.has_key?("key")
   end
 
-  def contact_mail
-    if params.has_key?("nobots")
-      # ignore the spam
-    elsif current_user || verify_recaptcha(message: "MESSAGE NOT SENT: reCAPTCHA verification required")
-      begin
-        help_request = DatabankMailer.contact_help(params)
-        help_request.deliver_now
-      rescue Net::SMTPSyntaxError => e
-        if e.message != "501 5.5.2 RCPT TO syntax error" # these are consistently spam
-          Rails.logger.warn(e.message)
-          Rails.logger.warn("could not deliver contact mail #{params}")
-        end
-      end
-      redirect_to "/contact", notice: "Your email has been sent to the Research Data Service Team. "
-    else
-      query_array=["help-name=#{params['help-name']}",
-                  "help-email=#{params['help-email']}",
-                  "help-topic=#{params['help-topic']}",
-                  "help-message=#{params['help-message']}"]
-      query_string = query_array.join("&")
-      redirect_to "/contact?#{query_string}"
-    end
-  end
-
+  # Responds to `GET /check_token`
   def check_token
     if params.has_key?("token")
 
@@ -51,8 +38,10 @@ class WelcomeController < ApplicationController
     end
   end
 
+  # Responds to `GET /on_failed_registration`
   def on_failed_registration; end
 
+  # Responds to `POST /update_read_only_message`
   def update_read_only_message
     respond_to do |format|
       if params.has_key?("msg_middle") &&
@@ -69,11 +58,14 @@ class WelcomeController < ApplicationController
     end
   end
 
+  # Responds to `GET /robots`
   def robots
     # Don't forget to delete /public/robots.txt
     respond_to :text
   end
 
+  # Responds to `POST /ensure_local_buckets`
+  # used to monitor development and testing environment setup
   def ensure_local_buckets
     @local_buckets_ensured = StorageManager.instance.ensure_local_buckets
   end

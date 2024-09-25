@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+##
+# This module provides methods for interacting with DataCite to reserve, register, and manage identifiers
+# This module is included in the Dataset model
+
 require "uri"
 require "net/http"
 require "base64"
@@ -600,6 +604,13 @@ module Dataset::Identifiable
       related_identifiers_node.remove if ready_count.zero?
     end
     doc.to_xml(save_with: Nokogiri::XML::Node::SaveOptions::AS_XML)
+  end
+
+  ##
+  # @return [String] the DataCite XML for the dataset
+  # @note this method is used to generate the DataCite XML for the dataset
+  def to_datacite_raw_xml
+    Nokogiri::XML::Document.parse(to_datacite_xml).to_xml
   end
 
   def doi_infohash

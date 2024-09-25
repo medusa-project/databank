@@ -1,5 +1,15 @@
 # frozen_string_literal: true
 
+##
+# Supports exporting datasets to Illinois Experts
+# generates an XML section for each dataset
+# with metadata and creators
+# The Illinois Experts API is used to get information about creators, if they are internal
+#
+# The XML document is a string that is written to a file
+# which is read by Illinois Experts
+# This module is included in the Dataset model.
+
 module Dataset::Exportable
   extend ActiveSupport::Concern
 

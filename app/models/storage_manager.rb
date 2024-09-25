@@ -1,5 +1,57 @@
 # frozen_string_literal: true
 
+##
+# StorageManager
+# ---------------
+# Singleton class that manages storage locations for the application.
+#
+# The StorageManager is a singleton class that manages the storage locations
+# used by the application. It provides access to the root directories for
+# draft storage, Medusa storage, message storage, and temporary file storage.
+# It also provides access to the root directories for Globus download and ingest
+# storage, but only in certain server environments.
+#
+# The StorageManager is initialized with the root directories for draft, Medusa,
+# and message storage, as well as the temporary directory used for temporary
+# file storage. It also initializes an S3 resource object for use in interacting
+# with S3 storage.
+#
+# The StorageManager provides methods for ensuring that local buckets exist,
+# emptying local buckets, setting up a bucket, checking whether a bucket exists,
+# and deleting objects from a bucket. It also provides a method for returning
+# the client options for use in creating the S3 client.
+#
+# The StorageManager is a singleton class, so there is only one instance of it
+# in the application.
+#
+# == Attributes
+# * +draft_root+ - the root directory for draft storage
+# * +medusa_root+ - the root directory for Medusa storage
+# * +message_root+ - the root directory for message storage
+# * +tmpfs_root+ - the root directory for temporary file storage
+# * +globus_download_root+ - the root directory for Globus download storage
+# * +globus_ingest_root+ - the root directory for Globus ingest storage
+# * +root_set+ - the root set object that contains the root directories
+# * +tmpdir+ - the temporary directory used for temporary file storage
+# * +resource+ - the S3 resource object used for interacting with S3 storage
+#
+# # frozen_string_literal: true
+#
+# ##
+# # StorageManager
+# # ---------------
+# # Singleton class that manages storage locations for the application.
+# #
+# # The StorageManager is a singleton class that manages the storage locations
+# # used by the application. It provides access to the root directories for
+# # draft storage, Medusa storage, message storage, and temporary file storage.
+# # It also provides access to the root directories for Globus download and ingest
+# # storage, but only in certain server environments.
+# #
+# # The StorageManager is initialized with the root directories for draft, Medusa,
+# # and message storage, as well as the temporary directory used for temporary
+# # file storage. It also initializes an S3 resource object for use in interacting
+# # with S3 storage.
 require "singleton"
 
 class StorageManager
@@ -14,6 +66,9 @@ class StorageManager
                 :tmpdir,
                 :resource
 
+  ##
+  # initialize
+  # Initializes the object
   def initialize
     storage_config = STORAGE_CONFIG[:storage].map(&:to_h)
     self.root_set = MedusaStorage::RootSet.new(storage_config)
@@ -29,11 +84,19 @@ class StorageManager
     initialize_tmpdir
   end
 
+  ##
+  # initialize_tmpdir
+  # Initializes the temporary directory
   def initialize_tmpdir
     self.tmpdir = IDB_CONFIG[:storage_tmpdir]
   end
 
+  ############################################################
   # methods to support local development and testing
+  ##########################################################
+  ##
+  # ensure_local_buckets
+  # Ensures that local buckets exist
   def ensure_local_buckets
     return false unless Rails.env.development? || Rails.env.test?
 
@@ -46,6 +109,9 @@ class StorageManager
     end
   end
 
+  ##
+  # empty_local_buckets
+  # Empties local buckets
   def empty_local_buckets
     return false unless Rails.env.development? || Rails.env.test?
 
@@ -58,6 +124,10 @@ class StorageManager
     end
   end
 
+  ##
+  # setup_bucket
+  # Sets up a bucket
+  # @param bucket_name [String] The name of the bucket.
   def setup_bucket(bucket_name:)
     return false unless Rails.env.development? || Rails.env.test?
 
@@ -86,13 +156,14 @@ class StorageManager
     delete_objects(bucket: bucket_name)
   end
 
+  ##
+  # bucket_exists?
   # Checks to see whether an Amazon Simple Storage Service
-  #   (Amazon S3) bucket exists.
+  # (Amazon S3) bucket exists.
   #
   # @param s3_client [Aws::S3::Client] An initialized S3 client.
   # @param bucket_name [String] The name of the bucket.
   # @return [Boolean] true if the bucket exists; otherwise, false.
-  #
   def bucket_exists?(s3_client:, bucket_name:)
     response = s3_client.list_buckets
     response.buckets.each do |bucket|
@@ -104,11 +175,20 @@ class StorageManager
     false
   end
 
+  ##
+  # delete_objects
+  # Deletes objects from a bucket
+  # @param bucket [String] The name of the bucket.
+  # @param key_prefix [String] The prefix of the keys to delete.
   def delete_objects(bucket:, key_prefix: "")
     bucket = resource.bucket(bucket)
     bucket.objects(prefix: key_prefix).each(&:delete)
   end
 
+  ##
+  # client_options
+  # Returns the client options for use in creating the S3 client.
+  # @return [Hash] the client options
   def client_options
     opts = {region: IDB_CONFIG[:aws][:region]}
     if Rails.env.development? || Rails.env.test?

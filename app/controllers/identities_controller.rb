@@ -5,33 +5,34 @@ class IdentitiesController < ApplicationController
   skip_authorize_resource only: %i[login register]
   before_action :set_identity, only: %i[show edit update destroy]
 
-  # GET /identities
-  # GET /identities.json
+  # Responds to `GET /identities`
+  # Responds to `GET /identities.json`
   def index
     @identities = Identity.all
   end
 
-  # GET /identities/1
-  # GET /identities/1.json
+  # Responds to `GET /identities/1`
+  # Responds to `GET /identities/1.json`
   def show; end
 
-  # GET /identities/new
+  # Responds to `GET /identities/new`
   def new
     redirect_to action: "register"
   end
 
+  # Responds to `GET /identities/register`
   def register; end
 
+  # Responds to `GET /identities/login`
   def login; end
 
-  # GET /identities/1/edit
+  # Responds to `GET /identities/1/edit`
   def edit; end
 
-  # POST /identities
-  # POST /identities.json
+  # Responds to `POST /identities`
+  # Responds to `POST /identities.json`
   def create
     @identity = Identity.new(identity_params)
-
     respond_to do |format|
       if @identity.save
         format.html { redirect_to @identity, notice: "Identity was successfully created." }
@@ -43,8 +44,8 @@ class IdentitiesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /identities/1
-  # PATCH/PUT /identities/1.json
+  # Responds to `PATCH/PUT /identities/1`
+  # Responds to `PATCH/PUT /identities/1.json`
   def update
     respond_to do |format|
       if @identity.update(identity_params)
@@ -57,8 +58,8 @@ class IdentitiesController < ApplicationController
     end
   end
 
-  # DELETE /identities/1
-  # DELETE /identities/1.json
+  # Responds to `DELETE /identities/1`
+  # Responds to `DELETE /identities/1.json`
   def destroy
     @identity.destroy
     respond_to do |format|

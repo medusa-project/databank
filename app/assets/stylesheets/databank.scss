@@ -267,7 +267,9 @@ table {
   padding-left: 15px;
   padding-right: 15px;
   padding-bottom: 15px;
+  padding-top: 15px;
   margin-top: 15px;
+  background-color: $color__lightest-grey;
 }
 
 .idb-help-prompt{
@@ -539,6 +541,14 @@ table.deposit-agreement-selection-warning > tbody > tr > td {
   margin-top: 5px;
 }
 
+ul.no-bullets {
+  list-style-type: none;
+}
+
+li.row.listing {
+  padding: 2px;
+}
+
 #g-recaptcha-response {
   display: block !important;
   position: absolute;
@@ -563,4 +573,11 @@ table.deposit-agreement-selection-warning > tbody > tr > td {
   @page { margin: 0.5cm; }
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3 { page-break-after: avoid; }
+}
+
+caption.policy-document-history, caption.info-table {
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  background-color: $color__dark-navy;
 }

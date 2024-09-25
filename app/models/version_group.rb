@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
+# Represents the group of versions of a dataset, in an ordered chain of versions
 class VersionGroup
 
   attr_accessor :dataset, :group_hash, :latest_published_version
 
+  # @param [Dataset] dataset the dataset to create the group for
+  # @return [VersionGroup] the group of versions
   def initialize(dataset)
     self.dataset = dataset
     self_version_entry = dataset.related_version_entry_hash

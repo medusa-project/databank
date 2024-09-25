@@ -1,29 +1,29 @@
+# frozen_string_literal: true
+
 class IngestResponsesController < ApplicationController
   before_action :set_ingest_response, only: [:show, :edit, :update, :destroy]
   authorize_resource
 
-  # GET /ingest_responses
+  # Responds to `GET /ingest_responses`
   # GET /ingest_responses.json
   def index
     @ingest_responses = IngestResponse.all
   end
 
-  # GET /ingest_responses/1
-  # GET /ingest_responses/1.json
-  def show
-  end
+  # Responds to `GET /ingest_responses/1`
+  # Responds to `GET /ingest_responses/1.json`
+  def show; end
 
-  # GET /ingest_responses/new
+  # Responds to `GET /ingest_responses/new`
   def new
     @ingest_response = IngestResponse.new
   end
 
-  # GET /ingest_responses/1/edit
-  def edit
-  end
+  # Responds to `GET /ingest_responses/1/edit`
+  def edit; end
 
-  # POST /ingest_responses
-  # POST /ingest_responses.json
+  # Responds to `POST /ingest_responses`
+  # Responds to `POST /ingest_responses.json`
   def create
     @ingest_response = IngestResponse.new(ingest_response_params)
 
@@ -38,8 +38,8 @@ class IngestResponsesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /ingest_responses/1
-  # PATCH/PUT /ingest_responses/1.json
+  # Responds to `PATCH/PUT /ingest_responses/1
+  # Responds to `PATCH/PUT /ingest_responses/1.json
   def update
     respond_to do |format|
       if @ingest_response.update(ingest_response_params)
@@ -52,8 +52,8 @@ class IngestResponsesController < ApplicationController
     end
   end
 
-  # DELETE /ingest_responses/1
-  # DELETE /ingest_responses/1.json
+  # Responds to `DELETE /ingest_responses/1
+  # Responds to `DELETE /ingest_responses/1.json
   def destroy
     @ingest_response.destroy
     respond_to do |format|
@@ -63,13 +63,13 @@ class IngestResponsesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_ingest_response
-      @ingest_response = IngestResponse.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_ingest_response
+    @ingest_response = IngestResponse.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def ingest_response_params
-      params.require(:ingest_response).permit(:as_text, :status, :response_time, :staging_key, :medusa_key, :uuid)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def ingest_response_params
+    params.require(:ingest_response).permit(:as_text, :status, :response_time, :staging_key, :medusa_key, :uuid)
+  end
 end

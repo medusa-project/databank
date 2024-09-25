@@ -338,10 +338,10 @@ namespace :fix do
   desc "migrate demo datasets"
   task migrate_demo_datasets: :environment do
 
-    host = IDB_CONFIG[:test_datacite_endpoint]
-    user = IDB_CONFIG[:test_datacite_username]
-    password = IDB_CONFIG[:test_datacite_password]
-    shoulder = IDB_CONFIG[:test_datacite_shoulder]
+    host = IDB_CONFIG[:datacite_test_endpoint]
+    user = IDB_CONFIG[:datacite_test_username]
+    password = IDB_CONFIG[:datacite_test_password]
+    shoulder = IDB_CONFIG[:datacite_test_shoulder]
 
     Dataset.all.each do |dataset|
       if dataset.identifier && dataset.identifier.include?("10.5072/FK2")

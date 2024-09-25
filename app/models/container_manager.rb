@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+##
+# A singleton that manages the ECS client
+# It is used by ExtractorTask to interact with the ECS service
+
 require "singleton"
 
 class ContainerManager

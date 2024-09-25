@@ -1857,7 +1857,6 @@ GEM
     rchardet (1.8.0)
     rdoc (6.6.0)
       psych (>= 4.0.0)
-    recaptcha (5.16.0)
     redcarpet (3.6.0)
     regexp_parser (2.8.2)
     reline (0.4.0)
@@ -2076,7 +2075,6 @@ DEPENDENCIES
   rails (~> 7.1)
   rb-readline
   rchardet
-  recaptcha
   redcarpet
   rest-client
   roda

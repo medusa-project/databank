@@ -1,78 +1,62 @@
 # frozen_string_literal: true
 
+##
+# Encapsulates client functionality for the Medusa downloader service
+
 require "json"
 require "curb"
 
 class DownloaderClient
   include ActiveModel::Conversion
   include ActiveModel::Naming
-
-  # precondition: all targets are in Medusa
-
-  def self.datafiles_download_hash(dataset, web_ids, zipname)
-    download_hash = {}
-    total_size = 0
-
-    # web_ids is expected to be an array
-
-    num_files = 0
-    if web_ids.respond_to?(:count)
-      num_files = web_ids.count
-    else
-      download_hash["status"] = "error"
-      download_hash["error"] = "internal error invalid file identifiers"
-      return download_hash
-    end
-    if num_files.zero?
-      download_hash["status"] = "error"
-      download_hash["error"] = "no valid file identifiers found"
-      return download_hash
-    end
-
-    targets_arr = []
-
-    web_ids.each do |web_id|
-      df = Datafile.find_by(web_id: web_id)
-
-      next unless df
-
-      if !df.storage_root || df.storage_root != "medusa" || !df.storage_key || df.storage_key == ""
-        # should not get here because of precondition
-        Rails.logger.warn "invalid storage_root / storage_key for datafile #{df.to_yaml}"
-        download_hash["status"] = "error"
-        download_hash["error"] = "internal error file path not found"
-        return download_hash
+  # all methods are class methods
+  class << self
+    ##
+    # @param dataset [Dataset] The dataset the files belong to
+    # @param web_ids [Array] The web_ids of the files to download
+    # @param zip_name [String] The name of the zip file to create
+    def datafiles_download_hash(dataset:, web_ids:, zip_name:)
+      begin
+        targets_arr = targets_arr(dataset: dataset, web_ids: web_ids)
+        unless targets_arr.count.positive?
+          Rails.logger.warn "error in datafiles_download_hash for dataset #{dataset.id} and web_ids #{web_ids}"
+          return {"status": "error", "error": "internal error no valid files found"}
+        end
+      rescue StandardError => e
+        Rails.logger.warn "error in datafiles_download_hash: #{e.message}"
+        return {"status": "error", "error": "internal error file path not found"}
       end
-      total_size += df.bytestream_size
-      target_hash = {}
-      target_hash["type"] = "file"
-      target_hash["path"] = df.storage_key.to_s
-      targets_arr.push(target_hash)
+
+      medusa_request_json = {"root": "idb", "zip_name": zip_name.to_s, "targets": targets_arr}.to_json
+      download_hash = request_download_hash(medusa_request_json: medusa_request_json)
+      download_hash[:total_size] = total_size(dataset: dataset, web_ids: web_ids) if download_hash[:status] == "ok"
+      download_hash
     end
 
-    recordfile_hash = {}
-    recordfile_hash["type"] = "literal"
-    recordfile_hash["name"] = "dataset_info.txt"
-    recordfile_hash["content"] = dataset.recordtext
-    targets_arr.push(recordfile_hash)
+    private
 
-    total_size += dataset.recordtext.bytesize
-
-    if targets_arr.count.zero?
-      download_hash["status"] = "error"
-      download_hash["error"] = "internal error: no valid files found"
-      return download_hash
+    ##
+    # @param dataset [Dataset] The dataset the files belong to
+    # @param web_ids [Array] The web_ids of the files to download
+    # @return [Array] The array of files to download
+    def targets_arr(dataset:, web_ids:)
+      targets_arr = []
+      web_ids.each do |web_id|
+        df = dataset.datafiles.find_by(web_id: web_id)
+        targets_arr.push({"type": "file", "path": df.storage_key.to_s})
+      end
+      targets_arr.push({"type": "literal", "name": "dataset_info.txt", "content": dataset.record_text})
+      targets_arr
     end
-    medusa_request_hash = {}
-    medusa_request_hash["root"] = "idb"
-    medusa_request_hash["zip_name"] = zipname.to_s
-    medusa_request_hash["targets"] = targets_arr
-    medusa_request_json = medusa_request_hash.to_json
-    client_url = (IDB_CONFIG["downloader"]["endpoint"]).to_s
-    begin
+
+    ##
+    # @param medusa_request_json [String] The JSON string to send to the downloader
+    # @return [Hash] The response hash from the downloader
+    # @note: This method sends a request to the downloader to download the files
+    def request_download_hash(medusa_request_json:)
       user = IDB_CONFIG["downloader"]["user"]
       password = IDB_CONFIG["downloader"]["password"]
-      client = Curl::Easy.new(client_url)
+      client = Curl::Easy.new((IDB_CONFIG["downloader"]["endpoint"]).to_s)
       client.http_auth_types = :digest
       client.ssl_verify_peer = true
       client.username = user
@@ -81,28 +65,28 @@ class DownloaderClient
       client.post
       client.headers = {"Content-Type": "application/json"}
       client.perform
-      # DEBUG LOGGING
       response_hash = JSON.parse(client.body_str)
-      if response_hash.has_key?("download_url")
-        # Rails.logger.warn "inside downloader client: #{response_hash["download_url"]}"
-        download_hash["status"] = "ok"
-        download_hash["download_url"] = response_hash["download_url"]
-        download_hash["status_url"] = response_hash["status_url"]
-        download_hash["total_size"] = total_size
-      else
-        Rails.logger.warn "*** invalid download response: #{client.body_str} to request: #{medusa_request_json}"
-        download_hash["status"] = "error"
-        download_hash["error"] = "invalid response from downloader service "
+      unless response_hash.has_key?("download_url")
+        return {"status": "error", "error": "invalid response from downloader service"}
       end
-      return download_hash
+
+      {"status": "ok", "download_url": response_hash["download_url"], "status_url": response_hash["status_url"]}
     rescue StandardError => e
-      Rails.logger.warn "error interacting with medusa-downloader #{e}"
-      download_hash["status"] = "error"
-      download_hash["error"] = "invalid response from downloader service "
-      return download_hash
+      Rails.logger.warn "error interacting with medusa-downloader: #{e.class} #{e.message}"
+      {"status": "error", "error": "internal error downloading files"}
     end
 
-    # should not get here
-    nil
+    ##
+    # @param dataset [Dataset] The dataset containing the datafiles to download
+    # @param web_ids [Array] The array of web_ids for datafiles to download
+    # @return [Integer] The total size of the files to download
+    def total_size(dataset:, web_ids:)
+      total_size = 0
+      web_ids.each do |web_id|
+        df = Datafile.find_by(web_id: web_id)
+        total_size += df.bytestream_size
+      end
+      total_size += dataset.record_text.bytesize
+    end
   end
 end

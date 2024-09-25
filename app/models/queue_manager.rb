@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+##
+# QueueManager
+# @note: This class is used to manage the queue client for the application
+# @note: This class is a singleton
+
 LOCAL_ENDPOINT = "http://localhost:9324"
 
 require "singleton"
