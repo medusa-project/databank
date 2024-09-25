@@ -853,7 +853,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.datafiles.each do |datafile|
       datafile.record_download(request.remote_ip)
     end
-    redirect_to @dataset.globus_download_dir
+    redirect_to @dataset.globus_download_dir, allow_other_host: true
   end
 
   # @deprecated
