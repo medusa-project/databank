@@ -86,7 +86,7 @@ class DatafilesController < ApplicationController
         send_file input_file, type: safe_content_type(@datafile), disposition: "inline", filename: @datafile.name
       end
     else
-      redirect_to(datafile_view_link(@datafile))
+      redirect_to(datafile_view_link(@datafile), allow_other_host: true)
     end
   end
 

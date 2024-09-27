@@ -49,7 +49,7 @@ downloader:
 :iiif:
   :draft_base: <%= Rails.application.credentials[:iiif][:draft_base] %>
   :medusa_base: <%= Rails.application.credentials[:iiif][:medusa_base] %>
-  #:preview_root: <%= Rails.application.credentials[:iiif][:preview_root] %>
+  :preview_root: <%= Rails.application.credentials[:iiif][:preview_root] %>
 
 :illinois_experts:
   :key: <%= Rails.application.credentials[:illinois_experts][:key] %>
