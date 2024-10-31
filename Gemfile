@@ -130,8 +130,7 @@ gem "valid_email"
 # Use boostrap-datepicker-rails for selecting release date
 # gem 'bootstrap-datepicker-rails'
 
-# Use identity strategy to create local accounts for testing
-gem "omniauth-identity"
+# Use shibboleth strategy for omniauth -- NetID login
 gem "omniauth-shibboleth"
 
 gem "omniauth-rails_csrf_protection"

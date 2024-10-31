@@ -32,20 +32,15 @@
             Contact Us
       %ul.nav.navbar-nav.navbar-right
         - if current_user
-          -if current_user.role == Databank::UserRole::NETWORK_REVIEWER
-            %li
-              %a{href: "/data_curation_network/my_account"}
-                =current_user.name
-          -else
-            %li
-              %a{href: "/datasets?editor=#{current_user.username}"}
-                =current_user.name
+          %li
+            %a{href: "/datasets?editor=#{current_user.username}"}
+              =current_user.name
           %li
             %a{href: "/logout"}
               Log out
         - elsif Rails.env.development? || Rails.env.test?
           %li
-            %a{href: "/identities/login"}
+            %a{href: "/login"}
               Log in Local
         - else
           %li

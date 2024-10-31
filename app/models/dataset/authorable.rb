@@ -104,7 +104,7 @@ module Dataset::Authorable
     return "unknown|Unknown Depositor" unless depositor_email
 
     email = depositor_email
-    user = User::Shibboleth.find_by(email: email)
+    user = User.find_by(email: email)
     return "unknown|Unknown Depositor" unless user
 
     "#{depositor_netid}|#{user.name}"
@@ -113,7 +113,7 @@ module Dataset::Authorable
   def depositor_netid
     return nil unless depositor_email
 
-    user = User::Shibboleth.find_by(email: depositor_email)
+    user = User.find_by(email: depositor_email)
     return nil unless user
 
     user.email.split("@").first

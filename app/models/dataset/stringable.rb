@@ -225,7 +225,7 @@ module Dataset::Stringable
       change_hash.delete("remote_address")
       change_hash.delete("request_uuid")
       user = nil
-      user = User::Shibboleth.find(Integer(change.user_id)) if change.user_id && change.user_id != ""
+      user = User.find(Integer(change.user_id)) if change.user_id && change.user_id != ""
       agent = if user
                 user.serializable_hash
               else

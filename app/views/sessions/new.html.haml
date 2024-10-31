@@ -1,0 +1,8 @@
+=form_tag('/auth/developer/callback', method: :post, no_validate: 'noValidate') do
+  = label_tag :email, 'Email:'
+  = text_field_tag :email
+  = label_tag :name, 'Name:'
+  = text_field_tag :name
+  = label_tag :role, 'Role:'
+  = text_field_tag :role
+  %button{type: 'submit'} Sign In

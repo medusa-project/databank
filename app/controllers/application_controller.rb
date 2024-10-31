@@ -117,10 +117,10 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # @return [User::Shibboleth, User::Identity] the current user
+  # @return [User] the current user
   def current_user
     if session[:user_id]
-      @current_user = User::Shibboleth.find(session[:user_id]) || User::Identity.find(session[:user_id])
+      @current_user = User.find(session[:user_id])
     end
   rescue ActiveRecord::RecordNotFound
     session[:user_id] = nil
@@ -128,8 +128,8 @@ class ApplicationController < ActionController::Base
 
   ##
   # sets the current user
-  # @param [User::Shibboleth, User::Identity] user
-  # @return [User::Shibboleth, User::Identity] the current user
+  # @param [User] user
+  # @return [User] the current user
   def set_current_user(user)
     @current_user = user
     session[:current_user_id] = user.id

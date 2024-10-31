@@ -128,8 +128,6 @@ class UserAbility < ApplicationRecord
     def add_to_editors(dataset:, email:)
       return true if dataset.editor_emails.include?(email)
 
-      return false if email[-12..] != "illinois.edu" && !User::Identity.find_by(email: email)
-
       grant(dataset: dataset, email: email, ability: :read)
       grant(dataset: dataset, email: email, ability: :view_files)
       grant(dataset: dataset, email: email, ability: :update)
@@ -137,8 +135,6 @@ class UserAbility < ApplicationRecord
 
     def remove_from_editors(dataset:, email:)
       return true unless dataset.editor_emails.include?(email)
-
-      return false if email[-12..] != "illinois.edu" && !User::Identity.find_by(email: email)
 
       revoke(dataset: dataset, email: email, ability: :read)
       revoke(dataset: dataset, email: email, ability: :view_files)
@@ -152,7 +148,7 @@ class UserAbility < ApplicationRecord
     # @return [Boolean] Whether the user was successfully granted the ability
     def grant(dataset:, email:, ability:)
       email = email.strip.downcase
-      user = User::Identity.find_by(email: email)
+      user = User.find_by(email: email)
       return grant_external(dataset: dataset, user: user, ability: ability) if user
 
       return false unless email[-12..] == "illinois.edu"
@@ -196,14 +192,14 @@ class UserAbility < ApplicationRecord
     # @return [Boolean] Whether the user was successfully revoked the ability
     def revoke(dataset:, email:, ability:)
       email = email.strip.downcase
-      user = User::Identity.find_by(email: email)
+      user = User.find_by(email: email)
       return revoke_external(dataset: dataset, user: user, ability: ability) if user
 
       return false unless email[-12..] == "illinois.edu"
 
       existing_record = UserAbility.find_by(resource_type: "Dataset",
                                             resource_id:   dataset.id,
-                                            user_provider: "Shibboleth",
+                                            user_provider: "shibboleth",
                                             user_uid:      email,
                                             ability:       ability)
       existing_record&.destroy

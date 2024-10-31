@@ -85,7 +85,7 @@ namespace :fix do
       invitee.update_attribute("role", Databank::UserRole::NETWORK_REVIEWER)
     end
 
-    User::Identity.where(role: "reviewer").each do |user|
+    User.where(role: "reviewer").each do |user|
       user.update_attribute("role", Databank::UserRole::NETWORK_REVIEWER)
     end
   end

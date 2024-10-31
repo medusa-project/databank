@@ -145,7 +145,7 @@ namespace :databank do
 
   desc "Clear users"
   task clear_users: :environment do
-    User::User.all.each do |user|
+    User.all.each do |user|
       user.destroy
     end
     Identity.all.each do |identity|
@@ -156,27 +156,6 @@ namespace :databank do
   desc "Clear Rails cache (sessions, views, etc.)"
   task clear: :environment do
     Rails.cache.clear
-  end
-
-  desc 'Create demo users'
-  task :create_users => :environment do
-    salt = BCrypt::Engine.generate_salt
-    encrypted_password = BCrypt::Engine.hash_secret("demo", salt)
-
-    num_accounts = 10
-
-    (1..num_accounts).each do |i|
-      identity = Identity.find_or_create_by(email: "demo#{i}@example.edu")
-      identity.name = "Demo#{i} Depositor"
-      identity.password_digest = encrypted_password
-      identity.save!
-    end
-
-    # create rspec test user -- not just identity
-    auth = OmniAuth.config.mock_auth[:identity]
-    user = User::Identity.create_with_omniauth(auth)
-    user.save!
-
   end
 
   desc 'Retroactively set publication_state'
