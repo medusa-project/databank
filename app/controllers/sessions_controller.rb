@@ -9,6 +9,7 @@ class SessionsController < ApplicationController
     if params[:provider] && params[:provider] == 'shibboleth'
       session[:login_return_referer] = request.env['HTTP_REFERER']
       redirect_to(shibboleth_login_path(Databank::Application.shibboleth_host))
+      return
     end
   end
 
