@@ -7,7 +7,7 @@ require "rails/test_help"
 class ActiveSupport::TestCase
 
   # Setup fixtures in test/fixtures/*.yml
-  fixtures :invitees, :identities, "user/identities", :datasets, :datafiles, :creators, :related_materials
+  fixtures  :users, :datasets, :datafiles, :creators, :related_materials
 
   def self.seeding?
     @@seeding
@@ -18,9 +18,10 @@ class ActiveSupport::TestCase
   # (local, non-shibboleth) identity provider is assumed
   #
   def log_in_as(user)
-    post "/auth/identity/callback", params: {
-      auth_key: user.email,
-      password: "password"
+    post "/auth/developer/callback", params: {
+      email: user.email,
+      name: user.name,
+      role: user.role
     }
   end
 
