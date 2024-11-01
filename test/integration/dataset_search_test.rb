@@ -20,7 +20,7 @@ class DatasetSearchTest < ActionDispatch::IntegrationTest
 
   test "default listing for depositor" do
     Dataset.all.each(&:ensure_creator_editors)
-    @user = user_identities :researcher1
+    @user = user :researcher1
     log_in_as(@user)
     get datasets_path
     assert_response :success
@@ -34,7 +34,7 @@ class DatasetSearchTest < ActionDispatch::IntegrationTest
 
   test "default listing for curator" do
     Dataset.all.each(&:ensure_creator_editors)
-    @user = user_identities :curator1
+    @user = user :curator1
     log_in_as(@user)
     get datasets_path
     assert_response :success
