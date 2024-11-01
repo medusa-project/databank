@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
 
   # Responds to `GET /login`
   def new
-    if params[:provider] && params[:provider] == 'shibboleth'
+    unless Rails.env.test? || Rails.env.development?
       session[:login_return_referer] = request.env['HTTP_REFERER']
       redirect_to(shibboleth_login_path(Databank::Application.shibboleth_host))
       return
