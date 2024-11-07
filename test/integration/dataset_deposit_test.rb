@@ -21,7 +21,7 @@ class DatasetDepositTest < ActionDispatch::IntegrationTest
 
   def create_dataset
     assert_difference "Dataset.count" do
-      post datasets_path, params: { dataset: { publisher: "University of Illinois at Urbana-Champaign",
+      post datasets_path, params: { dataset: { publisher: "University of Illinois Urbana-Champaign",
                                                resource_type: "Dataset",
                                                license: "CC01",
                                                depositor_name: "researcher1",

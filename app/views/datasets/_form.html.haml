@@ -23,7 +23,7 @@
               = @dataset.publication_year && @dataset.publication_year != "" ? "(#{@dataset.publication_year})" : "(#{Time.now.year}):"
             %span( id="title-preview" )
               = @dataset.title && @dataset.title != "" ? "#{@dataset.title}." : "[The Title]."
-            University of Illinois at Urbana-Champaign.
+            University of Illinois Urbana-Champaign.
             %span( id="doi-preview" )
               = @dataset.identifier && @dataset.identifier != "" ? "#{@dataset.persistent_url}" : ""
           .panel-collapse.collapse.in(id="descriptionPanel" role="tabpanel" aria-labelledby="descriptionHeading" )
@@ -76,7 +76,7 @@
                     -else
                       Switch to Organization Creators
 
-              = f.hidden_field :publisher, :value=>"University of Illinois at Urbana-Champaign"
+              = f.hidden_field :publisher, :value=>"University of Illinois Urbana-Champaign"
 
               .form-group
                 = f.label :description, "Dataset Description", :class => "control-label"
@@ -332,7 +332,7 @@
 
           %tr.row
             %td
-              %button(type="button" id="portable-upload" class="btn btn-success fileinput-button" )
+              =link_to("https://go.illinois.edu/databank_largefiletransfer", class: "btn btn-success fileinput-button idb", target: "_blank") do
                 %span(class="large-text" )
                   &#x1f45f;
                 Arrange physical pickup or Globus transfer

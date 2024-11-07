@@ -2,7 +2,7 @@
   "demosets": [
     {
       "title": "The Unicorn in LIS Literature: a preliminary analysis",
-      "publisher": "University of Illinois at Urbana-Champaign",
+      "publisher": "University of Illinois Urbana-Champaign",
       "publication_year": "2016",
       "description": "This dataset was created to answer the following question:  Does the word 'unicorn', occur in titles of Web of Science records in the 'INFORMATION SCIENCE LIBRARY SCIENCE' category?  This question was asked because the Research Data Service is developing a data repository and we enjoy using unicorns in our example deposits. We also enjoy candy.",
       "license": "license.txt",
@@ -29,7 +29,7 @@
     },
     {
       "title": "Characterization of enlO in the central metabolism of superfish",
-      "publisher": "University of Illinois at Urbana-Champaign",
+      "publisher": "University of Illinois Urbana-Champaign",
       "publication_year": "2016",
       "description": "Superfish need to metabolize stuff.",
       "license": "CC01",
@@ -65,7 +65,7 @@
     },
     {
       "title": "Phylogenic Analysis of Condensation Domains in the AMB Biosynthetic Pathway",
-      "publisher": "University of Illinois at Urbana-Champaign",
+      "publisher": "University of Illinois Urbana-Champaign",
       "publication_year": "2016",
       "description": "The condensation domains in the NRPS biosynthetic gene clusters for production of antimetabolite L -2-amino-4-methoxy-trans-3-butenoic acid (AMB) in Pseudomonas aeruginosa have low homology to \"traditional\" condensation domains.  This dataset contains the FASTA sequences for phylogenetic analysis of these unusual domains as well as the tree diagram representations.    ",
       "license": "CCBY4",
@@ -93,7 +93,7 @@
     },
     {
       "title": "Brain regions and molecular pathways responding to food reward type and value in honey bees.",
-      "publisher": "University of Illinois at Urbana-Champaign",
+      "publisher": "University of Illinois Urbana-Champaign",
       "publication_year": "2016",
       "description": "This is the dataset corresponding to the article \"Brain regions and molecular pathways responding to food reward type and value in honey bees,\" published in Genes, Brain, and Behavior. PMID 26566901 DOI: 10.1111/gbb.12275 ",
       "license": "CCBY4",

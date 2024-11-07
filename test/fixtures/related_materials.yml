@@ -20,7 +20,7 @@ dataset1:
   uri: "10.13012/B2IDB-4900670_V1"
   uri_type: "DOI"
   citation:
-      "Donovan Brian; Mori Alec; Agrawal Nimit; Meng Yalan; Lee Jong; Work Daniel (2016): New York City Hourly Traffic Estimates (2010-2013). University of Illinois at Urbana-Champaign. https://doi.org/10.13012/B2IDB-4900670_V1"
+      "Donovan Brian; Mori Alec; Agrawal Nimit; Meng Yalan; Lee Jong; Work Daniel (2016): New York City Hourly Traffic Estimates (2010-2013). University of Illinois Urbana-Champaign. https://doi.org/10.13012/B2IDB-4900670_V1"
   dataset_id: 13
   created_at: Wed 29 Jun 2016 20:06:19.373154000 UTC +00:00
   updated_at: Mon 12 Jun 2017 18:50:17.878883000 UTC +00:00
