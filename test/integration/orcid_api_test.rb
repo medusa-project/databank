@@ -23,7 +23,7 @@ class OrcidApiTest < ActionDispatch::IntegrationTest
   test "fetch orcid person" do
     expected_person_record = {family_name: "Fallaw",
                               given_names: "Colleen",
-                              affiliation: "University of Illinois Urbana-Champaign"}
+                              affiliation: "University of Illinois at Urbana-Champaign"}
     person_search_result = Creator.orcid_person(orcid: "0000-0002-0339-9809")
     assert_equal(expected_person_record, person_search_result)
   end
