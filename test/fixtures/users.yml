@@ -1,9 +1,5 @@
-##
-# Every User::Identity in this file MUST have a corresponding
-# Identity in `identities.yml`.
-#
 curator1:
-  provider: identity
+  provider: developer
   uid: $LABEL@mailinator.com
   name: $LABEL
   email: $LABEL@mailinator.com
@@ -13,7 +9,7 @@ curator1:
   updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 curator2:
-  provider: identity
+  provider: developer
   uid: $LABEL@mailinator.com
   name: $LABEL
   email: $LABEL@mailinator.com
@@ -23,7 +19,7 @@ curator2:
   updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher1:
-  provider: identity
+  provider: developer
   uid: $LABEL@mailinator.com
   name: $LABEL
   email: $LABEL@mailinator.com
@@ -33,7 +29,7 @@ researcher1:
   updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher2:
-  provider: identity
+  provider: developer
   uid: $LABEL@mailinator.com
   name: $LABEL
   email: $LABEL@mailinator.com
@@ -43,7 +39,7 @@ researcher2:
   updated_at: <%= 5.day.ago.to_fs(:db) %>
 
 researcher3:
-  provider: identity
+  provider: developer
   uid: $LABEL@mailinator.com
   name: $LABEL
   email: $LABEL@mailinator.com
@@ -51,4 +47,3 @@ researcher3:
   username: $LABEL
   created_at: <%= 5.day.ago.to_fs(:db) %>
   updated_at: <%= 5.day.ago.to_fs(:db) %>
-

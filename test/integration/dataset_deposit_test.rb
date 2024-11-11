@@ -8,7 +8,7 @@ require "test_helper"
 class DatasetDepositTest < ActionDispatch::IntegrationTest
 
   setup do
-    @user = user_identities :researcher1
+    @user = users :researcher1
     log_in_as(@user)
   end
 
@@ -21,7 +21,7 @@ class DatasetDepositTest < ActionDispatch::IntegrationTest
 
   def create_dataset
     assert_difference "Dataset.count" do
-      post datasets_path, params: { dataset: { publisher: "University of Illinois at Urbana-Champaign",
+      post datasets_path, params: { dataset: { publisher: "University of Illinois Urbana-Champaign",
                                                resource_type: "Dataset",
                                                license: "CC01",
                                                depositor_name: "researcher1",

@@ -4,7 +4,7 @@ namespace :pub do
   desc 'update publication state for datasets with current or past release date'
   task :update_state => :environment do
 
-    @current_user = User::User.system_user
+    @current_user = User.system_user
 
     Dataset.all.each do |dataset|
 

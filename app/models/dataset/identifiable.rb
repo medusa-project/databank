@@ -269,7 +269,7 @@ module Dataset::Identifiable
     titles_node.parent = resource_node
 
     publisher_node = doc.create_element("publisher")
-    publisher_node.content = publisher || "University of Illinois at Urbana-Champaign"
+    publisher_node.content = publisher || "University of Illinois Urbana-Champaign"
     publisher_node.parent = resource_node
 
     publication_year_node = doc.create_element("publicationYear")
@@ -334,7 +334,7 @@ module Dataset::Identifiable
     titles_node.parent = resource_node
 
     publisher_node = doc.create_element("publisher")
-    publisher_node.content = publisher || "University of Illinois at Urbana-Champaign"
+    publisher_node.content = publisher || "University of Illinois Urbana-Champaign"
     publisher_node.parent = resource_node
 
     publication_year_node = doc.create_element("publicationYear")
@@ -514,7 +514,7 @@ module Dataset::Identifiable
     end
 
     publisher_node = doc.create_element("publisher")
-    publisher_node.content = publisher || "University of Illinois at Urbana-Champaign"
+    publisher_node.content = publisher || "University of Illinois Urbana-Champaign"
     publisher_node.parent = resource_node
 
     publication_year_node = doc.create_element("publicationYear")

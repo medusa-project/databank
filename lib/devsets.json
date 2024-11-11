@@ -2,7 +2,7 @@
   "devsets": [
     {
       "title": "The Google Fonts: a preliminary analysis",
-      "publisher": "University of Illinois at Urbana-Champaign",
+      "publisher": "University of Illinois Urbana-Champaign",
       "publication_year": "2016",
       "description": "This dataset was created to answer the following question:  Is the Databank working properly as datasets and datafiles are propagated for testing.",
       "license": "license.txt",
@@ -55,7 +55,7 @@
     },
     {
       "title": "The Google Fonts: a secondary analysis",
-      "publisher": "University of Illinois at Urbana-Champaign",
+      "publisher": "University of Illinois Urbana-Champaign",
       "publication_year": "2016",
       "description": "More files are needed for testing the Databank.",
       "license": "CC01",
@@ -117,7 +117,7 @@
     },
     {
       "title": "The Google Fonts: a tertiary analysis",
-      "publisher": "University of Illinois at Urbana-Champaign",
+      "publisher": "University of Illinois Urbana-Champaign",
       "publication_year": "2016",
       "description": "Even more files are needed for testing the Databank.",
       "license": "CCBY4",
@@ -171,7 +171,7 @@
     },
     {
       "title": "Brain regions and molecular pathways responding to food reward type and value in honey bees.",
-      "publisher": "University of Illinois at Urbana-Champaign",
+      "publisher": "University of Illinois Urbana-Champaign",
       "publication_year": "2016",
       "description": "This is the dataset corresponding to the article \"Brain regions and molecular pathways responding to food reward type and value in honey bees,\" published in Genes, Brain, and Behavior. PMID 26566901 DOI: 10.1111/gbb.12275 ",
       "license": "CCBY4",

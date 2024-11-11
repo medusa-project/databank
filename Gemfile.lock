@@ -1774,9 +1774,6 @@ GEM
       hashie (>= 3.4.6)
       rack (>= 2.2.3)
       rack-protection
-    omniauth-identity (3.0.9)
-      bcrypt
-      omniauth
     omniauth-rails_csrf_protection (1.0.1)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
@@ -2061,7 +2058,6 @@ DEPENDENCIES
   net-ldap (~> 0.16.2)
   nokogiri
   nokogiri-diff
-  omniauth-identity
   omniauth-rails_csrf_protection
   omniauth-shibboleth
   open_uri_redirections

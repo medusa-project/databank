@@ -8,7 +8,7 @@ require "test_helper"
 class DatasetVersionTest < ActionDispatch::IntegrationTest
 
   setup do
-    @user = user_identities :researcher1
+    @user = users :researcher1
     log_in_as(@user)
   end
 

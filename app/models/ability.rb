@@ -19,7 +19,7 @@ class Ability
     # alias_action :new, :to => :create
     # alias_action :edit, :to => :update
 
-    user ||= User::Shibboleth.new # guest user (not logged in)
+    user ||= User.new # guest user (not logged in)
 
     can :manage, :all if user.is?(Databank::UserRole::ADMIN)
 
@@ -71,10 +71,6 @@ class Ability
         UserAbility.user_can?("Dataset", dataset.id, :update, user) ||
         UserAbility.user_can?("Dataset", dataset.id, :read, user) ||
         dataset.data_curation_network && user.is?(Databank::UserRole::NETWORK_REVIEWER)
-    end
-
-    can [:read, :update], Identity do |identity|
-      identity.email == user.email
     end
 
     can :read, [Guide::Section, Guide::Item, Guide::Subitem], &:public?

@@ -6,32 +6,36 @@ class SessionsController < ApplicationController
 
   # Responds to `GET /login`
   def new
-    session[:login_return_referer] = request.env['HTTP_REFERER']
-    redirect_to(shibboleth_login_path(Databank::Application.shibboleth_host))
+    unless Rails.env.test? || Rails.env.development?
+      session[:login_return_referer] = request.env['HTTP_REFERER']
+      redirect_to(shibboleth_login_path(Databank::Application.shibboleth_host))
+      return
+    end
   end
+
   # Responds to `POST /auth/:provider/callback`
   def create
     auth = request.env["omniauth.auth"]
 
-    if auth[:provider] && auth[:provider] == 'shibboleth'
-      user = User::Shibboleth.from_omniauth(auth)
-    elsif auth[:provider] && auth[:provider] == 'identity'
-      user = User::Identity.from_omniauth(auth)
-    else
+    unless auth[:provider] && ['shibboleth', 'developer'].include?(auth[:provider])
       unauthorized
+      return
     end
+
+    if auth[:provider] == 'developer' && !(Rails.env.test? || Rails.env.development?)
+      unauthorized
+      return
+    end
+
+    user = User.from_omniauth(auth)
 
     if user&.id
       session[:user_id] = user.id
-      if user.provider == 'identity' && user.role == Databank::UserRole::NETWORK_REVIEWER
-        redirect_to '/data_curation_network'
-      elsif user.role == 'no_deposit'
+      if user.role == 'no_deposit'
         redirect_to root_url, notice: "ACCOUNT NOT ELIGABLE TO DEPOSIT DATA.<br/>Faculty, staff, and graduate students are eligable to deposit data in Illinois Data Bank.<br/>Please <a href='/help'>contact the Research Data Service</a> if this determination is in error, or if you have any questions."
       else
         redirect_to return_url
       end
-    elsif session[:previous_url] == '/data_curation_network/register'
-      redirect_to '/data_curation_network/after_registration'
     else
       redirect_to root_url
     end

@@ -6,20 +6,6 @@
 # This module is included in the Datafile model to provide methods for handling the download of the datafile
 module Datafile::Downloadable
   extend ActiveSupport::Concern
-  ##
-  # @return [String] the datafile's download link
-  def download_link
-    case cfs_file.storage_root.root_type
-    when :filesystem
-      download_cfs_file_path(cfs_file)
-    when :s3
-      cfs_file.storage_root.presigned_get_url(cfs_file.key,
-                                              response_content_disposition: disposition("attachment", cfs_file),
-                                              response_content_type:        safe_content_type(cfs_file))
-    else
-      raise "Unrecognized storage root type #{cfs_file.storage_root.type}"
-    end
-  end
 
   ##
   # @return [ActiveRecord::Relation] the FileDownloadTally records for this datafile

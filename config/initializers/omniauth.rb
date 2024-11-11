@@ -2,11 +2,30 @@ shib_opts = YAML.load_file(File.join(Rails.root, 'config', 'shibboleth.yml'))[Ra
 
 Rails.application.config.middleware.use OmniAuth::Builder do
 
-  provider :identity,
-           :fields => [:email, :name],
-           :on_failed_registration => WelcomeController.action(:on_failed_registration)
+  if Rails.env.development? || Rails.env.test?
+    provider :developer, :fields => [:email, :name, :role], :uid_field => :email
 
-  provider :shibboleth, shib_opts.symbolize_keys
+      # host: localhost
+      # uid_field: eppn
+      # extra_fields:
+      #   - eppn
+      #   - unscoped-affiliation
+      #   - uid
+      #   - sn
+      #   - nickname
+      #   - mail
+      #   - givenName
+      #   - displayName
+      #   - iTrustAffiliation
+      #   - uiucEduStudentLevelCode
+      # request_type: header
+      # info_fields:
+      #   name: displayName
+      #   email: mail
+
+  else
+    provider :shibboleth, shib_opts.symbolize_keys
+  end
 
 end
 

@@ -138,8 +138,7 @@ collaborators to access the data files while the dataset is not public.</li>
   def index
     if current_user
       user_role = current_user.role
-      user = User::Shibboleth.find_by(email: current_user&.email)
-      user ||= User::Identity.find_by(email: current_user&.email)
+      user = User.find_by(email: current_user&.email)
     else
       user_role = Databank::UserRole::GUEST
       user = nil

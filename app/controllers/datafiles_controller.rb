@@ -196,8 +196,24 @@ class DatafilesController < ApplicationController
 
   # Called from download action or to download a file without recording the download for drafts/curators/testing
   def download_no_record
-
-    if @datafile.current_root.root_type == :filesystem
+    if Rails.env == "development" || Rails.env == "test"
+      case @datafile.storage_root
+      when "draft"
+        root = StorageManager.instance.draft_root
+      when "medusa"
+        root = StorageManager.instance.medusa_root
+      else
+        raise "invalid storage root for datafile web_id: #{@datafile.web_id}, id: #{@datafile.id}"
+      end
+      expanded_key = "#{root.prefix}#{@datafile.storage_key}"
+      # DEBUG
+      Rails.logger.warn "expanded_key: #{expanded_key}"
+      Rails.logger.warn "binary_name: #{@datafile.binary_name}"
+      # Use the Application.aws_client to get the object from the bucket found at @datafile.storage_root and the expanded_key, then download it to the browser
+      object = Application.aws_client.get_object(bucket: root.bucket, key: expanded_key)
+      send_data object.body.read, filename: @datafile.binary_name, type: safe_content_type(@datafile)
+      return
+    elsif @datafile.current_root.root_type == :filesystem
       @datafile.with_input_file do |input_file|
         path = @datafile.current_root.path_to(@datafile.storage_key, check_path: true)
         send_file path, filename: @datafile.binary_name, type: safe_content_type(@datafile)

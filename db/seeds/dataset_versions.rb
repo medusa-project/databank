@@ -1,5 +1,5 @@
 ds1 = Dataset.create!("title": "The Google Fonts: a preliminary analysis",
-                      "publisher": "University of Illinois at Urbana-Champaign",
+                      "publisher": "University of Illinois Urbana-Champaign",
                       "publication_year": "2023",
                       "description": "This dataset was created to answer the following question:  Is the Databank working properly as datasets and datafiles are propagated for testing.",
                       "license": "CCBY4",

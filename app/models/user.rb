@@ -3,169 +3,221 @@
 require "open-uri"
 require "json"
 
-module User
-  # This is an abstract class to represent a User. It is intended to be subclassed
+class User < ApplicationRecord
+  include ActiveModel::Serialization
 
-  class User < ApplicationRecord
-    include ActiveModel::Serialization
+  validates :uid, uniqueness: {allow_blank: false}
+  before_save :downcase_email
+  validates :name,  presence: true
+  validates :email, presence: true, length: {maximum: 255},
+            format: {with: VALID_EMAIL_REGEX},
+            uniqueness: {case_sensitive: false}
+  # system user is a special user that is used to perform system tasks such as releasing embargoed datasets
+  class_attribute :system_user
 
-    validates :uid, uniqueness: {allow_blank: false}
-    before_save :downcase_email
-    validates :name,  presence: true
-    validates :email, presence: true, length: {maximum: 255},
-              format: {with: VALID_EMAIL_REGEX},
-              uniqueness: {case_sensitive: false}
-    # system user is a special user that is used to perform system tasks such as releasing embargoed datasets
-    class_attribute :system_user
+  # @return [Boolean] true if the user is an admin
+  def admin?
+    role == Databank::UserRole::ADMIN
+  end
 
-    # @return [Boolean] true if the user is an admin
-    def admin?
-      role == Databank::UserRole::ADMIN
+  # @return [Boolean] true if the user is a depositor
+  def depositor?
+    role == Databank::UserRole::DEPOSITOR
+  end
+
+  # @return [Boolean] true if the user is a guest
+  def guest?
+    role == Databank::UserRole::GUEST
+  end
+
+  # @return [Boolean] true if the user is a network reviewer
+  def network_reviewer?
+    role == Databank::UserRole::NETWORK_REVIEWER
+  end
+
+  # @param [User] user the user to check
+  # @return [Array<Dataset>] the datasets the user can view
+  def datasets_user_can_view(user:)
+    forbidden_hold_states = [Databank::PublicationState::TempSuppress::VERSION,
+                              Databank::PublicationState::PermSuppress::METADATA]
+    case user.role
+    when Databank::UserRole::ADMIN
+      Dataset.all
+    when Databank::UserRole::DEPOSITOR
+      datasets = Dataset.select(&:metadata_public?)
+      datasets += Dataset.where(depositor_email: user.email)
+      ability_datasets = UserAbility.where(user_provider: user.provider,
+                                            user_uid:      user.email,
+                                            resource_type: "Dataset",
+                                            ability:       :read).pluck(:resource_id)
+      datasets += Dataset.where(id: ability_datasets)
+      datasets -= Dataset.where(hold_state: forbidden_hold_states)
+      datasets -= Dataset.where(publication_state: Databank::PublicationState::PermSuppress::METADATA)
+      datasets.uniq
+    when Databank::UserRole::NETWORK_REVIEWER
+      datasets = Dataset.select(&:metadata_public?)
+      datasets += Dataset.where(data_curation_network: true)
+      datasets -= Dataset.where(hold_state: forbidden_hold_states)
+      datasets -= Dataset.where(publication_state: Databank::PublicationState::PermSuppress::METADATA)
+      datasets.uniq
+    else
+      Dataset.select(&:metadata_public?)
     end
+  end
 
-    # @return [Boolean] true if the user is a depositor
-    def depositor?
-      role == Databank::UserRole::DEPOSITOR
+  # @param [User] user the user to check
+  # @return [Array<Dataset>] the datasets the user can edit
+  def datasets_user_can_edit(user:)
+    forbidden_hold_states = [Databank::PublicationState::TempSuppress::VERSION,
+                              Databank::PublicationState::PermSuppress::METADATA]
+    case user.role
+    when Databank::UserRole::ADMIN
+      Dataset.all
+    when Databank::UserRole::DEPOSITOR
+      datasets = Dataset.where(depositor_email: user.email)
+      ability_datasets = UserAbility.where(user_provider: user.provider,
+                                            user_uid:      user.email,
+                                            resource_type: "Dataset",
+                                            ability:       :update).pluck(:resource_id)
+      datasets += Dataset.where(id: ability_datasets)
+      datasets -= Dataset.where(hold_state: forbidden_hold_states)
+      datasets -= Dataset.where(publication_state: Databank::PublicationState::PermSuppress::METADATA)
+      datasets.uniq
+    else
+      []
     end
+  end
 
-    # @return [Boolean] true if the user is a guest
-    def guest?
-      role == Databank::UserRole::GUEST
-    end
+  # @param [String] requested_role the role to check if this user is
+  def is?(requested_role)
+    role == requested_role.to_s
+  end
 
-    # @return [Boolean] true if the user is a network reviewer
-    def network_reviewer?
-      role == Databank::UserRole::NETWORK_REVIEWER
-    end
+  # @return [User] the system user
+  def self.system_user
+    system_user = User.find_by(provider: "system", uid: IDB_CONFIG[:system_user_email])
+    system_user ||= User.create_system_user
+    system_user
+  end
 
-    # @param [User] user the user to check
-    # @return [Array<Dataset>] the datasets the user can view
-    def datasets_user_can_view(user:)
-      forbidden_hold_states = [Databank::PublicationState::TempSuppress::VERSION,
-                               Databank::PublicationState::PermSuppress::METADATA]
-      case user.role
-      when Databank::UserRole::ADMIN
-        Dataset.all
-      when Databank::UserRole::DEPOSITOR
-        datasets = Dataset.select(&:metadata_public?)
-        datasets += Dataset.where(depositor_email: user.email)
-        ability_datasets = UserAbility.where(user_provider: user.provider,
-                                             user_uid:      user.email,
-                                             resource_type: "Dataset",
-                                             ability:       :read).pluck(:resource_id)
-        datasets += Dataset.where(id: ability_datasets)
-        datasets -= Dataset.where(hold_state: forbidden_hold_states)
-        datasets -= Dataset.where(publication_state: Databank::PublicationState::PermSuppress::METADATA)
-        datasets.uniq
-      when Databank::UserRole::NETWORK_REVIEWER
-        datasets = Dataset.select(&:metadata_public?)
-        datasets += Dataset.where(data_curation_network: true)
-        datasets -= Dataset.where(hold_state: forbidden_hold_states)
-        datasets -= Dataset.where(publication_state: Databank::PublicationState::PermSuppress::METADATA)
-        datasets.uniq
+  # Converts email to all lower-case.
+  def downcase_email
+    self.email = email.downcase
+  end
+
+# This method is called by the omniauth callback controller
+  # to create or update a user based on the omniauth response
+  # It will return the user if it exists or create a new one if it does not
+  # @return [User] the user
+  def self.from_omniauth(auth)
+    if auth && auth[:uid]
+      user = User.find_by(provider: auth["provider"], uid: auth["uid"])
+      if user
+        user.update_with_omniauth(auth)
       else
-        Dataset.select(&:metadata_public?)
+        user = User.create_with_omniauth(auth)
       end
+      user
+
+    end
+  end
+
+  # This method is called by the omniauth callback controller's from_omniauth method
+  # to create a new user based on the omniauth response
+  # @param auth [Hash] the omniauth response
+  # @return [User] the user
+  def self.create_with_omniauth(auth)
+    if auth["provider"] == "shibboleth"
+      auth["info"]["role"] = User.user_role(auth)
+    end
+    create! do |user|
+      user.provider = auth["provider"]
+      user.uid = auth["uid"]
+      user.email = auth["info"]["email"]
+      user.username = (auth["info"]["email"]).split("@").first
+      user.name = auth["info"]["name"]
+      user.role = auth["info"]["role"]
+    end
+  end
+
+  # This method is called by the omniauth callback controller's from_omniauth method
+  # to update an existing user based on the omniauth response
+  # @param auth [Hash] the omniauth response
+  # @return [User] the user
+  def update_with_omniauth(auth)
+
+    Rails.logger.warn(auth.to_yaml)
+
+    if auth["provider"] == "shibboleth"
+      auth["info"]["role"] = User.user_role(auth)
+    end
+    update_attribute(:provider, auth["provider"])
+    update_attribute(:uid, auth["uid"])
+    update_attribute(:email, auth["info"]["email"])
+    update_attribute(:username, email.split("@").first)
+    update_attribute(:name, auth["info"]["name"])
+    update_attribute(:role, auth["info"]["role"])
+    self
+  end
+
+  # @return [String] the netid of the user
+  def netid
+    email.split("@")[0]
+  end
+
+  # @return [String] the email of the user
+  # @param auth [Hash] the omniauth response
+  # @return [String] the email of the user
+  def self.user_role(auth)
+
+    admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
+    net_id = auth["info"]["email"].split("@").first
+    return Databank::UserRole::ADMIN if admins.include?(net_id)
+
+    user = User.find_by(provider: auth["provider"], uid: auth["uid"])
+    return Databank::UserRole::DEPOSITOR if user && UserAbility.user_can?("Dataset", nil, "create", user)
+
+    unless auth["extra"]["raw_info"]["iTrustAffiliation"].respond_to?(:split)
+      raise StandardError.new("missing iTrustAffiliation")
     end
 
-    # @param [User] user the user to check
-    # @return [Array<Dataset>] the datasets the user can edit
-    def datasets_user_can_edit(user:)
-      forbidden_hold_states = [Databank::PublicationState::TempSuppress::VERSION,
-                               Databank::PublicationState::PermSuppress::METADATA]
-      case user.role
-      when Databank::UserRole::ADMIN
-        Dataset.all
-      when Databank::UserRole::DEPOSITOR
-        datasets = Dataset.where(depositor_email: user.email)
-        ability_datasets = UserAbility.where(user_provider: user.provider,
-                                             user_uid:      user.email,
-                                             resource_type: "Dataset",
-                                             ability:       :update).pluck(:resource_id)
-        datasets += Dataset.where(id: ability_datasets)
-        datasets -= Dataset.where(hold_state: forbidden_hold_states)
-        datasets -= Dataset.where(publication_state: Databank::PublicationState::PermSuppress::METADATA)
-        datasets.uniq
-      else
-        []
-      end
-    end
+    affiliations = auth["extra"]["raw_info"]["iTrustAffiliation"].split(";")
+    if affiliations.respond_to?(:length) && !affiliations.empty?
+      return Databank::UserRole::DEPOSITOR if affiliations.include?("staff")
 
-    # @param [String] requested_role the role to check if this user is
-    def is?(requested_role)
-      role == requested_role.to_s
-    end
-
-    # @return [User] the system user
-    def self.system_user
-      system_user = User.find_by(provider: "system", uid: IDB_CONFIG[:system_user_email])
-      system_user ||= User.create_system_user
-      system_user
-    end
-
-    # Converts email to all lower-case.
-    def downcase_email
-      self.email = email.downcase
-    end
-
-    # @return [String] the user's group, which is the provider for Shibboleth users and the group for Identity users
-    def group
-      case provider
-      when "shibboleth"
-        provider
-      when "identity"
-        invitee = Invitee.find_by(email: email)
-        return invitee.group if invitee
-
-        raise StandardError.new("no invitation found for identity: #{email}")
-      else
-        raise StandardError.new("unknown provider: #{provider}")
-      end
-    end
-
-    # @param [Hash] auth the omniauth hash
-    # @return [User] the user created from the omniauth hash
-    def self.from_omniauth(_auth)
-      raise "subclass responsibility"
-    end
-
-    # @param [Hash] auth the omniauth hash
-    # @return [User] the user created from the omniauth hash
-    def self.create_with_omniauth(_auth)
-      raise "subclass responsibility"
-    end
-
-    # @param [Hash] auth the omniauth hash
-    # @return [User] the user updated from the omniauth hash
-    def update_with_omniauth(_auth)
-      raise "subclass responsibility"
-    end
-
-    # @param [String] email the email to check
-    # @return [String] the role of the user
-    def self.user_role(_email)
-      raise "subclass responsibility"
-    end
-
-    # @param [String] email the email to check
-    # @return [String] the display name of the user
-    def self.display_name(_email)
-      raise "subclass responsibility"
-    end
-
-    class << self
-      # creates the system user
-      # @return [User] the system user
-      def create_system_user
-        create! do |user|
-          user.provider = "system"
-          user.uid = IDB_CONFIG[:system_user_email]
-          user.name = IDB_CONFIG[:system_user_name]
-          user.email = IDB_CONFIG[:system_user_email]
-          user.username = IDB_CONFIG[:system_user_name]
-          user.role = "admin"
+      if affiliations.include?("student")
+        if auth["extra"]["raw_info"]["uiucEduStudentLevelCode"] == "1U"
+          Databank::UserRole::NO_DEPOSIT
+        else
+          Databank::UserRole::DEPOSITOR
         end
+      end
+    else
+      Rails.logger.warn("unexpected auth: #{auth.to_yaml}")
+      notification = DatabankMailer.error("Unexpected auth response: #{auth.to_yaml}")
+      notification.deliver_now
+      Databank::UserRole::NO_DEPOSIT
+    end
+  rescue StandardError => e
+    Rails.logger.warn("error determining user role #{e.message} for #{auth.to_yaml}")
+    notification = DatabankMailer.error("error determining user role #{e.message} for #{auth.to_yaml}")
+    notification.deliver_now
+    Databank::UserRole::NO_DEPOSIT
+  end
+
+  class << self
+    # creates the system user
+    # @return [User] the system user
+    def create_system_user
+      create! do |user|
+        user.provider = "system"
+        user.uid = IDB_CONFIG[:system_user_email]
+        user.name = IDB_CONFIG[:system_user_name]
+        user.email = IDB_CONFIG[:system_user_email]
+        user.username = IDB_CONFIG[:system_user_name]
+        user.role = "admin"
       end
     end
   end
 end
+
