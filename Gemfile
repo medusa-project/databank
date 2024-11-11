@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 source "https://rubygems.org"
-ruby '3.1.4'
-gem 'rails', '~> 7.1'
+ruby '3.3.6'
+gem 'rails', '~> 7.2.2'
 
 # Use postgresql as the database for Active Record
 gem "pg"
@@ -44,9 +44,6 @@ gem "ruby-filemagic"
 # Use rubyzip to stream dynamically generated zip files
 gem "rubyzip"
 gem "zipline"
-
-# Use seven_zip_ruby to handle 7zip archives
-gem "seven_zip_ruby"
 
 # Use minitar to deal with POSIX tar archive files
 gem "minitar"

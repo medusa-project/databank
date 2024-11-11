@@ -28,7 +28,6 @@
 # Methods not concerned with derived attributes are included in the Datafile modules.
 
 require "zip"
-require "seven_zip_ruby"
 require "filemagic"
 require "mime/types"
 require "minitar"

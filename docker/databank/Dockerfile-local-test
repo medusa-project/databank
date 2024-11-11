@@ -1,5 +1,5 @@
 FROM ubuntu:22.04
-FROM ruby:3.1.4
+FROM ruby:3.3.6
 
 ARG rails_env=test
 ENV RAILS_ENV=test
