@@ -53,6 +53,8 @@ class Datafile < ApplicationRecord
   before_destroy :destroy_job
   before_destroy :remove_binary
 
+  validates :binary_name, presence: true
+
   ##
   # Returns the datafile web_id as the parameter for the datafile
   #
