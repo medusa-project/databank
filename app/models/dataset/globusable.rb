@@ -31,19 +31,13 @@ module Dataset::Globusable
   end
 
   def globus_download_dir
-    if Application.server_envs.include?(Rails.env)
-      "#{GLOBUS_CONFIG[:download_url_base]}#{key}"
-    else
-      "https://app.globus.org"
-    end
+    "#{GLOBUS_CONFIG[:download_url_base]}#{key}"
   end
 
   def ensure_globus_ingest_dir
-    return nil unless Application.server_envs.include?(Rails.env)
-
     root = StorageManager.instance.draft_root
-    prefix = Rails.application.credentials[:storage][:draft_prefix]
-    dir_key = "#{prefix}#{root.ensure_directory_key(key)}"
+    prefix = root.prefix
+    dir_key = "#{prefix}#{root.ensure_directory_key(self.key)}"
     return true if StorageManager.instance.globus_ingest_root.exist?("#{key}/")
 
     return nil unless IDB_CONFIG[:aws][:s3_mode] == true
@@ -55,16 +49,21 @@ module Dataset::Globusable
   end
 
   def globus_ingest_dir
-    if Application.server_envs.include?(Rails.env)
-      "#{GLOBUS_CONFIG[:ingest_url_base]}#{key}"
-    else
-      "https://app.globus.org"
-    end
+    "#{GLOBUS_CONFIG[:ingest_url_base]}#{key}"
+  end
+
+  def copy_to_globus_ingest_dir(source_root:, source_key:, target_name_override: nil)
+    raise "unable to ensure globus ingest directory" unless ensure_globus_ingest_dir
+
+    target_name = target_name_override || source_key.split("/").last
+    target_key = "#{self.key}/#{target_name}"
+
+    StorageManager.instance.globus_ingest_root.copy_content_to(target_key, source_root, source_key)
   end
 
   def import_from_globus
-    raise "invalid environment" unless Application.server_envs.include?(Rails.env)
-    raise "files not found on Globus endpoint" unless StorageManager.instance.globus_ingest_root.exist?("#{key}/")
+
+    raise StandardError.new "No file found on Globus endpoint." unless StorageManager.instance.globus_ingest_root.exist?("#{key}/")
 
     storage_keys = StorageManager.instance.globus_ingest_root.file_keys(key)
     storage_keys.each do |storage_key|

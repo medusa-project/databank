@@ -11,8 +11,8 @@ production:
   :download_url_base: "https://app.globus.org/file-manager?origin_id=7e8c5183-112b-472b-9f86-751a60dcfb75&origin_path=%2F"
   :ingest_url_base: "https://app.globus.org/file-manager?origin_id=27efae19-3109-4009-a1ae-1842423b7c92&origin_path=%2Fproduction%2Fdatabank%2Fingest%2F"
 development:
-  :download_url_base: "https://app.globus.org/"
-  :ingest_url_base: "https://app.globus.org"
+  :download_url_base: "https://app.globus.org/file-manager?origin_id=placeholder&origin_path=%2F"
+  :ingest_url_base: "https://app.globus.org/file-manager?origin_id=placeholder&origin_path=%2Fdemo%2Fdatabank%2Fingest%2F"
 test:
-  :download_url_base: "https://app.globus.org/"
-  :ingest_url_base: "https://app.globus.org"
+  :download_url_base: "https://app.globus.org/file-manager?origin_id=placeholder&origin_path=%2F"
+  :ingest_url_base: "https://app.globus.org/file-manager?origin_id=placeholder&origin_path=%2Fdemo%2Fdatabank%2Fingest%2F"
