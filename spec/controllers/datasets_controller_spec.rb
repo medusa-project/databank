@@ -98,14 +98,14 @@ RSpec.describe DatasetsController, type: :controller do
   # to set up for this test, there should be a file object in the minio bucket in the approriate location
   # Also the globus_ingest_root should be set up in the storage manager for the test enviroment
   # Also the globusable.rb file should be updated not to just reject all non-production environments
-  describe 'POST #import_from_globus' do
-    it 'imports dataset from globus' do
-      post :import_from_globus, params: { id: dataset.to_param }
-      puts response.body
-      puts response.status
-      expect(response).to be_successful
-    end
-  end
+  # describe 'POST #import_from_globus' do
+  #   it 'imports dataset from globus' do
+  #     post :import_from_globus, params: { id: dataset.to_param }
+  #     puts response.body
+  #     puts response.status
+  #     expect(response).to be_successful
+  #   end
+  # end
 
 #   describe 'POST #send_to_medusa' do
 #     it 'sends dataset to medusa' do
