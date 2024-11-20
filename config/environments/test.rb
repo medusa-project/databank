@@ -7,11 +7,7 @@ STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/medus
 # and recreated between test runs. Don't rely on the data there!
 
 Rails.application.configure do
-
   # Settings specified here will take precedence over those in config/application.rb.
-
-  # Use warn level to avoid excessive logging
-  config.log_level = :warn
 
   config.cache_classes = true
 

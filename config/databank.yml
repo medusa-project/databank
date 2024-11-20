@@ -101,4 +101,10 @@ medusa_info:
 
 :tmpdir: <%= Rails.application.credentials[:tmpdir] %>
 
+
+
+
+
+
+
 :help_transition_filepath: <%= Rails.root.join('config', 'serializations', 'help_transition.txt') %>
