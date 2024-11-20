@@ -76,10 +76,8 @@ class StorageManager
     self.medusa_root = root_set.at("medusa")
     self.message_root = root_set.at("message")
     self.tmpfs_root = root_set.at("tmpfs")
-    if Application.server_envs.include?(Rails.env)
-      self.globus_download_root = root_set.at("globus_download")
-      self.globus_ingest_root = root_set.at("globus_ingest")
-    end
+    self.globus_download_root = root_set.at("globus_download")
+    self.globus_ingest_root = root_set.at("globus_ingest")
     self.resource = Aws::S3::Resource.new(client_options)
     initialize_tmpdir
   end
