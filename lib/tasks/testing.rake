@@ -22,7 +22,14 @@ namespace :testing do
           raise "invalid storage root for datafile web_id: #{datafile.web_id}, id: #{datafile.id}"
         end
         key = "#{root.prefix}#{datafile.storage_key}"
-        puts key
+        # next if object with key already exists
+        begin
+          Application.aws_client.get_object(bucket: root.bucket, key: key)
+          puts "object with key #{key} already exists"
+          next
+        rescue Aws::S3::Errors::NoSuchKey
+          puts "uploading #{key}"
+        end
         Aws::S3::Resource.new(client: Application.aws_client).bucket(root.bucket).object(key).upload_file(file)
       end
     end

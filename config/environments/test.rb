@@ -9,6 +9,9 @@ STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config/medus
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # set logger level to warn
+  config.log_level = :warn
+
   config.cache_classes = true
 
   # Do not eager load code on boot. This avoids loading your whole application

@@ -111,8 +111,7 @@ class MedusaIngest < ApplicationRecord
       response_hash.has_key?("status") && %w[ok error].include?(response_hash["status"])
       true
     else
-      notification = DatabankMailer.error("invalid message, #{response_hash['status']}")
-      notification.deliver_now
+      notify_or_report(exception_string:("invalid message, #{response_hash['status']}"))
       false
     end
   end
@@ -179,13 +178,11 @@ class MedusaIngest < ApplicationRecord
         StorageManager.instance.draft_root.delete_content(dataset.draft_agreement_key)
       else
         exception_string = "Agreement file exists in both draft and medusa storage systems, but the sizes are different. Dataset: #{dataset.key}."
-        notification = DatabankMailer.error(exception_string)
-        notification.deliver_now
+        notify_or_report(exception_string: exception_string)
       end
     elsif !draft_exists && !medusa_exists
       exception_string = "Deposit agreement not found for Dataset: #{dataset.key}."
-      notification = DatabankMailer.error(exception_string)
-      notification.deliver_now
+      notify_or_report(exception_string: exception_string)
     end
     # END deposit agreement
 
@@ -272,14 +269,14 @@ class MedusaIngest < ApplicationRecord
       ingest = ingest_relation.first
       ingest_relation.where.not(id: ingest.id).destroy_all
     else
-      notification = DatabankMailer.error("Ingest not found. response_hash['pass_through'] #{response_hash['pass_through']} #{response_hash.to_yaml}")
-      notification.deliver_now
+      exception_string = "Ingest not found. response_hash['pass_through'] #{response_hash['pass_through']} #{response_hash.to_yaml}"
+      notify_or_report(exception_string: exception_string)
       return false
     end
 
     unless ingest&.staging_key && ingest.staging_key != ""
-      notification = DatabankMailer.error("Ingest not found for ingest suceeded message from Medusa. #{response_hash.to_yaml}")
-      notification.deliver_now
+      exception_string = "Ingest not found. response_hash['pass_through'] #{response_hash['pass_through']} #{response_hash.to_yaml}"
+      notify_or_report(exception_string: exception_string)
       return false
     end
 
@@ -296,16 +293,18 @@ class MedusaIngest < ApplicationRecord
 
       datafile = Datafile.find_by(web_id: response_hash["pass_through"]["identifier"])
       unless datafile
-        notification = DatabankMailer.error("Datafile not found for ingest suceeded message from Medusa. #{response_hash.to_yaml}")
-        notification.deliver_now
+        exception_string = "Datafile not found for ingest suceeded message from Medusa. #{response_hash.to_yaml}"
+        notify_or_report(exception_string: exception_string)
         return false
       end
 
       # datafile found - do things with datafile and ingest response
       # this method returns a boolean and also updates the datafile and removed draft binary, if it exists
+
+      puts "datafile.in_medusa: #{datafile.in_medusa}"
       unless datafile.in_medusa
-        notification = DatabankMailer.error("Datafile ingest failure. #{response_hash.to_yaml}")
-        notification.deliver_now
+        exception_string = "Datafile ingest failure. #{response_hash.to_yaml}"
+        notify_or_report(exception_string: exception_string)
         return false
       end
 
@@ -323,8 +322,8 @@ class MedusaIngest < ApplicationRecord
     else
       dataset = Dataset.find_by(key: response_hash["pass_through"]["identifier"])
       unless dataset
-        notification = DatabankMailer.error("Dataset not found for Medusa message. #{response_hash.to_yaml}")
-        notification.deliver_now
+        exception_string = "Dataset not found for Medusa message. #{response_hash.to_yaml}"
+        notify_or_report(exception_string: exception_string)
         return false
       end
 
@@ -338,21 +337,21 @@ class MedusaIngest < ApplicationRecord
         if system_files.count == 1
           system_file = system_files.first
         elsif system_files.count > 1
-          notification = DatabankMailer.error("multiple system files found dataset_id: #{dataset.id}, storage_key: #{response_hash['staging_key']}.")
-          notification.deliver_now
+          exception_string = "multiple system files found dataset_id: #{dataset.id}, storage_key: #{response_hash['staging_key']}."
+          notify_or_report(exception_string: exception_string)
         end
 
         if system_file
           system_file.update_attribute("storage_root", "medusa")
         else
-          notification = DatabankMailer.error("Record not found for Medusa message. #{response_hash.to_yaml}")
-          notification.deliver_now
+          exception_string = "Record not found for Medusa message. #{response_hash.to_yaml}"
+          notify_or_report(exception_string: exception_string)
           false
         end
 
       else
-        notification = DatabankMailer.error("File not found for Medusa message. #{response_hash.to_yaml}")
-        notification.deliver_now
+        exception_string = "File not found for Medusa message. #{response_hash.to_yaml}"
+        notify_or_report(exception_string: exception_string)
         false
       end
     end
@@ -370,8 +369,8 @@ class MedusaIngest < ApplicationRecord
       info_key = "#{response_hash['staging_key']}.info"
       draft_root.delete_contant(info_key) if draft_root.exist?(info_key)
     else
-      notification = DatabankMailer.error("file exists in both draft and medusa, but not same size #{response_hash.to_yaml}")
-      notification.deliver_now
+      exception_string = "file exists in both draft and medusa, but not same size #{response_hash.to_yaml}"
+      notify_or_report(exception_string: exception_string)
     end
   end
 
@@ -380,7 +379,7 @@ class MedusaIngest < ApplicationRecord
   # @param response_hash [Hash] the response from Medusa
   # @return [Boolean] true if the response is handled, false otherwise
   def self.on_medusa_failed_message(response_hash)
-    error_string = "Problem ingesting #{response_hash.to_yaml} into Medusa."
+    exception_string = "Problem ingesting #{response_hash.to_yaml} into Medusa."
 
     ingest_relation = MedusaIngest.where(staging_path: response_hash["staging_path"])
     if ingest_relation.count.positive?
@@ -390,11 +389,9 @@ class MedusaIngest < ApplicationRecord
       ingest.response_time = Time.current.iso8601
       ingest.save
     else
-      error_string += "\nand could not find file for medusa failure message: #{response_hash['staging_path']}"
+      exception_string += "\nand could not find file for medusa failure message: #{response_hash['staging_path']}"
     end
-
-    notification = DatabankMailer.error(error_string)
-    notification.deliver_now
+    notify_or_report(exception_string: exception_string)
   end
 
   def self.remove_draft_if_in_medusa
@@ -451,5 +448,14 @@ class MedusaIngest < ApplicationRecord
      staging_key:  staging_key,
      target_key:   target_key,
      pass_through: {class: idb_class, identifier: idb_identifier}}
+  end
+
+  def self.notify_or_report(exception_string:)
+    if Application.server_envs.include?(Rails.env)
+      notification = DatabankMailer.error(exception_string)
+      notification.deliver_now
+    else
+      puts exception_string
+    end
   end
 end

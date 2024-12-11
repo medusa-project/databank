@@ -95,26 +95,31 @@ RSpec.describe DatasetsController, type: :controller do
   end
 
   # assumes that the to be copied to the globus ingest directory is already in the draft directory, setup during load fixtures
-  # describe 'POST #import_from_globus' do
-  #   context 'with file object in globus import directory' do
-  #     before do
-  #       dataset.copy_to_globus_ingest_dir(source_root_name: 'draft', source_key: 'testf/sample_file.txt')
-  #     end
-  #     it 'imports dataset from globus' do
-  #       post :import_from_globus, params: { id: dataset.to_param }
-  #       puts response.body
-  #       puts response.status
+  describe 'POST #import_from_globus' do
+    context 'with file object in globus import directory' do
+      before do
+        dataset.copy_to_globus_ingest_dir(source_root_name: 'draft', source_key: 'testf/sample_file.txt')
+      end
+      after do
+        dataset.delete_from_globus_ingest_dir(storage_key: 'testf/sample_file.txt')
+      end
+      it 'imports dataset from globus' do
+        post :import_from_globus, params: { id: dataset.to_param }
+        expect(response).to be_successful
+      end
+    end
+  end
+
+  # assumes specified published dataset created during load fixtures step
+  # describe 'POST #send_to_medusa' do
+  #   context 'published dataset' do
+  #     it 'sends dataset to medusa' do
+  #       published_dataset = Dataset.find_by(key: "TESTIDB-5920542")
+  #       post :send_to_medusa, params: { id: published_dataset.to_param }
   #       expect(response).to be_successful
   #     end
   #   end
   # end
-
-#   describe 'POST #send_to_medusa' do
-#     it 'sends dataset to medusa' do
-#       post :send_to_medusa, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
 
 #   describe 'POST #publish' do
 #     it 'publishes the dataset' do

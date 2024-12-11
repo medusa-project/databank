@@ -67,12 +67,10 @@ module Datafile::Storable
     Rails.logger.warn("dataset not found for datafile #{self.web_id} :in_medusa") unless dataset
     return false unless dataset
 
-    unless dataset.identifier && dataset.identifier != ""
-      Rails.logger.warn("dataset not found for datafile #{self.web_id} :in_medusa")
-    end
     return false unless dataset.identifier && dataset.identifier != ""
 
     datafile_in_medusa = StorageManager.instance.medusa_root.exist?(target_key)
+    Rails.logger.warn "datafile_in_medusa: #{datafile_in_medusa} for #{target_key}"
     if datafile_in_medusa
       if storage_root && storage_key && storage_root == "draft" && storage_key != ""
 

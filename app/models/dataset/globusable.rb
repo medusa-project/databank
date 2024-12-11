@@ -52,7 +52,7 @@ module Dataset::Globusable
     dir_key = "#{prefix}#{root.ensure_directory_key(key)}"
     return true if StorageManager.instance.globus_ingest_root.exist?("#{key}/")
 
-    return nil unless IDB_CONFIG[:aws][:s3_mode] == true
+    return nil unless IDB_CONFIG[:aws][:s3_mode] == true || IDB_CONFIG[:aws][:s3_mode] == "local"
 
     bucket = root.s3_bucket.name
     client = root.s3_client
@@ -99,6 +99,13 @@ module Dataset::Globusable
       StorageManager.instance.globus_download_root.delete_content(storage_key)
     end
     StorageManager.instance.globus_download_root.delete_content("#{key}/")
+  end
+
+  def delete_from_globus_ingest_dir(storage_key:)
+    return nil unless StorageManager.instance.globus_ingest_root.exist?(storage_key)
+
+    target_key = "#{self.key}/#{storage_key}"
+    StorageManager.instance.globus_ingest_root.delete_content(target_key)
   end
 
   def remove_globus_ingest_dir

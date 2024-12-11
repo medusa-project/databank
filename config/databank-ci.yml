@@ -89,26 +89,7 @@
   :user: guest
   :verify: verify_none
   :verify_peer: false
-#Configuration for the medusa integration
-:medusa:
-  :datasets_url_base: http://example.org
-  :file_group_url: http://example.org
-  :incoming_queue: medusa_to_idb
-  :outgoing_queue: idb_to_medusa
-:downloader:
-  :endpoint: na
-  :host: na
-  :password: password
-  :port: 8080
-  :realm: realm
-  :ssl: true
-  :user: user
-:medusa_info:
-  :ssl: false
-  :host: http://example.org
-  :port: 8080
-  :user: user
-  :password: password
+
 # Used as the base secret for all MessageVerifiers in Rails, including the one protecting cookies.
 secret_key_base: secret_key_base
 

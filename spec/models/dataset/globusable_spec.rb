@@ -43,6 +43,7 @@ RSpec.describe Dataset::Globusable, type: :model do
   end
 
   describe '#import_from_globus' do
+
     it 'raises an error if files are not found on the Globus endpoint' do
       allow(globus_ingest_root).to receive(:exist?).and_return(false)
       expect {
@@ -50,15 +51,19 @@ RSpec.describe Dataset::Globusable, type: :model do
       }.to raise_error('files not found on Globus endpoint')
     end
 
-    it 'imports files from the Globus ingest directory' do
-      allow(globus_ingest_root).to receive(:exist?).and_return(true)
-      allow(globus_ingest_root).to receive(:file_keys).and_return(['key/file1.txt'])
-      allow(draft_root).to receive(:size).and_return(100)
-      allow(MIME::Types).to receive(:type_for).and_return([Mime[:text]])\
 
-      expect {
-        dataset.import_from_globus
-      }.to change { Datafile.count }.by(1)
+    context 'when a file exists in the Globus ingest directory' do
+      before do
+        dataset.copy_to_globus_ingest_dir(source_root_name: 'draft', source_key: 'testf/sample_file.txt')
+      end
+      after do
+        dataset.remove_globus_ingest_dir
+      end
+      it 'imports files from the Globus ingest directory' do
+        expect {
+          dataset.import_from_globus
+        }.to change { Datafile.count }.by(1)
+      end
     end
   end
 
