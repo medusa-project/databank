@@ -177,6 +177,11 @@ ready = function () {
         $('#new_dataset').submit();
     });
 
+    $('#update_datafile').click(function () {
+        window.onbeforeunload = null;
+        $('.edit_datafile').submit();
+    });
+
     $('.new-save').hide();
 
     $('.preview').hide();
