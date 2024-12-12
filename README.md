@@ -2,6 +2,3 @@
 # Databank
 
 Databank is the Ruby on Rails web application component of Illinois Data Bank, which is a public access repository for research data from the University of Illinois Urbana-Champaign.
-
-Application documentation is hosted in the
-[SCARS Wiki](https://wiki.illinois.edu/wiki/display/scrs/SCARS+Home).
