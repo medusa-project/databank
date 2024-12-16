@@ -1,12 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe DatafilesController, type: :controller do
-  let(:dataset) { create(:dataset) }
-  let(:datafile) { create(:datafile, dataset: dataset) }
-  let(:valid_attributes) { attributes_for(:datafile, dataset_id: dataset.id) }
+
+  let(:user) { create(:user) }
+  let(:dataset) { Dataset.where(publication_state: "draft").first}
+  let(:datafile) { dataset.datafiles.first}
+  let(:valid_attributes) { attributes_for(:datafile, dataset_id: dataset.key, storage_key: datafile.storage_key, storage_root: datafile.storage_root, binary_name: "test.png") }
   let(:invalid_attributes) { { binary_name: nil } }
 
   before do
+    #sign_in user
     allow(controller).to receive(:authorize!).and_return(true)
   end
 
@@ -53,16 +56,19 @@ RSpec.describe DatafilesController, type: :controller do
 
   # describe "POST #create" do
   #   context "with valid params" do
+
   #     it "creates a new Datafile" do
+  #       sign_in user
+  #       # confirm that currently signed in user has a role of "depositor"
+  #       expect(controller.instance_eval{current_user.role}).to eq("depositor")
   #       expect {
   #         post :create, params: { datafile: valid_attributes }
+  #         puts response.body # Print the response body for debugging
+  #         puts response.status # Print the response status for debugging
+  #         if assigns(:datafile).errors.any?
+  #           puts assigns(:datafile).errors.full_messages # Print validation errors
+  #         end
   #       }.to change(Datafile, :count).by(1)
-  #     end
-
-  #     it "renders a JSON response with the new datafile" do
-  #       post :create, params: { datafile: valid_attributes }
-  #       expect(response).to have_http_status(:created)
-  #       expect(response.content_type).to eq('application/json')
   #     end
   #   end
 
@@ -75,35 +81,21 @@ RSpec.describe DatafilesController, type: :controller do
   #   end
   # end
 
-  # describe "PATCH #update" do
-  #   context "with valid params" do
-  #     let(:new_attributes) { { description: "Updated description" } }
+  describe "PATCH #update" do
+    context "with valid params" do
+      let(:new_attributes) { { description: "Updated description" } }
 
-  #     it "updates the requested datafile" do
-  #       patch :update, params: { id: datafile.web_id, datafile: new_attributes }
-  #       datafile.reload
-  #       expect(datafile.description).to eq("Updated description")
-  #     end
-
-  #     it "renders a JSON response with the datafile" do
-  #       patch :update, params: { id: datafile.web_id, datafile: new_attributes }
-  #       expect(response).to have_http_status(:ok)
-  #       expect(response.content_type).to eq('application/json')
-  #     end
-  #   end
-
-  #   context "with invalid params" do
-  #     it "renders a JSON response with errors for the datafile" do
-  #       patch :update, params: { id: datafile.web_id, datafile: invalid_attributes }
-  #       expect(response).to have_http_status(:unprocessable_entity)
-  #       expect(response.content_type).to eq('application/json')
-  #     end
-  #   end
-  # end
+      it "updates the requested datafile" do
+        patch :update, params: { id: datafile.web_id, datafile: new_attributes }
+        datafile.reload
+        expect(datafile.description).to eq("Updated description")
+      end
+    end
+  end
 
   # describe "DELETE #destroy" do
   #   it "destroys the requested datafile" do
-  #     datafile # create the datafile
+  #     datafile = Datafile.create(dataset_id: dataset.id) # create the datafile
   #     expect {
   #       delete :destroy, params: { id: datafile.web_id }
   #     }.to change(Datafile, :count).by(-1)

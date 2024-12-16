@@ -57,8 +57,8 @@ class DatafilesController < ApplicationController
     authorize! :update, @dataset
     @datafile = Datafile.new(dataset_id: @dataset.id)
     @datafile.web_id ||= @datafile.generate_web_id
-
-    if params.has_key?(:datafile) && params[:datafile].has_key?(:tus_url)
+    
+    if params.has_key?(:datafile) && !params[:datafile].is_a?(String) && params[:datafile].has_key?(:tus_url)
       tus_url = params[:datafile][:tus_url]
       tus_url_arr = tus_url.split("/")
       tus_key = tus_url_arr[-1]
@@ -206,9 +206,6 @@ class DatafilesController < ApplicationController
         raise "invalid storage root for datafile web_id: #{@datafile.web_id}, id: #{@datafile.id}"
       end
       expanded_key = "#{root.prefix}#{@datafile.storage_key}"
-      # DEBUG
-      Rails.logger.warn "expanded_key: #{expanded_key}"
-      Rails.logger.warn "binary_name: #{@datafile.binary_name}"
       # Use the Application.aws_client to get the object from the bucket found at @datafile.storage_root and the expanded_key, then download it to the browser
       object = Application.aws_client.get_object(bucket: root.bucket, key: expanded_key)
       send_data object.body.read, filename: @datafile.binary_name, type: safe_content_type(@datafile)
