@@ -1,7 +1,7 @@
 # spec/factories/users.rb
 FactoryBot.define do
   factory :user do
-    provider { "shibboleth" }
+    provider { "developer" }
     uid { SecureRandom.uuid }
     email { Faker::Internet.email }
     username { email.split("@").first }

@@ -192,6 +192,7 @@ end
 
 group :test do
   #gem 'cucumber', '~> 2.0'
+  gem 'rails-controller-testing'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
   gem 'simplecov'

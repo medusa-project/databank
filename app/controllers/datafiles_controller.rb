@@ -40,7 +40,7 @@ class DatafilesController < ApplicationController
     authorize! :update, @dataset
   end
 
-  # Responds to `GET /datafiles/add`
+  # Responds to `GET /datasets/:id/datafiles/add`
   def add
     @datafile = Datafile.new(dataset_id: @dataset.id, binary_name: "placeholder")
     @datafile.web_id = @datafile.generate_web_id
@@ -52,7 +52,7 @@ class DatafilesController < ApplicationController
     end
   end
 
-  # Responds to `POST /datafiles`
+  # Responds to `POST /datasets/:dataset_id/datafiles`
   def create
     authorize! :update, @dataset
     @datafile = Datafile.new(dataset_id: @dataset.id)
@@ -70,11 +70,15 @@ class DatafilesController < ApplicationController
       @datafile.mime_type = params[:datafile][:mime_type]
       @datafile.peek_type = Databank::PeekType::NONE
       @datafile.peek_text = nil
+    else
+      @datafile.assign_attributes(datafile_params)
     end
 
     if @datafile.save
       render json: to_fileupload, content_type: request.format, :layout => false
     else
+      Rails.logger.warn "error in datafile create"
+      Rails.logger.warn @datafile.errors.to_yaml
       render json: @datafile.errors, status: :unprocessable_entity
     end
   end

@@ -5,7 +5,7 @@ RSpec.describe DatafilesController, type: :controller do
   let(:user) { create(:user) }
   let(:dataset) { Dataset.where(publication_state: "draft").first}
   let(:datafile) { dataset.datafiles.first}
-  let(:valid_attributes) { attributes_for(:datafile, dataset_id: dataset.key, storage_key: datafile.storage_key, storage_root: datafile.storage_root, binary_name: "test.png") }
+  let(:valid_attributes) { {storage_key: "fake_key", storage_root: datafile.storage_root, binary_name: "test.png" }}
   let(:invalid_attributes) { { binary_name: nil } }
 
   before do
@@ -54,32 +54,29 @@ RSpec.describe DatafilesController, type: :controller do
     end
   end
 
-  # describe "POST #create" do
-  #   context "with valid params" do
+  describe "POST #create" do
+    context "with valid params" do
 
-  #     it "creates a new Datafile" do
-  #       sign_in user
-  #       # confirm that currently signed in user has a role of "depositor"
-  #       expect(controller.instance_eval{current_user.role}).to eq("depositor")
-  #       expect {
-  #         post :create, params: { datafile: valid_attributes }
-  #         puts response.body # Print the response body for debugging
-  #         puts response.status # Print the response status for debugging
-  #         if assigns(:datafile).errors.any?
-  #           puts assigns(:datafile).errors.full_messages # Print validation errors
-  #         end
-  #       }.to change(Datafile, :count).by(1)
-  #     end
-  #   end
+      it "creates a new Datafile" do
+        sign_in user
+        expect(controller.instance_eval{current_user.role}).to eq("depositor")
+        expect {
+          post :create, params: { dataset_id: dataset.key, datafile: valid_attributes }
+          if !assigns(:datafile).nil? && assigns(:datafile).errors.any?
+            puts assigns(:datafile).errors.full_messages # Print validation errors
+          end
+        }.to change(Datafile, :count).by(1)
+      end
+    end
 
-  #   context "with invalid params" do
-  #     it "renders a JSON response with errors for the new datafile" do
-  #       post :create, params: { datafile: invalid_attributes }
-  #       expect(response).to have_http_status(:unprocessable_entity)
-  #       expect(response.content_type).to eq('application/json')
-  #     end
-  #   end
-  # end
+    context "with invalid params" do
+      it "renders a JSON response with errors for the new datafile" do
+        post :create, params: { dataset_id: dataset.key, datafile: invalid_attributes }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.content_type).to eq("application/json; charset=utf-8")
+      end
+    end
+  end
 
   describe "PATCH #update" do
     context "with valid params" do
@@ -93,56 +90,24 @@ RSpec.describe DatafilesController, type: :controller do
     end
   end
 
-  # describe "DELETE #destroy" do
-  #   it "destroys the requested datafile" do
-  #     datafile = Datafile.create(dataset_id: dataset.id) # create the datafile
-  #     expect {
-  #       delete :destroy, params: { id: datafile.web_id }
-  #     }.to change(Datafile, :count).by(-1)
-  #   end
+  describe "DELETE #destroy" do
+    let(:dataset) { create(:dataset) }
+    let(:datafile) { create(:datafile, dataset: dataset, binary_name: "trythis.try") }
 
-  #   it "renders a JSON response with the confirmation" do
-  #     delete :destroy, params: { id: datafile.web_id }
-  #     expect(response).to have_http_status(:ok)
-  #     expect(response.content_type).to eq('application/json')
-  #   end
-  # end
+    it "destroys the requested datafile" do
+      expect(datafile).to be_present
+      puts "Datafile count before delete: #{Datafile.count}"
+      puts "datafile.web_id: #{datafile.web_id}"
+      expect {
+        delete :destroy, params: { id: datafile.web_id }
+      }.to change(Datafile, :count).by(-1)
+      puts "Datafile count after delete: #{Datafile.count}"
+    end
 
-  # describe "GET #download" do
-  #   it "records the download and initiates the download" do
-  #     expect(datafile).to receive(:record_download).with(anything)
-  #     get :download, params: { id: datafile.web_id }
-  #     expect(response).to have_http_status(:ok)
-  #   end
-  # end
-
-  # describe "GET #view" do
-  #   it "renders the file inline" do
-  #     get :view, params: { id: datafile.web_id }
-  #     expect(response).to have_http_status(:ok)
-  #   end
-  # end
-
-  # describe "GET #filepath" do
-  #   context "when file is in S3" do
-  #     before { allow(IDB_CONFIG[:aws]).to receive(:[]).with(:s3_mode).and_return(true) }
-
-  #     it "returns an error message" do
-  #       get :filepath, params: { id: datafile.web_id }
-  #       expect(response).to have_http_status(:bad_request)
-  #       expect(response.content_type).to eq('application/json')
-  #     end
-  #   end
-
-  #   context "when file is on filesystem" do
-  #     before { allow(IDB_CONFIG[:aws]).to receive(:[]).with(:s3_mode).and_return(false) }
-
-  #     it "returns the filepath" do
-  #       allow(datafile).to receive(:filepath).and_return("/path/to/file")
-  #       get :filepath, params: { id: datafile.web_id }
-  #       expect(response).to have_http_status(:ok)
-  #       expect(response.content_type).to eq('application/json')
-  #     end
-  #   end
-  # end
+    it "renders a JSON response with the confirmation" do
+      delete :destroy, params: { id: datafile.web_id }
+      expect(response).to have_http_status(:found)
+      expect(response.content_type).to eq("text/html; charset=utf-8")
+    end
+  end
 end
