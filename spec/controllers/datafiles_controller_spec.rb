@@ -9,7 +9,7 @@ RSpec.describe DatafilesController, type: :controller do
   let(:invalid_attributes) { { binary_name: nil } }
 
   before do
-    #sign_in user
+    sign_in user
     allow(controller).to receive(:authorize!).and_return(true)
   end
 
@@ -58,7 +58,6 @@ RSpec.describe DatafilesController, type: :controller do
     context "with valid params" do
 
       it "creates a new Datafile" do
-        sign_in user
         expect(controller.instance_eval{current_user.role}).to eq("depositor")
         expect {
           post :create, params: { dataset_id: dataset.key, datafile: valid_attributes }
