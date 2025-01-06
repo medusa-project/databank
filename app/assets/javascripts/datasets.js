@@ -396,17 +396,6 @@ function pad(n) {
     return n < 10 ? '0' + n : n
 }
 
-function cancelBoxUpload(datafile, job) {
-
-    $.getJSON( '/datasets/' + dataset_key + '/datafiles/' + datafile + '/cancel_box_upload' )
-        .done(function() {
-            $("#job" + job).remove();
-        })
-        .fail(function() {
-            console.log( "cancel failed, see server log" );
-        });
-}
-
 function setDepositor(email, name) {
 
     $('#depositor_email').val(email);

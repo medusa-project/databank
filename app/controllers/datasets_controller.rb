@@ -193,15 +193,6 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def update_permissions
     authorize! :manage, @dataset
-    if params.has_key?(:can_read)
-      if params[:can_read].include?(Databank::UserRole::NETWORK_REVIEWER)
-        @dataset.update_attribute(:data_curation_network, true)
-      else
-        @dataset.update_attribute(:data_curation_network, false)
-      end
-    else
-      @dataset.update_attribute(:data_curation_network, false)
-    end
     reviewer_emails = params[:reviewer_emails] || []
     editor_emails = params[:editor_emails] || []
     UserAbility.update_permissions(@dataset.key, reviewer_emails, editor_emails)
@@ -217,89 +208,90 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
-  def cancel_box_upload
-    Rails.logger.warn "cancel box upload params: #{params}"
+  # DEPRECATED
+  # def cancel_box_upload
+  #   Rails.logger.warn "cancel box upload params: #{params}"
 
-    begin
-      @job_id_string = "0"
+  #   begin
+  #     @job_id_string = "0"
 
-      @datafile = Datafile.find_by(web_id: params[:web_id])
+  #     @datafile = Datafile.find_by(web_id: params[:web_id])
 
-      if @datafile
+  #     if @datafile
 
-        Rails.logger.warn "datafile found"
+  #       Rails.logger.warn "datafile found"
 
-        if @datafile.job_id
-          @job_id_string = @datafile.job_id.to_s
-          job = Delayed::Job.where(id: @datafile.job_id).first
-          if job&.locked_by && !job.locked_by.empty?
-            locked_by_text = job.locked_by.to_s
+  #       if @datafile.job_id
+  #         @job_id_string = @datafile.job_id.to_s
+  #         job = Delayed::Job.where(id: @datafile.job_id).first
+  #         if job&.locked_by && !job.locked_by.empty?
+  #           locked_by_text = job.locked_by.to_s
 
-            pid = locked_by_text.split(":").last
+  #           pid = locked_by_text.split(":").last
 
-            if !pid.empty?
+  #           if !pid.empty?
 
-              Process.kill("QUIT", Integer(pid))
-              Dir.foreach(IDB_CONFIG[:delayed_job_pid_dir]) do |pid_filename|
-                next if (pid_filename == ".") || (pid_filename == "..")
-                next unless pid_filename.include? "delayed_job"
+  #             Process.kill("QUIT", Integer(pid))
+  #             Dir.foreach(IDB_CONFIG[:delayed_job_pid_dir]) do |pid_filename|
+  #               next if (pid_filename == ".") || (pid_filename == "..")
+  #               next unless pid_filename.include? "delayed_job"
 
-                pid_filepath = "#{IDB_CONFIG[:delayed_job_pid_dir]}/#{pid_filename}"
+  #               pid_filepath = "#{IDB_CONFIG[:delayed_job_pid_dir]}/#{pid_filename}"
 
-                if File.exist?(pid_filepath)
+  #               if File.exist?(pid_filepath)
 
-                  file_contents = IO.read(pid_filepath)
-                  File.delete(pid_filepath) if file_contents.include? pid.to_s
-                else
-                  Rails.logger.warn "#{pid_filepath} did not exist"
-                end
-              end
+  #                 file_contents = IO.read(pid_filepath)
+  #                 File.delete(pid_filepath) if file_contents.include? pid.to_s
+  #               else
+  #                 Rails.logger.warn "#{pid_filepath} did not exist"
+  #               end
+  #             end
 
-              if Delayed::Job.all.count.zero?
-                system "cd #{Rails.root} && RAILS_ENV=#{::Rails.env} bin/delayed_job -n #{@@num_box_ingest_deamons} restart"
-              else
-                running_deamon_count = 0
-                Dir.foreach(IDB_CONFIG[:delayed_job_pid_dir]) do |item|
-                  next if (item == ".") || (item == "..")
-                  next unless item.include? "delayed_job"
+  #             if Delayed::Job.all.count.zero?
+  #               system "cd #{Rails.root} && RAILS_ENV=#{::Rails.env} bin/delayed_job -n #{@@num_box_ingest_deamons} restart"
+  #             else
+  #               running_deamon_count = 0
+  #               Dir.foreach(IDB_CONFIG[:delayed_job_pid_dir]) do |item|
+  #                 next if (item == ".") || (item == "..")
+  #                 next unless item.include? "delayed_job"
 
-                  running_deamon_count += 1
-                end
-              end
-            elsif job
-              if job.destroy && @datafile.destroy
-                render json: {}, status: :ok
-              else
-                Rails.logger.warn("failed to destroy job or datafile")
-                render json: {}, status: :unprocessable_entity
-              end
-            end
-          elsif @datafile.destroy
-            render json: {}, status: :ok
-          else
-            Rails.logger.warn("there was no job, failed to destroy datafile")
-            render json: {}, status: :unprocessable_entity
-          end
+  #                 running_deamon_count += 1
+  #               end
+  #             end
+  #           elsif job
+  #             if job.destroy && @datafile.destroy
+  #               render json: {}, status: :ok
+  #             else
+  #               Rails.logger.warn("failed to destroy job or datafile")
+  #               render json: {}, status: :unprocessable_entity
+  #             end
+  #           end
+  #         elsif @datafile.destroy
+  #           render json: {}, status: :ok
+  #         else
+  #           Rails.logger.warn("there was no job, failed to destroy datafile")
+  #           render json: {}, status: :unprocessable_entity
+  #         end
 
-        elsif @datafile.destroy
-          render json: {}, status: :ok
-        else
-          Rails.logger.warn("there was no job_id, failed to destroy datafile")
-          render json: {}, status: :unprocessable_entity
-        end
+  #       elsif @datafile.destroy
+  #         render json: {}, status: :ok
+  #       else
+  #         Rails.logger.warn("there was no job_id, failed to destroy datafile")
+  #         render json: {}, status: :unprocessable_entity
+  #       end
 
-      else
-        Rails.logger.warn "did not find datafile"
-        render json: {}, status: :ok
-      end
-    rescue Errno::ESRCH => e
-      Rails.logger.warn e.message
-      render json: {}, status: :unprocessable_entity
-    rescue Exception::StandardError => e
-      Rails.logger.warn e.message
-      render json: {}, status: :unprocessable_entity
-    end
-  end
+  #     else
+  #       Rails.logger.warn "did not find datafile"
+  #       render json: {}, status: :ok
+  #     end
+  #   rescue Errno::ESRCH => e
+  #     Rails.logger.warn e.message
+  #     render json: {}, status: :unprocessable_entity
+  #   rescue Exception::StandardError => e
+  #     Rails.logger.warn e.message
+  #     render json: {}, status: :unprocessable_entity
+  #   end
+  # end
 
   # GET /datasets/new
   def new
@@ -783,6 +775,7 @@ collaborators to access the data files while the dataset is not public.</li>
   end
 
   # publishing in IDB means interacting with DataCite and Medusa
+  # Responds to `POST /datasets/:id/publish`
   def publish
     authorize! :update, @dataset
     publish_attempt_result = @dataset.publish(current_user)

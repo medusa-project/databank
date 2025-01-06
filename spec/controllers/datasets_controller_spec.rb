@@ -2,9 +2,9 @@
 require 'rails_helper'
 
 RSpec.describe DatasetsController, type: :controller do
-  let(:user) { create(:user) }
+  fixtures :users, :datasets, :datafiles
+  let(:user) { users(:researcher1) }
   let(:dataset) { create(:dataset, depositor_email: user.email, depositor_name: user.name, corresponding_creator_email: user.email, corresponding_creator_name: user.name) }
-  # let(:dataset) { create(:dataset, user: user, title: "Custom Title", depositor_name: user.name, depositor_email: user.email) }
 
   before do
     sign_in user
@@ -110,175 +110,203 @@ RSpec.describe DatasetsController, type: :controller do
     end
   end
 
-  # assumes specified published dataset created during load fixtures step
-  # describe 'POST #send_to_medusa' do
-  #   context 'published dataset' do
-  #     it 'sends dataset to medusa' do
-  #       published_dataset = Dataset.find_by(key: "TESTIDB-5920542")
-  #       post :send_to_medusa, params: { id: published_dataset.to_param }
-  #       expect(response).to be_successful
+  describe 'POST #publish' do
+    context 'with valid draft dataset, valid logged_in user' do 
+      it 'publishes the dataset' do        
+        # assumes that the dataset exists and is in draft state, setup during load fixtures
+        draft1 = Dataset.find_by(key: "TESTIDB-1423696")
+        # visit the dataset show page
+        get :show, params: { id: draft1.to_param }
+        expect(response).to be_successful
+        draft1.store_agreement
+        post :publish, params: { id: draft1.to_param }
+        expect(response.status).to eq(302)
+      end
+      after do
+        draft1 = Dataset.find_by(key: "TESTIDB-1423696")
+        draft1.publication_state = Databank::PublicationState::DRAFT
+        draft1.identifier = ""
+        draft1.save
+        expect(draft1.publication_state).to eq(Databank::PublicationState::DRAFT)
+        expect(draft1.identifier).to eq("")
+      end
+    end
+  end
+
+  describe 'POST #validate_change2published' do
+    it 'validates change to published' do
+      post :validate_change2published, params: { id: dataset.to_param }
+      expect(response).to be_successful
+    end
+  end
+
+  describe 'POST #share' do
+    it 'creates a share link' do
+      draft1 = Dataset.find_by(key: "TESTIDB-1423696")
+      post :share, params: { id: draft1.to_param }
+      expect(response.status).to eq(302)
+    end
+  end
+
+  describe 'POST #remove_sharing_link' do
+    it 'removes the sharing link' do
+      post :remove_sharing_link, params: { id: dataset.to_param }
+      expect(response.status).to eq(302)
+    end
+  end
+
+  describe 'POST #suppress_changelog' do
+    it 'suppresses the changelog' do
+      sign_in users(:curator1)
+      post :suppress_changelog, params: { id: dataset.to_param }
+      expect(response.status).to eq(302)
+    end
+  end
+
+  describe 'POST #unsuppress_changelog' do
+    it 'unsuppresses the changelog' do
+      sign_in users(:curator1)
+      post :unsuppress_changelog, params: { id: dataset.to_param }
+      expect(response.status).to eq(302)
+    end
+  end
+
+  describe 'POST #temporarily_suppress_files' do
+    it 'temporarily suppresses files' do
+      sign_in users(:curator1)
+      post :temporarily_suppress_files, params: { id: dataset.to_param }
+      expect(response.status).to eq(302)
+    end
+  end
+
+  describe 'POST #temporarily_suppress_metadata' do
+    it 'temporarily suppresses metadata' do
+      sign_in users(:curator1)
+      post :temporarily_suppress_metadata, params: { id: dataset.to_param }
+      expect(response.status).to eq(302)
+    end
+  end
+
+  describe 'POST #unsuppress' do
+    it 'unsuppresses the dataset' do
+      sign_in users(:curator1)
+      post :unsuppress, params: { id: dataset.to_param }
+      expect(response.status).to eq(302)
+    end
+  end
+
+  describe 'POST #request_review' do
+    it 'requests a review' do
+      post :request_review, params: { id: dataset.to_param }
+      expect(response).to be_successful
+    end
+  end
+
+  # describe 'POST #version_request' do
+  #   it 'requests a version' do
+  #     post :version_request, params: { id: dataset.to_param, previous_key: dataset.to_param }
+  #     expect(response).to be_successful
+  #   end
+  # end
+
+  # describe 'POST #version_confirm' do
+  #   it 'confirms a version' do
+  #     post :version_confirm, params: { id: dataset.to_param, dataset: attributes_for(:dataset) }
+  #     expect(response).to be_successful
+  #   end
+  # end
+
+  # describe 'POST #version_to_draft' do
+  #   it 'changes version to draft' do
+  #     post :version_to_draft, params: { id: dataset.to_param }
+  #     expect(response).to be_successful
+  #   end
+  # end
+
+  # describe 'POST #draft_to_version' do
+  #   it 'changes draft to version' do
+  #     post :draft_to_version, params: { id: dataset.to_param }
+  #     expect(response).to be_successful
+  #   end
+  # end
+
+
+  # describe 'DELETE #destroy' do
+  #   context 'when user is signed in' do
+  #     it 'destroys the requested dataset' do
+  #       dataset = create(:dataset, depositor_email: user.email, depositor_name: user.name)
+  #       expect {
+  #         delete :destroy, params: { id: dataset.to_param }
+  #       }.to change(Dataset, :count).by(-1)
+  #     end
+
+  #     it 'redirects to the user-specific datasets list' do
+  #       dataset = create(:dataset, depositor_email: user.email, depositor_name: user.name)
+  #       delete :destroy, params: { id: dataset.to_param }
+  #       expect(response).to redirect_to("/datasets?q=&#{CGI.escape('depositors[]')}=#{user.username}")
+  #     end
+  #   end
+
+  #   context 'when no user is signed in' do
+  #     before do
+  #       sign_out user
+  #     end
+
+  #     it 'destroys the requested dataset' do
+  #       dataset = create(:dataset)
+  #       expect {
+  #         delete :destroy, params: { id: dataset.to_param }
+  #       }.to change(Dataset, :count).by(-1)
+  #     end
+
+  #     it 'redirects to the datasets list' do
+  #       dataset = create(:dataset)
+  #       delete :destroy, params: { id: dataset.to_param }
+  #       expect(response).to redirect_to(datasets_url)
   #     end
   #   end
   # end
 
-#   describe 'POST #publish' do
-#     it 'publishes the dataset' do
-#       post :publish, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
+  describe 'POST #update_permissions' do
+    let(:reviewer_emails) { ['researcher2@mailinator.com'] }
+    let(:editor_emails) { ['researcher3@mailinator.com'] }
 
-#   describe 'POST #send_publication_notice' do
-#     it 'sends publication notice' do
-#       post :send_publication_notice, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
+    before do
+      sign_in users(:curator1)
+      allow(UserAbility).to receive(:update_permissions)
+    end
 
-#   describe 'POST #validate_change2published' do
-#     it 'validates change to published' do
-#       post :validate_change2published, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
+    context 'with valid params' do
+      it 'updates the permissions' do
+        post :update_permissions, params: { id: dataset.to_param, reviewer_emails: reviewer_emails, editor_emails: editor_emails }
+        expect(UserAbility).to have_received(:update_permissions).with(dataset.key, reviewer_emails, editor_emails)
+        expect(response).to redirect_to(dataset_path(dataset.key))
+        expect(flash[:notice]).to eq('Permissions updated.')
+      end
 
-#   describe 'POST #cancel_box_upload' do
-#     it 'cancels box upload' do
-#       post :cancel_box_upload, params: { id: dataset.to_param, web_id: 'some_web_id' }
-#       expect(response).to be_successful
-#     end
-#   end
+      it 'returns a success response with JSON format' do
+        post :update_permissions, params: { id: dataset.to_param, reviewer_emails: reviewer_emails, editor_emails: editor_emails }, format: :json
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq('application/json; charset=utf-8')
+      end
+    end
 
-#   describe 'POST #share' do
-#     it 'creates a share link' do
-#       post :share, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
+    context 'with invalid params' do
+      before do
+        allow_any_instance_of(Dataset).to receive(:save).and_return(false)
+      end
 
-#   describe 'POST #remove_sharing_link' do
-#     it 'removes the sharing link' do
-#       post :remove_sharing_link, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
+      it 'redirects to the dataset with an alert' do
+        post :update_permissions, params: { id: dataset.to_param, reviewer_emails: reviewer_emails, editor_emails: editor_emails }
+        expect(response).to redirect_to(dataset_path(dataset.key))
+        expect(flash[:alert]).to eq('Error attempting to update permissions.')
+      end
 
-#   describe 'POST #suppress_changelog' do
-#     it 'suppresses the changelog' do
-#       post :suppress_changelog, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
-
-#   describe 'POST #unsuppress_changelog' do
-#     it 'unsuppresses the changelog' do
-#       post :unsuppress_changelog, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
-
-#   describe 'POST #temporarily_suppress_files' do
-#     it 'temporarily suppresses files' do
-#       post :temporarily_suppress_files, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
-
-#   describe 'POST #temporarily_suppress_metadata' do
-#     it 'temporarily suppresses metadata' do
-#       post :temporarily_suppress_metadata, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
-
-#   describe 'POST #unsuppress' do
-#     it 'unsuppresses the dataset' do
-#       post :unsuppress, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
-
-#   describe 'POST #permanently_suppress_files' do
-#     it 'permanently suppresses files' do
-#       post :permanently_suppress_files, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
-
-#   describe 'POST #permanently_suppress_metadata' do
-#     it 'permanently suppresses metadata' do
-#       post :permanently_suppress_metadata, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
-
-#   describe 'POST #request_review' do
-#     it 'requests a review' do
-#       post :request_review, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
-
-#   describe 'POST #version_request' do
-#     it 'requests a version' do
-#       post :version_request, params: { id: dataset.to_param, previous_key: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
-
-#   describe 'POST #version_confirm' do
-#     it 'confirms a version' do
-#       post :version_confirm, params: { id: dataset.to_param, dataset: attributes_for(:dataset) }
-#       expect(response).to be_successful
-#     end
-#   end
-
-#   describe 'POST #version_to_draft' do
-#     it 'changes version to draft' do
-#       post :version_to_draft, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
-
-#   describe 'POST #draft_to_version' do
-#     it 'changes draft to version' do
-#       post :draft_to_version, params: { id: dataset.to_param }
-#       expect(response).to be_successful
-#     end
-#   end
-# end
-# describe 'DELETE #destroy' do
-#   context 'when user is signed in' do
-#     it 'destroys the requested dataset' do
-#       dataset = create(:dataset, depositor_email: user.email, depositor_name: user.name)
-#       expect {
-#         delete :destroy, params: { id: dataset.to_param }
-#       }.to change(Dataset, :count).by(-1)
-#     end
-
-#     it 'redirects to the user-specific datasets list' do
-#       dataset = create(:dataset, depositor_email: user.email, depositor_name: user.name)
-#       delete :destroy, params: { id: dataset.to_param }
-#       expect(response).to redirect_to("/datasets?q=&#{CGI.escape('depositors[]')}=#{user.username}")
-#     end
-#   end
-
-#   context 'when no user is signed in' do
-#     before do
-#       sign_out user
-#     end
-
-#     it 'destroys the requested dataset' do
-#       dataset = create(:dataset)
-#       expect {
-#         delete :destroy, params: { id: dataset.to_param }
-#       }.to change(Dataset, :count).by(-1)
-#     end
-
-#     it 'redirects to the datasets list' do
-#       dataset = create(:dataset)
-#       delete :destroy, params: { id: dataset.to_param }
-#       expect(response).to redirect_to(datasets_url)
-#     end
-#   end
+      it 'returns an unprocessable entity response with JSON format' do
+        post :update_permissions, params: { id: dataset.to_param, reviewer_emails: reviewer_emails, editor_emails: editor_emails }, format: :json
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.content_type).to eq('application/json; charset=utf-8')
+      end
+    end
+  end
 end

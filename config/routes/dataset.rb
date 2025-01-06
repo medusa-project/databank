@@ -62,7 +62,6 @@ resources :datasets do
   resources :datafiles do
     member do
       get 'bucket_and_key', to: 'datafiles#bucket_and_key', defaults: { format: 'json' }
-      get "cancel_box_upload", to: 'datasets#cancel_box_upload', defaults: {format: 'json'}
       get 'iiif_filepath', to: 'datafiles#iiif_filepath', defaults: { format: 'json' }
       get 'filepath', to: 'datafiles#filepath', defaults: { format: 'json' }
       get 'upload', to: 'datafiles#upload'
