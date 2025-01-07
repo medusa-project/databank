@@ -838,6 +838,7 @@ collaborators to access the data files while the dataset is not public.</li>
   # Responds to `Get /datasets/:id/confirmation_message`
   def confirmation_message
     proposed_dataset = @dataset
+    # DEBUG
     if params.has_key?("new_embargo_state")
       new_embargo_state = case params["new_embargo_state"]
                           when Databank::PublicationState::Embargo::FILE

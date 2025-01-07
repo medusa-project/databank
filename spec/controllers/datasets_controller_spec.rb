@@ -202,6 +202,136 @@ RSpec.describe DatasetsController, type: :controller do
     end
   end
 
+  describe 'GET #get_new_token' do
+    it 'gets a new token' do
+      get :get_new_token, params: { id: dataset.to_param }
+      expect(response).to be_successful
+    end
+  end
+
+  describe 'GET #get_current_token' do 
+    it 'gets the current token' do
+      get :get_current_token, params: { id: dataset.to_param }
+      expect(response).to be_successful
+    end
+  end
+
+  describe 'GET #download_endNote_XML' do
+    it 'downloads the endNote XML' do
+      released1 = Dataset.find_by(key: "TESTIDB-5920542")
+      get :download_endNote_XML, params: { id: released1.to_param }
+      expect(response).to be_successful
+    end
+  end
+
+  describe 'GET #confirmation_message' do
+    context 'with a dataset that has been published' do
+      it 'returns a success response' do
+        released1 = Dataset.find_by(key: "TESTIDB-5920542")
+        get :confirmation_message, params: { id: released1.to_param }
+        expect(response).to be_successful
+      end
+      it 'returns a success response with JSON format' do
+        released1 = Dataset.find_by(key: "TESTIDB-5920542")
+        get :confirmation_message, params: { id: released1.to_param }, format: :json
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq('application/json; charset=utf-8')
+      end
+      it 'returns a message that includes specific text' do
+        released1 = Dataset.find_by(key: "TESTIDB-5920542")
+        get :confirmation_message, params: { id: released1.to_param }
+        expect(response.body).to include('This action will make your updates to your dataset record')
+      end
+    end
+    context 'with a dataset that has not been published' do
+      it 'returns a success response' do
+        draft1 = Dataset.find_by(key: "TESTIDB-1423696")
+        get :confirmation_message, params: { id: draft1.to_param }
+        expect(response).to be_successful
+      end
+      it 'returns a success response with JSON format' do
+        draft1 = Dataset.find_by(key: "TESTIDB-1423696")
+        get :confirmation_message, params: { id: draft1.to_param }, format: :json
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq('application/json; charset=utf-8')
+      end
+      it 'returns a message that includes specific text' do
+        draft1 = Dataset.find_by(key: "TESTIDB-1423696")
+        get :confirmation_message, params: { id: draft1.to_param }
+        expect(response.body).to include('This action will make your dataset')
+        expect(response.body).to include('visible through search engines')
+      end
+    end
+    context 'with a dataset that is file embargoed' do
+      it 'returns a success response' do
+        embargoed1 = Dataset.find_by(key: "TESTIDB-5720850")
+        get :confirmation_message, params: { id: embargoed1.to_param }
+        expect(response).to be_successful
+      end
+      it 'returns a success response with JSON format' do
+        embargoed1 = Dataset.find_by(key: "TESTIDB-5720850")
+        get :confirmation_message, params: { id: embargoed1.to_param }, format: :json
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq('application/json; charset=utf-8')
+      end
+      it 'returns a message that includes specific text' do
+        embargoed1 = Dataset.find_by(key: "TESTIDB-5720850")
+        get :confirmation_message, params: { id: embargoed1.to_param }
+        expect(response.body).to include('This action will make your updates to your dataset')
+        expect(response.body).to include('visible through search engines')
+      end
+    end
+    context 'with a new embargo state param of Databank::PublicationState::Embargo::FILE' do
+      it 'returns a success response with JSON format' do
+        embargoed1 = Dataset.find_by(key: "TESTIDB-5720850")
+        get :confirmation_message, params: { id: embargoed1.to_param, new_embargo_state: Databank::PublicationState::Embargo::FILE }, format: :json
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq('application/json; charset=utf-8')
+      end
+      it 'returns a message that includes specific text' do
+        embargoed1 = Dataset.find_by(key: "TESTIDB-5720850")
+        get :confirmation_message, params: { id: embargoed1.to_param, new_embargo_state: Databank::PublicationState::Embargo::FILE }
+        expect(response).to be_successful
+        expect(response.body).to include('This action will make your updates to your dataset')
+        expect(response.body).to include('visible through search engines')
+      end
+    end
+    context 'with a new embargo state param of Databank::PublicationState::Embargo::METADATA' do
+      it 'returns a success response with JSON format' do
+        released1 = Dataset.find_by(key: "TESTIDB-5920542")
+        get :confirmation_message, params: { id: released1.to_param, new_embargo_state: Databank::PublicationState::Embargo::METADATA, release_date: Date.current + 1.month }, format: :json
+        puts "metadata embargoed new param test"
+        puts response.body
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq('application/json; charset=utf-8')
+      end
+      it 'returns a message that includes specific text' do
+        released1 = Dataset.find_by(key: "TESTIDB-5920542")
+        get :confirmation_message, params: { id: released1.to_param, new_embargo_state: Databank::PublicationState::Embargo::METADATA, release_date: Date.current + 1.month }
+        expect(response).to be_successful
+        expect(response.body).to include('This action will remove your dataset')
+        expect(response.body).to include('your dataset is not visible')
+      end
+    end
+    context 'with an invalid new embargo state param' do
+      it 'returns a success response with JSON format' do
+        embargoed1 = Dataset.find_by(key: "TESTIDB-5720850")
+        get :confirmation_message, params: { id: embargoed1.to_param, new_embargo_state: 'invalid' }, format: :json
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq('application/json; charset=utf-8')
+      end
+      it 'returns a message that includes specific text' do
+        embargoed1 = Dataset.find_by(key: "TESTIDB-5720850")
+        get :confirmation_message, params: { id: embargoed1.to_param, new_embargo_state: 'invalid' }
+        expect(response).to be_successful
+        expect(response.body).to include('This action will make your updates to your dataset')
+        expect(response.body).to include('visible through search engines')
+      end
+    end
+  end
+
+
+
   # describe 'POST #version_request' do
   #   it 'requests a version' do
   #     post :version_request, params: { id: dataset.to_param, previous_key: dataset.to_param }
