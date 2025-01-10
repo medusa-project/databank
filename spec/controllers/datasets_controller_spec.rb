@@ -4,7 +4,8 @@ require 'rails_helper'
 RSpec.describe DatasetsController, type: :controller do
   fixtures :users, :datasets, :datafiles
   let(:user) { users(:researcher1) }
-  let(:dataset) { create(:dataset, depositor_email: user.email, depositor_name: user.name, corresponding_creator_email: user.email, corresponding_creator_name: user.name) }
+  let(:valid_attributes) { { depositor_email: user.email, depositor_name: user.name, corresponding_creator_email: user.email, corresponding_creator_name: user.name } }
+  let!(:dataset) { create(:dataset, valid_attributes) }
 
   before do
     sign_in user
@@ -361,41 +362,16 @@ RSpec.describe DatasetsController, type: :controller do
   # end
 
 
-  # describe 'DELETE #destroy' do
-  #   context 'when user is signed in' do
-  #     it 'destroys the requested dataset' do
-  #       dataset = create(:dataset, depositor_email: user.email, depositor_name: user.name)
-  #       expect {
-  #         delete :destroy, params: { id: dataset.to_param }
-  #       }.to change(Dataset, :count).by(-1)
-  #     end
-
-  #     it 'redirects to the user-specific datasets list' do
-  #       dataset = create(:dataset, depositor_email: user.email, depositor_name: user.name)
-  #       delete :destroy, params: { id: dataset.to_param }
-  #       expect(response).to redirect_to("/datasets?q=&#{CGI.escape('depositors[]')}=#{user.username}")
-  #     end
-  #   end
-
-  #   context 'when no user is signed in' do
-  #     before do
-  #       sign_out user
-  #     end
-
-  #     it 'destroys the requested dataset' do
-  #       dataset = create(:dataset)
-  #       expect {
-  #         delete :destroy, params: { id: dataset.to_param }
-  #       }.to change(Dataset, :count).by(-1)
-  #     end
-
-  #     it 'redirects to the datasets list' do
-  #       dataset = create(:dataset)
-  #       delete :destroy, params: { id: dataset.to_param }
-  #       expect(response).to redirect_to(datasets_url)
-  #     end
-  #   end
-  # end
+  describe 'DELETE #destroy' do
+    context 'when the dataset exists' do
+      it 'destroys the requested dataset' do
+        dataset = Dataset.create! valid_attributes
+        expect {
+          delete :destroy, params: { id: dataset.to_param }
+        }.to change(Dataset, :count).by(-1)
+      end
+    end
+  end
 
   describe 'POST #update_permissions' do
     let(:reviewer_emails) { ['researcher2@mailinator.com'] }

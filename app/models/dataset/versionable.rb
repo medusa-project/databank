@@ -45,6 +45,13 @@ module Dataset::Versionable
     save
   end
 
+  def destroy_relationship_with_previous_version
+    return true if previous_idb_dataset.nil?
+
+    prev_relation = previous_idb_dataset.related_materials.find_by(datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF)
+    prev_relation&.destroy
+  end
+
   ##
   # send email to notify depositor that dataset version is approved
   def send_approve_version

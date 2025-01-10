@@ -1,7 +1,6 @@
 resources :datasets do
   member do
     get 'add_review_request'
-    get 'cancel_version'
     get "citation_text", defaults: {format: 'json'}
     get "confirmation_message", defaults: {format: 'json'}
     get 'confirm_review'

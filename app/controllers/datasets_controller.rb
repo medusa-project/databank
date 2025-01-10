@@ -64,22 +64,12 @@ class DatasetsController < ApplicationController
 
   @@num_box_ingest_deamons = 10
 
+  include DatasetsController::Versionable
   # enable streaming responses
   include ActionController::Streaming
 
   # enable zipline
   include Zipline
-  def cancel_version
-    @dataset = Dataset.find_by(key: params[:id])
-    authorize! :edit, @dataset
-    @previous = @dataset.previous_idb_dataset
-    render "edit" and return if @previous.nil?
-
-    relationship_from_previous_dataset = @previous.related_materials.find_by(datacite_list: Databank::Relationship::PREVIOUS_VERSION_OF)
-    relationship_from_previous_dataset&.destroy!
-    @dataset.destroy!
-    redirect_to dataset_path(@previous.key)
-  end
 
   # Responds to `GET /datasets/:id/share`
   def share
@@ -96,31 +86,6 @@ collaborators to access the data files while the dataset is not public.</li>
       else
         format.html { redirect_to dataset_path(@dataset), notice: "Error generating share link." }
         format.json { render json: {private_share_link: nil}, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # Responds to `POST /datasets/:id/copy_version_files`
-  def copy_version_files
-    if @dataset.update(dataset_params)
-      files_to_copy = @dataset.version_files.where(selected: true, initiated: false)
-      unless files_to_copy.count.positive?
-        respond_to do |format|
-          format.html { render :edit, alert: "No files selected for copy." }
-          format.json { render json: {error: "No files selected for copy."}, status: :unprocessable_entity }
-        end
-        return
-      end
-      @dataset.mark_version_files_initiated(files_to_copy: files_to_copy)
-      @dataset.copy_version_files
-      respond_to do |format|
-        format.html { render :copy_version_files, notice: "File copy process initiated." }
-        format.json { render json: {notice: "File copy process initiated"}, status: :ok }
-      end
-    else
-      respond_to do |format|
-        format.html { render :edit, alert: "Error attempting to copy files." }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -285,30 +250,7 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
-  def version_request
-    authorize! :update, @dataset
-    @previous = Dataset.find_by(key: params[:previous_key])
-    raise ActiveRecord::RecordNotFound unless @previous
 
-    @dataset.add_version_metadata_copy(previous: @previous)
-    @dataset.add_version_nested_objects(previous: @previous)
-    @dataset.add_version_relationships(previous: @previous)
-    @dataset.add_version_files(previous: @previous)
-  end
-
-  def version_confirm
-    authorize! :update, @dataset
-    respond_to do |format|
-      if @dataset.update(dataset_params)
-        @dataset.send_version_request_emails
-        format.html {redirect_to dataset_path(@dataset.key), notice: "version requested"}
-        format.json {render :show, status: :ok, location: dataset_path(@dataset.key)}
-      else
-        format.html { redirect_to dataset_path(@dataset.previous_key), notice: "error attempting to create version" }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
-      end
-    end
-  end
 
   # PATCH/PUT /datasets/1
   # PATCH/PUT /datasets/1.json
@@ -372,7 +314,7 @@ collaborators to access the data files while the dataset is not public.</li>
               format.json { render json: @dataset.errors, status: :unprocessable_entity }
             end
           else # this else means completion_check was not ok within publish context
-            Rails.logger.warn Dataset.completion_check(@dataset)
+            # Rails.logger.warn Dataset.completion_check(@dataset)
             raise "Error: Cannot update published dataset with incomplete information."
           end
         elsif params.has_key?("context") && params["context"] == "continue_edit"
@@ -402,17 +344,19 @@ collaborators to access the data files while the dataset is not public.</li>
   # DELETE /datasets/1.json
   def destroy
     authorize! :destroy, @dataset
-    @dataset.destroy
+    if current_user.role == Databank::UserRole::DEPOSITOR
+      redirect_url = "/datasets?q=&#{CGI.escape('depositors[]')}=#{current_user.username}"
+    else
+      redirect_url = datasets_url
+    end
     respond_to do |format|
-      if current_user
-        format.html {
-          redirect_to "/datasets?q=&#{CGI.escape('depositors[]')}=#{current_user.username}",
-                      notice: "Dataset was successfully deleted."
-        }
+      if @dataset.destroy_relationship_with_previous_version && @dataset.destroy
+        format.html { redirect_to redirect_url, notice: "Dataset was successfully deleted." }
+        format.json { render json: {status: :ok}, content_type: request.format, layout: false }
       else
-        format.html { redirect_to datasets_url, notice: "Dataset was successfully deleted." }
+        format.html { redirect_to redirect_url, alert: "Error attempting to delete dataset." }
+        format.json { render json: @dataset.errors, status: :unprocessable_entity }
       end
-      format.json { head :no_content }
     end
   end
 
@@ -592,37 +536,6 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
-  def version_to_draft
-    @dataset.publication_state = Databank::PublicationState::DRAFT
-    @dataset.hold_state = Databank::PublicationState::TempSuppress::NONE
-    respond_to do |format|
-      if @dataset.save
-        @dataset.send_approve_version
-        format.html {
-          redirect_to dataset_path(@dataset.key), notice: %(Dataset designated as standard draft.)
-        }
-        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
-      else
-        format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def draft_to_version
-    @dataset.publication_state = Databank::PublicationState::TempSuppress::VERSION
-    respond_to do |format|
-      if @dataset.save
-        format.html {
-          redirect_to dataset_path(@dataset.key), notice: %(Dataset designated as standard draft.)
-        }
-        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
-      else
-        format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
-      end
-    end
-  end
 
   def permanently_suppress_metadata
     authorize! :manage, @dataset

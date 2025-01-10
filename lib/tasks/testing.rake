@@ -33,6 +33,7 @@ namespace :testing do
         Aws::S3::Resource.new(client: Application.aws_client).bucket(root.bucket).object(key).upload_file(file)
       end
     end
+
   end
 
   desc "send a RabbitMQ message"

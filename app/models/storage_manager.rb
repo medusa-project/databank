@@ -104,6 +104,12 @@ class StorageManager
       next if bucket_exists?(s3_client: s3_client, bucket_name: bucket_name)
 
       setup_bucket(bucket_name: bucket_name)
+
+      if bucket_exists?(s3_client: s3_client, bucket_name: bucket_name)
+        puts "Local bucket #{bucket_name} created."
+      else
+        puts "Local bucket #{bucket_name} not created."
+      end
     end
   end
 

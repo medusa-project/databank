@@ -2,7 +2,7 @@
 
 namespace :globus do
   desc "copy datasets to globus"
-  task copy_datasets: :environment do
+  task copy_datasets: :environment do 
     datasets = Dataset.select(&:files_public?)
     datasets.each do |dataset|
       puts "copying dataset: #{dataset.title}, key: #{dataset.key}"

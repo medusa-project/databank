@@ -17,7 +17,7 @@
         =link_to("/contact", class: "btn btn-success btn-block idb") do
           %span.glyphicon.glyphicon-question-sign
           Get Help
-        =link_to("/datasets/#{@dataset.key}/cancel_version", class: "btn btn-block btn-danger idb", name: "cancel", id: 'cancel-button') do
+        = link_to(dataset_path(@dataset.key), method: :delete, :class => "btn idb btn-danger btn-block") do
           %span.glyphicon.glyphicon-remove
           Cancel
         %br

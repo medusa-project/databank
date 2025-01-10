@@ -92,7 +92,8 @@ module Dataset::Globusable
   end
 
   def remove_from_globus_download
-    return nil unless StorageManager.instance.globus_download_root.exist?("#{key}/")
+
+    return true unless StorageManager.instance.globus_download_root.exist?("#{key}/")
 
     storage_keys = StorageManager.instance.globus_download_root.file_keys(key)
     storage_keys.each do |storage_key|
