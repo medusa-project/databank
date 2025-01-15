@@ -39,7 +39,6 @@ RSpec.describe DatasetsController, type: :controller do
     end
   end
 
-
   describe 'POST #create' do
     context 'with valid params' do
       it 'creates a new Dataset' do
@@ -330,37 +329,6 @@ RSpec.describe DatasetsController, type: :controller do
       end
     end
   end
-
-
-
-  # describe 'POST #version_request' do
-  #   it 'requests a version' do
-  #     post :version_request, params: { id: dataset.to_param, previous_key: dataset.to_param }
-  #     expect(response).to be_successful
-  #   end
-  # end
-
-  # describe 'POST #version_confirm' do
-  #   it 'confirms a version' do
-  #     post :version_confirm, params: { id: dataset.to_param, dataset: attributes_for(:dataset) }
-  #     expect(response).to be_successful
-  #   end
-  # end
-
-  # describe 'POST #version_to_draft' do
-  #   it 'changes version to draft' do
-  #     post :version_to_draft, params: { id: dataset.to_param }
-  #     expect(response).to be_successful
-  #   end
-  # end
-
-  # describe 'POST #draft_to_version' do
-  #   it 'changes draft to version' do
-  #     post :draft_to_version, params: { id: dataset.to_param }
-  #     expect(response).to be_successful
-  #   end
-  # end
-
 
   describe 'DELETE #destroy' do
     context 'when the dataset exists' do

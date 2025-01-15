@@ -231,12 +231,13 @@ collaborators to access the data files while the dataset is not public.</li>
   # POST /datasets
   # POST /datasets.json
   def create
-    #Rails.logger.warn params.to_yaml
     authorize! :create, Dataset
     @dataset = Dataset.new(dataset_params)
     respond_to do |format|
       if @dataset.save
         if params[:dataset].has_key?(:previous_key) && params[:dataset][:previous_key].present?
+          # DEBUG
+          Rails.logger.warn "within create with previous_key params: #{params.to_yaml}"
           redirect_to action: :version_request, previous_key: params[:dataset][:previous_key], id: @dataset.key
           return
         end

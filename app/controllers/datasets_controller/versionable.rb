@@ -3,6 +3,28 @@
 module DatasetsController::Versionable
   extend ActiveSupport::Concern
 
+  # Responds to `GET /datasets/:id/version`
+  def pre_version
+    @previous = Dataset.find_by(key: params[:id])
+    @previous ||= Dataset.find(params[:dataset_id])
+    raise ActiveRecord::RecordNotFound unless @previous
+
+    @dataset = Dataset.new
+    set_file_mode
+  end
+
+  # Responds to `GET /datasets/:id/version_request`
+  def version_request
+    authorize! :update, @dataset
+    @previous = Dataset.find_by(key: params[:previous_key])
+    raise ActiveRecord::RecordNotFound unless @previous
+
+    @dataset.add_version_metadata_copy(previous: @previous)
+    @dataset.add_version_nested_objects(previous: @previous)
+    @dataset.add_version_relationships(previous: @previous)
+    @dataset.add_version_files(previous: @previous)
+  end
+
   # Responds to `GET /datasets/:id/draft_to_version`
   def draft_to_version
     @dataset.publication_state = Databank::PublicationState::TempSuppress::VERSION
@@ -26,7 +48,7 @@ module DatasetsController::Versionable
       unless files_to_copy.count.positive?
         respond_to do |format|
           format.html { render :edit, alert: "No files selected for copy." }
-          format.json { render json: {error: "No files selected for copy."}, status: :unprocessable_entity }
+          format.json { render json: { error: "No files selected for copy." }, status: :unprocessable_entity }
         end
         return
       end
@@ -34,7 +56,7 @@ module DatasetsController::Versionable
       @dataset.copy_version_files
       respond_to do |format|
         format.html { render :copy_version_files, notice: "File copy process initiated." }
-        format.json { render json: {notice: "File copy process initiated"}, status: :ok }
+        format.json { render json: { notice: "File copy process initiated" }, status: :ok }
       end
     else
       respond_to do |format|
@@ -42,18 +64,6 @@ module DatasetsController::Versionable
         format.json { render json: @dataset.errors, status: :unprocessable_entity }
       end
     end
-  end
-
-  # Responds to `GET /datasets/:id/version_request`
-  def version_request
-    authorize! :update, @dataset
-    @previous = Dataset.find_by(key: params[:previous_key])
-    raise ActiveRecord::RecordNotFound unless @previous
-
-    @dataset.add_version_metadata_copy(previous: @previous)
-    @dataset.add_version_nested_objects(previous: @previous)
-    @dataset.add_version_relationships(previous: @previous)
-    @dataset.add_version_files(previous: @previous)
   end
 
   # Responds to `GET /datasets/:id/version`
