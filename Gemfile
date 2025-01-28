@@ -192,6 +192,11 @@ end
 
 group :test do
   #gem 'cucumber', '~> 2.0'
+  gem 'rubocop-rspec'
+  gem 'rubocop-rspec_rails'
+  gem 'rubocop-factory_bot'
+  gem 'rubocop-capybara'
+  gem 'rails-controller-testing'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
   gem 'simplecov'

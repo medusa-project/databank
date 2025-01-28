@@ -145,9 +145,6 @@ class User < ApplicationRecord
   # @param auth [Hash] the omniauth response
   # @return [User] the user
   def update_with_omniauth(auth)
-
-    Rails.logger.warn(auth.to_yaml)
-
     if auth["provider"] == "shibboleth"
       auth["info"]["role"] = User.user_role(auth)
     end

@@ -1,8 +1,10 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
+require 'capybara/rspec'
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+# using developer strategy for testing
 OmniAuth.config.test_mode = true
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
@@ -44,10 +46,14 @@ RSpec.configure do |config|
 
   # Use OmniAuth testing support
   config.include OmniauthMacros, type: :controller
+  config.include OmniauthMacros, type: :request
   
+  config.include Capybara::DSL, type: :feature
+  config.include Capybara::DSL, type: :request
+
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
-    Rails.root.join('spec/fixtures')
+    Rails.root.join('test/fixtures')
   ]
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
