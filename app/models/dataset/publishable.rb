@@ -43,6 +43,10 @@ module Dataset::Publishable
     return true if publication_state == Databank::PublicationState::Embargo::METADATA &&
       embargo != Databank::PublicationState::Embargo::METADATA
 
+    # approved version candidates are ok to publish
+    return true if hold_state == Databank::PublicationState::TempSuppress::NONE &&
+      publication_state == Databank::PublicationState::TempSuppress::VERSION
+
     missing_identifier_for_non_draft = (publication_state != Databank::PublicationState::DRAFT) && (!identifier || identifier == "")
     if missing_identifier_for_non_draft
       Rails.logger.warn( "Missing identifier for dataset that is not a draft. Dataset: #{key}" )
