@@ -170,7 +170,9 @@ class User < ApplicationRecord
     config_admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
     admin_user_abilities UserAbility.where(resource_type: 'Databank', ability: 'manage', resource_id: nil)
     added_admins = admin_user_abilities.map(&:user_uid).map {|x| x.split("@")[0] || x }
+    Rails.logger.warn("added_admins: #{added_admins}")
     admins = config_admins + added_admins
+    Rails.logger.warn("admins: #{admins}")
 
     net_id = auth["info"]["email"].split("@").first
     return Databank::UserRole::ADMIN if admins.include?(net_id)

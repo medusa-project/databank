@@ -6,6 +6,8 @@
   - @user_abilities.each do |user_ability|
     %li.row.listing
       %span.col-md-4
+        = user_ability.name
+      %span.col-md-4
         %span.pull-right
           = user_ability.user_uid
       %span.col-md-2

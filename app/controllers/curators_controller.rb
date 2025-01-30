@@ -8,6 +8,13 @@ class CuratorsController < ApplicationController
   # Responds to `GET /curators.json`
   def index
     @user_abilities = UserAbility.where(resource_type: 'Databank', ability: 'manage', resource_id: nil)
+    # convert user_abilities to a hash
+    @user_abilities = @user_abilities.map(&:attributes)
+    # add name attribute to each user_ability record, based on user_provider and user_uid
+    @user_abilities.each do |ua|
+      user = User.find_by(provider: ua[:user_provider], uid: ua[:user_uid])
+      ua[:name] = user.name
+    end
   end
 
   # Responds to `GET /curators/1`

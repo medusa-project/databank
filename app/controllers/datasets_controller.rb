@@ -236,8 +236,6 @@ collaborators to access the data files while the dataset is not public.</li>
     respond_to do |format|
       if @dataset.save
         if params[:dataset].has_key?(:previous_key) && params[:dataset][:previous_key].present?
-          # DEBUG
-          Rails.logger.warn "within create with previous_key params: #{params.to_yaml}"
           redirect_to action: :version_request, previous_key: params[:dataset][:previous_key], id: @dataset.key
           return
         end
@@ -752,7 +750,6 @@ collaborators to access the data files while the dataset is not public.</li>
   # Responds to `Get /datasets/:id/confirmation_message`
   def confirmation_message
     proposed_dataset = @dataset
-    # DEBUG
     if params.has_key?("new_embargo_state")
       new_embargo_state = case params["new_embargo_state"]
                           when Databank::PublicationState::Embargo::FILE

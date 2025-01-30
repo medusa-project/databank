@@ -10,7 +10,10 @@
     = f.label "email address"
     = f.text_field :user_uid, placeholder: "netid@illinois.edu"
   .field
-    = f.hidden_field :user_provider, value: "shibboleth"
+    - if Application.server_envs.include?(Rails.env)
+      = f.hidden_field :user_provider, value: "shibboleth"
+    -else
+      = f.hidden_field :user_provider, value: "developer"
   .field
     = f.hidden_field :resource_type, value: "Dataset"
   .field
