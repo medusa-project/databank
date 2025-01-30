@@ -167,7 +167,11 @@ class User < ApplicationRecord
   # @return [String] the email of the user
   def self.user_role(auth)
 
-    admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
+    config_admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
+    admin_user_abilities UserAbility.where(resource_type: 'Databank', ability: 'manage', resource_id: nil)
+    added_admins = admin_user_abilities.map(&:user_uid).map {|x| x.split("@")[0] || x }
+    admins = config_admins + added_admins
+
     net_id = auth["info"]["email"].split("@").first
     return Databank::UserRole::ADMIN if admins.include?(net_id)
 

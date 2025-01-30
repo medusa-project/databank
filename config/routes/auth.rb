@@ -1,4 +1,5 @@
 resources :account_activations, only: [:edit]
+resources :curators
 resources :deposit_exceptions
 match '/auth/failure', to: 'sessions#unauthorized', as: :unauthorized, via: [:get, :post]
 match '/auth/:provider/callback', to: 'sessions#create', via: [:get, :post]
