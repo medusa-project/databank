@@ -9,6 +9,11 @@
       =link_to "/deposit_exceptions", class:"btn btn-primary btn-block idb" do
         Manage Deposit Exceptions
         %span( class="glyphicon glyphicon-user" )
+    .col-md-3
+      =link_to "/curators", class:"btn btn-primary btn-block idb" do
+        Manage Curators
+        %span( class="glyphicon glyphicon-user" )
+        %span( class="glyphicon glyphicon-certificate" )
   = render partial: 'role_switch_form'
 
   .panel-group(id="service-msg" role="tablist" aria-multiselectable="true")
