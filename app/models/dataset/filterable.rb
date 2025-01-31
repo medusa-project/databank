@@ -28,7 +28,7 @@ module Dataset::Filterable
 
   class_methods do
     def filtered_list(user_role: Databank::UserRole::GUEST, user: nil, params: {})
-      per_page = if params.has_key?(:per_page)
+      per_page = if params.has_key?(:per_page) && params[:per_page].to_i > 0 && params[:per_page].to_i <= 100
                    params[:per_page].to_i
                  else
                    25
