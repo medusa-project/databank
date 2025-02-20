@@ -10,6 +10,7 @@ class CuratorsController < ApplicationController
     config_admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
     @config_admin_uids = config_admins.map {|x| x + "@illinois.edu" }
     @curators = User.curators
+    @non_user_curator_uids = UserAbility.curators.pluck(:user_uid) - @curators.pluck(:uid)
   end
 
   # Responds to `GET /curators/1`
