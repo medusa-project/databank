@@ -61,6 +61,7 @@ class UserAbility < ApplicationRecord
                           user_provider: user.provider,
                           user_uid:      user.uid,
                           ability:       "manage")
+      Application.admin_uids << user.uid
     end
 
     # used to remove a user from the list of curators for a databank
@@ -71,6 +72,7 @@ class UserAbility < ApplicationRecord
                         user_provider: user.provider,
                         user_uid:      user.uid,
                         ability:       "manage").destroy_all
+      Application.admin_uids.delete(user.uid)
     end
 
     # used to grant the ability to deposit to a user who does not have it by default, graduates and ex-employees

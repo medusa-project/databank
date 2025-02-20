@@ -1,22 +1,36 @@
 %h1 Curators
 %p
   People who access curation features.
-
+%h2 Admins from configuration
 %ul.no-bullets.container
-  - @user_abilities.each do |user_ability|
+  - @config_admin_uids.each do |uid|
+    - user = User.find_by(uid: uid)
     %li.row.listing
       %span.col-md-4
-        = user_ability.name
+        = user.name if user
       %span.col-md-4
         %span.pull-right
-          = user_ability.user_uid
-      %span.col-md-2
-        =link_to "/curators/#{user_ability.id}/edit", class: "btn btn-success btn-block idb" do
-          %span(class="glyphicon glyphicon-edit" )
-          Edit
-      %span.col-md-2
-        = link_to "/curators/#{user_ability.id}", class: "btn btn-danger btn-block idb", method: :delete, data: { confirm: 'Are you sure?' } do
-          %span(class="glyphicon glyphicon-trash" )
-          Delete
+          = uid
+- if @curators.empty?
+  %p No added curators.
+- else
+  %h2 Curators managed in this interface
+  %ul.no-bullets.container
+    - @curators.each do |user|
+      - user_ability = user.associated_curator_ability
+      %li.row.listing
+        %span.col-md-4
+          = user.name
+        %span.col-md-4
+          %span.pull-right
+            = user_ability.user_uid
+        %span.col-md-2
+          =link_to "/curators/#{user_ability.id}/edit", class: "btn btn-success btn-block idb" do
+            %span(class="glyphicon glyphicon-edit" )
+            Edit
+        %span.col-md-2
+          = link_to "/curators/#{user_ability.id}", class: "btn btn-danger btn-block idb", method: :delete, data: { confirm: 'Are you sure?' } do
+            %span(class="glyphicon glyphicon-trash" )
+            Delete
 .text-center
   = link_to "Add Curator", "/curators/new", class: "btn btn-primary idb"

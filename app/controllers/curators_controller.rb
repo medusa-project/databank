@@ -7,14 +7,9 @@ class CuratorsController < ApplicationController
   # Responds to `GET /curators`
   # Responds to `GET /curators.json`
   def index
-    @user_abilities = UserAbility.where(resource_type: 'Databank', ability: 'manage', resource_id: nil)
-    # convert user_abilities to a hash
-    @user_abilities = @user_abilities.map(&:attributes)
-    # add name attribute to each user_ability record, based on user_provider and user_uid
-    @user_abilities.each do |ua|
-      user = User.find_by(provider: ua[:user_provider], uid: ua[:user_uid])
-      ua[:name] = user.name
-    end
+    config_admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
+    @config_admin_uids = config_admins.map {|x| x + "@illinois.edu" }
+    @curators = User.curators
   end
 
   # Responds to `GET /curators/1`
@@ -36,6 +31,7 @@ class CuratorsController < ApplicationController
 
     respond_to do |format|
       if @user_ability.save
+        Application.admin_uids = User.admin_uids
         format.html { redirect_to "/curators", notice: 'Curator was successfully added.' }
         format.json { render :show, status: :created, location: @user_ability }
       else
@@ -50,6 +46,7 @@ class CuratorsController < ApplicationController
   def update
     respond_to do |format|
       if @user_ability.update(user_ability_params)
+        Application.admin_uids = User.admin_uids
         format.html { redirect_to "/curators", notice: 'Curator was successfully updated.' }
         format.json { render :show, status: :ok, location: @user_ability }
       else
@@ -62,6 +59,7 @@ class CuratorsController < ApplicationController
   # Responds to `DELETE /curators/1`
   # Responds to `DELETE /curators/1.json`
   def destroy
+    Application.admin_uids.delete(@user.uid)
     @user_ability.destroy
     respond_to do |format|
       format.html { redirect_to "/curators", notice: 'Curator was successfully removed.' }
