@@ -99,7 +99,6 @@ class User < ApplicationRecord
   end
 
   def associated_curator_ability
-    return nil unless admin?
     UserAbility.where(user_provider: provider, user_uid: uid, resource_type: 'Databank', ability: 'manage', resource_id: nil).first
   end
 
