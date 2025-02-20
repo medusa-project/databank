@@ -11,9 +11,9 @@
       %span.col-md-4
         %span.pull-right
           = uid
-- if @curators.empty?
+- if @curators.empty? && @non_config_admin_uids.empty?
   %p No added curators.
-- else
+- if @curators.any?
   %h2 Curators managed in this interface
   %ul.no-bullets.container
     - @curators.each do |user|
@@ -32,5 +32,16 @@
           = link_to "/curators/#{user_ability.id}", class: "btn btn-danger btn-block idb", method: :delete, data: { confirm: 'Are you sure?' } do
             %span(class="glyphicon glyphicon-trash" )
             Delete
+- if @non_config_admin_uids.any?
+  %h2 Curators specified but no user found, might indicate an error
+  %ul.no-bullets.container
+    - @non_config_admin_uids.each do |uid|
+      %li.row.listing
+        %span.col-md-4
+          User not known
+        %span.col-md-4
+          %span.pull-right
+            = uid
+
 .text-center
   = link_to "Add Curator", "/curators/new", class: "btn btn-primary idb"

@@ -75,6 +75,11 @@ class UserAbility < ApplicationRecord
       Application.admin_uids.delete(user.uid)
     end
 
+    def curators
+      UserAbility.where(resource_type: "Databank",
+                        model_id:      nil, ability: "manage")
+    end
+
     # used to grant the ability to deposit to a user who does not have it by default, graduates and ex-employees
     # @param [User] user The user to grant the ability to deposit, used when not granted by shib attributes.
     def grant_deposit_exception(user:)
