@@ -136,6 +136,7 @@ class User < ApplicationRecord
     system_user
   end
 
+  # @return [Array<String>] the uids of the admins
   def self.admin_uids
     # curator is an alias for admin
     config_admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
@@ -213,7 +214,7 @@ class User < ApplicationRecord
   # @return [String] the email of the user
   def self.user_role(auth)
 
-    return Databank::UserRole::ADMIN if User.admins_uids.include?(auth["uid"])
+    return Databank::UserRole::ADMIN if User.admin_uids.include?(auth["uid"])
 
     # if the user is already in the database with explicit permissio to create datasets, return depositor role
     user = User.find_by(provider: auth["provider"], uid: auth["uid"])
