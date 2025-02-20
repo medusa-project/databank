@@ -31,7 +31,6 @@ class CuratorsController < ApplicationController
 
     respond_to do |format|
       if @user_ability.save
-        Application.admin_uids = User.admin_uids
         format.html { redirect_to "/curators", notice: 'Curator was successfully added.' }
         format.json { render :show, status: :created, location: @user_ability }
       else
@@ -46,7 +45,6 @@ class CuratorsController < ApplicationController
   def update
     respond_to do |format|
       if @user_ability.update(user_ability_params)
-        Application.admin_uids = User.admin_uids
         format.html { redirect_to "/curators", notice: 'Curator was successfully updated.' }
         format.json { render :show, status: :ok, location: @user_ability }
       else
@@ -59,7 +57,6 @@ class CuratorsController < ApplicationController
   # Responds to `DELETE /curators/1`
   # Responds to `DELETE /curators/1.json`
   def destroy
-    Application.admin_uids.delete(@user.uid)
     @user_ability.destroy
     respond_to do |format|
       format.html { redirect_to "/curators", notice: 'Curator was successfully removed.' }
