@@ -1,4 +1,4 @@
-= form_for @user_ability, :url => url_for(:controller => 'curators') do |f|
+= form_for @user_ability do |f|
   - if @user_ability.errors.any?
     #error_explanation
       %h2= "#{pluralize(@user_ability.errors.count, "error")} prohibited this deposit exception from being saved:"

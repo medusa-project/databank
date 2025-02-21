@@ -32,6 +32,10 @@ class UserAbilitiesController < ApplicationController
           redirect_to "/deposit_exceptions", notice: 'Deposit exception was successfully created.'
           return
         end
+        if @user_ability.ability.curator?
+          redirect_to "/curators", notice: 'Curator was successfully added.'
+          return
+        end
         format.html { redirect_to @user_ability, notice: 'User ability was successfully created.' }
         format.json { render :show, status: :created, location: @user_ability }
       else
@@ -50,6 +54,10 @@ class UserAbilitiesController < ApplicationController
           redirect_to "/deposit_exceptions", notice: 'Deposit exception was successfully updated.'
           return
         end
+        if @user_ability.curator?
+          redirect_to "/curators", notice: 'Curator was successfully updated.'
+          return
+        end
         format.html { redirect_to @user_ability, notice: 'User ability was successfully updated.' }
         format.json { render :show, status: :ok, location: @user_ability }
       else
@@ -65,6 +73,10 @@ class UserAbilitiesController < ApplicationController
     @user_ability.destroy
     if @user_ability.deposit_exception?
       redirect_to "/deposit_exceptions", notice: 'Deposit exception was successfully destroyed.'
+      return
+    end
+    if @user_ability.curator?
+      redirect_to "/curators", notice: 'Curator was successfully removed.'
       return
     end
     respond_to do |format|
