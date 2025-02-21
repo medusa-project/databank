@@ -33,8 +33,7 @@
             %span(class="glyphicon glyphicon-trash" )
             Delete
 - if @curator_ability_user_not_found && @curator_ability_user_not_found.any?
-  %h2 Curators specified but no user found
-  %p might indicate an error
+  %h2 Curators specified but no user found (error)
   %ul.no-bullets.container
     - @curator_ability_user_not_found.each do |user_ability|
       %li.row.listing
