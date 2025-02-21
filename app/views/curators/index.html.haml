@@ -12,7 +12,7 @@
         %span.pull-right
           = uid
 - if @curators.empty? && @non_config_admin_uids.empty?
-  %p No added curators.
+  %h2 No added curators.
 - if @curators && @curators.any?
   %h2 Curators managed in this interface
   %ul.no-bullets.container
@@ -33,7 +33,8 @@
             %span(class="glyphicon glyphicon-trash" )
             Delete
 - if @non_user_curator_uids && @non_user_curator_uids.any?
-  %h2 Curators specified but no user found, might indicate an error
+  %h2 Curators specified but no user found
+  %p might indicate an error
   %ul.no-bullets.container
     - @non_user_curator_uids.each do |uid|
       %li.row.listing
