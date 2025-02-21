@@ -13,6 +13,11 @@ class User < ApplicationRecord
             format: {with: VALID_EMAIL_REGEX},
             uniqueness: {case_sensitive: false}
 
+  def system_admin?
+    admin_netids = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
+    admin_uids = admin_netids.map {|x| x + "@illinois.edu" }
+    admin_uids.include?(uid)
+  end
 
   # @return [Boolean] true if the user is an admin
   def admin?

@@ -1,5 +1,5 @@
-%h1 Curator and Admin Dashboard
-- if current_user && current_user.role == 'admin'
+- if current_user && current_user.system_admin?
+  %h1 Curator and Admin Dashboard
   .row
     .col-md-3
       =link_to "/researcher_spotlights", class:"btn btn-primary btn-block idb" do
@@ -14,8 +14,6 @@
         Manage Curators
         %span( class="glyphicon glyphicon-user" )
         %span( class="glyphicon glyphicon-certificate" )
-  = render partial: 'role_switch_form'
-
   .panel-group(id="service-msg" role="tablist" aria-multiselectable="true")
     .panel.panel-default
       .panel-heading(role="tab" id="serviceMsgHeading")
@@ -26,6 +24,8 @@
       .panel-collapse.collapse(id="serviceMsgPanel" role="tabpanel" aria-labelledby="serviceMsgHeading" )
         .panel-body
           = render partial: 'service_message_form'
+- if current_user && current_user.role == 'admin'
+  = render partial: 'role_switch_form'
 - else
   %h2 You are not authorized to view this page.
   = link_to 'Back', root_path, class: 'btn btn-primary idb'

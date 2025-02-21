@@ -8,7 +8,10 @@
   = @user_ability.user_provider
 %p
   %b User name:
-  = @user.name
+   - if @user
+    = @user.name
+  - else
+    %em User not found
 %p
   %b Resource type:
   = @user_ability.resource_type
