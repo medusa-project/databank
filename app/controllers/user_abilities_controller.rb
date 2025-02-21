@@ -32,7 +32,7 @@ class UserAbilitiesController < ApplicationController
           redirect_to "/deposit_exceptions", notice: 'Deposit exception was successfully created.'
           return
         end
-        if @user_ability.ability.curator?
+        if @user_ability.curator?
           redirect_to "/curators", notice: 'Curator was successfully added.'
           return
         end
