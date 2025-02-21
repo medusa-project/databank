@@ -32,17 +32,17 @@
           = link_to "/curators/#{user_ability.id}", class: "btn btn-danger btn-block idb", method: :delete, data: { confirm: 'Are you sure?' } do
             %span(class="glyphicon glyphicon-trash" )
             Delete
-- if @non_user_curator_uids && @non_user_curator_uids.any?
+- if @curator_ability_user_not_found && @curator_ability_user_not_found.any?
   %h2 Curators specified but no user found
   %p might indicate an error
   %ul.no-bullets.container
-    - @non_user_curator_uids.each do |uid|
+    - @curator_ability_user_not_found.each do |user_ability|
       %li.row.listing
         %span.col-md-4
-          User not known
+          %em User not found
         %span.col-md-4
           %span.pull-right
-            = uid
+            = user_ability.user_uid
         %span.col-md-2
           =link_to "/curators/#{user_ability.id}/edit", class: "btn btn-success btn-block idb" do
             %span(class="glyphicon glyphicon-edit" )
