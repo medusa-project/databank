@@ -42,6 +42,14 @@
         %span.col-md-4
           %span.pull-right
             = uid
+        %span.col-md-2
+          =link_to "/curators/#{user_ability.id}/edit", class: "btn btn-success btn-block idb" do
+            %span(class="glyphicon glyphicon-edit" )
+            Edit
+        %span.col-md-2
+          = link_to "/curators/#{user_ability.id}", class: "btn btn-danger btn-block idb", method: :delete, data: { confirm: 'Are you sure?' } do
+            %span(class="glyphicon glyphicon-trash" )
+            Delete
 
 .text-center
   = link_to "Add Curator", "/curators/new", class: "btn btn-primary idb"
