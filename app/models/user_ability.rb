@@ -76,8 +76,7 @@ class UserAbility < ApplicationRecord
     end
 
     def curators
-      UserAbility.where(resource_type: "Databank",
-                        model_id:      nil, ability: "manage")
+      UserAbility.where(resource_type: "Databank", resource_id: nil, ability: "manage")
     end
 
     # used to grant the ability to deposit to a user who does not have it by default, graduates and ex-employees
