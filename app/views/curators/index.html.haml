@@ -12,7 +12,7 @@
         %span.col-md-4
           %span.pull-right
             = uid
-  - if @curators.nil? || (@curators.empty? && @non_config_admin_uids.empty?)
+  - unless @curators || @curator_ability_user_not_found
     %h2 No added curators.
   - if @curators && @curators.any?
     %h2 Curators managed in this interface
