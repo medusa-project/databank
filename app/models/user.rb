@@ -12,8 +12,12 @@ class User < ApplicationRecord
   validates :email, presence: true, length: {maximum: 255},
             format: {with: VALID_EMAIL_REGEX},
             uniqueness: {case_sensitive: false}
-  # system user is a special user that is used to perform system tasks such as releasing embargoed datasets
-  class_attribute :system_user
+
+  def system_admin?
+    admin_netids = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
+    admin_uids = admin_netids.map {|x| x + "@illinois.edu" }
+    admin_uids.include?(uid)
+  end
 
   # @return [Boolean] true if the user is an admin
   def admin?
@@ -93,11 +97,58 @@ class User < ApplicationRecord
     role == requested_role.to_s
   end
 
+  def self.curators
+    curator_abilities = UserAbility.where(resource_type: 'Databank', ability: 'manage', resource_id: nil)
+    curator_uids = curator_abilities.map {|x| x.user_uid }
+    curators = User.where(uid: curator_uids)
+  end
+
+  def associated_curator_ability
+    UserAbility.where(user_provider: provider, user_uid: uid, resource_type: 'Databank', ability: 'manage', resource_id: nil).first
+  end
+
+  # @param [String] resource_type the type of resource
+  # @param [String] resource_id the id of the resource
+  # @param [String] ability the ability to check
+  # @param [User] user the user to check
+  # @return [Boolean] true if the user has the ability
+  def self.user_can?(resource_type, resource_id, ability, user)
+    return false unless user
+    return true if user.admin?
+    return true if user.depositor? && ability == "create" && resource_type == "Dataset"
+    return true if user.depositor? && ability == "read" && resource_type == "Dataset" && resource_id.nil?
+    return true if user.depositor? && ability == "update" && resource_type == "Dataset" && resource_id.nil?
+    return true if user.depositor? && ability == "destroy" && resource_type == "Dataset" && resource_id.nil?
+    return true if user.depositor? && ability == "read" && resource_type == "Dataset" && resource_id && Dataset.find(resource_id).depositor_email == user.email
+    return true if user.depositor? && ability == "update" && resource_type == "Dataset" && resource_id && Dataset.find(resource_id).depositor_email == user.email
+    return true if user.depositor? && ability == "destroy" && resource_type == "Dataset" && resource_id && Dataset.find(resource_id).depositor_email == user.email
+    return true if user.network_reviewer? && ability == "read" && resource_type == "Dataset" && resource_id.nil?
+    return true if user.network_reviewer? && ability == "read" && resource_type == "Dataset" && resource_id && Dataset.find(resource_id).data_curation_network
+    UserAbility.where(user_provider: user.provider, user_uid: user.uid, resource_type: resource_type, resource_id: resource_id, ability: ability).any?
+  end
+
+  # @param [String] resource_type the type of resource
+  # @param [String] resource_id the id of the resource
+  # @param [String] ability the ability to check
+  # @param [User] user the user to check
+  # @return [Boolean] true if the
+
   # @return [User] the system user
   def self.system_user
     system_user = User.find_by(provider: "system", uid: IDB_CONFIG[:system_user_email])
     system_user ||= User.create_system_user
     system_user
+  end
+
+  # @return [Array<String>] the uids of the admins
+  def self.admin_uids
+    # curator is an alias for admin
+    config_admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
+    config_admin_uids = config_admins.map {|x| x + "@illinois.edu" }
+    admin_user_abilities = UserAbility.where(resource_type: 'Databank', ability: 'manage', resource_id: nil)
+    user_ability_admin_uids = admin_user_abilities.map {|x| x.user_uid }
+    admin_uids = config_admin_uids + user_ability_admin_uids
+    admin_uids
   end
 
   # Converts email to all lower-case.
@@ -167,13 +218,13 @@ class User < ApplicationRecord
   # @return [String] the email of the user
   def self.user_role(auth)
 
-    admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
-    net_id = auth["info"]["email"].split("@").first
-    return Databank::UserRole::ADMIN if admins.include?(net_id)
+    return Databank::UserRole::ADMIN if User.admin_uids.include?(auth["uid"])
 
+    # if the user is already in the database with explicit permissio to create datasets, return depositor role
     user = User.find_by(provider: auth["provider"], uid: auth["uid"])
     return Databank::UserRole::DEPOSITOR if user && UserAbility.user_can?("Dataset", nil, "create", user)
 
+    # new users require iTrustAffiliation to determine role
     unless auth["extra"]["raw_info"]["iTrustAffiliation"].respond_to?(:split)
       raise StandardError.new("missing iTrustAffiliation")
     end

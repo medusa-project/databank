@@ -1,35 +1,38 @@
 # frozen_string_literal: true
-# convenience methods for managing deposit exceptions, a filter of user_ability records
+# convenience methods for managing curators, a filter of user_ability records
 
-class DepositExceptionsController < ApplicationController
+class CuratorsController < ApplicationController
   before_action :set_user_ability, only: [:show, :edit, :update, :destroy]
 
-  # Responds to `GET /deposit_exceptions`
-  # Responds to `GET /deposit_exceptions.json`
+  # Responds to `GET /curators`
+  # Responds to `GET /curators.json`
   def index
-    @user_abilities = UserAbility.where(resource_type: 'Dataset', ability: 'create', resource_id: nil)
+    config_admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
+    @config_admin_uids = config_admins.map {|x| x + "@illinois.edu" }
+    @curators = User.curators
+    @curator_ability_user_not_found = UserAbility.curators.where.not(user_uid: @curators.pluck(:uid))
   end
 
-  # Responds to `GET /deposit_exceptions/1`
-  # Responds to `GET /deposit_exceptions/1.json`
+  # Responds to `GET /curators/1`
+  # Responds to `GET /curators/1.json`
   def show; end
 
-  # Responds to `GET /deposit_exceptions/new`
+  # Responds to `GET /curators/new`
   def new
     @user_ability = UserAbility.new
   end
 
-  # Responds to `GET /deposit_exceptions/1/edit`
+  # Responds to `GET /curators/1/edit`
   def edit; end
 
-  # Responds to `POST /deposit_exceptions`
-  # Responds to `POST /deposit_exceptions.json`
+  # Responds to `POST /curators`
+  # Responds to `POST /curators.json`
   def create
     @user_ability = UserAbility.new(user_ability_params)
 
     respond_to do |format|
       if @user_ability.save
-        format.html { redirect_to "/deposit_exceptions", notice: 'Deposit exception was successfully created.' }
+        format.html { redirect_to "/curators", notice: 'Curator was successfully added.' }
         format.json { render :show, status: :created, location: @user_ability }
       else
         format.html { render :new }
@@ -38,12 +41,12 @@ class DepositExceptionsController < ApplicationController
     end
   end
 
-  # Responds to `PATCH/PUT /deposit_exceptions/1`
-  # Responds to `PATCH/PUT /deposit_exceptions/1.json`
+  # Responds to `PATCH/PUT /curators/1`
+  # Responds to `PATCH/PUT /curators/1.json`
   def update
     respond_to do |format|
       if @user_ability.update(user_ability_params)
-        format.html { redirect_to "/deposit_exceptions", notice: 'Deposit exception was successfully updated.' }
+        format.html { redirect_to "/curators", notice: 'Curator was successfully updated.' }
         format.json { render :show, status: :ok, location: @user_ability }
       else
         format.html { render :edit }
@@ -52,12 +55,12 @@ class DepositExceptionsController < ApplicationController
     end
   end
 
-  # Responds to `DELETE /deposit_exceptions/1`
-  # Responds to `DELETE /deposit_exceptions/1.json`
+  # Responds to `DELETE /curators/1`
+  # Responds to `DELETE /curators/1.json`
   def destroy
     @user_ability.destroy
     respond_to do |format|
-      format.html { redirect_to "/deposit_exceptions", notice: 'Deposit exception was successfully destroyed.' }
+      format.html { redirect_to "/curators", notice: 'Curator was successfully removed.' }
       format.json { head :no_content }
     end
   end

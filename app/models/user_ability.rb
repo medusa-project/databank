@@ -23,6 +23,14 @@ class UserAbility < ApplicationRecord
     true
   end
 
+  def curator?
+    return false unless resource_id.nil?
+    return false unless resource_type == "Databank"
+    return false unless ability == "manage"
+
+    true
+  end
+
   def trim_values
     self.resource_type = resource_type.strip if resource_type
     self.user_provider = user_provider.strip if user_provider
@@ -44,6 +52,31 @@ class UserAbility < ApplicationRecord
                         user_provider: user.provider,
                         user_uid:      user.uid,
                         ability:       ability).exists?
+    end
+
+    # used to add a user to the list of curators for a databank
+    # @param [User] user The user to add to the list of curators
+    def add_curator(user:)
+      UserAbility.create(resource_type: "Databank",
+                          user_provider: user.provider,
+                          user_uid:      user.uid,
+                          ability:       "manage")
+      Application.admin_uids << user.uid
+    end
+
+    # used to remove a user from the list of curators for a databank
+    # @param [User] user The user to remove from the list of curators
+    def remove_curator(user:)
+      UserAbility.where(resource_type: "Databank",
+                        model_id:      nil,
+                        user_provider: user.provider,
+                        user_uid:      user.uid,
+                        ability:       "manage").destroy_all
+      Application.admin_uids.delete(user.uid)
+    end
+
+    def curators
+      UserAbility.where(resource_type: "Databank", resource_id: nil, ability: "manage")
     end
 
     # used to grant the ability to deposit to a user who does not have it by default, graduates and ex-employees

@@ -8,7 +8,10 @@
   = @user_ability.user_provider
 %p
   %b User name:
-  = @user.name
+   - if @user
+    = @user.name
+  - else
+    %em User not found
 %p
   %b Resource type:
   = @user_ability.resource_type
@@ -19,6 +22,6 @@
   %b Ability:
   = @user_ability.ability
 
-= link_to 'Edit', edit_depositor_exception_path(@user_ability)
+= link_to 'Edit', edit_curator_path(@user_ability)
 \|
-= link_to 'Back', depositor_exceptions_path
+= link_to 'Back', curators_path
