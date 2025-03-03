@@ -109,6 +109,11 @@ module Dataset::Filterable
 
         keywords(params[:q])
 
+        if params[:q] && params[:q].include?('/')
+          with :identifier, params[:q]
+        end
+
+
         if params.has_key?("sort_by")
           case params["sort_by"]
           when "sort_updated_asc"
