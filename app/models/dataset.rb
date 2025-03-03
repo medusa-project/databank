@@ -113,6 +113,7 @@ class Dataset < ApplicationRecord
 
   searchable do
     text :title,
+         :identifier,
          :description,
          :subject_text,
          :keywords,

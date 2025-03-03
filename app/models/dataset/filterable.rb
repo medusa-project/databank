@@ -107,10 +107,7 @@ module Dataset::Filterable
           end
         end
 
-        any_of do
-          keywords(params[:q])
-          with(:identifier, params[:q])
-        end
+        keywords(params[:q])
 
         if params.has_key?("sort_by")
           case params["sort_by"]
@@ -306,11 +303,8 @@ module Dataset::Filterable
           end
         end
 
-        any_of do
-          keywords(params[:q])
-          with(:identifier, params[:q])
-        end
-        
+        keywords(params[:q])
+
         if params.has_key?("sort_by")
           case params["sort_by"]
           when "sort_updated_asc"
