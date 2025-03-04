@@ -107,10 +107,10 @@ module Dataset::Filterable
           end
         end
 
-        keywords(params[:q])
-
         if params[:q] && params[:q].include?('/')
           with :identifier, params[:q]
+        else
+          keywords(params[:q])
         end
 
 
