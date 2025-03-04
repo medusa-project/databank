@@ -107,7 +107,11 @@ module Dataset::Filterable
           end
         end
 
-        keywords(params[:q])
+        if params[:q] && params[:q].include?('/')
+          with :identifier, params[:q]
+        else
+          keywords(params[:q])
+        end
 
         if params.has_key?("sort_by")
           case params["sort_by"]
@@ -216,7 +220,13 @@ module Dataset::Filterable
             end
           end
         end
-        keywords(params[:q])
+
+        if params[:q] && params[:q].include?('/')
+          with :identifier, params[:q]
+        else
+          keywords(params[:q])
+        end
+
         if params.has_key?("sort_by")
           case params["sort_by"]
           when "sort_updated_asc"
@@ -303,7 +313,12 @@ module Dataset::Filterable
           end
         end
 
-        keywords(params[:q])
+        if params[:q] && params[:q].include?('/')
+          with :identifier, params[:q]
+        else
+          keywords(params[:q])
+        end
+
         if params.has_key?("sort_by")
           case params["sort_by"]
           when "sort_updated_asc"
@@ -340,7 +355,11 @@ module Dataset::Filterable
       Dataset.search do
         without(:depositor, "error")
         with(:is_most_recent_version, true)
-        keywords(params[:q])
+        if params[:q] && params[:q].include?('/')
+          with :identifier, params[:q]
+        else
+          keywords(params[:q])
+        end
         facet(:license_code)
         facet(:funder_codes)
         facet(:depositor)
@@ -379,7 +398,11 @@ module Dataset::Filterable
             end
           end
         end
-        keywords(params[:q])
+        if params[:q] && params[:q].include?('/')
+          with :identifier, params[:q]
+        else
+          keywords(params[:q])
+        end
         facet(:license_code)
         facet(:funder_codes)
         facet(:creator_names)
@@ -419,7 +442,11 @@ module Dataset::Filterable
             end
           end
         end
-        keywords(params[:q])
+        if params[:q] && params[:q].include?('/')
+          with :identifier, params[:q]
+        else
+          keywords(params[:q])
+        end
         facet(:visibility_code)
       end
     end
@@ -439,8 +466,11 @@ module Dataset::Filterable
             with :publication_state, Databank::PublicationState::PermSuppress::FILE
           end
         end
-
-        keywords(params[:q])
+        if params[:q] && params[:q].include?('/')
+          with :identifier, params[:q]
+        else
+          keywords(params[:q])
+        end
         facet(:license_code)
         facet(:funder_codes)
         facet(:creator_names)

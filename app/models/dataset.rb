@@ -113,10 +113,10 @@ class Dataset < ApplicationRecord
 
   searchable do
     text :title,
+         :identifier,
          :description,
          :subject_text,
          :keywords,
-         :identifier,
          :funder_names_fulltext,
          :grant_numbers_fulltext,
          :creator_names_fulltext,
@@ -124,6 +124,7 @@ class Dataset < ApplicationRecord
          :datafile_extensions_fulltext,
          :publication_year
 
+    string :identifier
     string :publication_year
     string :license_code
     string :depositor
