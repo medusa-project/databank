@@ -1,0 +1,70 @@
+section1:
+  id: 1
+  anchor: "submission"
+  label: "Submission Process"
+  ordinal: 2
+  public: true
+  created_at: "2022-07-25 15:29:21.568559000 +0000"
+  updated_at: "2025-02-19 22:27:24.671537000 +0000"
+  heading: "Submission Process"
+  body: ""
+section2:
+  id: 2
+  anchor: "practices"
+  label: "Good Data Practices"
+  ordinal: 3
+  public: true
+  created_at: "2022-07-25 15:29:21.626974000 +0000"
+  updated_at: "2025-02-19 22:27:24.683141000 +0000"
+  heading: "Good Data Practices"
+  body: ""
+section3:
+  id: 3
+  anchor: "faq"
+  label: "Frequently Asked Questions"
+  ordinal: 4
+  public: true
+  created_at: "2022-07-25 15:29:21.650792000 +0000"
+  updated_at: "2025-02-19 22:27:24.685511000 +0000"
+  heading: "Frequently Asked Questions"
+  body: ""
+section4:
+  id: 4
+  anchor: "developers"
+  label: "Information for Developers"
+  ordinal: 6
+  public: true,
+  created_at: "2022-07-25 15:29:21.683080000 +0000"
+  updated_at: "2025-02-19 22:27:24.678214000 +0000"
+  heading: "Information for Developers" 
+  body: "<div class='indent'> <p> Databank is the Ruby on Rails web application component of Illinois Data Bank. Within the repository system at the University Library at Illinois, the web application integrates with the <a class='intense' href='https://doi.org/10.1145/2467696.2467725' target='_blank'><span style=\"color: #dd3403;\">Medusa digital preservation repository</a></span>, also developed at the Univeristy Library at Illinois. Medusa provides long-term retention and accessibility of its digital collection. In development of Medusa, the Library’s goal was to closely integrate the Library’s digital production, preservation, and access services in order to establish an efficient, sensible, and sustainable digital library program. Externally, Illinois Data Bank integrates with the DataCite Metadata Store through DataCite’s EZ API. </p> <p> When a depositor confirms an intention to publish, the web application requests a <a class='intense' href='#doi'><span style=\"color: #dd3403;\">DOI</a></span>, Within a pre-registered prefix, the DataCite EZ API supports generation of a random DOI or a specified DOI. Illinois Data Bank specifies a DOI that is largely opaque, but encodes version information. After DataCite returns a DOI, Databank sends a message to Medusa to initiate ingestion into the digital preservation system. Building on an approach Medusa uses for other functionality, the messages are sent using Advanced Message Queuing Protocol, specifically using a RabbitMQ server. Messaging supports effective integration, while allowing independent development. Custom selection of files for zipping and downloading files in published datasets, which are stored in Medusa, is supported with a distinct web service called Medusa Downloader. </p> <p> For more information on development of the Illinois Data Bank, please see our <a class='intense' href='http://journal.code4lib.org/articles/11980' target='_blank'><span style=\"color: #dd3403;\">Code4Lib paper</a></span>, view our most recent code in <a class='intense' href='https://github.com/medusa-project/databank' target='_blank'><span style=\"color: #dd3403;\">GitHub</a></span>, or <a class='intense' href='https://databank.illinois.edu/contact'><span style=\"color: #dd3403;\">contact us</a></span>. </p> </div>"
+section5:
+  id: 5
+  anchor: "accessibility"
+  label: "Accessibility"
+  ordinal: 7
+  public: true
+  created_at: "2022-07-25 15:29:21.686212000 +0000"
+  updated_at: "2025-02-19 22:27:24.680711000 +0000"
+  heading: "Accessibility"
+  body: "<p>Research Data Service staff are committed to making the Illinois Data Bank service available to everyone. We are continuously improving the Illinois Data Bank for accessibility but understand that there may be areas and tasks that are not optimized for all access methods.</p><p>Research Data Service staff are happy to assist with the data deposit or access process if you encounter technical or navigation trouble. Do not hesitate to <a class='intense' href='https://databank.illinois.edu/contact'><span style=\"color: #dd3403;\">contact us</a></span> by using our help form, emailing: <a class='intense' href='mailto:databank@library.illinois.edu'><span style=\"color: #dd3403;\">databank@library.illinois.edu</a></span>, or by calling 217-244-1331</p>"
+section6:
+  id: 6
+  anchor: "mission_commitment"
+  label: "Mission and Commitment to Data Sharing "
+  ordinal: 1
+  public: true
+  created_at: "2025-02-12 16:44:06.905732000 +0000"
+  updated_at: "2025-02-19 22:27:24.688374000 +0000"
+  heading: "Mission and Commitment to Data Sharing "
+  body: "As a trustworthy repository, the Illinois Data Bank commits to centralize, preserve, and provide reliable access to research data created by affiliates of the University of Illinois Urbana-Champaign. Managed by the Research Data Service at the University Library, it leverages the Library’s digital preservation system and operates within a robust policy framework that articulates the University's commitment to providing persistent and reliable access to research data."
+section7:
+  id: 7,
+  anchor: "definitions"
+  label: "Definitions"
+  ordinal: 5
+  public: true
+  created_at: "2022-07-25 15:29:21.689322000 +0000"
+  updated_at: "2025-02-19 22:27:24.675454000 +0000"
+  heading: "Definitions of Terms in the Illinois Data Bank"
+  body: "<p> The following are simplified definitions:</p>"

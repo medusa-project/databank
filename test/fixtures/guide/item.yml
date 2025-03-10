@@ -1,0 +1,264 @@
+item1:
+  id: 1
+  section_id: 1
+  anchor: "login"
+  label: "Log In"
+  ordinal: 1
+  heading: "Log in with NetID"
+  body: "<p> The first step to depositing data within the Illinois Data Bank is logging in with your Illinois NetID and Active Directory password. The Illinois Data Bank will check your NetID and confirm that you belong to a group eligible for self-deposit. Illinois faculty, graduate students, and most staff are eligible for self-deposit, but others (including undergraduates) will see a restriction notice after logging in. </p>\r\n<p><a class='intense' href='https://databank.illinois.edu/contact'><span style=\"color: #dd3403;\">&#x2709; Contact the Research Data Service staff</a></span> if you run into trouble or need to request authorization for self-deposit. </p>"
+  public: true
+  created_at: "2022-07-25 15:29:21.583373000 +0000"
+  updated_at: "2024-10-21 15:25:47.894254000 +0000"
+item2:
+  id: 2
+  section_id: 1
+  anchor: "describe"
+  label: "Describe Your Dataset"
+  ordinal: 2
+  heading: "Describe Your Dataset"
+  body: "<p> The information you provide here will be attached to your dataset as metadata associated with your <a class='intense' href='help#doi'>DOI</a>. Providing detailed descriptive information is important because it will be transmitted to search engines such as Google Scholar and other aggregators that look at data. The clearer you can describe your data, the easier it will be for others to find and make use of it! </p> <p>You can always edit and expand your metadata after publication. Research Data Service staff also regularly review the metadata and add information to increase the visibility of your dataset. Sections to add information about your dataset:</p> <ol><li> <p><b><em>Title:</em></b> provides descriptive title to reflect the dataset. <b>Tip:</b> common used format: Data for [insert article title].<br /><br /><img src=\"/dataset_title.png\"/> </p>  </li><li> <p><b><em>Description:</em></b> allows you to provide brief information about the dataset you are publishing, including information about the data files and their contents. You may choose to repeat a portion of your main documentation file here as well. <b>Tip:</b> information in this section should describe your dataset, not summarize the associated paper. <br /><br /><img src=\"/dataset_description.png\"/> </p> </li> <li> <p><b><em>Keywords:</em></b> enhances dataset searchability. <b>Tip:</b> use semicolon (;) to separate the list of keywords and add any words from the title that would be searchable in the keywords list.<br /><br /><img src=\"/dataset_keywords.png\"/> </p> </li> <li> <p><b><em>Funder:</em></b> allows you to provide grant or other information about financial support of your dataset. <br /><br /><img src=\"/dataset_funder.png\"/> </p> </li> <li> <p><b><em>Related Materials:</em></b> is where you can provide information about scholarly works that use or have contributed to your dataset. Research Data Service staff review this section and create links between these works and your dataset record. This allows publishers and <a href='http://altmetrics.org/tools/' target='_blank'>altmetrics tools</a> to make connections to your published data. <br /><br /><img src=\"/dataset_relatedmaterial.png\"/> </p> </li> </ol>"
+  public: true
+  created_at: "2022-07-25 15:29:21.588154000 +0000"
+  updated_at: "2024-04-04 14:53:42.185023000 +0000"
+item3:
+  id: 3
+  section_id: 1
+  anchor: "upload"
+  label: "Upload Files"
+  ordinal: 3
+  heading: "Upload Files"
+  body: "<p>You may either upload directly from your computer or import files you already have stored inside of Box. Depending on your file size, there are several options for uploading your individual data files: <br/><br /> <img class=\"image-responsive\" src=\"/file_upload.png\"/></p>\r\n<p>You may save and exit your draft at any time. Let us know if we can help you get your data prepared and documented.\r\n<p><b>*NOTE:</b> Unlike the metadata, you <b>will not be allowed to edit or change your data files after publication</b> without curator assistance. <a class='intense' href='https://databank.illinois.edu/contact'><span style=\"color: #dd3403;\">&#x2709; Contact the Research Data Service staff</a></span> if you need assistance during uploading phase.</p>"
+  public: true,
+  created_at: "2022-07-25 15:29:21.591485000 +0000"
+  updated_at: "2024-04-04 14:56:26.991999000 +0000"
+item4:
+  id: 4
+  section_id: 3
+  anchor: "doi"
+  label: "What is a DOI?"
+  ordinal: 5
+  heading: "What is a DOI?"
+  body: "<p>A <a class='intense' href=\"https://emails.illinois.edu/newsletter/163601.html\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">DOI</a></span>, or digital object identifier, is a unique ID assigned to digital resources on the web and used to identify digital resources on the Web over long periods of time. DOIs also promote resource discovery through the publication of descriptive information about the associated online resources. </p> <p><strong>Access:</strong> DOIs have associated redirect links, usually a page pointing to where the resource can be accessed. Any changes to where the resource is located on the web can be sent to the DOI resolution database and the DOI will automatically begin forwarding to that new page. This means that you are free to use this DOI link within static publications without fear that a resource migration or other URL change may break the link.</p> <p><strong>Discovery: </strong>DataCite, the resolution service that the Illinois Data Bank uses for minting DOIs, also accepts descriptive information about the registered data objects. This metadata is indexed by several search engines and promotes the discovery of the resources for future users.</p> <p><strong>Reserve DOI vs. Active DOI:</strong> The two types of DOI we use. If you choose to have your data curated before publishing, a reserve DOI will be attached. This reserves the datasets unique DOI, remains the same throughout, but it is not activated yet. The reserved DOI can be included in your upcoming publication. Once the dataset is published, the DOI becomes resolved (activated).</p> <p>Publishing your dataset within the Illinois Data Bank grants you a DOI for your dataset so you can benefit from a stable URL, increased visibility, and more formalized citation practices. Research Data Service staff members review and edit your descriptive metadata to ensure accuracy and maximize visibility. Curators also add formal links between associated publications so that aggregation and altmetrics services can recognize and include datasets within their reports.</p> <p>There are two types of DOI's we use: reserve DOI and active DOI. If you choose to do have your data curated before publishing, a reserve DOI will be attached. This reserves the datasets unique DOI, but it is not activated yet for sharing. Once the dataset is published, the DOI becomes actived and is ready for sharing.</p> <p>Questions or concerns about how DOIs work? <a class='intense' href='https://databank.illinois.edu/contact'><span style=\"color: #dd3403;\">&#x2709; Contact the Research Data Service staff</a></span>.</p>"
+  public: true,
+  created_at: "2022-07-25 15:29:21.653948000 +0000"
+  updated_at: "2024-12-13 21:04:41.595588000 +0000"
+item5:
+  id: 5
+  section_id: 3
+  anchor: "data_availability"
+  label: "What is data availability?"
+  ordinal: 8
+  heading: "How to write a data availability statement"
+  body: "<p>Data availability statements are short, simple explanations of how a dataset referenced in a publication is available to others. \r\nWhen producing a statement for a dataset deposited in the Illinois Data Bank, reference the following:</p>\r\n\"The dataset supporting these findings is openly available in the Illinois Data Bank at [DOI received].\"</p>"
+  public: true
+  created_at: "2023-11-09 20:16:48.598352000 +0000"
+  updated_at: "2024-12-13 21:04:41.598774000 +0000"
+item6:
+  id: 6
+  section_id: 3
+  anchor: "related materials"
+  label: "Related Materials vs. Cited By"
+  ordinal: 12
+  heading: "Related Materials vs. Cited By"
+  body: "<p>Articles, theses, code, etc. are items often related to a published dataset. We call these items \"Related Materials\" which provide context about the research project and methodology used to create, clean, or analyze the data. Related materials are produced by the same or very similar set of individuals who published the dataset. </p><p>“Cited By” indicates publications that have referenced the original dataset.</p>"
+  public: true
+  created_at: "2024-04-09 23:27:33.132407000 +0000"
+  updated_at: "2024-12-13 21:04:41.604627000 +0000"
+item7:
+  id: 7
+  section_id: 3
+  anchor: "desirable_characteristics"
+  label: "Meeting data sharing requirements?"
+  ordinal: 3
+  heading: "How does Illinois Data Bank help you meet the data sharing requirements?"
+  body: "<p>The Illinois Data Bank is certified as a trustworthy..."
+  public: true
+  created_at: "2024-12-13 21:02:35.579459000 +0000"
+  updated_at: "2025-03-06 15:48:30.904990000 +0000"
+item9:
+  id: 9
+  section_id: 1
+  anchor: "review"
+  label: "Revew Submission"
+  ordinal: 4
+  heading: "Review Submission"
+  body: "<p>This phase of publication gives you a chance to look over all the information you've provided and confirm that everything is ready go to. You have the option of saving your work and exiting from the publication process if you need more time to gather information from a colleague, Research Data Service staff, or other sources. </p><p>After clicking \"Continue\" button, you will have <b>two options to choose</b> as showing in the image:<br /><br /><img src=\"/review_options.png\"/></p><ul><li><p><strong>Review and then publish</strong> (recommended) option: lets curators preview your submission to eliminate errors before publication. With this option, you receive a <a class='intense' href='https://databank.illinois.edu/guides#doi'><span style=\"color: #dd3403;\">reserved DOI</a> that can be used in your upcoming associated publication(s). The reserved DOI will remain the same throughout and work after the review which normally takes 2-5 business days.</p></li><li><p><strong>Publish then review</strong> option: your <a class='intense' href='https://databank.illinois.edu/guides#doi'><span style=\"color: #dd3403;\">DOI</a></span> will resolve (work) in few minutes. However, because curation occurs after publication, any errors that are found will result in having to re-publish the dataset, which will require a new DOI.</p></li></ul>"
+  public: true
+  created_at: "2022-07-25 15:29:21.613499000 +0000"
+  updated_at: "2024-04-04 15:09:25.132073000 +0000"
+item11:
+  id: 11
+  section_id: 1
+  anchor: "embargo"
+  label: "Delay Publication"
+  ordinal: 5
+  heading: "Delay Publication (Optional)"
+  body: "<div class='indent'>\r\n<p>The primary purpose of the Illinois Data Bank is to provide University of Illinois researchers a space to make their research data openly available immediately to anyone in the world. We do recognize that there are sometimes cases where, due to publisher or other requirements, researchers may need to deposit their dataset but make it temporarily unavailable for download. To meet this need, we provide the following two options for temporarily delaying publication of datasets in the Illinois Data Bank:</p>\r\n<div class='table-responsive'>\r\n<table class='table table-bordered' id='embargo_info_table'>\r\n<thead>\r\n<tr class='row idb-infographic-header'>\r\n<th class='col-md-6'>\r\n<h4>File Only Publication Delay</h4>\r\n</th>\r\n<th class='col-md-6'>\r\n<h4>Metadata and File Publication Delay</h4>\r\n</th>\r\n</tr>\r\n</thead>\r\n<tbody>\r\n<tr class='row'>\r\n<td>\r\n<h4>\r\n<strong>You receive an active DOI.</strong>\r\n</h4>\r\n<div class='indent'>You will receive a DOI, and the link will forward to the Illinois Data Bank page for your dataset.</div>\r\n</td>\r\n<td>\r\n<h4>\r\n<strong>Your DOI is saved, but the link will fail.</strong>\r\n</h4>\r\n<div class='indent'>You will receive a DOI link to place in your publication, but the link will fail until the release date you selected.</div>\r\n</td>\r\n</tr>\r\n<tr class='row'>\r\n<td>\r\n<h4>\r\n<strong>Your dataset record is discoverable.</strong>\r\n</h4>\r\n<div class='indent'>Information for your dataset in the Illinois Data Bank will be publicly visible through several search engines and other sources.</div>\r\n</td>\r\n<td>\r\n<h4>\r\n<strong>Your dataset record is not discoverable.</strong>\r\n</h4>\r\n<div class='indent'>Your dataset will be stored in the Illinois Data Bank, but is not discoverable or visible until the release date you selected.</div>\r\n</td>\r\n</tr>\r\n<tr class='row'>\r\n<td>\r\n<h4>\r\n<strong>Dataset files cannot be accessed or seen.</strong>\r\n</h4>\r\n<div class='indent'>Although the record for your dataset is publicly visible, your data files will not be made available until the release date you selected.</div>\r\n</td>\r\n<td>\r\n<h4>\r\n<strong>Dataset files cannot be accessed or seen.</strong>\r\n</h4>\r\n<div class='indent'>The record for your dataset is not visible, nor are your data files available until the release date you selected.</div>\r\n</td>\r\n</tr>\r\n</tbody>\r\n</table>\r\n</div>\r\n\r\n<div class='idb-callout idb-callout-lg'>\r\nThe\r\n<strong>maximum</strong>\r\namount of time that data can be delayed for publication is\r\n<strong>1 year</strong>.\r\n</div>\r\n<p>\r\nNot sure if you should delay publication of your data, what your release date should be, or have any other questions?\r\n<a class='intense' href='https://databank.illinois.edu/contact'><span style=\"color: #dd3403;\">&#x2709; Contact the Research Data Service staff</a></span>\r\nand we will advise on publication delay based on your specific needs.\r\n</p>\r\n</div>"
+  public: true
+  created_at: "2022-07-25 15:29:21.616672000 +0000"
+  updated_at: "2024-04-04 15:10:38.991901000 +0000"
+item12:
+  id: 12
+  section_id: 1
+  anchor: "finalize"
+  label: "Finalize Your Dataset"
+  ordinal: 6
+  heading: "Finalize Your Dataset"
+  body: "<p>Once everything looks good to you, your final step is to publish the dataset. As mentioned in the Review Submission section, after clicking \"Continue\" button, you will have two (2) options to choose:</p><ul><li><p><strong>Review and then publish</strong> (recommended) option: lets curators preview your submission to eliminate errors before publication. With this option, you receive a reserved DOI that can be used in your upcoming associated publication(s). The reserved DOI will work after the review which normally takes 2-5 business days.</p></li><li><p><strong>Publish then review</strong> option: your DOI will resolve (work) in few minutes. However, because curation occurs after publication, any errors that are found will result in having to re-publish the dataset, which will require a new DOI.</p></li></ul><br /><p> A small windown will pop up to confirm your intention to publish: <br /><br /><img src=\"/publish_dataset.png\"/></p><br /><b>*NOTE:</b> for embargoed dataset, you <b>must publish </b> your dataset in order for it to be available on the released date</p>"
+  public: true
+  created_at: "2022-07-25 15:29:21.619755000 +0000"
+  updated_at: "2022-07-25 15:29:21.619755000 +0000"
+item13:
+  id: 13
+  section_id: 1
+  anchor: "curation"
+  label: "Curation Process"
+  ordinal: 7
+  heading: "Curation Process"
+  body: "<strong>What is data curation?</strong><br /><p>Data curation is a set of activities that enables data discovery and retrieval, maintains data quality, adds value, and provides for re-use over time through activities including authentication, archiving, metadata creation, digital preservation, and transformation. The person who performs this work is a data curator, and these professionals collaborate with researchers to share data ethically and in ways that are <span style=\"text-decoration: underline;\"><strong>F</strong></span>indable, <span style=\"text-decoration: underline;\"><strong>A</strong></span>ccessible, <span style=\"text-decoration: underline;\"><strong>I</strong></span>nteroperable and <span style=\"text-decoration: underline;\"><strong>R</strong></span>eusable by aligning with the <a class='intense' href=\"https://www.go-fair.org/fair-principles/\"><span style=\"color: #dd3403;\">FAIR Principles</span></a>.<br /><p><strong>How are datasets curated in the Illinois Data Bank?</strong><br />Research Data Service staff monitor and curate all datasets submitted to the <a class='intense' href=\"https://databank.illinois.edu/\"><span style=\"color: #dd3403;\">Illinois Data Bank</span></a>. The depth of curation depends on the size of the dataset deposited, how well it is documented, and the tools available to our team to open the files. To better curate the diverse data deposited into the Illinois Data Bank, the University of Illinois at Urbana-Champaign is a sustaining member of the <a class='intense' href=\"https://datacurationnetwork.org/\"><span style=\"color: #dd3403;\">Data Curation Network</span></a>, a network of professional data curators with a wide variety of specialized skills and knowledge. <br />Illinois Data Bank curation workflow aims to follow the DCN's established <a class='intense' href=\"https://datacurationnetwork.org/outputs/workflows/\"><span style=\"color: #dd3403;\">CURATED Steps:</span></a><ul><li><p><span style=\"text-decoration: underline;\"><strong><span style=\"font-size: 18pt;\">C</span></strong></span>heck files/code and read documentation (risk mitigation, file inventory, appraisal/selection)<br /></li><li><p><span style=\"text-decoration: underline;\"><strong><span style=\"font-size: 18pt;\">U</span></strong></span>nderstand the data (or try to), if not… (run files/code, QA/QC issues, readmes)<br /></li><li><p><span style=\"text-decoration: underline;\"><strong><span style=\"font-size: 18pt;\">R</span></strong></span>equest missing information or changes (tracking provenance of any changes and why)<br /></li><li><p><span style=\"text-decoration: underline;\"><strong><span style=\"font-size: 18pt;\">A</span></strong></span>ugment metadata for findability (DOIs, metadata standards, discoverability)<br /></li><li><p><span style=\"text-decoration: underline;\"><strong><span style=\"font-size: 18pt;\">T</span></strong></span>ransform file formats for reuse (through suggested actions for data preservation, conversion tools, data visualization)<br /></li><li><p><span style=\"text-decoration: underline;\"><strong><span style=\"font-size: 18pt;\">E</span></strong></span>valuate for FAIRness (transparent usage licenses, responsibility standards, metrics for tracking use)<br /></li><li><p><span style=\"text-decoration: underline;\"><strong><span style=\"font-size: 18pt;\">D</span></strong></span>ocument all curation activities throughout the process</li></ul><br /><span class=\"author-1701876906 font-size-medium\">*</span> <span class=\"author-1701876906 font-size-medium\"><strong>Note</strong>: DCN CURATED steps are not considered peer review and do not judge the core scientific analysis, methodologies, or conclusions behind the data.</span></p><br />\r\n\r\n<p><b>If you deposit a dataset into the Illinois Data Bank, what can you expect?</b><br /><ul> <li><p>An automated email confirming for your actions, including requesting a pre-publication review, and publishing a dataset</p></li><li><p>A personal email from Research Data Service staff relating to suggested changes to metadata and/or data file(s)</p></li><li><p>All suggestions from curators are optional, and depositors have the right to accept or reject those suggestions</p></li></ul>\r\n\r\n<p><b>Who can help with data curation?</b><br /><span class=\"author-1701876906 font-size-medium\"> Research Data Service staff are happy answer any questions related to data curation. Send your question(s) to</span> <a class='intense' href=\"mailto:databank@library.illinois.edu\"><span style=\"color: #dd3403;\">&#x2709; databank@library.illinois.edu</span></a>, and we will get back to you in timely manner."
+  public: true
+  created_at: "2022-07-25 15:29:21.622925000 +0000"
+  updated_at: "2024-04-04 15:11:42.224821000 +0000"
+item14:
+  id: 14
+  section_id: 3
+  anchor: "ideals"
+  label: "Illinois Data Bank vs. IDEALS"
+  ordinal: 1
+  heading: "When do I use the Illinois Data Bank vs. IDEALS?"
+  body: "<p>While <a class='intense' href=\"https://www.ideals.illinois.edu/\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">IDEALS</a></span> and the Illinois Data Bank are both repositories that University of Illinois at Urbana-Champaign researchers can submit their research materials to, they deal with different materials. The Illinois Data Bank accepts deposits of research data while IDEALS accepts research and scholarship materials. The format of the content (images, code, spreadsheet, etc.) doesn’t matter as much as the purpose of the submission. </p> <p>The Illinois Data Bank defines data in our terminologies as “Factual material commonly accepted in a given research community as necessary to validate or extend research findings. Data may be qualitative, in the form of literature, interviews, observations, etc., or quantitative, in the form of numerical, spatial, measurements, etc.” If the content’s purpose is to discuss research, a project, or an act of scholarship, it should be deposited into IDEALS. If the content was collected and/or created during the research process and is necessary for the reproduction of research, then it should be deposited into the Illinois Data Bank.</p> <p>Examples of Illinois Data Bank content: </p> <ul> <li>Data output (of various types) from a technical instrument </li> <li>Cleaned data collected from field studies and field notebooks</li> <li>Cleaned, deidentified, non-PII interview data</li> <li>Research data documentation</li> <li>Code necessary to access and use a research dataset</li> </ul> <p>Examples of IDEALS content:</p><ul><li>Thesis and dissertations</li> <li>Presentation slides</li> <li>Publication pre-prints</li> <li>Electronic theses and dissertations</li> <li>Audio or video recording of a presentation</li> </ul>"
+  public: true
+  created_at: "2022-07-25 15:29:21.656974000 +0000"
+  updated_at: "2024-04-04 15:22:11.915680000 +0000"
+item15:
+  id: 15
+  section_id: 3
+  anchor: "use"
+  label: "Why use the Illinois Data Bank?"
+  ordinal: 2
+  heading: "Why to use/deposit to the Illinois Data Bank?"
+  body: "<p>Use data in the Illinois Data Bank because it:</p> <ul><li>Provides freely accessible and openly licensed research data (refer to individual datasets for specific licensing information)</li> <li>Supplies a DOI for easy and persistent sharing</li> <li>Is curated by data experts and subject specialists to improve usability and preservation efforts</li> <li>Reduces the unintentional duplication of research efforts</li> <li>Allows you to build off of existing data created by UIUC researchers</li></ul> <p>Deposit data into the Illinois Data Bank so you can:</p> <ul><li>Meet research data sharing requirements as outlined by funding agency and/or publisher</li> <li>Include your dataset metrics as evidence of scholarly impact</li> <li>Show professional and ethical commitment to improving research reproducibility and reducing barriers to research access</li> <li>Add dataset DOI to related research publications for increased visibility</li> <li>Choose between pre- and post-deposit for dataset curation to ensure sustainability and future researcher understanding</li> <li>Improve access and findability of your data through Illinois Data Bank search engine indexing</li></ul>\r\n\r\n<p>Some publishers offer the option of contributing data as \"supplemental materials\" in the form of a pdf. The Illinois Data Bank can provide a more flexible alternative, as detailed below:</p>\r\n\r\n<table> <thead> <tr class='row idb-infographic-header'> <th class='col-md-4'> <h2>Criteria</h2> </th> <th class='col-md-4'> <h2>Supplemental Material</h2> </th> <th class='col-md-4'> <h2>Illinois Data Bank</h2> </th> </tr> </thead> <tbody> <tr class='row'> <td>Size limitations on files</td> <td>Often lower than 100 MB</td> <td>2 Terabytes</td> </tr> <tr class='row'> <td>Format limitations on files</td> <td>Restrictions and requirements are possible. Often PDF only.</td> <td>Any format is accepted</td> </tr> <tr class='row'> <td>Digital Object Identifier (DOI)</td> <td>Unlikely to be available</td> <td>Automatically provided</td> </tr> <tr class='row'> <td>Metadata available, exportable, and searchable</td> <td>Unlikely to be available</td> <td>Automatically provided</td> </tr> <tr class='row'> <td>Access restriction / findability</td> <td>Can be hidden by paywalls or publisher-chosen access controls.</td> <td>Data will be freely available (after release from any embargoes you choose to assign).</td> </tr> <tr class='row'> <td>Download statistics</td> <td>Unlikely to be available</td> <td>Automatically provided</td> </tr> <tr class='row'> <td>Storage infrastructure</td> <td>Stability and suitability for long term storage is usually not be guaranteed</td> <td>Stable preservation environment that complies with many funder and publisher requirements</td> </tr> <tr class='row'> <td>Cost to publish</td> <td>Sometimes fee-based</td> <td>No cost for University of Illinois researchers</td> </tr> <tr class='row'> <td>Guaranteed availability</td> <td>Unlikely to be guaranteed for multiple years or regularly reviewed</td> <td>Every dataset is guaranteed to be available for a minimum of 5 years, with longer storage likely. Regular review and curation will ensure continued availability and preservation best practices as time passes.</td> </tr> <tr class='row'> <td>Connections to additional papers that uses the data and other materials</td> <td>Sometimes available</td> <td>We link your dataset to articles, code, theses, other data sources, etc.</td> </tr> <tr class='row'> <td>Standard or custom licensing statements</td> <td>Unlikely to be available</td> <td>CC0 and CC BY are standard offerings; you can also upload a customized license statement.</td> </tr> </tbody> </table>"
+  public: true
+  created_at: "2022-07-25 15:29:21.659825000 +0000"
+  updated_at: "2022-10-04 14:26:04.068493000 +0000"
+item17:
+  id: 17
+  section_id: 3
+  anchor: "publish"
+  label: "When do I publish a dataset?"
+  ordinal: 4
+  heading: "When do I publish a dataset in the Illinois Data Bank?"
+  body: "<p>We suggest publishing a dataset with the Illinois Data Bank after a journal article or other work of scholarship has reached final acceptance with a publisher. When a dataset is published with the Illinois Data Bank, the submitter can then include the dataset DOI in the journal article for easy linking. </p> <p>Please note, we accept data from research projects that will not be published and/or published in traditional ways. As long as the data meets the <a class='intense' href=\"https://databank.illinois.edu/policies#deposit_agreement\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">deposit agreements</a></span>, we are happy to support the publication of your data.</p> <img class=\"img-responsive\" src=\"/when_to_publish_dataset.jpg\"/>"
+  public: true
+  created_at: "2022-07-25 15:29:21.663043000 +0000"
+  updated_at: "2024-12-13 21:04:41.585687000 +0000"
+item19:
+  id: 19
+  section_id: 3
+  anchor: "metadata"
+  label: "What is metadata?"
+  ordinal: 6
+  heading: "What is metadata?"
+  body: "<p>Metadata is often described as “data about data.” While this is a shallow definition, it works in showing that metadata describes the ‘aboutness’ of data. In the context of the Illinois Data Bank, metadata is provided during the deposit process. The submission metadata includes:</p> <ul><li>Dataset Title</li> <li>License</li> <li>Author(s) name(s)</li> <li>Author ORCID ID (if applicable) </li> <li>Email</li> <li>Dataset Description</li> <li>Keywords</li> <li>Publication Delay & Release Date (if applicable) </li> <li>Funder</li> <li>Related Resources (articles, presentations, code, etc.) </li> </ul><p>Full documentation, including current and previous versions, of the metadata that the Illinois Data Bank stores and transmits can be found here: <a class='intense' href=\"https://www.ideals.illinois.edu/handle/2142/91019\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">https://www.ideals.illinois.edu/handle/2142/91019</a></span>.</p> <p>Metadata describing the datasets housed within the Illinois Data Bank are published in a variety of ways. Individual metadata records may be directly accessed via our internal API. Appending “.json” to a record’s internal URL will provide the Illinois Data Bank’s original metadata. Using “.xml” will provide the version transmitted to DataCite. An index of all available dataset records can be found at https://databank.illinois.edu/datasets.json. External entities are welcome to harvest our metadata records using at least a 2 second access delay. The DataCite API (<a class='intense' href=\"https://support.datacite.org/docs/mds-api-guide\" style=\"text-decoration:none;\"target=\"_blank\"><span style=\"color: #dd3403;\">https://support.datacite.org/docs/mds-api-guide</a></span>) can also serve individual records for the Illinois Data Bank when provided with our prefix: 10.13012. </p> "
+  public: true
+  created_at: "2022-07-25 15:29:21.665895000 +0000"
+  updated_at: "2025-01-23 18:39:35.052038000 +0000"
+item20:
+  id: 20
+  section_id: 3
+  anchor: "private_link"
+  label: "What is a private sharing link?"
+  ordinal: 7
+  heading: "What is private sharing link?"
+  body: "Anybody with this private sharing link can access to your private dataset so be careful who you share it with.\r\nThis link can be used at the journal office during the review process and/or for sharing with collaborators to access the data files while the dataset is not public. This link will expire 12 months after the date first generated or upon publication."
+  public: true
+  created_at: "2022-07-25 15:29:21.668705000 +0000"
+  updated_at: "2024-12-13 21:04:41.582612000 +0000"
+item21:
+  id: 21
+  section_id: 3
+  anchor: "metrics"
+  label: "What metrics are collected?"
+  ordinal: 9
+  heading: "What metrics does the Illinois Data Bank collect?"
+  body: "<p><h3>Download metrics</h3></p> <p>The Illinois Data Bank tracks download counts for datasets. To mitigate possible over- or under-estimation of download counts, a dataset's download counter will increment up by one when one or more any associated files are downloaded or viewed. However, only one download instance will be counted per IP address per calendar day. This means that a single computer downloading a dataset's files multiple times in the same day will only be counted once. IP addresses of downloaders are only used for this purpose and are deleted regularly in compliance with our <a class='intense' href=\"https://www.vpaa.uillinois.edu/policies/web_privacy.cfm\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">privacy policy</a></span>.</p> <p><h3>Other metrics</h3></p> <p>Research Data Service team members also collect data on DOI access, individual file downloads, and other citation information about deposits held within the Illinois Data Bank. This information can be found at our <a class='intense' href=\"https://databank.illinois.edu/metrics\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">metrics page</a></span>. Please filter based on your dataset's DOI. Depositors are welcome to send in feedback to ask for updated metrics data for their deposits, but please allow several working days for us to collect the information. Some citation information will also be added into dataset metadata areas. Depositors can expect to receive updates about notable citations or changes in access traffic. </p>"
+  public: true
+  created_at: "2022-07-25 15:29:21.673802000 +0000"
+  updated_at: "2024-12-13 21:04:41.589364000 +0000"
+item22:
+  id: 22
+  section_id: 3
+  anchor: "update_file"
+  label: "Can I edit files?"
+  ordinal: 10
+  heading: "Can I change, update, or add files?"
+  body: "<p>You can add and remove files in draft datasets. A draft dataset does not have a DOI, because it not been published or scheduled for publication.</p>\r\n<p>What do you do if you realize you need to correct an error in a dataset you've already published or scheduled for publication (embargoed)? Or what if you have created a helpful documentation file that you want to add to make it easier for others to understand your dataset? Even though the Illinois Data Bank is designed for publication-ready data, we are available to discuss any situation you may be in where you would like to create a new version of your dataset. Please <a class='intense' href='https://databank.illinois.edu/contact'><span style=\"color: #dd3403;\">&#x2709; Contact the Research Data Service staff</a></span> so we can discuss your situation and needs.</p>\r\n<p>If you expect that your dataset might evolve over time (for example, additional data will be added each year), consider setting, defining, and documenting a \"release\" cycle. For example, if you plan to deposit rainfall data, appropriate release cycles could include a calendar-based season or annual release, which should be clearly indicated in any documentation files that you deposit along with your data files. To determine the granularity of the release cycle you can consider what span of data is most likely to be needed for reuse, how quickly you'd like to make the data public, and how often you can commit to collect, prepare, and document datasets for deposit. Consider requesting a consultation with <a class='intense' href='https://databank.illinois.edu/contact'><span style=\"color: #dd3403;\">the Research Data Service staff</a></span> to discuss these options.</p>"
+  public: true
+  created_at: "2022-07-25 15:29:21.677140000 +0000"
+  updated_at: "2024-12-13 21:04:41.607233000 +0000"
+item24:
+  id: 24
+  section_id: 3
+  anchor: "large_download"
+  label: "How do I download large files?"
+  ordinal: 11
+  heading: "How do I download large files using Globus?"
+  body: "<p>The datasets in Illinois Data Bank's repository hold files of varying sizes. While files can be downloaded directly from datasets through a browser, Globus can offer a faster alternative that can be especially noticeable on datasets larger than a few gigabytes.</p> <p>To set up your systems to use Globus to transfer files to your computer, refer to the <a class='intense' href=\"https://docs.globus.org/how-to/get-started/\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">getting started guide</a></span> from Globus for detailed guidance on setting up an account and installing Globus Connect Personal.</p> <p>Once you configure and select an endpoint to send the files to (on your personal computer or other system) you can click on the \"Open in Globus File Manager\" button on a dataset download page.</p>"
+  public: true
+  created_at: "2022-07-25 15:29:21.680126000 +0000"
+  updated_at: "2025-02-19 19:54:08.557993000 +0000"
+item25:
+  id: 25
+  section_id: 2
+  anchor: "file_format"
+  label: "File Formats"
+  ordinal: 1
+  heading: "File Formats"
+  body: "<p>The file formats of deposited data and associated documentation effect the access, use, and preservation of content. Proprietary file formats reduce the ability for other researchers to use your data. Some scholars work at institutions that cannot afford a certain expensive software, or the proprietary file format may not be compatible with the software they use. In addition, the preservation of data greatly depends on it's file format.</p> \r\n<p>We suggest that <b>all possible data deposits be in an open, non-proprietary file format</b>. This may require conversion from a proprietary file format used during research to an open file format for sharing purposes. Check for errors or omissions after conversion to ensure data integrity. If conversion to an open file format is not possible, please provide information about the file format in the associated dataset documentation. Documentation should include: name and version of software used, year and/or company who made the software instrument, information about the required operating systems, and other information needed to be able to use the file.</p>\r\n<p><img class=\"img-responsive\" width=\"60%\" src=\"/Caldrone_File_Format_Matrix_2022_02_28.png\"></p>\r\n\r\n<p>**Further Reading:**</p> \r\n<p>eCommons. Recommended File Formats. Cornell University Library. <a class='intense' href=\"https://guides.library.cornell.edu/ecommons/formats\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\"> https://guides.library.cornell.edu/ecommons/formats</a></span></p>\r\n<p>Research Data Service. (Apr. 2021) File format considerations for data sharing. Data Nudge. <a class='intense' href=\"http://hdl.handle.net/2142/111753\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\"> http://hdl.handle.net/2142/111753</a></span></p>\r\n<p>Research Data Service. (Jan. 2018) Your File Formats Matter. Data Nudge. <a class='intense' href=\"http://hdl.handle.net/2142/109970\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\"> http://hdl.handle.net/2142/109970</a></sapn></p>\r\n<p>United States Geological Survey. File Formats. <a class='intense' href=\"https://www.usgs.gov/data-management/file-formats\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\"> https://www.usgs.gov/data-management/file-formats</a></span></p>\r\n<p>Van den Eynden, Veerle, Corti, Louise, Woollard, Matthew, Bishop, Libby, and Laurence Horton. (2011). <i>Managing and Sharing Data: Best Practice for Researchers</i>. UK Data Archive. <a class='intense' href=\"https://dam.ukdataservice.ac.uk/media/622417/managingsharing.pdf\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\"> https://dam.ukdataservice.ac.uk/media/622417/managingsharing.pdf</a></span></p>"
+  public: true
+  created_at: "2022-07-25 15:29:21.630591000 +0000"
+  updated_at: "2024-04-04 15:13:13.583671000 +0000"
+item26:
+  id: 26
+  section_id: 2
+  anchor: "file_naming"
+  label: "File Naming"
+  ordinal: 2
+  heading: "File Naming"
+  body: "<p>File names need to indicate to the user what content is inside the file. File names should be consistent, unique, easy, and meaningful. Without clear file names, researchers (yourself included) will be confused as to the purpose and relationship between files. Using underscores or hyphens instead of spaces between words also reduces interoperability issues between operating systems. All deposited files and directories should follow a consistent <a class='intense' href=\"http://hdl.handle.net/2142/111618\" style=\"text-decoration:none;\" target=\"_blank\">file naming convention</a>. The following table lists file naming best practices and examples. </p>\r\n\r\n<table class=\"table table-responsive\"> <thead> <tr class=\"row idb-infographic-header\"> <th class=\"col-md-6\"> <h4>File naming best practice</h4> </th> <th class=\"col-md-6\"> <h4>Examples</h4> </th> </tr> </thead> <tbody> <tr class=\"row\"> <td> <p>Use YYYY-MM-DD format</p> </td> <td> <p>project01_2019-01-01</p> </td> </tr> <tr class=\"row\"> <td> <p>Use combination of letters, numbers, underscores, and hyphens</p> </td> <td> <p>  project01_raw-data.json</p> </td> </tr> <tr class=\"row\"> <td> <p>Use standard file extensions to indicate file type</p> </td> <td> <p>myproject.txt</p> </td> </tr> <tr class=\"row\"> <td> <p>Use leading zeroes for version</p> </td> <td> <p>name001.csv&nbsp;&nbsp;&nbsp; name010.csv&nbsp;&nbsp; name101.csv </p> </td> </tr> <tr class=\"row\"> <td> <p>Keep file name short</p> </td> <td> <p>not_too_long.xml</p> </td> </tr> <tr class=\"row\"> <td> <p>Use alphanumericals</p> </td> <td> <p>data_champaign_il_2019-01-01.csv</p> </td> </tr> <tr class=\"row\"> <td> <p>Use underscore between words</p> </td> <td> <p>data_location_time.csv</p> </td> </tr> <tr class=\"row\"> <td> <p>Use lowercase (some systems are case sensitive)</p> </td> <td> <p>all_lowercase_would-be-safer.tiff</p> </td> </tr> </tbody> </table> "
+  public: true
+  created_at: "2022-07-25 15:29:21.634881000 +0000"
+  updated_at: "2024-04-04 15:15:14.119510000 +0000"
+item27:
+  id: 27
+  section_id: 2
+  anchor: "zip"
+  label: "Zip Files"
+  ordinal: 4
+  heading: "Zip Files"
+  body: "<p>It is a good data practice to zip files in order to share with others, as the size of a dataset may be too large for some computers. Zipping files reduces the size while also keeping all the associated files in one directory. In order to keep your file and directory organization during submission to the Illinois Data Bank, you will need to zip your files together. Try to keep each group under 10 GB before you zip it so it's easier to download. Please note that while we use the term zip in this section, you can often hear it referred to as compression. Use a resource you are familiar with to zip your files, such as <a class='intense' href=\"https://www.7-zip.org/\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">7-zip</a></span>, <a class='intense' href=\"https://www.gnu.org/software/tar/\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">GNU Tar</a></span>, etc. </p>\r\n\r\n<p>For more information on the most common forms compressed file formats refer to: </p>\r\n<p>Research Data Service. (Aug. 2018) Common Zipped File Format Used in Research. Data Nudge. <a class='intense' href=\"http://hdl.handle.net/2142/109977\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">http://hdl.handle.net/2142/109977</a></span></p>"
+  public: true
+  created_at: "2022-07-25 15:29:21.637865000 +0000"
+  updated_at: "2024-04-04 15:17:02.493924000 +0000"
+item28:
+  id: 28
+  section_id: 2
+  anchor: "group"
+  label: "File Grouping"
+  ordinal: 3
+  heading: "File Grouping"
+  body: "<p>Uploading lots and lots of files in a single dataset without directory organization can make data difficult to curate, upload/download, understand, and reuse. A long list of files may overwhelm potential users and can also cause technical issues such as slow or failed page loading. Grouping files together may make your dataset easier to deposit and use.</p>\r\n\r\n<p>In addition, you will need to zip any folders or subdirectories before uploading them. The Illinois Data Bank lets you upload files but not entire folders. Zipping your files ensures your existing folder structure is kept during the deposit process.</p> <p>File grouping strategies to consider:</p> <ul><li>Organize your files into logical groups (i.e. by time, location, project - whatever would be most helpful to someone reusing your data)</li> <li>Add a note to your data documentation about the groupings you chose and why </li></ul>\r\n<div class= 'container-flex'><table class='table table-bordered table-sm' id='grouping_info_table'> <thead> <tr class='row idb-infographic-header'> <th class='col-md-4'> <small>Example 1: Temporal organization by seasons and years</small> </th> <th class='col-md-4'> <small>Example 2: Publication supporting organization by figures, tables</small> </th> <th class='col-md-4'> <small>Example 3: Topical organization by species name and treatment types</small> </th> </tr> </thead> <tbody> <tr class='row'> <td> <img class=\"img-responsive\" src=\"/assets/temporal_grouping-e179baff356f5fac2c9d33ae8d492642ce7399d54a4c9a5fe05ac70eb0507edc.png\" /> </td> <td> <img class=\"img-responsive\" src=\"/assets/publication_supporting-9c4cb1f8500d64dfbe83fc793781a3087e6cfad9a2e5cc2b2da2be1e896baba4.png\" /> </td> <td> <img class=\"img-responsive\" src=\"/assets/biological_dataset-7cdd84a2397d72dad00cd89d7f521d009a661908256f72e1ce4778048e53b095.png\" /> </td> </tr> </tbody> </table></div>\r\n\r\n<p>Other categories to consider include:</p> <ul><li>topical (e.g. by species, treatment, etc)</li> <li>temporal (e.g. by year, month, season, etc)</li> <li>spatial (e.g. by county, state, country, etc)</li> <li>file type (e.g. by spreadsheet, text, code, etc)</li> <li>publication supporting (e.g. by figure, table, etc)</li> <li>workflow (e.g. by inputs, outputs, etc)</li></ul>\r\n\r\n<p>We're happy to consult with you on grouping strategies for your dataset, <a class='intense' href='https://databank.illinois.edu/contact'><span style=\"color: #dd3403;\">&#x2709; contact us</a></span>! Or take a look at these good examples in the Illinois Data Bank:</p> <p>Willson, James; Roddur, Mrinmoy Saha; Baqiao, Liu; Zaharias, Paul; Warnow, Tandy (2021): Data from: \"Inferring Species Trees from Gene-Family with Duplication and Loss using Multi-Copy Gene-Family Tree Decomposition\". University of Illinois at Urbana-Champaign. <a class='intense' href=\"https://doi.org/10.13012/B2IDB-4050038_V1\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">https://doi.org/10.13012/B2IDB-4050038_V1</a></span></p> <p>Schroeder, Nathan (2020): Burton Endo electron micrograph library. University of Illinois at Urbana-Champaign. <a class='intense' href=\"https://doi.org/10.13012/B2IDB-2692533_V1\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">https://doi.org/10.13012/B2IDB-2692533_V1</a></span></p> <p>Donovan, Brian; Work, Dan (2016): New York City Taxi Trip Data (2010-2013). University of Illinois at Urbana-Champaign. <a class='intense' href=\"https://doi.org/10.13012/J8PN93H8\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">https://doi.org/10.13012/J8PN93H8</a></span></p>"
+  public: true
+  created_at: "2022-07-25 15:29:21.641152000 +0000"
+  updated_at: "2024-04-04 15:16:16.850544000 +0000"
+item29:
+  id: 29
+  section_id: 2
+  anchor: "documentation"
+  label: "Data Documentation"
+  ordinal: 5
+  heading: "Data Documentation"
+  body: "<p> We encourage dataset authors to develop documentation that will make it possible for you and others to understand and interpret your dataset in the future. Through the process of depositing in the Illinois Data Bank, you will provide high-level documentation for your dataset, such as title, creator, etc. It is likely that there are many additional details about your dataset that cannot easily be included as a part of this basic description. To provide customized, detailed information about your dataset, we recommend that you include a documentation file as a part of your dataset deposit. </p> <p> Dataset documentation is critical for future users of the data to understand it and to ensure its proper interpretation. Without documentation, the quality and provenance of the data is questionable. A related research publication does not provide enough information about the data itself, such as file organization and units of measurement, though related scholarship should be connected to the dataset during the deposit process (if available at the time).</p> <p>For more information about how to develop documentation files, please refer to these excellent resources:</p> <p>Readme files: Simple text file that accounts for all files and folders in a dataset</p> <ul><li style=\"margin-left:40px;\"> Cornell University. 'Guide to writing 'readme' style metadata.' <a class='intense' href=\"http://data.research.cornell.edu/content/readme\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">http://data.research.cornell.edu/content/readme</a></span></li></ul> <p> Codebooks: Contains study-level information and descriptions of each variable/data item</p> <ul><li style=\"margin-left:40px;\">Agency for Healthcare Research and Quality. 'What is a codebook?' <a class='intense' href=\"https://www.icpsr.umich.edu/web/ICPSR/cms/1983\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">https://www.icpsr.umich.edu/web/ICPSR/cms/1983</a></span></li></ul> <p> Data Dictionaries: Provides a detailed description for each element or variable in your dataset and data model. <ul><li style=\"margin-left:40px;\">University of Wisconsin Data Services. 'Data Management: Data Dictionaries.' <a class='intense' href=\"https://www.youtube.com/watch?v=Fe3i9qyqPjo\" style=\"text-decoration:none;\" target=\"_blank\"><span style=\"color: #dd3403;\">https://www.youtube.com/watch?v=Fe3i9qyqPjo</a></span> (video)</li></ul>"
+  public: true
+  created_at: "2022-07-25 15:29:21.644130000 +0000"
+  updated_at: "2024-04-04 15:17:35.546244000 +0000"
