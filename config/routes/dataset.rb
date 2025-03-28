@@ -19,6 +19,7 @@ resources :datasets do
     get 'medusa_details'
     get 'nuke'
     get 'open_in_globus'
+    get 'open_in_granite'
     get 'permanently_suppress_files'
     get 'permanently_suppress_metadata'
     get 'permissions'

@@ -224,6 +224,17 @@ class Dataset < ApplicationRecord
   end
 
   ##
+  # @return [Boolean] true if the files can be downloaded in an aggregate form, for use in the UI
+  # Otherwise, it returns false
+  # The criteria for this is at least one of the following is true:
+  # - the dataset files are all in Medusa Collection Registry (fileset_preserved?)
+  # - the dataset files are all in Globus (globus_downloadable?)
+  # - the dataset has a Granite link (!granite_link.nil?)
+  def aggregate_downloadable?
+    fileset_preserved? || globus_downloadable? || !granite_link.nil?
+  end
+
+  ##
   # @return [Integer] the year of the publication date, defaults to the current year if no date is set
   def publication_year
     if release_date

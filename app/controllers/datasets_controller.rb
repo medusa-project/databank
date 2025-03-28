@@ -37,6 +37,7 @@ class DatasetsController < ApplicationController
                                      :confirm_review,
                                      :send_publication_notice,
                                      :open_in_globus,
+                                     :open_in_granite,
                                      :import_from_globus,
                                      :share,
                                      :remove_sharing_link,
@@ -674,6 +675,16 @@ collaborators to access the data files while the dataset is not public.</li>
     redirect_to @dataset.globus_download_dir, allow_other_host: true
   end
 
+  # Responds to `Get /datasets/:id/open_in_granite'
+  def open_in_granite
+    if @dataset.datafiles && @dataset.datafiles.count.positive?
+      @dataset.datafiles.each do |datafile|
+        datafile.record_download(request.remote_ip)
+      end
+    end
+    redirect_to @dataset.granite_link, allow_other_host: true
+  end
+
   # @deprecated
   # Was used before Medusa Download was implemented
   # Could get overwhemled by large datasets
@@ -922,7 +933,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def dataset_params
-    params.require(:dataset).permit(:medusa_dataset_dir, :title, :identifier, :publisher, :license, :key, :description, :keywords, :depositor_email, :depositor_name, :corresponding_creator_name, :corresponding_creator_email, :embargo, :complete, :search, :dataset_version, :release_date, :is_test, :is_import, :audit_id, :removed_private, :have_permission, :internal_reviewer, :agree, :web_ids, :org_creators, :version_comment, :subject,
+    params.require(:dataset).permit(:medusa_dataset_dir, :title, :identifier, :publisher, :license, :key, :description, :keywords, :depositor_email, :depositor_name, :corresponding_creator_name, :corresponding_creator_email, :embargo, :granite_link, :complete, :search, :dataset_version, :release_date, :is_test, :is_import, :audit_id, :removed_private, :have_permission, :internal_reviewer, :agree, :web_ids, :org_creators, :version_comment, :subject,
                                     datafiles_attributes:         [:datafile, :description, :attachment, :dataset_id, :id, :_destroy, :_update, :audit_id],
                                     creators_attributes:          [:dataset_id, :family_name, :given_name, :institution_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
                                     contributors_attributes:      [:dataset_id, :family_name, :given_name, :identifier, :identifier_scheme, :type_of, :row_position, :is_contact, :email, :id, :_destroy, :_update, :audit_id],
