@@ -5,15 +5,15 @@
       #minibar
         %ul.nav.navbar-nav
           %li.minibar-brand
-            %a{:href => "/"} Illinois Data Bank
+            %a{:href => "/"} Home
           %li
             %a{:href => "/datasets/new"}
               %span.glyphicon.glyphicon-plus
-              Deposit Dataset
+              Deposit
           %li
             %a{:href => "/datasets"}
               %span.glyphicon.glyphicon-search
-              Find Data
+              Find
           %li
             %a{:href => "/policies"}
               %span.glyphicon.glyphicon-info-sign
@@ -25,7 +25,7 @@
           %li
             %a{:href => "/contact"}
               %span.glyphicon.glyphicon-envelope
-              Contact Us
+              Contact
         %ul.nav.navbar-nav.navbar-right
           - if current_user
             %li
@@ -37,5 +37,5 @@
           - else
             %li
               %a{href: "/login"}
-                Log in with NetID
+                Log in
     / /.nav-collapse

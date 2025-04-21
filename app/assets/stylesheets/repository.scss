@@ -200,6 +200,7 @@ $dropDown: false;
   border-radius: 0;
   background-color: $color__dark-navy;
   border-color: $color__dark-navy;
+  overflow: hidden;
   .minibar-brand {
     font-size: 24px;
     color: $color__text-light;
@@ -214,6 +215,7 @@ $dropDown: false;
   }
   .navbar-nav {
     > li {
+      overflow: hidden;
       > a {
         color: $color__text-light;
         &:hover, &:focus {

@@ -66,16 +66,15 @@
     =succeed "," do
       %a(href="#{IDB_CONFIG[:root_url_text]}/contact") contact us
     or to review any of this information, open the
-    %a(href="#{IDB_CONFIG[:root_url_text]}/help" )
-      %span(class="glyphicon glyphicon-question-sign")
-      Help
+    %a(href="#{IDB_CONFIG[:root_url_text]}/guides" )
+      %span.glyphicon.glyphicon-question-sign
+      Guides
     menu at the top of each page.
   %p
-    For context-specific help, look for
-    %a(href="#" )
-      %span(class="glyphicon glyphicon-question-sign" tabindex="-1" )
-      what's this?
-    links near form elements.
+    For context-specific help, click the question icon
+    %a(href="#{IDB_CONFIG[:root_url_text]}/guides" )
+      %span.far.fa-question-circle
+    near form elements for additional details.
 
 %hr
 
