@@ -262,6 +262,11 @@ function initFileUpload() {
         makeDroppable(selectElement, uploadSelectedFiles);
     }
 
+    $("#FileUploadInput").change(function () {
+        var fileName = $(this).val().split("\\").pop();
+        $("#FileUploadFileName").text(fileName);
+    });
+
 }
 
 function makeDroppable(element, callback) {

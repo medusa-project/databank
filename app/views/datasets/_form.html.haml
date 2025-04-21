@@ -236,9 +236,35 @@
       = render partial: 'datafiles_subform', locals: {f: f}
 
   - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
-
+    #upload-options
+      %h4
+        %span( class="metadata-label" )
+          File Upload Options
+      .curator-only
+        %span(class="glyphicon glyphicon-warning-sign" )
+        Curator-only options are not available to the public.    
+        %ul
+          %li
+            Provide a URL
+          %li
+            Import from Globus
+      %em      
+        Different upload options are available depending on the size of the files you are uploading.
+      %ul
+        %li
+          %p Files up to 4 GB can be uploaded directly from your computer.
+          %label.file-upload
+            %span.file-upload__text
+              Click or Drag file here...
+            %span(role="presentation" class="file-upload__file-name" id="FileUploadFileName")
+              No file selected
+            %input(type="file" class="file-upload__input" id="FileUploadInput")
+        %li
+          Files up to 50 GB can use Command Line Tools.
+        %li
+          Files larger than 50 GB can be transferred using Globus, or by arranging another method.
     .container-fluid
-
+    
       %table(id="upload-table" )
         %thead
           %tr.row
@@ -282,18 +308,6 @@
               %span(class="far upload-unavailable fa-circle")
             %td
               %span(class="far upload-unavailable fa-circle")
-
-          -# %tr.row
-          -#   %td
-          -#     %div(id="box-select" data-link-type="direct" data-multiselect="true" data-client-id="r5tgofc05460skm84yjepz1ck16ptotr" role="button" )
-          -#   %td
-          -#     %span(class="fas upload-consistent fa-circle")
-          -#   %td
-          -#     %span(class="fas upload-consistent fa-circle")
-          -#   %td
-          -#     %span(class="far upload-unavailable fa-circle")
-          -#   %td
-          -#     %span(class="far upload-unavailable fa-circle")
 
           - if can? :manage, @dataset
             %tr.row

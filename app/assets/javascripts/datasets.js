@@ -339,44 +339,6 @@ ready = function () {
         });
 
     });
-
-
-    // var boxSelect = new BoxSelect();
-    // Register a success callback handler
-    // boxSelect.success(function (response) {
-    //     $('#files').css("display", "block");
-    //     $('#collapseFiles').collapse('show');
-    //
-    //     $.each(response, function (i, boxItem) {
-    //
-    //         if (filename_isdup(boxItem.name)) {
-    //             alert("Duplicate file error: A file named " + boxItem.name + " is already in this dataset.  For help, please contact the Research Data Service.");
-    //         } else {
-    //             boxItem.dataset_key = dataset_key;
-    //             window.onbeforeunload = confirmOnPageExit;
-    //             $.ajax({
-    //                 type: "POST",
-    //                 url: "/datafiles/create_from_url",
-    //                 data: boxItem,
-    //                 success: function (data) {
-    //                     eval($(data).text());
-    //                 },
-    //                 dataType: 'script'
-    //             });
-    //         }
-    //
-    //     });
-    //
-    // });
-    //
-    // // Register a cancel callback handler
-    // boxSelect.cancel(function () {
-    //     console.log("The user clicked cancel or closed the popup");
-    // });
-    //
-    // $('#box-upload-in-progress').hide();
-
-
 }
 
 

@@ -361,6 +361,48 @@ legend.metadata-border {
   margin: 5px;
 }
 
+.file-upload {
+  box-sizing: border-box;
+  height: 200px;
+  width: 100%;
+  background-color: hsl(317, 20%, 80%);
+  border: 5px dashed hsl(317, 20%, 60%);
+  border-radius: 20px;
+  position: relative;
+  transition: 0.2s ease all;
+  // Align all children to the center of the container
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.file-upload:hover {
+  background-color: hsl(317, 20%, 90%);
+}
+
+.file-upload:focus,
+.file-upload:focus-within {
+  outline: 5px solid hsl(317, 20%, 60%);
+  outline-offset: 5px;
+}
+
+.file-upload__text {
+  font-size: 2em;
+  font-family: sans-serif;
+}
+.file-upload__input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  // New Styles
+  opacity: 0;
+}
+
 .highlight-background{
   background-color: $color__yellow-background;
 }
