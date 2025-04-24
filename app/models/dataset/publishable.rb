@@ -32,18 +32,21 @@ module Dataset::Publishable
   # @return [Boolean] true if the dataset is ok to publish, false otherwise
   def ok_to_publish?
 
-    # metadata embargoed datasets are ok to publish, which removes the embargo
-    return true if publication_state == Databank::PublicationState::Embargo::METADATA
-
-    # file-embargoed datasets are ok to publish, which removes the embargo
-    return true if publication_state == Databank::PublicationState::Embargo::FILE
-
     # non-draft datasets are not ok to publish if they are missing an identifier
     missing_identifier_for_non_draft = (publication_state != Databank::PublicationState::DRAFT) && (!identifier || identifier == "")
     if missing_identifier_for_non_draft
       Rails.logger.warn( "Missing identifier for dataset that is not a draft. Dataset: #{key}" )
       return false
     end
+
+    # if the dataset is in a hold state, it is not ok to publish
+    return false unless [Databank::PublicationState::TempSuppress::NONE, nil, ""].include?(hold_state)
+
+    # metadata embargoed datasets are ok to publish, which removes the embargo
+    return true if publication_state == Databank::PublicationState::Embargo::METADATA
+
+    # file-embargoed datasets are ok to publish, which removes the embargo
+    return true if publication_state == Databank::PublicationState::Embargo::FILE
 
     # approved version candidates are ok to publish\
     return true if hold_state == Databank::PublicationState::TempSuppress::NONE && publication_state == Databank::PublicationState::TempSuppress::VERSION
@@ -52,6 +55,8 @@ module Dataset::Publishable
     return true if publication_state == Databank::PublicationState::DRAFT
 
     # if the dataset is not in a state that is ok to publish, return false
+    Rails.logger.warn( "Dataset is not ok to publish. Dataset: #{key} publication_state: #{publication_state} hold_state: #{hold_state}" )
+    Rails.logger.warn( self.to_yaml )
     false
   end
 
