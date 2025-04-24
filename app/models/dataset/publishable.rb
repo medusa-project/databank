@@ -32,9 +32,6 @@ module Dataset::Publishable
   # @return [Boolean] true if the dataset is ok to publish, false otherwise
   def ok_to_publish?
 
-    # held datasets are not ok to publish
-    return false if hold_state != Databank::PublicationState::TempSuppress::NONE
-
     # metadata embargoed datasets are ok to publish, which removes the embargo
     return true if publication_state == Databank::PublicationState::Embargo::METADATA
 
@@ -48,8 +45,8 @@ module Dataset::Publishable
       return false
     end
 
-    # approved version candidates are ok to publish (hold state checked above)
-    return true if publication_state == Databank::PublicationState::TempSuppress::VERSION
+    # approved version candidates are ok to publish\
+    return true if hold_state == Databank::PublicationState::TempSuppress::NONE && publication_state == Databank::PublicationState::TempSuppress::VERSION
 
     # other draft datasets are ok to publish
     return true if publication_state == Databank::PublicationState::DRAFT
@@ -92,6 +89,7 @@ module Dataset::Publishable
       self.publication_state = self.embargo
     else
       self.publication_state = Databank::PublicationState::RELEASED
+      self.hold_state = Databank::PublicationState::TempSuppress::NONE
     end
 
     # set the release date if the publication state was draft(y) and this publication action is making it released
