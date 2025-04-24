@@ -18,7 +18,9 @@ module Dataset::Complete
     end
 
     e_arr = []
-    e_arr << "release date" unless Dataset.key_not_empty?(params: params, key: :release_date)
+    unless params[:dataset].has_key?(:embargo) && params[:dataset][:embargo] ==  Databank::PublicationState::Embargo::NONE
+      e_arr << "release date" unless Dataset.key_not_empty?(params: params, key: :release_date)
+
     e_arr << "title" unless Dataset.key_not_empty?(params: params, key: :title)
     has_creators_params = Dataset.key_not_empty?(params: params, key: :creators_attributes)
     if has_creators_params && params[:dataset][:creators_attributes].to_unsafe_hash.size.positive?
