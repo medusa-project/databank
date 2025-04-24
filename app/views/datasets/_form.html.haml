@@ -46,7 +46,7 @@
                     = f.label :license, "License", :class => "control-label"
                     %a(href="#" data-toggle="modal" data-target="#licenseModal" tabindex="-1" )
                       %span(class="far fa-question-circle")
-                      what's this?
+                      what's a license?
 
                     -if @dataset.publication_state == Databank::PublicationState::DRAFT
                       = f.collection_select :license, LICENSE_INFO_ARR, :code, :name, {:prompt => true}, {:class => "form-control dataset"}
@@ -125,7 +125,7 @@
                       =f.label :embargo, "Publication Delay (embargo)", class: "control-label"
                       %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="-1" )
                         %span(class="far fa-question-circle")
-                        what's this?
+                        what's an embargo?
                       - if ((can? :manage, @dataset) || [Databank::PublicationState::DRAFT, Databank::PublicationState::Embargo::METADATA].include?(@dataset.publication_state))
                         = f.select :embargo, options_for_select([["No Publication Delay", Databank::PublicationState::Embargo::NONE],["File Only Publication Delay", Databank::PublicationState::Embargo::FILE],["Metadata and File Publication Delay", Databank::PublicationState::Embargo::METADATA]], @dataset.embargo), {}, {class: "form-control dataset"}
                       -else
@@ -149,7 +149,7 @@
                       =f.label :embargo, "Publication Delay (embargo)", class: "control-label"
                       %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="-1" )
                         %span(class="far fa-question-circle")
-                        what's this?
+                        what's an embargo?
                       = f.select :embargo, options_for_select([["No Publication Delay", Databank::PublicationState::Embargo::NONE]], @dataset.embargo), {class: "form-control dataset"}
                   .col-md-2
                     =f.label :release_date, "Date Released",  :class => "control-label"

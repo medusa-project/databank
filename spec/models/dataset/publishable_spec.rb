@@ -17,15 +17,18 @@ RSpec.describe Dataset::Publishable, type: :model do
 
     context 'when the dataset has a metadata-only embargo' do
       it 'returns true' do
-        dataset.publication_state = Databank::PublicationState::RELEASED
+        dataset.identifier = 'doi:10.1234/5678'
+        dataset.publication_state = Databank::PublicationState::Embargo::METADATA
         dataset.embargo = Databank::PublicationState::Embargo::METADATA
+        dataset.hold_state = Databank::PublicationState::TempSuppress::NONE
         expect(dataset.ok_to_publish?).to be true
       end
     end
 
     context 'when the dataset has a file embargo' do
       it 'returns true' do
-        dataset.publication_state = Databank::PublicationState::Embargo::METADATA
+        dataset.identifier = 'doi:10.1234/5678'
+        dataset.publication_state = Databank::PublicationState::Embargo::FILE
         dataset.embargo = Databank::PublicationState::Embargo::FILE
         expect(dataset.ok_to_publish?).to be true
       end
@@ -33,15 +36,16 @@ RSpec.describe Dataset::Publishable, type: :model do
 
     context 'when the dataset is not a draft and has no identifier' do
       it 'returns false' do
-        dataset.publication_state = Databank::PublicationState::RELEASED
+        dataset.publication_state = Databank::PublicationState::Embargo::FILE
         dataset.identifier = nil
         expect(dataset.ok_to_publish?).to be false
       end
     end
 
-    context 'when the dataset is not ok to publish' do
+    context 'when the dataset is in a hold state' do
       it 'returns false' do
-        dataset.publication_state = Databank::PublicationState::RELEASED
+        dataset.publication_state = Databank::PublicationState::DRAFT
+        dataset.hold_state = Databank::PublicationState::TempSuppress::METADATA
         dataset.embargo = Databank::PublicationState::Embargo::FILE
         dataset.identifier = 'doi:10.1234/5678'
         expect(dataset.ok_to_publish?).to be false
