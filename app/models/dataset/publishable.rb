@@ -31,28 +31,30 @@ module Dataset::Publishable
   # "ok to publish" means that the dataset is in a state where it can be published
   # @return [Boolean] true if the dataset is ok to publish, false otherwise
   def ok_to_publish?
-    # metadata-only embargo datasets are ok to publish, which removes the embargo
-    return true if (publication_state != Databank::PublicationState::DRAFT) &&
-      (publication_state != Databank::PublicationState::Embargo::METADATA) &&
-      (embargo == Databank::PublicationState::Embargo::METADATA)
 
-    # draft datasets are ok to publish
-    return true if publication_state == Databank::PublicationState::DRAFT
+    # held datasets are not ok to publish
+    return false if hold_state != Databank::PublicationState::TempSuppress::NONE
+
+    # metadata embargoed datasets are ok to publish, which removes the embargo
+    return true if publication_state == Databank::PublicationState::Embargo::METADATA
 
     # file-embargoed datasets are ok to publish, which removes the embargo
-    return true if publication_state == Databank::PublicationState::Embargo::METADATA &&
-      embargo != Databank::PublicationState::Embargo::METADATA
+    return true if publication_state == Databank::PublicationState::Embargo::FILE
 
-    # approved version candidates are ok to publish
-    return true if hold_state == Databank::PublicationState::TempSuppress::NONE &&
-      publication_state == Databank::PublicationState::TempSuppress::VERSION
-
+    # non-draft datasets are not ok to publish if they are missing an identifier
     missing_identifier_for_non_draft = (publication_state != Databank::PublicationState::DRAFT) && (!identifier || identifier == "")
     if missing_identifier_for_non_draft
       Rails.logger.warn( "Missing identifier for dataset that is not a draft. Dataset: #{key}" )
       return false
     end
 
+    # approved version candidates are ok to publish (hold state checked above)
+    return true if publication_state == Databank::PublicationState::TempSuppress::VERSION
+
+    # other draft datasets are ok to publish
+    return true if publication_state == Databank::PublicationState::DRAFT
+
+    # if the dataset is not in a state that is ok to publish, return false
     false
   end
 
