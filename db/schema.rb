@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_28_171223) do
+ActiveRecord::Schema[7.2].define(version: 2025_04_25_203706) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -144,7 +144,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_28_171223) do
     t.boolean "org_creators", default: false
     t.boolean "data_curation_network", default: false, null: false
     t.datetime "nested_updated_at"
-    t.string "granite_link"
+    t.string "external_files_link"
+    t.text "external_files_note"
     t.index ["key"], name: "index_datasets_on_key", unique: true
   end
 

@@ -195,18 +195,23 @@
                         =f.label :version_comment, "Version Comment", class: "control-label"
                         %br
                         =f.text_area :version_comment, :rows => 1, class: "form-control dataset"
-                  -# add granite_link to dataset
                   .row
-                    %span(class="col-md-6" )
+                    %span.col-md-6
                       .form-group
-                        =f.label :granite_link, "Granite Link", class: "control-label"
+                        =f.label :external_files_link, "Link to Externally Stored Files", class: "control-label"
                         %br
-                        =f.text_field :granite_link, class: "form-control dataset", :placeholder => 'https://granite.example.edu/1234567890'
+                        =f.text_field :external_files_link, class: "form-control dataset", :placeholder => 'https://granite.example.edu/1234567890'
                     %span(class="col-md-6" )
                       .form-group
                         =f.label :medusa_dataset_dir, "URL in Medusa (relative to #{IDB_CONFIG['medusa']['datasets_url_base']} )", class: "control-label"
                         %br
                         =f.text_field :medusa_dataset_dir, class: "form-control dataset", :placeholder => '/cfs_directories/number'
+                  .row
+                    %span.col-md-12
+                      .form-group
+                        =f.label :external_files_note, "Access Noptes for Externally Stored Files", class: "control-label"
+                        %br
+                        =f.text_area :external_files_note, :rows => 4, class: "form-control dataset"
 
 
       - if can? :manage, @dataset
@@ -338,10 +343,10 @@
 
           %tr.row
             %td
-              =link_to("https://go.illinois.edu/databank_largefiletransfer", class: "btn btn-success fileinput-button idb", target: "_blank") do
+              =link_to("https://forms.illinois.edu/sec/1562600062", class: "btn btn-success fileinput-button idb", target: "_blank") do
                 %span(class="large-text" )
                   &#x1f45f;
-                Arrange physical pickup or Globus transfer
+                Requst large file transfer
             %td
               %span(class="fas upload-consistent fa-circle")
             %td
