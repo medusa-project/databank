@@ -7,7 +7,6 @@
             %span(class="metadata-label" id="files-label") Files
       %div(class="panel-collapse.collapse.in" id="collapseOne" role="tabpanel" aria-labelledby="headingOne")
         .panel-body
-
           =render partial: 'file_restriction_alert', locals: {dataset: dataset}
           - if dataset.publication_state == Databank::PublicationState::RELEASED && globus_only && !dataset.globus_downloadable?
             =render partial: 'globus_delay_alert' , locals: {dataset: dataset}
@@ -44,7 +43,7 @@
                                   %span(class="idb-help-prompt" )
                                     what's this?
                             .col-md-4
-                              - if !dataset.granite_link.nil?
+                              - if !dataset.external_files_link.nil?
                                 =link_to "#{image_tag("globus.png", size: "24x18", "aria-hidden": true, "alt": "Globus logo")} Access Associated Large Files in Globus".html_safe, "/datasets/#{dataset.key}/open_in_granite", target: "_blank", class: "btn btn-primary idb"
                                 %a(href="/guides#upload_globus" target="_blank" )
                                   %span(class="far fa-question-circle")
@@ -141,3 +140,5 @@
                     -elsif dataset.datafiles.count.zero?
                       %jumbotron
                         No files found
+      -if dataset.has_external_files?
+        =render partial: 'show_external_files', locals: {dataset: dataset}

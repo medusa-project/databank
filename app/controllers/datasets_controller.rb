@@ -682,7 +682,7 @@ collaborators to access the data files while the dataset is not public.</li>
         datafile.record_download(request.remote_ip)
       end
     end
-    redirect_to @dataset.granite_link, allow_other_host: true
+    redirect_to @dataset.external_files_link, allow_other_host: true
   end
 
   # @deprecated

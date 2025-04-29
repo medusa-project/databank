@@ -116,11 +116,8 @@
     </div>
 
     <!-- BEGIN file section -->
-    <% is_too_big = @dataset.total_filesize > (IDB_CONFIG[:globus_only_gb].to_i)*(2**30) %>
 
-    <%= render partial: 'datasets/show_files', locals: {dataset: @dataset,
-                                                        globus_only: is_too_big,
-                                                        shared_by_link: @shared_by_link} %>
+    <%= render partial: 'datasets/show_files', locals: {dataset: @dataset, globus_only: @dataset.is_too_big?, shared_by_link: @shared_by_link} %>
 
     <!-- END file section -->
   <% end %>

@@ -229,9 +229,28 @@ class Dataset < ApplicationRecord
   # The criteria for this is at least one of the following is true:
   # - the dataset files are all in Medusa Collection Registry (fileset_preserved?)
   # - the dataset files are all in Globus (globus_downloadable?)
-  # - the dataset has a Granite link (!granite_link.nil?)
+  # - the dataset has a Granite link (!external_files_link.nil?)
   def aggregate_downloadable?
-    fileset_preserved? || globus_downloadable? || !granite_link.nil?
+    fileset_preserved? || globus_downloadable? || !external_files_link.nil?
+  end
+
+  ##
+  # @return [Boolean] true if the dataset has external files
+  # Otherwise, it returns false
+  # The criteria for this is at least one of the following is true:
+  # - the dataset has external files not that is not nill, empty, or ""
+  def has_external_files?
+    no_external_files = external_files_note.nil? || external_files_note.empty? || external_files_note == ""
+    return !no_external_files
+  end
+
+  ##
+  # @return [Boolean] true if the dataset is too big to be downloaded in an aggregate form
+  # Otherwise, it returns false
+  # The criteria for this is at least one of the following is true:
+  # - the dataset has a total file size greater than the Globus only limit from configuration
+  def is_too_big?
+    total_filesize.to_i > (IDB_CONFIG[:globus_only_gb].to_i * (2**30))
   end
 
   ##
