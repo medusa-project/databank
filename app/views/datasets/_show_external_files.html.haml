@@ -10,6 +10,7 @@
           %p
             = dataset.external_files_note 
           -if dataset.external_files_link
-            %a(role="button" href="#external-files-link" class="btn btn-primary" target="_blank")
-              %span.glyphicon.glyphicon-download
-              Access External Files
+            .row
+              .col-md-4.col-md-offset-8
+                =link_to "Access Associated Large Files", "#{dataset.external_files_link}", target: "_blank", class: "btn btn-primary idb"
+              

@@ -42,13 +42,7 @@
                                   %span(class="far fa-question-circle")
                                   %span(class="idb-help-prompt" )
                                     what's this?
-                            .col-md-4
-                              - if !dataset.external_files_link.nil?
-                                =link_to "#{image_tag("globus.png", size: "24x18", "aria-hidden": true, "alt": "Globus logo")} Access Associated Large Files in Globus".html_safe, "/datasets/#{dataset.key}/open_in_granite", target: "_blank", class: "btn btn-primary idb"
-                                %a(href="/guides#upload_globus" target="_blank" )
-                                  %span(class="far fa-question-circle")
-                                  %span(class="idb-help-prompt" )
-                                    what's Globus?
+
                     -if dataset.datafiles.count > 0 && dataset.datafiles.count <= 500
                       - dataset.complete_datafiles.each do |datafile|
                         %tr.row
