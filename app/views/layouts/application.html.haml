@@ -27,8 +27,8 @@
     / Le HTML5 shim, for IE6-8 support of HTML5 elements
     /[if lt IE 9]
       <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    / support import from box
-    %script{:src => "https://app.box.com/js/static/select.js", :type => "text/javascript"}
+    %link{rel: "stylesheet", href: "//cdn.toolkit.illinois.edu/3/toolkit.css"}
+    %script{type: "module", src: "//cdn.toolkit.illinois.edu/3/toolkit.js"}
     - if @dataset && @dataset.publication_state && @dataset.publication_state != Databank::PublicationState::DRAFT
       %meta{:content => "#{@dataset.title}", :name => "citation_title"}/
       %meta{:content => "#{@dataset.creator_list}", :name => "citation_author"}/
@@ -37,43 +37,44 @@
       %meta{:content => "#{@dataset.identifier}", :name => "citation_doi"}/
       %meta{:content => "en", :name => "citation_language"}/
   %body
-    -if Rails.env.production? || Rails.env.prod_rocky?
-      %noscript
-        %iframe{src: "https://www.googletagmanager.com/ns.html?id=GTM-P5CT7JQ",
-        height: "0",
-        width: "0",
-        style: "display:none;visibility:hidden"}
-    #page-top.idb-anchor
-    = render partial: 'shared/mini_navbar'
-    = render partial: 'shared/library_header'
-    = render partial: 'shared/header_navbar'
-    %main#main-content
-      - flash.each do |key, value|
-        %div{class: "alert alert-#{key}"}
-          = sanitize(value)
-      %div{id: "message"}
-      - if current_page?(root_path) || ( request.original_fullpath.include?('featured_researchers') && request.original_fullpath.include?('preview')  )
-        #welcome-image.hidden-xs
-          #welcome-overlay
-            %p The Illinois Data Bank is a public access repository for publishing research data from the University of Illinois Urbana-Champaign
-            %p
-              = link_to 'Learn how we meet trustworthy repository standards', "/guides#desirable_characteristics"
-      .container-fluid
-        = yield
-    = render partial: "shared/library_footer"
-    - if @dataset
-      = javascript_tag do
-        window.dataset_key = "#{j @dataset.key}";
-        window.dataset_id = "#{j @dataset.id.to_s}";
-    - if @datafile
-      = javascript_tag do
-        window.datafile_web_id = "#{j @datafile.web_id}";
-    =javascript_tag do
-      window.rails_env = "#{Rails.env}";
+    %ilw-page
+      -if Rails.env.production? || Rails.env.prod_rocky?
+        %noscript
+          %iframe{src: "https://www.googletagmanager.com/ns.html?id=GTM-P5CT7JQ",
+          height: "0",
+          width: "0",
+          style: "display:none;visibility:hidden"}
+      #page-top.idb-anchor
+      -# = render partial: 'shared/mini_navbar'
+      = render partial: 'shared/campus_header'
+      -# = render partial: 'shared/header_navbar'
+      %main#main-content
+        - flash.each do |key, value|
+          %div{class: "alert alert-#{key}"}
+            = sanitize(value)
+        %div{id: "message"}
+        - if current_page?(root_path) || ( request.original_fullpath.include?('featured_researchers') && request.original_fullpath.include?('preview')  )
+          #welcome-image.hidden-xs
+            #welcome-overlay
+              %p The Illinois Data Bank is a public access repository for publishing research data from the University of Illinois Urbana-Champaign
+              %p
+                = link_to 'Learn how we meet trustworthy repository standards', "/guides#desirable_characteristics"
+        .container-fluid
+          = yield
+      = render partial: "shared/campus_footer"
+      - if @dataset
+        = javascript_tag do
+          window.dataset_key = "#{j @dataset.key}";
+          window.dataset_id = "#{j @dataset.id.to_s}";
+      - if @datafile
+        = javascript_tag do
+          window.datafile_web_id = "#{j @datafile.web_id}";
+      =javascript_tag do
+        window.rails_env = "#{Rails.env}";
 
-    - if current_user && current_user.role
-      = javascript_tag do
-        window.user_role = "#{j current_user.role}";
-    - else
-      = javascript_tag do
-        window.user_role = "#{j 'guest'}";
+      - if current_user && current_user.role
+        = javascript_tag do
+          window.user_role = "#{j current_user.role}";
+      - else
+        = javascript_tag do
+          window.user_role = "#{j 'guest'}";

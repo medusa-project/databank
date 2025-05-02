@@ -3,10 +3,21 @@ $one-line-header-height: 102px;
 $two-line-header-height: 137px;
 $minibar-height: 50px;
 
-//.idb-help ul {
-//  list-style-type: none !important;
-//}
+p.footer-info {
+  font-size: 20px;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
 
+p.navitem{
+  font-size: 16px;
+  font-weight: bold;
+  font-family: Ariel, Sans-Serif;
+  display: inline-block;
+  padding: 0 .25em;
+}
 .contact-header {
   text-align: center !important;
 }
