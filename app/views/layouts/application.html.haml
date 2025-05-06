@@ -19,16 +19,25 @@
     / Mobile IE allows us to activate ClearType technology for smoothing fonts for easy reading
     /[if IEMobile]
       <meta http-equiv="cleartype" content="on">
-    =# %title Illinois Data Bank
     = favicon_link_tag 'favicon.ico'
     = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
     = javascript_include_tag 'application', 'data-turbolinks-track' => true
     = csrf_meta_tags
     / Le HTML5 shim, for IE6-8 support of HTML5 elements
     /[if lt IE 9]
-      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      %script{src: "//html5shim.googlecode.com/svn/trunk/html5.js"}
+    <!-- Illinois Toolkit -->
+    %link{rel: "shortcut icon", href: "https://cdn.brand.illinois.edu/favicon.ico"}
+    %link{rel: "apple-touch-icon", href: "https://cdn.brand.illinois.edu/touch-icon-40x40.png"}
+    %link{rel: "apple-touch-icon", sizes: "152x152", href: "https://cdn.brand.illinois.edu/touch-icon-152x152.png"}
+    %link{rel: "apple-touch-icon", sizes: "167x167", href: "https://cdn.brand.illinois.edu/touch-icon-167x167.png"}
+    %link{rel: "apple-touch-icon", sizes: "180x180", href: "https://cdn.brand.illinois.edu/touch-icon-180x180.png"}
+
     %link{rel: "stylesheet", href: "//cdn.toolkit.illinois.edu/3/toolkit.css"}
     %script{type: "module", src: "//cdn.toolkit.illinois.edu/3/toolkit.js"}
+    %script{src: "https://cdn.disability.illinois.edu/skipto.min.js"}
+    - if @title
+      %title= "#{@title} | Illinois Data Bank"
     - if @dataset && @dataset.publication_state && @dataset.publication_state != Databank::PublicationState::DRAFT
       %meta{:content => "#{@dataset.title}", :name => "citation_title"}/
       %meta{:content => "#{@dataset.creator_list}", :name => "citation_author"}/
@@ -36,31 +45,30 @@
       %meta{:content => "#{@dataset.publication_year}", :name => "citation_publication_date"}/
       %meta{:content => "#{@dataset.identifier}", :name => "citation_doi"}/
       %meta{:content => "en", :name => "citation_language"}/
-  %body
-    %ilw-page
-      -if Rails.env.production? || Rails.env.prod_rocky?
-        %noscript
-          %iframe{src: "https://www.googletagmanager.com/ns.html?id=GTM-P5CT7JQ",
-          height: "0",
-          width: "0",
-          style: "display:none;visibility:hidden"}
-      #page-top.idb-anchor
-      -# = render partial: 'shared/mini_navbar'
+  %body{style: "margin: 0;"}
+    %ilw-page{class: "ilw-font"}
       = render partial: 'shared/campus_header'
-      -# = render partial: 'shared/header_navbar'
       %main#main-content
-        - flash.each do |key, value|
-          %div{class: "alert alert-#{key}"}
-            = sanitize(value)
-        %div{id: "message"}
-        - if current_page?(root_path) || ( request.original_fullpath.include?('featured_researchers') && request.original_fullpath.include?('preview')  )
-          #welcome-image.hidden-xs
-            #welcome-overlay
-              %p The Illinois Data Bank is a public access repository for publishing research data from the University of Illinois Urbana-Champaign
-              %p
-                = link_to 'Learn how we meet trustworthy repository standards', "/guides#desirable_characteristics"
-        .container-fluid
-          = yield
+        %itw-content
+          -if Rails.env.production? || Rails.env.prod_rocky?
+            %noscript
+              %iframe{src: "https://www.googletagmanager.com/ns.html?id=GTM-P5CT7JQ",
+              height: "0",
+              width: "0",
+              style: "display:none;visibility:hidden"}
+          #page-top.idb-anchor
+          - flash.each do |key, value|
+            %div{class: "alert alert-#{key}"}
+              = sanitize(value)
+          %div{id: "message"}
+          - if current_page?(root_path) || ( request.original_fullpath.include?('featured_researchers') && request.original_fullpath.include?('preview')  )
+            #welcome-image.hidden-xs
+              #welcome-overlay
+                %p The Illinois Data Bank is a public access repository for publishing research data from the University of Illinois Urbana-Champaign
+                %p
+                  = link_to 'Learn how we meet trustworthy repository standards', "/guides#desirable_characteristics"
+          .container-fluid
+            = yield
       = render partial: "shared/campus_footer"
       - if @dataset
         = javascript_tag do
