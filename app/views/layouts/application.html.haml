@@ -46,9 +46,9 @@
       %meta{:content => "#{@dataset.identifier}", :name => "citation_doi"}/
       %meta{:content => "en", :name => "citation_language"}/
   %body{style: "margin: 0;"}
-    %ilw-page{class: "ilw-font"}
+    %ilw-page{class: "ilw-margin ilw-font"}
       = render partial: 'shared/campus_header'
-      %main#main-content
+      %main
         %itw-content
           -if Rails.env.production? || Rails.env.prod_rocky?
             %noscript
@@ -67,8 +67,7 @@
                 %p The Illinois Data Bank is a public access repository for publishing research data from the University of Illinois Urbana-Champaign
                 %p
                   = link_to 'Learn how we meet trustworthy repository standards', "/guides#desirable_characteristics"
-          .container-fluid
-            = yield
+          = yield
       = render partial: "shared/campus_footer"
       - if @dataset
         = javascript_tag do
