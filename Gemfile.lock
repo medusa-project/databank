@@ -1737,9 +1737,6 @@ GEM
     bigdecimal (3.1.8)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
-    bootstrap-sass (3.4.1)
-      autoprefixer-rails (>= 5.2.1)
-      sassc (>= 2.0.0)
     boxr (1.22.0)
       addressable (~> 2.8)
       hashie (>= 3.5, < 6)
@@ -2238,7 +2235,6 @@ DEPENDENCIES
   aws-sdk
   bcrypt
   bootsnap
-  bootstrap-sass
   boxr
   browser
   builder

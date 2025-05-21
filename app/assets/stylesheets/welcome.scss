@@ -1,0 +1,34 @@
+.welcome{
+  margin: 5px;
+}
+
+#welcome-image {
+  background-image: image-url("orange_data_banner_2021-08-05.png");
+  margin: 0;
+  padding: 0;
+  position: relative;
+  background-size: cover;
+  height: 200px;
+}
+
+#welcome-overlay {
+  position: absolute;
+  left: 30px;
+  top: 60px;
+  padding-left: 15px;
+  border: 1px solid var(--il-orange);
+  background-color: #fff;
+}
+
+#welcome-overlay > p {
+  font-size: 1em;
+  line-height: 1.25em;
+  margin: 15px;
+  width: 600px;
+}
+
+@media screen and (max-width: 767px) {
+ #welcome-image {
+   display: none;
+ }
+}

@@ -34,31 +34,7 @@ body {
   text-align: center;
 }
 
-#welcome-image {
-  background-image: image-url("orange_data_banner_2021-08-05.png");
-  margin: 0;
-  padding: 0;
-  position: relative;
-  background-size: cover;
-  height: 200px;
-}
 
-#welcome-overlay {
-  position: absolute;
-  left: 30px;
-  top: 60px;
-  background-color: $color__text-light;
-  padding-left: 15px;
-  border: 1px solid $color__highlight-orange;
-
-}
-
-#welcome-overlay > p {
-  text-size: 20px;
-  line-height: 23px;
-  width: 500px;
-  margin: 15px;
-}
 
 a {
   color: $color__dark-link;
