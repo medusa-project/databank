@@ -1,7 +1,7 @@
-.welcome{
-  margin: 5px;
+.welcome {
+  padding-right: 15px;
+  padding-left: 15px;
 }
-
 #welcome-image {
   background-image: image-url("orange_data_banner_2021-08-05.png");
   margin: 0;
@@ -18,6 +18,7 @@
   padding-left: 15px;
   border: 1px solid var(--il-orange);
   background-color: #fff;
+  max-width: 750px;
 }
 
 #welcome-overlay > p {

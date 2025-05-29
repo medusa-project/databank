@@ -44,10 +44,10 @@
       %meta{:content => "#{@dataset.publication_year}", :name => "citation_publication_date"}/
       %meta{:content => "#{@dataset.identifier}", :name => "citation_doi"}/
       %meta{:content => "en", :name => "citation_language"}/
-  %body{style: "margin: 0;"}
-    %ilw-page{class: "ilw-margin ilw-font"}
+  %body{style: "margin: 0; padding: 0;"}
+    %ilw-page{class: "ilw-font"}
       = render partial: 'shared/campus_header'
-      %main(width="page"){style: "padding: 0;"}
+      %main(width="page"){style: "margin: 0; padding: 0;"}
         %itw-content(width="page")
           -if Rails.env.production? || Rails.env.prod_rocky?
             %noscript
@@ -60,8 +60,6 @@
             %div{class: "alert alert-#{key}"}
               = sanitize(value)
           %div{id: "message"}
-          - if current_page?(root_path) || ( request.original_fullpath.include?('featured_researchers') && request.original_fullpath.include?('preview')  )
-            = render partial: 'welcome/hero'
           = yield
       = render partial: "shared/campus_footer"
       - if @dataset
