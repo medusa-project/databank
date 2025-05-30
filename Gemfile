@@ -18,9 +18,6 @@ gem "terser"
 # Use in-house storage gem to manage flexible storage on filesystems and s3 buckets
 gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "master"
 
-# Use net-ldap to interact with campus active directory
-gem 'net-ldap', '~> 0.16.2'
-
 # Use aws-sdk to manage signed urls for downloads
 gem "aws-sdk"
 
