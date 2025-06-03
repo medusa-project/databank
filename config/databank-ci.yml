@@ -1,10 +1,6 @@
 :smtp:
   :username: username
   :password: password
-:ldap:
-  :username: username
-  :password: password
-  :host: host
 :orcid:
   :endpoint_base: https://pub.orcid.org/v3.0/
 :primary_db:
