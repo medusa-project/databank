@@ -146,9 +146,9 @@ class Metric
         end
       end
       datasets.each do |dataset|
-        # divide into batches of 1000
+        # divide into batches of 500
         # write each batch to the file
-        dataset.datafiles.each_slice(1000) do |datafiles|
+        dataset.datafiles.each_slice(500) do |datafiles|
           write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype)
         end
       end
