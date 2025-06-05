@@ -249,10 +249,18 @@ class Metric
       datasets = Dataset.all_with_public_metadata
       File.open(target_path, "w") do |f|
         CSV.open(f, "w") do |report|
-          report << ["doi", "related_doi", "relationship_type"]
+          report << ["doi,datacite_relationship", "material_id_type", "material_id,material_type"]
           datasets.each do |dataset|
-            dataset.related_materials.each do |related_material|
-              report << [dataset.identifier, related_material.related_doi, related_material.relationship_type]
+            dataset.related_materials.each do |material|
+              datacite_arr = []
+              if material.datacite_list && material.datacite_list != ""
+                datacite_arr = material.datacite_list.split(",")
+              end
+              datacite_arr.each do |relationship|
+                if ["IsPreviousVersionOf", "IsNewVersionOf"].exclude?(relationship)
+                  report << [dataset.identifier.to_s, relationship.to_s, material.uri_type.to_s, material.uri.to_s, material.selected_type.to_s]
+                end
+              end
             end
           end
         end

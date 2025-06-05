@@ -232,6 +232,7 @@
   %h3
     -if modified_times[:funders_csv] == "not found"
       Funders CSV not available
+    -else  
       %a(href="/metrics/funders_csv" class="btn btn-primary idb" )
         %span.glyphicon.glyphicon-download
         Funders CSV
