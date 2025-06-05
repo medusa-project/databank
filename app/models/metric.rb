@@ -21,25 +21,25 @@ class Metric
     ##
     # @return [Hash] the modified times of the metrics
     def modified_times
-      self.write_dataset_downloads_json unless File.exist?(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
+      write_dataset_downloads_json unless File.exist?(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
       raise StandardError.new("unable to create dataset downloads json") unless File.exist?(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
 
-      self.write_datafile_downloads_json unless File.exist?(METRICS_CONFIG[:datafile_downloads_json][:relative_path])
+      write_datafile_downloads_json unless File.exist?(METRICS_CONFIG[:datafile_downloads_json][:relative_path])
       raise StandardError.new("unable to create datafile downloads json") unless File.exist?(METRICS_CONFIG[:datafile_downloads_json][:relative_path])
 
-      self.write_datafiles_csv unless File.exist?(METRICS_CONFIG[:datafiles_csv][:relative_path])
+      write_datafiles_csv unless File.exist?(METRICS_CONFIG[:datafiles_csv][:relative_path])
       raise StandardError.new("unable to create datafiles csv") unless File.exist?(METRICS_CONFIG[:datafiles_csv][:relative_path])
 
-      self.write_datasets_tsv unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
+      write_datasets_tsv unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
       raise StandardError.new("unable to create datasets tsv") unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
 
-      self.write_container_contents_csv unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
+      write_container_contents_csv unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
       raise StandardError.new("unable to create container contents csv") unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
 
-      self.write_funders_csv unless File.exist?(METRICS_CONFIG[:funders_csv][:relative_path])
+      write_funders_csv unless File.exist?(METRICS_CONFIG[:funders_csv][:relative_path])
       raise StandardError.new("unable to create funders csv") unless File.exist?(METRICS_CONFIG[:funders_csv][:relative_path])
 
-      self.write_related_materials_csv unless File.exist?(METRICS_CONFIG[:related_materials_csv][:relative_path])
+      write_related_materials_csv unless File.exist?(METRICS_CONFIG[:related_materials_csv][:relative_path])
       raise StandardError.new("unable to create related materials csv") unless File.exist?(METRICS_CONFIG[:related_materials_csv][:relative_path])
       # wait a second to ensure the files are written
       # This is necessary because the file system may not update the modified time immediately
@@ -217,44 +217,6 @@ class Metric
                            item.media_type]
               end
             end
-          end
-        end
-      end
-    end
-  end
-
-  ##
-  # write_funders_csv
-  # This method is used to write the funders csv
-  # @return [void]
-  def write_funders_csv
-    target_path = METRICS_CONFIG[:funders_csv][:relative_path]
-    datasets = Dataset.all_with_public_metadata
-    File.open(target_path, "w") do |f|
-      CSV.open(f, "w") do |report|
-        report << ["doi", "funder", "grant"]
-        datasets.each do |dataset|
-          dataset.funders.each do |funder|
-            report << [dataset.identifier, funder.name, funder.grant]
-          end
-        end
-      end
-    end
-  end
-
-  ##
-  # write_related_materials_csv
-  # This method is used to write the related materials csv
-  # @return [void]
-  def write_related_materials_csv
-    target_path = METRICS_CONFIG[:related_materials_csv][:relative_path]
-    datasets = Dataset.all_with_public_metadata
-    File.open(target_path, "w") do |f|
-      CSV.open(f, "w") do |report|
-        report << ["doi", "related_doi", "relationship_type"]
-        datasets.each do |dataset|
-          dataset.related_materials.each do |related_material|
-            report << [dataset.identifier, related_material.related_doi, related_material.relationship_type]
           end
         end
       end
