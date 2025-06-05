@@ -221,5 +221,42 @@ class Metric
         end
       end
     end
+    ##
+    # write_funders_csv
+    # This method is used to write the funders csv
+    # @return [void]
+    def write_funders_csv
+      target_path = METRICS_CONFIG[:funders_csv][:relative_path]
+      datasets = Dataset.all_with_public_metadata
+      File.open(target_path, "w") do |f|
+        CSV.open(f, "w") do |report|
+          report << ["doi", "funder", "grant"]
+          datasets.each do |dataset|
+            dataset.funders.each do |funder|
+              report << [dataset.identifier, funder.name, funder.grant]
+            end
+          end
+        end
+      end
+    end
+
+    ##
+    # write_related_materials_csv
+    # This method is used to write the related materials csv
+    # @return [void]
+    def write_related_materials_csv
+      target_path = METRICS_CONFIG[:related_materials_csv][:relative_path]
+      datasets = Dataset.all_with_public_metadata
+      File.open(target_path, "w") do |f|
+        CSV.open(f, "w") do |report|
+          report << ["doi", "related_doi", "relationship_type"]
+          datasets.each do |dataset|
+            dataset.related_materials.each do |related_material|
+              report << [dataset.identifier, related_material.related_doi, related_material.relationship_type]
+            end
+          end
+        end
+      end
+    end
   end
 end
