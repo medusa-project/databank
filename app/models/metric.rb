@@ -14,6 +14,8 @@ class Metric
       Metric.write_datafiles_csv
       Metric.write_datasets_tsv
       Metric.write_container_contents_csv
+      Metric.write_funders_csv
+      Metric.write_related_materials_csv
     end
 
     ##
@@ -34,6 +36,14 @@ class Metric
       write_container_contents_csv unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
       raise StandardError.new("unable to create container contents csv") unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
 
+      write_funders_csv unless File.exist?(METRICS_CONFIG[:funders_csv][:relative_path])
+      raise StandardError.new("unable to create funders csv") unless File.exist?(METRICS_CONFIG[:funders_csv][:relative_path])
+
+      write_related_materials_csv unless File.exist?(METRICS_CONFIG[:related_materials_csv][:relative_path])
+      raise StandardError.new("unable to create related materials csv") unless File.exist?(METRICS_CONFIG[:related_materials_csv][:relative_path])
+      # wait a second to ensure the files are written
+      # This is necessary because the file system may not update the modified time immediately
+
       sleep(1)
 
       dataset_downloads_time = File.mtime(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
@@ -41,16 +51,22 @@ class Metric
       datafiles_csv_time = File.mtime(METRICS_CONFIG[:datafiles_csv][:relative_path])
       datasets_tsv_time = File.mtime(METRICS_CONFIG[:datasets_tsv][:relative_path])
       container_csv_time = File.mtime(METRICS_CONFIG[:container_contents_csv][:relative_path])
+      funders_csv_time = File.mtime(METRICS_CONFIG[:funders_csv][:relative_path])
+      related_materials_csv_time = File.mtime(METRICS_CONFIG[:related_materials_csv][:relative_path])
 
       { dataset_downloads_json: dataset_downloads_time.to_formatted_s(:long),
         datafile_downloads_json: datafile_downloads_time.to_formatted_s(:long),
         datafiles_csv: datafiles_csv_time.to_formatted_s(:long),
         datasets_tsv: datasets_tsv_time.to_formatted_s(:long),
-        container_contents_csv: container_csv_time.to_formatted_s(:long) }
+        container_contents_csv: container_csv_time.to_formatted_s(:long),
+        funders_csv: funders_csv_time.to_formatted_s(:long),
+        related_materials_csv: related_materials_csv_time.to_formatted_s(:long) }
     end
 
     ##
     # write the datasets tsv
+    # This method is used to write the datasets tsv
+    # @return [void]
     def write_datasets_tsv
       target_path = METRICS_CONFIG[:datasets_tsv][:relative_path]
       datasets = Dataset.all_with_public_metadata
@@ -135,6 +151,8 @@ class Metric
 
     ##
     # write the datafiles csv
+    # This method is used to write the datafiles csv
+    # @return [void]
     def write_datafiles_csv
       doi_filename_mimetype = MedusaInfo.doi_filename_mimetype
       render(json: { error: "mimetype map not found", status: 500 }) && (return nil) unless doi_filename_mimetype
@@ -179,6 +197,7 @@ class Metric
     ##
     # write_container_contents_csv
     # This method is used to write the container contents csv
+    # @return [void]
     def write_container_contents_csv
       datasets = Dataset.all_with_public_metadata
       target_path = METRICS_CONFIG[:container_contents_csv][:relative_path]
@@ -198,6 +217,44 @@ class Metric
                            item.media_type]
               end
             end
+          end
+        end
+      end
+    end
+  end
+
+  ##
+  # write_funders_csv
+  # This method is used to write the funders csv
+  # @return [void]
+  def write_funders_csv
+    target_path = METRICS_CONFIG[:funders_csv][:relative_path]
+    datasets = Dataset.all_with_public_metadata
+    File.open(target_path, "w") do |f|
+      CSV.open(f, "w") do |report|
+        report << ["doi", "funder", "grant"]
+        datasets.each do |dataset|
+          dataset.funders.each do |funder|
+            report << [dataset.identifier, funder.name, funder.grant]
+          end
+        end
+      end
+    end
+  end
+
+  ##
+  # write_related_materials_csv
+  # This method is used to write the related materials csv
+  # @return [void]
+  def write_related_materials_csv
+    target_path = METRICS_CONFIG[:related_materials_csv][:relative_path]
+    datasets = Dataset.all_with_public_metadata
+    File.open(target_path, "w") do |f|
+      CSV.open(f, "w") do |report|
+        report << ["doi", "related_doi", "relationship_type"]
+        datasets.each do |dataset|
+          dataset.related_materials.each do |related_material|
+            report << [dataset.identifier, related_material.related_doi, related_material.relationship_type]
           end
         end
       end

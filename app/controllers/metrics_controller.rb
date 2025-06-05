@@ -158,4 +158,21 @@ class MetricsController < ApplicationController
     end
   end
 
+  def refresh_funders_csv
+    Metric.write_funders_csv
+    message = "Funders csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
+    respond_to do |format|
+      format.html { render :index, alert: message }
+      format.json { render json: {"message": message} }
+    end
+  end
+
+  def refresh_related_materials_csv
+    Metric.write_related_materials_csv
+    message = "Related materials csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
+    respond_to do |format|
+      format.html { render :index, alert: message }
+      format.json { render json: {"message": message} }
+    end
+  end
 end

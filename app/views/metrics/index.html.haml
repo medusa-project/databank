@@ -2,7 +2,9 @@
        datafile_downloads_json: "not found",
        datafiles_csv:           "not found",
        datasets_tsv:            "not found",
-       container_contents_csv:  "not found"}
+       container_contents_csv:  "not found",
+       related_materials_csv:   "not found",
+       funders_csv:             "not found"}
 
 %h2 Metrics
 .metrics-border
@@ -14,13 +16,14 @@
 .metrics-border
   %h3
     -link = '<a href="/dataset_downloads.json" >Dataset downloads json</a>'.html_safe
-    = modified_times[:dataset_downloads_json] == "not found" ? "refresh before download" : link
+    = modified_times[:dataset_downloads_json] == "not found" ? "Dataset downloads json not currently available" : link
   %p
     Modified:
     = modified_times[:dataset_downloads_json]
-    %a{href: "/metrics/refresh_dataset_downloads", class: "btn btn-success btn-sm idb"}
-      %span.glyphicon.glyphicon-refresh
-      Refresh
+    -if current_user && current_user.role == 'admin'
+      %a{href: "/metrics/refresh_dataset_downloads", class: "btn btn-success btn-sm idb"}
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Dataset downloads json
   .indent
     %p
       A json string detailing downloads calculated per
@@ -29,13 +32,14 @@
 .metrics-border
   %h3
     -link = '<a href="/datafile_downloads.json">Datafile downloads json</a>'.html_safe
-    = modified_times[:datafile_downloads_json] == "not found" ? "refresh before download" : link
+    = modified_times[:datafile_downloads_json] == "not found" ? "Datafile downloads json not currently available" : link
   %p
     Modified:
     = modified_times[:datafile_downloads_json]
-    %a{href: "/metrics/refresh_datafile_downloads", class: "btn btn-success btn-sm idb"}
-      %span.glyphicon.glyphicon-refresh
-      Refresh
+    -if current_user && current_user.role == 'admin'
+      %a{href: "/metrics/refresh_datafile_downloads", class: "btn btn-success btn-sm idb"}
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Datafile downloads json
   .indent
     %p
       A json string detailing downloads calculated per
@@ -50,7 +54,7 @@
 .metrics-border
   %h3
     -if modified_times[:datasets_tsv] == "not found"
-      refresh before download
+      Datafiles listing not found
     -else
       %a(href="/datasets.tsv" class="btn btn-primary idb" )
         %span.glyphicon.glyphicon-download
@@ -58,9 +62,10 @@
   %p
     Modified:
     = modified_times[:datasets_tsv]
-    %a(href="/metrics/refresh_datasets_tsv" class="btn btn-success btn-sm idb" )
-      %span.glyphicon.glyphicon-refresh
-      Refresh
+    -if current_user && current_user.role == 'admin'
+      %a(href="/metrics/refresh_datasets_tsv" class="btn btn-success btn-sm idb" )
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Datasets TSV
   .indent
     %p
       Button triggers a tab-separated-values (TSV) file download of select dataset features.
@@ -103,7 +108,7 @@
 .metrics-border
   %h3
     -if modified_times[:datafiles_csv] == "not found"
-      refresh before download
+      Datafiles CSV not available
     -else
       %a(href="/datafiles.csv" class="btn btn-primary idb" )
         %span.glyphicon.glyphicon-download
@@ -111,9 +116,10 @@
   %p
     modified:
     = modified_times[:datafiles_csv]
-    %a(href="/metrics/refresh_datafiles_csv" class="btn btn-success btn-sm idb" )
-      %span.glyphicon.glyphicon-refresh
-      Refresh
+    -if current_user && current_user.role == 'admin'
+      %a(href="/metrics/refresh_datafiles_csv" class="btn btn-success btn-sm idb" )
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Datafiles CSV
   .indent
     %p
       Button triggers a csv file download of datafile details.
@@ -145,7 +151,7 @@
 .metrics-border
   %h3
     -if modified_times[:container_contents_csv] == "not found"
-      refresh before download
+      Container Contents CSV not available
     -else
       %a{href: "/archive_file_contents.csv", class: "btn btn-primary idb"}
         %span.glyphicon.glyphicon-download
@@ -153,9 +159,10 @@
   %p
     modified:
     = modified_times[:container_contents_csv]
-    %a{href: "/metrics/refresh_container_csv", class: "btn btn-success btn-sm idb"}
-      %span.glyphicon.glyphicon-refresh
-      Refresh
+    -if current_user && current_user.role == 'admin'
+      %a{href: "/metrics/refresh_container_csv", class: "btn btn-success btn-sm idb"}
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Container File Contents CSV
   .indent
     %p
       Button triggers a csv file download of contents details for files in complex container formats (.zip, .tar.gz, .7z).
@@ -182,10 +189,20 @@
 
 .metrics-border
   %h3
-    %a(href="/metrics/related_materials_csv" class="btn btn-primary idb" )
-      %span.glyphicon.glyphicon-download
-      Related Materials CSV
-  %p Generated dynamically
+    -if modified_times[:related_materials_csv] == "not found"
+      Related Materials CSV not available
+    -else
+      %a(href="/metrics/related_materials_csv" class="btn btn-primary idb" )
+        %span.glyphicon.glyphicon-download
+        Related Materials CSV
+  %p
+    modified:
+    = modified_times[:related_materials_csv]
+  -if current_user && current_user.role == 'admin'
+    .curator-only
+      %a(href="/metrics/refresh_related_materials_csv" class="btn btn-success btn-sm idb")
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Related Materials CSV
   .indent
     %p
       Button triggers a csv file download.
@@ -213,17 +230,21 @@
 
 .metrics-border
   %h3
-    %a(href="/metrics/funders_csv" class="btn btn-primary idb" )
-      %span.glyphicon.glyphicon-download
-      Funders CSV
-  %p Generated dynamically
+    -if modified_times[:funders_csv] == "not found"
+      Funders CSV not available
+      %a(href="/metrics/funders_csv" class="btn btn-primary idb" )
+        %span.glyphicon.glyphicon-download
+        Funders CSV
+  -if current_user && current_user.role == 'admin'
+    .curator-only
+      %a(href="/metrics/refresh_funders_csv" class="btn btn-success btn-sm idb")
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Funders CSV
   .indent
     %p
       Button triggers a csv file download.
       %em (funder and grant info)
-
     %strong Column Headings
-
     %ul
       %li
         %strong doi:
