@@ -236,6 +236,9 @@
       %a(href="/metrics/funders_csv" class="btn btn-primary idb" )
         %span.glyphicon.glyphicon-download
         Funders CSV
+  %p
+    modified:
+    = modified_times[:funders_csv]
   -if current_user && current_user.role == 'admin'
     .curator-only
       %a(href="/metrics/refresh_funders_csv" class="btn btn-success btn-sm idb")
