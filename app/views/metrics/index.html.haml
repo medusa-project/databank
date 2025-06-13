@@ -17,10 +17,11 @@
   %h3
     -link = '<a href="/dataset_downloads.json" >Dataset downloads json</a>'.html_safe
     = modified_times[:dataset_downloads_json] == "not found" ? "Dataset downloads json not currently available" : link
-  %p
+  %p.inline-block
     Modified:
     = modified_times[:dataset_downloads_json]
-    -if current_user && current_user.role == 'admin'
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
       %a{href: "/metrics/refresh_dataset_downloads", class: "btn btn-success btn-sm idb"}
         %span.glyphicon.glyphicon-refresh
         Regenerate Dataset downloads json
@@ -33,10 +34,11 @@
   %h3
     -link = '<a href="/datafile_downloads.json">Datafile downloads json</a>'.html_safe
     = modified_times[:datafile_downloads_json] == "not found" ? "Datafile downloads json not currently available" : link
-  %p
+  %p.inline-block
     Modified:
     = modified_times[:datafile_downloads_json]
-    -if current_user && current_user.role == 'admin'
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
       %a{href: "/metrics/refresh_datafile_downloads", class: "btn btn-success btn-sm idb"}
         %span.glyphicon.glyphicon-refresh
         Regenerate Datafile downloads json
@@ -59,10 +61,11 @@
       %a(href="/datasets.tsv" class="btn btn-primary idb" )
         %span.glyphicon.glyphicon-download
         Datasets TSV
-  %p
+  %p.inline-block
     Modified:
     = modified_times[:datasets_tsv]
-    -if current_user && current_user.role == 'admin'
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
       %a(href="/metrics/refresh_datasets_tsv" class="btn btn-success btn-sm idb" )
         %span.glyphicon.glyphicon-refresh
         Regenerate Datasets TSV
@@ -113,10 +116,11 @@
       %a(href="/datafiles.csv" class="btn btn-primary idb" )
         %span.glyphicon.glyphicon-download
         Datafiles CSV
-  %p
+  %p.inline-block
     modified:
     = modified_times[:datafiles_csv]
-    -if current_user && current_user.role == 'admin'
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
       %a(href="/metrics/refresh_datafiles_csv" class="btn btn-success btn-sm idb" )
         %span.glyphicon.glyphicon-refresh
         Regenerate Datafiles CSV
@@ -156,11 +160,12 @@
       %a{href: "/archive_file_contents.csv", class: "btn btn-primary idb"}
         %span.glyphicon.glyphicon-download
         Container File Contents (zip) CSV
-  %p
+  %p.inline-block
     modified:
     = modified_times[:container_contents_csv]
-    -if current_user && current_user.role == 'admin'
-      %a{href: "/metrics/refresh_container_csv", class: "btn btn-success btn-sm idb"}
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
+      %a{href: "/metrics/refresh_container_contents_csv", class: "btn btn-success btn-sm idb"}
         %span.glyphicon.glyphicon-refresh
         Regenerate Container File Contents CSV
   .indent
@@ -195,11 +200,11 @@
       %a(href="/metrics/related_materials_csv" class="btn btn-primary idb" )
         %span.glyphicon.glyphicon-download
         Related Materials CSV
-  %p
+  %p.inline-block
     modified:
     = modified_times[:related_materials_csv]
   -if current_user && current_user.role == 'admin'
-    .curator-only
+    .curator-only.inline-block
       %a(href="/metrics/refresh_related_materials_csv" class="btn btn-success btn-sm idb")
         %span.glyphicon.glyphicon-refresh
         Regenerate Related Materials CSV
@@ -236,11 +241,11 @@
       %a(href="/metrics/funders_csv" class="btn btn-primary idb" )
         %span.glyphicon.glyphicon-download
         Funders CSV
-  %p
+  %p.inline-block
     modified:
     = modified_times[:funders_csv]
   -if current_user && current_user.role == 'admin'
-    .curator-only
+    .curator-only.inline-block
       %a(href="/metrics/refresh_funders_csv" class="btn btn-success btn-sm idb")
         %span.glyphicon.glyphicon-refresh
         Regenerate Funders CSV
