@@ -14,5 +14,8 @@ resources :metrics do
     get 'refresh_container_csv'
     get 'related_materials_csv'
     get 'refresh_datasets_tsv'
+    get 'refresh_funders_csv'
+    get 'refresh_related_materials_csv'
+    get 'refresh_container_contents_csv'
   end
 end

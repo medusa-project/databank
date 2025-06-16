@@ -106,4 +106,10 @@ class MetricsController < ApplicationController
     message = "Related materials csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
     redirect_to metrics_path, notice: message
   end
+
+  def refresh_container_contents_csv
+    Metric.write_container_contents_csv
+    message = "Container contents csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
+    redirect_to metrics_path, notice: message
+  end 
 end
