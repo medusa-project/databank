@@ -11,4 +11,4 @@
 :related_materials_csv:
   :relative_path: <%= Rails.root.join("public/related_materials.csv") %>
 :funders_csv:
-  :relative_path: <%= Rails.root.join("public/funders.json") %>
+  :relative_path: <%= Rails.root.join("public/funders.csv") %>
