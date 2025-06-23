@@ -1,5 +1,5 @@
 !!!
-%html{lang: "en"}
+%html{dir: "ltr", lang: "en"}
   %head
     -# Google Tag Manager
     - if Rails.env.production? || Rails.env.prod_rocky?
@@ -10,10 +10,10 @@
         f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-P5CT7JQ');
     = javascript_include_tag :modernizr
     %meta{:charset => "utf-8"}/
-    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    %meta{name: "viewport", content: "width=device-width, initial-scale=1"}
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
     / Mobile viewport optimization h5bp.com/ad
-    %meta{:content => "True", :name => "HandheldFriendly"}/
-    %meta{:content => "width=device-width,initial-scale=1.0", :name => "viewport"}/
+    %meta{:content => "True", :name => "HandheldFriendly"}
     / Internet Explorer use the highest version available
     %meta{:content => "IE=edge", "http-equiv" => "X-UA-Compatible"}/
     / Mobile IE allows us to activate ClearType technology for smoothing fonts for easy reading
@@ -45,10 +45,10 @@
       %meta{:content => "#{@dataset.identifier}", :name => "citation_doi"}/
       %meta{:content => "en", :name => "citation_language"}/
   %body{style: "margin: 0; padding: 0;"}
-    %ilw-page{class: "ilw-font"}
+    %ilw-page{class: "ilw-margin ilw-font"}
       = render partial: 'shared/campus_header'
-      %main(width="page"){style: "margin: 0; padding: 0;"}
-        %itw-content(width="page")
+      %main(width="full"){style: "margin: 0; padding: 0;"}
+        %itw-content(width="full")
           -if Rails.env.production? || Rails.env.prod_rocky?
             %noscript
               %iframe{src: "https://www.googletagmanager.com/ns.html?id=GTM-P5CT7JQ",
