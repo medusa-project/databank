@@ -47,6 +47,8 @@
   %body{style: "margin: 0; padding: 0;"}
     %ilw-page{class: "ilw-margin ilw-font"}
       = render partial: 'shared/campus_header'
+      - if current_page?(root_path) || ( request.original_fullpath.include?('featured_researchers') && request.original_fullpath.include?('preview')  )
+        = render partial: 'welcome/hero'
       %main(width="full"){style: "margin: 0; padding: 0;"}
         %itw-content(width="full")
           -if Rails.env.production? || Rails.env.prod_rocky?
