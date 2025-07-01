@@ -1,6 +1,6 @@
 body {
-  font-family: Ariel, Sans-Serif;
-  font-size: 16px;
+  font-family: $font__montserrat;
+  font-size: 1.25em;
 }
 
 .library-header {
@@ -29,7 +29,7 @@ body {
 }
 
 .repository-footer-info {
-  padding-top: 15px;
+  padding-top: 1.25em;
   text-align: center;
 }
 
@@ -43,20 +43,20 @@ body {
 }
 
 #welcome-overlay {
-  position: absolute;
-  left: 30px;
-  top: 60px;
+  position: relative;
+  margin-left: 1.25em;
+  margin-top: 2em;
   background-color: $color__text-light;
-  padding-left: 15px;
+  padding-left: 1.25em;
   border: 1px solid $color__highlight-orange;
 
 }
 
 #welcome-overlay > p {
-  text-size: 20px;
-  line-height: 23px;
+  font-size: 1.25em;
+  line-height: 1.5;
   width: 500px;
-  margin: 15px;
+  margin: 1.25em;
 }
 
 a {

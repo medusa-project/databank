@@ -11,7 +11,9 @@
  * file per style scope.
  *
  */
-@import "libguide-style";
+@import "_variables";
+@import "header-style";
+@import "footer-style";
 @import "jquery-ui";
 @import "jquery-ui/datepicker";
 //@import "datatables/bootstrap/3/jquery.dataTables.bootstrap";
