@@ -49,12 +49,10 @@ body {
   background-color: $color__text-light;
   padding-left: 15px;
   border: 1px solid $color__highlight-orange;
-
 }
 
 #welcome-overlay > p {
-  text-size: 20px;
-  line-height: 23px;
+  font-size: 1em;
   width: 500px;
   margin: 15px;
 }
