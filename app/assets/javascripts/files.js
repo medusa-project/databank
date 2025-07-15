@@ -2,10 +2,10 @@
 
 var files_ready;
 files_ready = function () {
-    $('.view-load-spinner').hide();
-    $.ajaxSetup({
+    jQuery('.view-load-spinner').hide();
+    jQuery.ajaxSetup({
         headers: {
-            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+            'X-CSRF-Token': jQuery('meta[name="csrf-token"]').attr('content')
         }
     });
 
@@ -18,23 +18,23 @@ files_ready = function () {
 
 function remove_file_row_pre_confirm(datafile_index){
 
-    if ($("#dataset_datafiles_attributes_" + datafile_index + "_web_id").val() == undefined) {
+    if (jQuery("#dataset_datafiles_attributes_" + datafile_index + "_web_id").val() == undefined) {
         console.log("web_id undefined");
     }
     else {
 
-        var old_count = Number($("#datafilesCount").html())
-        $("#datafilesCount").html(String(old_count - 1));
+        var old_count = Number(jQuery("#datafilesCount").html())
+        jQuery("#datafilesCount").html(String(old_count - 1));
 
-        web_id = $("#dataset_datafiles_attributes_" + datafile_index + "_web_id").val();
+        web_id = jQuery("#dataset_datafiles_attributes_" + datafile_index + "_web_id").val();
 
-        $.ajax({
+        jQuery.ajax({
             url: '/datafiles/' + web_id + '.json',
             type: 'DELETE',
             datatype: "json",
             success: function(result) {
-                $("#datafile_index_" + datafile_index).remove();
-                $("#dataset_datafiles_attributes_" + datafile_index + "_id").remove();
+                jQuery("#datafile_index_" + datafile_index).remove();
+                jQuery("#dataset_datafiles_attributes_" + datafile_index + "_id").remove();
             },
             error: function(xhr, status, error){
                 var err = eval("(" + xhr.responseText + ")");
@@ -58,59 +58,59 @@ function remove_filejob_row(job_id, datafile_id){
 
     if (window.confirm("Are you sure?")) {
 
-        var maxId = Number($('#datafile_index_max').val());
+        var maxId = Number(jQuery('#datafile_index_max').val());
         var newId = 1;
 
         if (maxId != NaN) {
             newId = maxId + 1;
         }
 
-        $('#datafile_index_max').val(newId);
+        jQuery('#datafile_index_max').val(newId);
 
         var row = '<tr id= "datafile_index_' + newId + '"><td>' +
             '<input value="true" type="hidden" name="dataset[datafiles_attributes]['+ newId + '][_destroy]" id="dataset_datafiles_attributes_' + newId + '__destroy "/>' +
             '<input value="'+ datafile_id +'" type="hidden" name="dataset[datafiles_attributes]['+ newId + '][_id]" id="dataset_datafiles_attributes_' + newId + '_id "/>' +
             '</td></tr>'
 
-        $("table#datafiles > tbody:last-child").append(row);
+        jQuery("table#datafiles > tbody:last-child").append(row);
 
-        $("#job"+job.id).hide;
+        jQuery("#job"+job.id).hide;
     }
 
 }
 
 function download_selected() {
-    var file_ids = $("input[name='selected_files[]']:checked").map(function (index, domElement) {
-        return $(domElement).val();
+    var file_ids = jQuery("input[name='selected_files[]']:checked").map(function (index, domElement) {
+        return jQuery(domElement).val();
     });
 
-    $.each(file_ids, function (i, file_id) {
+    jQuery.each(file_ids, function (i, file_id) {
         fileURL = "<iframe class='hidden' src='/datasets/" + dataset_key + "/stream_file/" + file_id + "'></iframe>";
-        $('#frames').append(fileURL);
+        jQuery('#frames').append(fileURL);
     });
 }
 
 function create_from_remote_unknown_size(){
-    $('#loadingModal').modal('show');
+    jQuery('#loadingModal').modal('show');
 
     console.log("inside create_from_remote_unknown_size()")
 
     // Use Ajax to submit form data
 
-    $.ajax({
-        url: $('#form_for_remote').attr('action'),
+    jQuery.ajax({
+        url: jQuery('#form_for_remote').attr('action'),
         type: 'POST',
-        data: $('#form_for_remote').serialize(),
+        data: jQuery('#form_for_remote').serialize(),
         datatype: 'json',
         success: function (data) {
 
-            var maxId = Number($('#datafile_index_max').val());
+            var maxId = Number(jQuery('#datafile_index_max').val());
             var newId = 1;
 
             if (maxId != NaN) {
                 newId = maxId + 1;
             }
-            $('#datafile_index_max').val(newId);
+            jQuery('#datafile_index_max').val(newId);
 
             var file = data.files[0];
 
@@ -129,32 +129,32 @@ function create_from_remote_unknown_size(){
 
             row = row + '</span></div></td></tr>';
             if (file.error) {
-                $("#datafiles > tbody:last-child").append('<tr><td><div class="row"><p>' + file.name + ': ' + file.error + '</p></div></td></tr>');
+                jQuery("#datafiles > tbody:last-child").append('<tr><td><div class="row"><p>' + file.name + ': ' + file.error + '</p></div></td></tr>');
             } else {
-                $("#datafiles > tbody:last-child").append(row);
+                jQuery("#datafiles > tbody:last-child").append(row);
             }
 
-            $('#loadingModal').modal('hide');
+            jQuery('#loadingModal').modal('hide');
         },
         error: function (data) {
             console.log(data);
             alert("There was a problem ingesting the remote file");
-            $('#loadingModal').modal('hide');
+            jQuery('#loadingModal').modal('hide');
         }
     });
 }
 
 function create_from_remote(){
 
-    if (filename_isdup($('#remote_filename').val())) {
-        alert("Duplicate filename error: A file named " + $('#remote_filename').val() + " is already in this dataset.  For help, please contact the Research Data Service.");
+    if (filename_isdup(jQuery('#remote_filename').val())) {
+        alert("Duplicate filename error: A file named " + jQuery('#remote_filename').val() + " is already in this dataset.  For help, please contact the Research Data Service.");
     }
     else {
 
-        $.ajax({
+        jQuery.ajax({
             url: "/datafiles/remote_content_length",
             type: 'POST',
-            data: $('#form_for_remote').serialize(),
+            data: jQuery('#form_for_remote').serialize(),
             datatype: 'json',
             success: function (data) {
                 if(data.status == "ok" ) {
@@ -180,71 +180,71 @@ function create_from_remote(){
 }
 
 function preview(web_id){
-    $("#preview_" + web_id).show();
+    jQuery("#preview_" + web_id).show();
 
-    if ($("#preview_" + web_id).hasClass('fetched')){
+    if (jQuery("#preview_" + web_id).hasClass('fetched')){
         console.log("using previously fetched text");
     } else {
-        $('.spinner_'+web_id).show();
+        jQuery('.spinner_'+web_id).show();
 
-        $.getJSON( "/datafiles/" + web_id + "/viewtext", function( json ) {
-            $("#preview_" + web_id).html("<pre>" + json.peek_text + "</pre>");
-            $("#preview_" + web_id).addClass('fetched');
-            $('.spinner_'+web_id).hide();
+        jQuery.getJSON( "/datafiles/" + web_id + "/viewtext", function( json ) {
+            jQuery("#preview_" + web_id).html("<pre>" + json.peek_text + "</pre>");
+            jQuery("#preview_" + web_id).addClass('fetched');
+            jQuery('.spinner_'+web_id).hide();
         });
     }
 
-    $("#preview_glyph_" + web_id).removeClass("glyphicon-eye-open");
-    $("#preview_glyph_" + web_id).addClass("glyphicon-eye-close");
-    $("#preview_btn_" + web_id).attr('onclick', "hide_preview('" + web_id  + "')");
+    jQuery("#preview_glyph_" + web_id).removeClass("glyphicon-eye-open");
+    jQuery("#preview_glyph_" + web_id).addClass("glyphicon-eye-close");
+    jQuery("#preview_btn_" + web_id).attr('onclick', "hide_preview('" + web_id  + "')");
 }
 
 function preview_md(web_id){
-    $("#preview_" + web_id).show();
-    $("#preview_glyph_" + web_id).removeClass("glyphicon-eye-open");
-    $("#preview_glyph_" + web_id).addClass("glyphicon-eye-close");
-    $("#preview_md_btn_" + web_id).attr('onclick', "hide_md_preview('" + web_id  + "')");
+    jQuery("#preview_" + web_id).show();
+    jQuery("#preview_glyph_" + web_id).removeClass("glyphicon-eye-open");
+    jQuery("#preview_glyph_" + web_id).addClass("glyphicon-eye-close");
+    jQuery("#preview_md_btn_" + web_id).attr('onclick', "hide_md_preview('" + web_id  + "')");
 }
 
 function hide_md_preview(web_id){
-    $("#preview_glyph_" + web_id).removeClass("glyphicon-eye-close");
-    $("#preview_glyph_" + web_id).addClass("glyphicon-eye-open");
-    $("#preview_md_btn_" + web_id).attr('onclick', "preview_md('" + web_id  + "')");
-    $("#preview_" + web_id).hide();
+    jQuery("#preview_glyph_" + web_id).removeClass("glyphicon-eye-close");
+    jQuery("#preview_glyph_" + web_id).addClass("glyphicon-eye-open");
+    jQuery("#preview_md_btn_" + web_id).attr('onclick', "preview_md('" + web_id  + "')");
+    jQuery("#preview_" + web_id).hide();
 }
 
 function hide_preview(web_id){
-    $("#preview_glyph_" + web_id).removeClass("glyphicon-eye-close");
-    $("#preview_glyph_" + web_id).addClass("glyphicon-eye-open");
-    $("#preview_btn_" + web_id).attr('onclick', "preview('" + web_id  + "')");
-    $("#preview_" + web_id).hide();
+    jQuery("#preview_glyph_" + web_id).removeClass("glyphicon-eye-close");
+    jQuery("#preview_glyph_" + web_id).addClass("glyphicon-eye-open");
+    jQuery("#preview_btn_" + web_id).attr('onclick', "preview('" + web_id  + "')");
+    jQuery("#preview_" + web_id).hide();
 }
 
 function preview_image(iiif_root, web_id){
 
-    $("#preview_" + web_id).show();
-    if ($("#preview_" + web_id).hasClass('fetched')){
+    jQuery("#preview_" + web_id).show();
+    if (jQuery("#preview_" + web_id).hasClass('fetched')){
         console.log("using previously fetched image");
     } else {
-        $('.spinner_'+web_id).show();
+        jQuery('.spinner_'+web_id).show();
         var image_url = iiif_root + "/" + web_id + "/full/max/0/default.jpg";
-        $("#preview_" + web_id).addClass('fetched');
-        $("#preview_" + web_id).html("<img src="+ image_url +" class='preview_body'>");
-        $('.spinner_'+web_id).hide();
+        jQuery("#preview_" + web_id).addClass('fetched');
+        jQuery("#preview_" + web_id).html("<img src="+ image_url +" class='preview_body'>");
+        jQuery('.spinner_'+web_id).hide();
     }
-    $("#preview_img_btn_" + web_id).html('<button type="button" class="btn btn-sm btn-success" onclick="hide_image_preview(&#39;' + iiif_root + '&#39;, &#39;' + web_id + '&#39;)"><span class="glyphicon glyphicon-eye-close"></span> View</button>');
+    jQuery("#preview_img_btn_" + web_id).html('<button type="button" class="btn btn-sm btn-success" onclick="hide_image_preview(&#39;' + iiif_root + '&#39;, &#39;' + web_id + '&#39;)"><span class="glyphicon glyphicon-eye-close"></span> View</button>');
 }
 
 function hide_image_preview(iiif_root, web_id){
-    $("#preview_img_btn_" + web_id).html('<button type="button" class="btn btn-sm btn-success" onclick="preview_image(&#39;' + iiif_root + '&#39;, &#39;' + web_id + '&#39;)"><span class="glyphicon glyphicon-eye-open"></span> View</button>');
-    $("#preview_" + web_id).hide();
+    jQuery("#preview_img_btn_" + web_id).html('<button type="button" class="btn btn-sm btn-success" onclick="preview_image(&#39;' + iiif_root + '&#39;, &#39;' + web_id + '&#39;)"><span class="glyphicon glyphicon-eye-open"></span> View</button>');
+    jQuery("#preview_" + web_id).hide();
 }
 
 function initFileUpload() {
     var bHaveFileAPI = (window.File && window.FileReader);
 
     if (!bHaveFileAPI) {
-        $(".fileselect").html("<p class='notice'>This browser does not support the HTML 5 File API required to upload files. Current versions of Chrome do, as do most modern browsers.</p>")
+        jQuery(".fileselect").html("<p class='notice'>This browser does not support the HTML 5 File API required to upload files. Current versions of Chrome do, as do most modern browsers.</p>")
         return;
     }
 
@@ -310,14 +310,14 @@ function makeDroppable(element, callback) {
 }
 
 function uploadSelectedFiles(files){
-    $('#files').css("display", "block");
-    $('#collapseFiles').collapse('show');
+    jQuery('#files').css("display", "block");
+    jQuery('#collapseFiles').collapse('show');
 
-    $('#divFiles').html('');
+    jQuery('#divFiles').html('');
     for (var i = 0; i < files.length; i++) { //Progress bar and status label's for each file genarate dynamically
         var fileId = i;
 
-        $('#datafiles_upload_progress').append('<div class="container-fluid" id="progress_' + fileId + '">' +
+        jQuery('#datafiles_upload_progress').append('<div class="container-fluid" id="progress_' + fileId + '">' +
             '<div class="row">' +
             '<div class="col-md-10">' +
             '<p class="progress-status" id="status_' + fileId + '">' + files[i].name.toString() + '</p>' +
@@ -344,16 +344,16 @@ function uploadSelectedFiles(files){
 /*function onFileChanged(theEvt) {
     var files = theEvt.target.files;
 
-    $('#files').css("display", "block");
-    $('#collapseFiles').collapse('show');
+    jQuery('#files').css("display", "block");
+    jQuery('#collapseFiles').collapse('show');
 
-    $('#divFiles').html('');
+    jQuery('#divFiles').html('');
     for (var i = 0; i < files.length; i++) { //Progress bar and status label's for each file genarate dynamically
         var fileId = i;
 
         console.log(files[i].name.toString());
 
-        $('#datafiles_upload_progress').append('<div class="container-fluid" id="progress_' + fileId + '">' +
+        jQuery('#datafiles_upload_progress').append('<div class="container-fluid" id="progress_' + fileId + '">' +
             '<div class="row">' +
             '<div class="col-md-10">' +
             '<p class="progress-status" id="status_' + fileId + '">' + files[i].name.toString() + '</p>' +
@@ -392,11 +392,11 @@ function uploadSingleFile(file, i){
             size: file.size
         },
         onError: function(error) {
-            $("#status_" + fileId).text("Upload Failed because: " + error);
+            jQuery("#status_" + fileId).text("Upload Failed because: " + error);
         },
         onProgress: function(bytesUploaded, bytesTotal) {
             var percentage = (bytesUploaded / bytesTotal * 100).toFixed(2)
-            $('#progressbar_' + fileId).css("width", percentage + "%")
+            jQuery('#progressbar_' + fileId).css("width", percentage + "%")
         },
         onSuccess: function() {
 
@@ -407,24 +407,24 @@ function uploadSingleFile(file, i){
 
                 var newFile = response.files[0];
 
-                $("#status_" + fileId).text(event.target.responseText);
-                $('#progressbar_' + fileId).css("width", "100%");
+                jQuery("#status_" + fileId).text(event.target.responseText);
+                jQuery('#progressbar_' + fileId).css("width", "100%");
 
                 appendFileRow(newFile);
 
-                $("#progress_" + fileId).remove();
+                jQuery("#progress_" + fileId).remove();
 
                 //Hide cancel button
-                var _cancel = $('#cancel_' + fileId);
+                var _cancel = jQuery('#cancel_' + fileId);
                 _cancel.hide();
             }, false);
 
             ajax.addEventListener("error", function (e) {
-                $("#status_" + fileId).text("Upload Failed");
+                jQuery("#status_" + fileId).text("Upload Failed");
             }, false);
             //Abort Listener
             ajax.addEventListener("abort", function (e) {
-                $("#status_" + fileId).text("Upload Aborted");
+                jQuery("#status_" + fileId).text("Upload Aborted");
             }, false);
 
             ajax.open("POST", "/datafiles");
@@ -436,7 +436,7 @@ function uploadSingleFile(file, i){
             uploaderForm.append('datafile[size]', upload.file.size);
             uploaderForm.append('datafile[mime_type]', upload.file.type);
 
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+            var csrfToken = jQuery('meta[name="csrf-token"]').attr('content');
 
             ajax.setRequestHeader('X-CSRF-Token', csrfToken);
             ajax.setRequestHeader('Accept', 'application/json');
@@ -444,7 +444,7 @@ function uploadSingleFile(file, i){
             ajax.send(uploaderForm);
 
             //Cancel button
-            var _cancel = $('#cancel_' + fileId);
+            var _cancel = jQuery('#cancel_' + fileId);
             _cancel.show();
 
             _cancel.on('click', function () {
@@ -460,13 +460,13 @@ function uploadSingleFile(file, i){
 }
 
 function appendFileRow(newFile){
-    var maxId = Number($('#datafile_index_max').val());
+    var maxId = Number(jQuery('#datafile_index_max').val());
     var newId = 1;
 
     if (maxId != NaN) {
         newId = maxId + 1;
     }
-    $('#datafile_index_max').val(newId);
+    jQuery('#datafile_index_max').val(newId);
 
     var file = newFile;
 
@@ -491,13 +491,13 @@ function appendFileRow(newFile){
 
     row = row + '</span></div></td></tr>';
     if (file.error) {
-        $("#datafiles > tbody:last-child").append('<tr><td><div class="row"><p>' + file.name + ': ' + file.error + '</p></div></td></tr>');
+        jQuery("#datafiles > tbody:last-child").append('<tr><td><div class="row"><p>' + file.name + ': ' + file.error + '</p></div></td></tr>');
     } else {
-        var old_count = Number($("#datafilesCount").html());
-        $("#datafilesCount").html(String(old_count + 1));
-        $("#datafiles > tbody:last-child").append(row);
+        var old_count = Number(jQuery("#datafilesCount").html());
+        jQuery("#datafilesCount").html(String(old_count + 1));
+        jQuery("#datafiles > tbody:last-child").append(row);
     }
 }
 
-$(document).ready(files_ready);
-$(document).on('page:load', files_ready);
+jQuery(document).ready(files_ready);
+jQuery(document).on('page:load', files_ready);

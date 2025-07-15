@@ -41,10 +41,10 @@
       type: 'PATCH',
       add: function (e, data) {
         var that = this;
-        $.getJSON(resume_path, { file: data.files[0].name }, function (result) {
+        jQuery.getJSON(resume_path, { file: data.files[0].name }, function (result) {
             var file = result.file;
             data.uploadedBytes = file && file.size;
-            $.blueimp.fileupload.prototype
+            jQuery.blueimp.fileupload.prototype
                 .options.add.call(that, e, data);
         });
       }
@@ -55,7 +55,7 @@
         $('#js-completed').html(perc + "%");
       })
       .bind('fileuploaddone', function (e, data) {
-        $.ajax({
+        jQuery.ajax({
           url: update_status_path,
           type: "PATCH",
           data: { status: 'uploaded'},

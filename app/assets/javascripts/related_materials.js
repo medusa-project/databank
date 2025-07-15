@@ -6,8 +6,8 @@ related_materials_ready = function () {
 }
 
 function handleMaterialChange(materialIndex) {
-    $('#update-confirm').prop('disabled', false);
-    materialSelectVal = $("#dataset_related_materials_attributes_" + materialIndex + "_selected_type").val();
+    jQuery('#update-confirm').prop('disabled', false);
+    materialSelectVal = jQuery("#dataset_related_materials_attributes_" + materialIndex + "_selected_type").val();
 
     switch (materialSelectVal) {
         case 'Article':
@@ -15,33 +15,33 @@ function handleMaterialChange(materialIndex) {
         case 'Presentation':
         case 'Thesis':
         case 'Dataset':
-            $('#dataset_related_materials_attributes_' + materialIndex + '_material_type').val(materialSelectVal);
-            $('#dataset_related_materials_attributes_' + materialIndex + '_material_type').css("visibility", "hidden");
+            jQuery('#dataset_related_materials_attributes_' + materialIndex + '_material_type').val(materialSelectVal);
+            jQuery('#dataset_related_materials_attributes_' + materialIndex + '_material_type').css("visibility", "hidden");
             break;
         case 'Other':
-            $('#dataset_related_materials_attributes_' + materialIndex + '_material_type').val('');
-            $('#material_cell_'+materialIndex).html('<input class="form-control dataset material-text" type="text" name="dataset[related_materials_attributes][' + materialIndex + '][material_type]" id="dataset_related_materials_attributes_' + materialIndex+'_material_type" />');
-            $('#dataset_related_materials_attributes_' + materialIndex + '_material_type').css("visibility", "visible");
+            jQuery('#dataset_related_materials_attributes_' + materialIndex + '_material_type').val('');
+            jQuery('#material_cell_'+materialIndex).html('<input class="form-control dataset material-text" type="text" name="dataset[related_materials_attributes][' + materialIndex + '][material_type]" id="dataset_related_materials_attributes_' + materialIndex+'_material_type" />');
+            jQuery('#dataset_related_materials_attributes_' + materialIndex + '_material_type').css("visibility", "visible");
 
-            $('#dataset_related_materials_attributes_' + materialIndex + '_material_type').focus();
+            jQuery('#dataset_related_materials_attributes_' + materialIndex + '_material_type').focus();
             break;
         // should not get to default
         default:
-            $('#dataset_related_materials_attributes_' + materialIndex + '_material_type').val('');
+            jQuery('#dataset_related_materials_attributes_' + materialIndex + '_material_type').val('');
     }
 
 }
 
 function handleMaterialTable() {
-    $('#material_table tr.item').each(function (i) {
+    jQuery('#material_table tr.item').each(function (i) {
 
         var split_id = (this.id).split('_');
         var material_index = split_id[2];
 
-        if ((i + 1 ) == ($("#material_table tr.item").length)) {
-            $("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_material_row(\x22" + material_index + "\x22 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_material_row()' type='button'><span class='glyphicon glyphicon-plus'></span></button>");
+        if ((i + 1 ) == (jQuery("#material_table tr.item").length)) {
+            jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_material_row(\x22" + material_index + "\x22 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_material_row()' type='button'><span class='glyphicon glyphicon-plus'></span></button>");
         } else {
-            $("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_material_row(\x22" + material_index + "\x22 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>");
+            jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_material_row(\x22" + material_index + "\x22 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>");
         }
 
     });
@@ -49,15 +49,15 @@ function handleMaterialTable() {
 
 function add_material_row() {
 
-    $('#update-confirm').prop('disabled', false);
+    jQuery('#update-confirm').prop('disabled', false);
 
-    var maxId = Number($('#material_index_max').val());
+    var maxId = Number(jQuery('#material_index_max').val());
     var newId = 0;
 
     if (maxId != NaN) {
         newId = maxId + 1;
     }
-    $('#material_index_max').val(newId);
+    jQuery('#material_index_max').val(newId);
 
     var material_row = '<tr class="item row" id="material_index_' + newId + '">' +
         '<td>' +
@@ -133,26 +133,26 @@ function add_material_row() {
 
     }
 
-    $("#material_table tbody:last-child").append(material_row);
+    jQuery("#material_table tbody:last-child").append(material_row);
     handleMaterialTable();
 }
 
 function remove_material_row(material_index) {
 
-    if ($("#dataset_related_materials_attributes_" + material_index + "_id").val() != undefined) {
-        $("#dataset_related_materials_attributes_" + material_index + "__destroy").val("true");
-        $("#deleted_material_table > tbody:last-child").append($("#material_index_" + material_index));
-        $("#material_index_" + material_index).hide();
+    if (jQuery("#dataset_related_materials_attributes_" + material_index + "_id").val() != undefined) {
+        jQuery("#dataset_related_materials_attributes_" + material_index + "__destroy").val("true");
+        jQuery("#deleted_material_table > tbody:last-child").append(jQuery("#material_index_" + material_index));
+        jQuery("#material_index_" + material_index).hide();
     } else {
-        $("#material_index_" + material_index).remove();
+        jQuery("#material_index_" + material_index).remove();
     }
 
-    $("#datacite_material_index_" + material_index).remove();
+    jQuery("#datacite_material_index_" + material_index).remove();
     
-    if ($("#material_table tr").length < 2) {
+    if (jQuery("#material_table tr").length < 2) {
         add_material_row();
     }
-    $('#update-confirm').prop('disabled', false);
+    jQuery('#update-confirm').prop('disabled', false);
     handleFunderTable();
 }
 
@@ -160,17 +160,17 @@ function handle_relationship_box(material_index) {
     console.log(material_index);
     var checked_values = "";
     var i = 0;
-    $(".material_checkbox_" + material_index + ":checked").each(function () {
+    jQuery(".material_checkbox_" + material_index + ":checked").each(function () {
         if (i > 0) {
             checked_values = checked_values + ','
         }
-        checked_values = checked_values + ( $(this).val() );
+        checked_values = checked_values + ( jQuery(this).val() );
         i = i + 1;
     });
 
-    $('#dataset_related_materials_attributes_' + material_index + '_datacite_list').val(checked_values)
+    jQuery('#dataset_related_materials_attributes_' + material_index + '_datacite_list').val(checked_values)
 
 }
 
-$(document).ready(related_materials_ready);
-$(document).on('page:load', related_materials_ready);
+jQuery(document).ready(related_materials_ready);
+jQuery(document).on('page:load', related_materials_ready);

@@ -15,7 +15,7 @@
 
   $("#progress#{@job.id} div.well").show();
   window["interval#{@job.id}"] = setInterval(function(){
-    $.ajax({
+    jQuery.ajax({
       url: '/progress-job/' + #{@job.id},
       success: function(job){
 

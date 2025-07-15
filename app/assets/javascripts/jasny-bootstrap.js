@@ -42,23 +42,23 @@ if (typeof jQuery === 'undefined') {
         return false // explicit for ie8 (  ._.)
     }
 
-    if ($.support.transition !== undefined) return  // Prevent conflict with Twitter Bootstrap
+    if (jQuery.support.transition !== undefined) return  // Prevent conflict with Twitter Bootstrap
 
     // http://blog.alexmaccaw.com/css-transitions
-    $.fn.emulateTransitionEnd = function (duration) {
+    jQuery.fn.emulateTransitionEnd = function (duration) {
         var called = false, $el = this
-        $(this).one($.support.transition.end, function () {
+        jQuery(this).one(jQuery.support.transition.end, function () {
             called = true
         })
         var callback = function () {
-            if (!called) $($el).trigger($.support.transition.end)
+            if (!called) jQuery($el).trigger(jQuery.support.transition.end)
         }
         setTimeout(callback, duration)
         return this
     }
 
-    $(function () {
-        $.support.transition = transitionEnd()
+    jQuery(function () {
+        jQuery.support.transition = transitionEnd()
     })
 
 }(window.jQuery);
@@ -89,18 +89,18 @@ if (typeof jQuery === 'undefined') {
     // =================================
 
     var OffCanvas = function (element, options) {
-        this.$element = $(element)
-        this.options = $.extend({}, OffCanvas.DEFAULTS, options)
+        this.$element = jQuery(element)
+        this.options = jQuery.extend({}, OffCanvas.DEFAULTS, options)
         this.state = null
         this.placement = null
 
         if (this.options.recalc) {
             this.calcClone()
-            $(window).on('resize', $.proxy(this.recalc, this))
+            jQuery(window).on('resize', jQuery.proxy(this.recalc, this))
         }
 
         if (this.options.autohide)
-            $(document).on('click', $.proxy(this.autohide, this))
+            jQuery(document).on('click', jQuery.proxy(this.autohide, this))
 
         if (this.options.toggle) this.toggle()
 
@@ -139,8 +139,8 @@ if (typeof jQuery === 'undefined') {
             this.$element.css('visiblity', 'hidden !important').addClass('in')
         }
 
-        var horizontal = $(window).width() / this.$element.width()
-        var vertical = $(window).height() / this.$element.height()
+        var horizontal = jQuery(window).width() / this.$element.width()
+        var vertical = jQuery(window).height() / this.$element.height()
 
         var element = this.$element
 
@@ -176,10 +176,10 @@ if (typeof jQuery === 'undefined') {
 
     OffCanvas.prototype.getCanvasElements = function () {
         // Return a set containing the canvas plus all fixed elements
-        var canvas = this.options.canvas ? $(this.options.canvas) : this.$element
+        var canvas = this.options.canvas ? jQuery(this.options.canvas) : this.$element
 
         var fixed_elements = canvas.find('*').filter(function () {
-            return $(this).css('position') === 'fixed'
+            return jQuery(this).css('position') === 'fixed'
         }).not(this.options.exclude)
 
         return canvas.add(fixed_elements)
@@ -187,7 +187,7 @@ if (typeof jQuery === 'undefined') {
 
     OffCanvas.prototype.slide = function (elements, offset, callback) {
         // Use jQuery animation if CSS transitions aren't supported
-        if (!$.support.transition) {
+        if (!jQuery.support.transition) {
             var anim = {}
             anim[this.placement] = "+=" + offset
             return elements.animate(anim, 350, callback)
@@ -197,33 +197,33 @@ if (typeof jQuery === 'undefined') {
         var opposite = this.opposite(placement)
 
         elements.each(function () {
-            if ($(this).css(placement) !== 'auto')
-                $(this).css(placement, (parseInt($(this).css(placement), 10) || 0) + offset)
+            if (jQuery(this).css(placement) !== 'auto')
+                jQuery(this).css(placement, (parseInt(jQuery(this).css(placement), 10) || 0) + offset)
 
-            if ($(this).css(opposite) !== 'auto')
-                $(this).css(opposite, (parseInt($(this).css(opposite), 10) || 0) - offset)
+            if (jQuery(this).css(opposite) !== 'auto')
+                jQuery(this).css(opposite, (parseInt(jQuery(this).css(opposite), 10) || 0) - offset)
         })
 
         this.$element
-            .one($.support.transition.end, callback)
+            .one(jQuery.support.transition.end, callback)
             .emulateTransitionEnd(350)
     }
 
     OffCanvas.prototype.disableScrolling = function () {
-        var bodyWidth = $('body').width()
+        var bodyWidth = jQuery('body').width()
         var prop = 'padding-' + this.opposite(this.placement)
 
-        if ($('body').data('offcanvas-style') === undefined) {
-            $('body').data('offcanvas-style', $('body').attr('style') || '')
+        if (jQuery('body').data('offcanvas-style') === undefined) {
+            jQuery('body').data('offcanvas-style', jQuery('body').attr('style') || '')
         }
 
-        $('body').css('overflow', 'hidden')
+        jQuery('body').css('overflow', 'hidden')
 
-        if ($('body').width() > bodyWidth) {
-            var padding = parseInt($('body').css(prop), 10) + $('body').width() - bodyWidth
+        if (jQuery('body').width() > bodyWidth) {
+            var padding = parseInt(jQuery('body').css(prop), 10) + jQuery('body').width() - bodyWidth
 
             setTimeout(function () {
-                $('body').css(prop, padding)
+                jQuery('body').css(prop, padding)
             }, 1)
         }
     }
@@ -231,7 +231,7 @@ if (typeof jQuery === 'undefined') {
     OffCanvas.prototype.show = function () {
         if (this.state) return
 
-        var startEvent = $.Event('show.bs.offcanvas')
+        var startEvent = jQuery.Event('show.bs.offcanvas')
         this.$element.trigger(startEvent)
         if (startEvent.isDefaultPrevented()) return
 
@@ -244,17 +244,17 @@ if (typeof jQuery === 'undefined') {
         var offset = this.offset()
 
         if (elements.index(this.$element) !== -1) {
-            $(this.$element).data('offcanvas-style', $(this.$element).attr('style') || '')
+            jQuery(this.$element).data('offcanvas-style', jQuery(this.$element).attr('style') || '')
             this.$element.css(placement, -1 * offset)
             this.$element.css(placement); // Workaround: Need to get the CSS property for it to be applied before the next line of code
         }
 
         elements.addClass('canvas-sliding').each(function () {
-            if ($(this).data('offcanvas-style') === undefined) $(this).data('offcanvas-style', $(this).attr('style') || '')
-            if ($(this).css('position') === 'static') $(this).css('position', 'relative')
-            if (($(this).css(placement) === 'auto' || $(this).css(placement) === '0px') &&
-                ($(this).css(opposite) === 'auto' || $(this).css(opposite) === '0px')) {
-                $(this).css(placement, 0)
+            if (jQuery(this).data('offcanvas-style') === undefined) jQuery(this).data('offcanvas-style', jQuery(this).attr('style') || '')
+            if (jQuery(this).css('position') === 'static') jQuery(this).css('position', 'relative')
+            if ((jQuery(this).css(placement) === 'auto' || jQuery(this).css(placement) === '0px') &&
+                (jQuery(this).css(opposite) === 'auto' || jQuery(this).css(opposite) === '0px')) {
+                jQuery(this).css(placement, 0)
             }
         })
 
@@ -269,22 +269,22 @@ if (typeof jQuery === 'undefined') {
             this.$element.trigger('shown.bs.offcanvas')
         }
 
-        setTimeout($.proxy(function () {
+        setTimeout(jQuery.proxy(function () {
             this.$element.addClass('in')
-            this.slide(elements, offset, $.proxy(complete, this))
+            this.slide(elements, offset, jQuery.proxy(complete, this))
         }, this), 1)
     }
 
     OffCanvas.prototype.hide = function (fast) {
         if (this.state !== 'slid') return
 
-        var startEvent = $.Event('hide.bs.offcanvas')
+        var startEvent = jQuery.Event('hide.bs.offcanvas')
         this.$element.trigger(startEvent)
         if (startEvent.isDefaultPrevented()) return
 
         this.state = 'slide-out'
 
-        var elements = $('.canvas-slid')
+        var elements = jQuery('.canvas-slid')
         var placement = this.placement
         var offset = -1 * this.offset()
 
@@ -298,7 +298,7 @@ if (typeof jQuery === 'undefined') {
 
             elements.removeClass('canvas-sliding')
             elements.add(this.$element).add('body').each(function () {
-                $(this).attr('style', $(this).data('offcanvas-style')).removeData('offcanvas-style')
+                jQuery(this).attr('style', jQuery(this).data('offcanvas-style')).removeData('offcanvas-style')
             })
 
             this.$element.trigger('hidden.bs.offcanvas')
@@ -306,8 +306,8 @@ if (typeof jQuery === 'undefined') {
 
         elements.removeClass('canvas-slid').addClass('canvas-sliding')
 
-        setTimeout($.proxy(function () {
-            this.slide(elements, offset, $.proxy(complete, this))
+        setTimeout(jQuery.proxy(function () {
+            this.slide(elements, offset, jQuery.proxy(complete, this))
         }, this), 1)
     }
 
@@ -320,7 +320,7 @@ if (typeof jQuery === 'undefined') {
         this.$calcClone = this.$element.clone()
             .html('')
             .addClass('offcanvas-clone').removeClass('in')
-            .appendTo($('body'))
+            .appendTo(jQuery('body'))
     }
 
     OffCanvas.prototype.recalc = function () {
@@ -334,38 +334,38 @@ if (typeof jQuery === 'undefined') {
 
         elements.removeClass('canvas-slid')
         elements.add(this.$element).add('body').each(function () {
-            $(this).attr('style', $(this).data('offcanvas-style')).removeData('offcanvas-style')
+            jQuery(this).attr('style', jQuery(this).data('offcanvas-style')).removeData('offcanvas-style')
         })
     }
 
     OffCanvas.prototype.autohide = function (e) {
-        if ($(e.target).closest(this.$element).length === 0) this.hide()
+        if (jQuery(e.target).closest(this.$element).length === 0) this.hide()
     }
 
     // OFFCANVAS PLUGIN DEFINITION
     // ==========================
 
-    var old = $.fn.offcanvas
+    var old = jQuery.fn.offcanvas
 
-    $.fn.offcanvas = function (option) {
+    jQuery.fn.offcanvas = function (option) {
         return this.each(function () {
-            var $this = $(this)
+            var $this = jQuery(this)
             var data = $this.data('bs.offcanvas')
-            var options = $.extend({}, OffCanvas.DEFAULTS, $this.data(), typeof option === 'object' && option)
+            var options = jQuery.extend({}, OffCanvas.DEFAULTS, $this.data(), typeof option === 'object' && option)
 
             if (!data) $this.data('bs.offcanvas', (data = new OffCanvas(this, options)))
             if (typeof option === 'string') data[option]()
         })
     }
 
-    $.fn.offcanvas.Constructor = OffCanvas
+    jQuery.fn.offcanvas.Constructor = OffCanvas
 
 
     // OFFCANVAS NO CONFLICT
     // ====================
 
-    $.fn.offcanvas.noConflict = function () {
-        $.fn.offcanvas = old
+    jQuery.fn.offcanvas.noConflict = function () {
+        jQuery.fn.offcanvas = old
         return this
     }
 
@@ -373,12 +373,12 @@ if (typeof jQuery === 'undefined') {
     // OFFCANVAS DATA-API
     // =================
 
-    $(document).on('click.bs.offcanvas.data-api', '[data-toggle=offcanvas]', function (e) {
-        var $this = $(this), href
+    jQuery(document).on('click.bs.offcanvas.data-api', '[data-toggle=offcanvas]', function (e) {
+        var $this = jQuery(this), href
         var target = $this.attr('data-target')
             || e.preventDefault()
             || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') //strip for ie7
-        var $canvas = $(target)
+        var $canvas = jQuery(target)
         var data = $canvas.data('bs.offcanvas')
         var option = data ? 'toggle' : $this.data()
 
@@ -413,10 +413,10 @@ if (typeof jQuery === 'undefined') {
     "use strict";
 
     var Rowlink = function (element, options) {
-        this.$element = $(element)
-        this.options = $.extend({}, Rowlink.DEFAULTS, options)
+        this.$element = jQuery(element)
+        this.options = jQuery.extend({}, Rowlink.DEFAULTS, options)
 
-        this.$element.on('click.bs.rowlink', 'td:not(.rowlink-skip)', $.proxy(this.click, this))
+        this.$element.on('click.bs.rowlink', 'td:not(.rowlink-skip)', jQuery.proxy(this.click, this))
     }
 
     Rowlink.DEFAULTS = {
@@ -424,8 +424,8 @@ if (typeof jQuery === 'undefined') {
     }
 
     Rowlink.prototype.click = function (e) {
-        var target = $(e.currentTarget).closest('tr').find(this.options.target)[0]
-        if ($(e.target)[0] === target) return
+        var target = jQuery(e.currentTarget).closest('tr').find(this.options.target)[0]
+        if (jQuery(e.target)[0] === target) return
 
         e.preventDefault();
 
@@ -442,24 +442,24 @@ if (typeof jQuery === 'undefined') {
     // ROWLINK PLUGIN DEFINITION
     // ===========================
 
-    var old = $.fn.rowlink
+    var old = jQuery.fn.rowlink
 
-    $.fn.rowlink = function (options) {
+    jQuery.fn.rowlink = function (options) {
         return this.each(function () {
-            var $this = $(this)
+            var $this = jQuery(this)
             var data = $this.data('bs.rowlink')
             if (!data) $this.data('bs.rowlink', (data = new Rowlink(this, options)))
         })
     }
 
-    $.fn.rowlink.Constructor = Rowlink
+    jQuery.fn.rowlink.Constructor = Rowlink
 
 
     // ROWLINK NO CONFLICT
     // ====================
 
-    $.fn.rowlink.noConflict = function () {
-        $.fn.rowlink = old
+    jQuery.fn.rowlink.noConflict = function () {
+        jQuery.fn.rowlink = old
         return this
     }
 
@@ -467,13 +467,13 @@ if (typeof jQuery === 'undefined') {
     // ROWLINK DATA-API
     // ==================
 
-    $(document).on('click.bs.rowlink.data-api', '[data-link="row"]', function (e) {
-        if ($(e.target).closest('.rowlink-skip').length !== 0) return
+    jQuery(document).on('click.bs.rowlink.data-api', '[data-link="row"]', function (e) {
+        if (jQuery(e.target).closest('.rowlink-skip').length !== 0) return
 
-        var $this = $(this)
+        var $this = jQuery(this)
         if ($this.data('bs.rowlink')) return
         $this.rowlink($this.data())
-        $(e.target).trigger('click.bs.rowlink')
+        jQuery(e.target).trigger('click.bs.rowlink')
     })
 
 }(window.jQuery);
@@ -512,8 +512,8 @@ if (typeof jQuery === 'undefined') {
     var Inputmask = function (element, options) {
         if (isAndroid) return // No support because caret positioning doesn't work on Android
 
-        this.$element = $(element)
-        this.options = $.extend({}, Inputmask.DEFAULTS, options)
+        this.$element = jQuery(element)
+        this.options = jQuery.extend({}, Inputmask.DEFAULTS, options)
         this.mask = String(this.options.mask)
 
         this.init()
@@ -541,7 +541,7 @@ if (typeof jQuery === 'undefined') {
         this.partialPosition = this.mask.length
         this.firstNonMaskPos = null
 
-        $.each(this.mask.split(""), $.proxy(function (i, c) {
+        jQuery.each(this.mask.split(""), jQuery.proxy(function (i, c) {
             if (c == '?') {
                 len--
                 this.partialPosition = i
@@ -554,14 +554,14 @@ if (typeof jQuery === 'undefined') {
             }
         }, this))
 
-        this.buffer = $.map(this.mask.split(""), $.proxy(function (c, i) {
+        this.buffer = jQuery.map(this.mask.split(""), jQuery.proxy(function (c, i) {
             if (c != '?') return defs[c] ? this.options.placeholder : c
         }, this))
 
         this.focusText = this.$element.val()
 
-        this.$element.data("rawMaskFn", $.proxy(function () {
-            return $.map(this.buffer, function (c, i) {
+        this.$element.data("rawMaskFn", jQuery.proxy(function () {
+            return jQuery.map(this.buffer, function (c, i) {
                 return this.tests[i] && c != this.options.placeholder ? c : null
             }).join('')
         }, this))
@@ -573,15 +573,15 @@ if (typeof jQuery === 'undefined') {
         var pasteEventName = (isIE ? 'paste' : 'input') + ".mask"
 
         this.$element
-            .on("unmask.bs.inputmask", $.proxy(this.unmask, this))
+            .on("unmask.bs.inputmask", jQuery.proxy(this.unmask, this))
 
-            .on("focus.bs.inputmask", $.proxy(this.focusEvent, this))
-            .on("blur.bs.inputmask", $.proxy(this.blurEvent, this))
+            .on("focus.bs.inputmask", jQuery.proxy(this.focusEvent, this))
+            .on("blur.bs.inputmask", jQuery.proxy(this.blurEvent, this))
 
-            .on("keydown.bs.inputmask", $.proxy(this.keydownEvent, this))
-            .on("keypress.bs.inputmask", $.proxy(this.keypressEvent, this))
+            .on("keydown.bs.inputmask", jQuery.proxy(this.keydownEvent, this))
+            .on("keypress.bs.inputmask", jQuery.proxy(this.keypressEvent, this))
 
-            .on(pasteEventName, $.proxy(this.pasteEvent, this))
+            .on(pasteEventName, jQuery.proxy(this.pasteEvent, this))
     }
 
     //Helper Function for Caret positioning
@@ -806,25 +806,25 @@ if (typeof jQuery === 'undefined') {
     // INPUTMASK PLUGIN DEFINITION
     // ===========================
 
-    var old = $.fn.inputmask
+    var old = jQuery.fn.inputmask
 
-    $.fn.inputmask = function (options) {
+    jQuery.fn.inputmask = function (options) {
         return this.each(function () {
-            var $this = $(this)
+            var $this = jQuery(this)
             var data = $this.data('bs.inputmask')
 
             if (!data) $this.data('bs.inputmask', (data = new Inputmask(this, options)))
         })
     }
 
-    $.fn.inputmask.Constructor = Inputmask
+    jQuery.fn.inputmask.Constructor = Inputmask
 
 
     // INPUTMASK NO CONFLICT
     // ====================
 
-    $.fn.inputmask.noConflict = function () {
-        $.fn.inputmask = old
+    jQuery.fn.inputmask.noConflict = function () {
+        jQuery.fn.inputmask = old
         return this
     }
 
@@ -832,8 +832,8 @@ if (typeof jQuery === 'undefined') {
     // INPUTMASK DATA-API
     // ==================
 
-    $(document).on('focus.bs.inputmask.data-api', '[data-mask]', function (e) {
-        var $this = $(this)
+    jQuery(document).on('focus.bs.inputmask.data-api', '[data-mask]', function (e) {
+        var $this = jQuery(this)
         if ($this.data('bs.inputmask')) return
         $this.inputmask($this.data())
     })
@@ -868,7 +868,7 @@ if (typeof jQuery === 'undefined') {
     // =================================
 
     var Fileinput = function (element, options) {
-        this.$element = $(element)
+        this.$element = jQuery(element)
 
         this.$input = this.$element.find(':file')
         if (this.$input.length === 0) return
@@ -877,7 +877,7 @@ if (typeof jQuery === 'undefined') {
 
         this.$hidden = this.$element.find('input[type=hidden][name="' + this.name + '"]')
         if (this.$hidden.length === 0) {
-            this.$hidden = $('<input type="hidden">').insertBefore(this.$input)
+            this.$hidden = jQuery('<input type="hidden">').insertBefore(this.$input)
         }
 
         this.$preview = this.$element.find('.fileinput-preview')
@@ -896,11 +896,11 @@ if (typeof jQuery === 'undefined') {
     }
 
     Fileinput.prototype.listen = function () {
-        this.$input.on('change.bs.fileinput', $.proxy(this.change, this))
-        $(this.$input[0].form).on('reset.bs.fileinput', $.proxy(this.reset, this))
+        this.$input.on('change.bs.fileinput', jQuery.proxy(this.change, this))
+        jQuery(this.$input[0].form).on('reset.bs.fileinput', jQuery.proxy(this.reset, this))
 
-        this.$element.find('[data-trigger="fileinput"]').on('click.bs.fileinput', $.proxy(this.trigger, this))
-        this.$element.find('[data-dismiss="fileinput"]').on('click.bs.fileinput', $.proxy(this.clear, this))
+        this.$element.find('[data-trigger="fileinput"]').on('click.bs.fileinput', jQuery.proxy(this.trigger, this))
+        this.$element.find('[data-dismiss="fileinput"]').on('click.bs.fileinput', jQuery.proxy(this.clear, this))
     },
 
         Fileinput.prototype.change = function (e) {
@@ -925,7 +925,7 @@ if (typeof jQuery === 'undefined') {
                 var element = this.$element
 
                 reader.onload = function (re) {
-                    var $img = $('<img>')
+                    var $img = jQuery('<img>')
                     $img[0].src = re.target.result
                     files[0].result = re.target.result
 
@@ -1000,25 +1000,25 @@ if (typeof jQuery === 'undefined') {
     // FILEUPLOAD PLUGIN DEFINITION
     // ===========================
 
-    var old = $.fn.fileinput
+    var old = jQuery.fn.fileinput
 
-    $.fn.fileinput = function (options) {
+    jQuery.fn.fileinput = function (options) {
         return this.each(function () {
-            var $this = $(this),
+            var $this = jQuery(this),
                 data = $this.data('bs.fileinput')
             if (!data) $this.data('bs.fileinput', (data = new Fileinput(this, options)))
             if (typeof options == 'string') data[options]()
         })
     }
 
-    $.fn.fileinput.Constructor = Fileinput
+    jQuery.fn.fileinput.Constructor = Fileinput
 
 
     // FILEINPUT NO CONFLICT
     // ====================
 
-    $.fn.fileinput.noConflict = function () {
-        $.fn.fileinput = old
+    jQuery.fn.fileinput.noConflict = function () {
+        jQuery.fn.fileinput = old
         return this
     }
 
@@ -1026,12 +1026,12 @@ if (typeof jQuery === 'undefined') {
     // FILEUPLOAD DATA-API
     // ==================
 
-    $(document).on('click.fileinput.data-api', '[data-provides="fileinput"]', function (e) {
-        var $this = $(this)
+    jQuery(document).on('click.fileinput.data-api', '[data-provides="fileinput"]', function (e) {
+        var $this = jQuery(this)
         if ($this.data('bs.fileinput')) return
         $this.fileinput($this.data())
 
-        var $target = $(e.target).closest('[data-dismiss="fileinput"],[data-trigger="fileinput"]');
+        var $target = jQuery(e.target).closest('[data-dismiss="fileinput"],[data-trigger="fileinput"]');
         if ($target.length > 0) {
             e.preventDefault()
             $target.trigger('click.bs.fileinput')

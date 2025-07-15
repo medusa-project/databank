@@ -3,59 +3,59 @@ const search_ready = function () {
     //alert("search.js javascript working");
 }
 function clearFilters(){
-    $(".checkFacetGroup").prop("checked",false);
-    $("#searchForm").submit();
+    jQuery(".checkFacetGroup").prop("checked",false);
+    jQuery("#searchForm").submit();
 }
 function handleFilterChange() {
-    $("#searchForm").submit();
+    jQuery("#searchForm").submit();
 }
 function backToSearch() {
-  $("input[name='download']").remove();
-    $("#searchForm").submit();
+  jQuery("input[name='download']").remove();
+    jQuery("#searchForm").submit();
 }
 function generateReport() {
 
-    $("#searchForm").append("<input type='hidden' name='report' value='generate' />");
-    $("#searchForm").submit();
+    jQuery("#searchForm").append("<input type='hidden' name='report' value='generate' />");
+    jQuery("#searchForm").submit();
 }
 function downloadCitationReport(){
-    $("#searchForm").append("<input type='hidden' name='download' value='now' />");
-    $("#searchForm").submit();
+    jQuery("#searchForm").append("<input type='hidden' name='download' value='now' />");
+    jQuery("#searchForm").submit();
 }
 function clearSearchTerm(){
-    $("input[name='q']").val("");
-    $("#searchForm").submit();
+    jQuery("input[name='q']").val("");
+    jQuery("#searchForm").submit();
 }
 function setSortStyle(){
-    const sort_criteria = $("input[name='sort_by']").val();
+    const sort_criteria = jQuery("input[name='sort_by']").val();
 
-    $('.btn-sort').removeClass('btn-current-sort');
+    jQuery('.btn-sort').removeClass('btn-current-sort');
 
     switch(sort_criteria) {
         case 'sort_updated_asc':
-            $('.updated_asc').addClass('btn-current-sort');
+            jQuery('.updated_asc').addClass('btn-current-sort');
             break;
         // case 'sort_updated_desc':
-        //     $('.updated_desc').addClass('btn-current-sort');
+        //     jQuery('.updated_desc').addClass('btn-current-sort');
         //     break;
         case 'sort_released_asc':
-            $('.released_asc').addClass('btn-current-sort');
+            jQuery('.released_asc').addClass('btn-current-sort');
             break;
         case 'sort_released_desc':
-            $('.released_desc').addClass('btn-current-sort');
+            jQuery('.released_desc').addClass('btn-current-sort');
             break;
         case 'sort_ingested_asc':
-            $('.ingested_asc').addClass('btn-current-sort');
+            jQuery('.ingested_asc').addClass('btn-current-sort');
             break;
         case 'sort_ingested_desc':
-            $('.ingested_desc').addClass('btn-current-sort');
+            jQuery('.ingested_desc').addClass('btn-current-sort');
             break;
         default:
-            $('.updated_desc').addClass('btn-current-sort');
+            jQuery('.updated_desc').addClass('btn-current-sort');
     }
 }
 function set_per_page(){
-    $("#searchForm").submit();
+    jQuery("#searchForm").submit();
 }
-$(document).ready(search_ready);
-$(document).on('page:load', search_ready);
+jQuery(document).ready(search_ready);
+jQuery(document).on('page:load', search_ready);

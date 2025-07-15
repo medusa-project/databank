@@ -2,17 +2,17 @@
 
 var contributors_ready;
 contributors_ready = function () {
-    $('.orcid-search-spinner').hide();
+    jQuery('.orcid-search-spinner').hide();
     var cells, desired_width, table_width;
-    if ($("#contributor_table tr").length > 0) {
-        table_width = $('#contributor_table').width();
-        cells = $('#contributor_table').find('tr')[0].cells.length;
+    if (jQuery("#contributor_table tr").length > 0) {
+        table_width = jQuery('#contributor_table').width();
+        cells = jQuery('#contributor_table').find('tr')[0].cells.length;
         desired_width = table_width / cells + 'px';
         handlecontributorTable();
 
-        $('#contributor_table td').css('width', desired_width);
+        jQuery('#contributor_table td').css('width', desired_width);
 
-        return $('#contributor_table').sortable({
+        return jQuery('#contributor_table').sortable({
 
             axis: 'y',
             items: '.item',
@@ -40,20 +40,20 @@ contributors_ready = function () {
 
 function add_contributor_row() {
 
-    $('#update-confirm').prop('disabled', false);
+    jQuery('#update-confirm').prop('disabled', false);
 
-    var maxId = Number($('#contributor_index_max').val());
+    var maxId = Number(jQuery('#contributor_index_max').val());
     var newId = 1;
 
     if (maxId != NaN) {
         newId = maxId + 1;
     }
-    $('#contributor_index_max').val(newId);
+    jQuery('#contributor_index_max').val(newId);
 
     var contributor_row = '<tr class="item row" id="contributor_index_' + newId + '">' +
         '<td><span style="display:inline;" class="glyphicon glyphicon-resize-vertical"></span></td>' +
         '<td class="col-md-2">' +
-        '<input type="hidden" value="' + $('#contributor_table tr').length + '" name="dataset[contributors_attributes][' + newId + '][row_position]" id="dataset_contributors_attributes_' + newId + '_row_position" />' +
+        '<input type="hidden" value="' + jQuery('#contributor_table tr').length + '" name="dataset[contributors_attributes][' + newId + '][row_position]" id="dataset_contributors_attributes_' + newId + '_row_position" />' +
         '<input value="0" type="hidden" name="dataset[contributors_attributes][' + newId + '][type_of]" id="dataset_contributors_attributes_' + newId + '_type_of" />' +
         '<input onchange="generate_contributor_preview()" class="form-control dataset contributor" placeholder="[e.g.: Smith]" type="text" name="dataset[contributors_attributes][' + newId + '][family_name]" id="dataset_contributors_attributes_' + newId + '_family_name" />' +
         '</td>' +
@@ -75,7 +75,7 @@ function add_contributor_row() {
         '</td>' +
         '<td class="col-md-1"></td>' +
         '</tr>';
-    $("#contributor_table tbody:last-child").append(contributor_row);
+    jQuery("#contributor_table tbody:last-child").append(contributor_row);
 
     handlecontributorTable();
 
@@ -86,45 +86,45 @@ function remove_contributor_row(contributor_index) {
 
     // do not allow removal of primary contact for published dataset
 
-    if (($("input[name='dataset[publication_state]']").val() != 'draft') && ($("#dataset_contributors_attributes_" + contributor_index + "_is_contact").val() == 'true')) {
+    if ((jQuery("input[name='dataset[publication_state]']").val() != 'draft') && (jQuery("#dataset_contributors_attributes_" + contributor_index + "_is_contact").val() == 'true')) {
         alert("The primary long term contact for a published dataset may not be removed.  To delete this author listing, first select a different contact.")
     }
     else {
-        if ($("#dataset_contributors_attributes_" + contributor_index + "_id").val() == undefined) {
-            $("#contributor_index_" + contributor_index).remove();
+        if (jQuery("#dataset_contributors_attributes_" + contributor_index + "_id").val() == undefined) {
+            jQuery("#contributor_index_" + contributor_index).remove();
         } else {
-            $("#dataset_contributors_attributes_" + contributor_index + "__destroy").val("true");
-            $("#deleted_contributor_table > tbody:last-child").append($("#contributor_index_" + contributor_index));
-            $("#contributor_index_" + contributor_index).hide();
+            jQuery("#dataset_contributors_attributes_" + contributor_index + "__destroy").val("true");
+            jQuery("#deleted_contributor_table > tbody:last-child").append(jQuery("#contributor_index_" + contributor_index));
+            jQuery("#contributor_index_" + contributor_index).hide();
         }
 
-        $('#contributor_table').sortable('refresh');
+        jQuery('#contributor_table').sortable('refresh');
 
-        if ($("#contributor_table tr").length < 2) {
+        if (jQuery("#contributor_table tr").length < 2) {
             add_contributor_row();
         }
-        $('#update-confirm').prop('disabled', false);
+        jQuery('#update-confirm').prop('disabled', false);
         handlecontributorTable();
         generate_contributor_preview();
     }
 }
 
 function handlecontributorTable() {
-    $('#contributor_table tr').each(function (i) {
+    jQuery('#contributor_table tr').each(function (i) {
         // for all but header row, set the row_position value of the input to match the table row position
         if (i > 0) {
             var split_id = (this.id).split('_');
             var contributor_index = split_id[2];
 
-            $("#dataset_contributors_attributes_" + contributor_index + "_row_position").val(i);
+            jQuery("#dataset_contributors_attributes_" + contributor_index + "_row_position").val(i);
 
             // set contributor row num display
-            //$("td:first", this).html("<span style='display:inline;'>  " + i + "     </span><span style='display:inline;' class='glyphicon glyphicon-resize-vertical'></span>" );
+            //jQuery("td:first", this).html("<span style='display:inline;'>  " + i + "     </span><span style='display:inline;' class='glyphicon glyphicon-resize-vertical'></span>" );
 
-            if ((i + 1) == ($("#contributor_table tr").length)) {
-                $("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_contributor_row(\x22" + contributor_index + "\x22 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_contributor_row()' type='button'><span class='glyphicon glyphicon-plus'></span></button>");
+            if ((i + 1) == (jQuery("#contributor_table tr").length)) {
+                jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_contributor_row(\x22" + contributor_index + "\x22 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_contributor_row()' type='button'><span class='glyphicon glyphicon-plus'></span></button>");
             } else {
-                $("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_contributor_row(\x22" + contributor_index + "\x22 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>");
+                jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_contributor_row(\x22" + contributor_index + "\x22 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>");
             }
         }
     });
@@ -133,61 +133,61 @@ function handlecontributorTable() {
 function handle_contributor_email_change(input) {
 
     console.log("contributor");
-    console.log($(input).val());
-    console.log(isEmail($(input).val()));
+    console.log(jQuery(input).val());
+    console.log(isEmail(jQuery(input).val()));
 
-    if (isEmail($(input).val())) {
-        $(input).closest('td').removeClass('input-field-required');
-        $(input).removeClass("invalid-email");
-    } else if ($(input).val() != "") {
-        $(input).addClass("invalid-email");
+    if (isEmail(jQuery(input).val())) {
+        jQuery(input).closest('td').removeClass('input-field-required');
+        jQuery(input).removeClass("invalid-email");
+    } else if (jQuery(input).val() != "") {
+        jQuery(input).addClass("invalid-email");
         alert("email address must be in valid format");
-        $(input).focus();
+        jQuery(input).focus();
     } else {
-        $(input).removeClass("invalid-email");
+        jQuery(input).removeClass("invalid-email");
     }
 }
 
 function generate_contributor_preview() {
     var contributor_list_preview = "";
 
-    $('#contributor_table tr').each(function (i) {
+    jQuery('#contributor_table tr').each(function (i) {
 
         var split_id = (this.id).split('_');
         var contributor_index = split_id[2];
 
-        if ((i > 0) && (($("#dataset_contributors_attributes_" + contributor_index + "_family_name").val() != "") || ($("#dataset_contributors_attributes_" + contributor_index + "_given_name").val() != ""))) {
+        if ((i > 0) && ((jQuery("#dataset_contributors_attributes_" + contributor_index + "_family_name").val() != "") || (jQuery("#dataset_contributors_attributes_" + contributor_index + "_given_name").val() != ""))) {
 
             if (contributor_list_preview.length > 0) {
 
                 contributor_list_preview = contributor_list_preview + "; ";
             }
 
-            contributor_list_preview = contributor_list_preview + $("#dataset_contributors_attributes_" + contributor_index + "_family_name").val();
+            contributor_list_preview = contributor_list_preview + jQuery("#dataset_contributors_attributes_" + contributor_index + "_family_name").val();
             contributor_list_preview = contributor_list_preview + ", "
-            contributor_list_preview = contributor_list_preview + $("#dataset_contributors_attributes_" + contributor_index + "_given_name").val();
+            contributor_list_preview = contributor_list_preview + jQuery("#dataset_contributors_attributes_" + contributor_index + "_given_name").val();
         }
     });
 
-    $('#contributor-preview').html(contributor_list_preview);
+    jQuery('#contributor-preview').html(contributor_list_preview);
 }
 
 function handle_contact_change() {
     // set is_contact value to match selection staus and highlight required email input field if blank
-    var selectedVal = $("input[type='radio'][name='primary_contact']:checked").val();
+    var selectedVal = jQuery("input[type='radio'][name='primary_contact']:checked").val();
     console.log("selected value: " + selectedVal);
 
-    $('#contributor_table tr').each(function (i) {
+    jQuery('#contributor_table tr').each(function (i) {
         if (i > 0) {
-            var contributor_index = $(this).find('td').first().next().find('input').first().attr('id').split('_')[3];
+            var contributor_index = jQuery(this).find('td').first().next().find('input').first().attr('id').split('_')[3];
 
             //mark all as not the contact -- then later mark the contact as the contact.
-            $("input[name='dataset[contributors_attributes][" + contributor_index + "][email]']").closest('td').removeClass('input-field-required');
-            $("input[name='dataset[contributors_attributes][" + contributor_index + "][is_contact]']").val('false');
+            jQuery("input[name='dataset[contributors_attributes][" + contributor_index + "][email]']").closest('td').removeClass('input-field-required');
+            jQuery("input[name='dataset[contributors_attributes][" + contributor_index + "][is_contact]']").val('false');
         }
     });
 
-    $("input[name='dataset[contributors_attributes][" + selectedVal + "][is_contact]']").val('true');
+    jQuery("input[name='dataset[contributors_attributes][" + selectedVal + "][is_contact]']").val('true');
 
 }
 
@@ -195,40 +195,40 @@ function handle_contact_change() {
 
 
 function set_contributor_orcid_from_search_modal() {
-    var contributor_index = $("#contributor-index").val();
-    var selected = $("input[type='radio'][name='orcid-search-select']:checked").val();
+    var contributor_index = jQuery("#contributor-index").val();
+    var selected = jQuery("input[type='radio'][name='orcid-search-select']:checked").val();
     var select_split = selected.split("~");
     var selected_id = select_split[0];
     var selected_family = select_split[1];
     var selected_given = select_split[2];
 
-    $("#dataset_contributors_attributes_" + contributor_index + "_identifier").val(selected_id);
-    $("#dataset_contributors_attributes_" + contributor_index + "_family_name").val(selected_family);
-    $("#dataset_contributors_attributes_" + contributor_index + "_given_name").val(selected_given);
+    jQuery("#dataset_contributors_attributes_" + contributor_index + "_identifier").val(selected_id);
+    jQuery("#dataset_contributors_attributes_" + contributor_index + "_family_name").val(selected_family);
+    jQuery("#dataset_contributors_attributes_" + contributor_index + "_given_name").val(selected_given);
 }
 
 function search_contributor_orcid() {
 
-    $("#orcid-search-results").empty();
-    $('.orcid-search-spinner').show();
+    jQuery("#orcid-search-results").empty();
+    jQuery('.orcid-search-spinner').show();
 
     var endpoint = 'https://pub.orcid.org/v3.0/search?q=';
-    if ($("#contributor-family").val() != "") {
-        var search_query = 'family-name:' + $("#contributor-family").val() + "*";
-        if ($("#contributor-given").val() != "") {
-            search_query = search_query + '+AND+given-names:' + $("#contributor-given").val() + "*";
+    if (jQuery("#contributor-family").val() != "") {
+        var search_query = 'family-name:' + jQuery("#contributor-family").val() + "*";
+        if (jQuery("#contributor-given").val() != "") {
+            search_query = search_query + '+AND+given-names:' + jQuery("#contributor-given").val() + "*";
         }
-    } else if ($("#contributor-given").val() != "") {
-        var search_query = 'given-names:' + $("#contributor-given").val() + "*";
+    } else if (jQuery("#contributor-given").val() != "") {
+        var search_query = 'given-names:' + jQuery("#contributor-given").val() + "*";
     }
 
     var search_string = endpoint + search_query;
 
-    $.ajax({
+    js.ajax({
         url: search_string,
         dataType: 'jsonp',
         success: function (data) {
-            $('.orcid-search-spinner').hide();
+            jQuery('.orcid-search-spinner').hide();
 
               try {
 
@@ -258,12 +258,12 @@ function search_contributor_orcid() {
 
 
 
-                      $("#orcid-search-results").append("<div class='row'>Showing first 50 results of " + total_found + ". For more results, search <a href='http://orcid.org' target='_blank'>The ORCID site</a>.</div><hr/>");
+                      jQuery("#orcid-search-results").append("<div class='row'>Showing first 50 results of " + total_found + ". For more results, search <a href='http://orcid.org' target='_blank'>The ORCID site</a>.</div><hr/>");
                       max_records = 50;
                   }
                   if (total_found > 0) {
 
-                      $("#orcid-search-results").append("<table class='table table-striped' id='orcid-search-results-table'><thead><tr class='row'><th class='col-md-5'>Identifier (click link for details)</th><th class='col-md-5'>Affiliation</span></th><th class='col-md-1'>Select</th></tr></thead><tbody></tbody></table>")
+                      jQuery("#orcid-search-results").append("<table class='table table-striped' id='orcid-search-results-table'><thead><tr class='row'><th class='col-md-5'>Identifier (click link for details)</th><th class='col-md-5'>Affiliation</span></th><th class='col-md-1'>Select</th></tr></thead><tbody></tbody></table>")
 
                       for (i = 0; i < max_records; i++) {
                           var orcidIdRecord = identifiers[i];
@@ -281,12 +281,12 @@ function search_contributor_orcid() {
                           var affiliation = getOrcidAffiliation(orcid);
 
 
-                          $("#orcid-search-results-table > tbody:last-child").append("<tr class='row'><td><a href='" + orcid_uri + "' target='_blank'>" + family_name + ", " + given_name + ": " + orcid + "</a></td><td>" + affiliation + "</td><td><input type='radio' name='orcid-search-select' onclick='enableOrcidImport()'  value='" + orcid + "~" + family_name + "~" + given_name + "'/></td></tr>");
+                          jQuery("#orcid-search-results-table > tbody:last-child").append("<tr class='row'><td><a href='" + orcid_uri + "' target='_blank'>" + family_name + ", " + given_name + ": " + orcid + "</a></td><td>" + affiliation + "</td><td><input type='radio' name='orcid-search-select' onclick='enableOrcidImport()'  value='" + orcid + "~" + family_name + "~" + given_name + "'/></td></tr>");
 
                       }
 
                   } else {
-                      $("#orcid-search-results").append("<p>No results found.  Try fewer letters or <a href='http://orcid.org' target='_blank'>The ORCID site</a></p>")
+                      jQuery("#orcid-search-results").append("<p>No results found.  Try fewer letters or <a href='http://orcid.org' target='_blank'>The ORCID site</a></p>")
                   }
               } catch(err){
                   console.trace();
@@ -351,21 +351,21 @@ function getOrcidAffiliation(orcid){
 
 function enableOrcidImport() {
 
-    $('#orcid-import-btn').prop('disabled', false);
+    jQuery('#orcid-import-btn').prop('disabled', false);
 }
 
 function showContributorOrcidSearchModal(contributor_index) {
 
-    $('#orcid-import-btn').prop('disabled', true);
+    jQuery('#orcid-import-btn').prop('disabled', true);
 
-    $("#contributor-index").val(contributor_index);
-    var contributorFamilyName = $("#dataset_contributors_attributes_" + contributor_index + "_family_name").val();
-    var contributorGivenName = $("#dataset_contributors_attributes_" + contributor_index + "_given_name").val();
-    $("#contributor-family").val(contributorFamilyName);
-    $("#contributor-given").val(contributorGivenName);
-    $("#orcid-search-results").empty();
-    $('#orcid_contributor_search').modal('show');
+    jQuery("#contributor-index").val(contributor_index);
+    var contributorFamilyName = jQuery("#dataset_contributors_attributes_" + contributor_index + "_family_name").val();
+    var contributorGivenName = jQuery("#dataset_contributors_attributes_" + contributor_index + "_given_name").val();
+    jQuery("#contributor-family").val(contributorFamilyName);
+    jQuery("#contributor-given").val(contributorGivenName);
+    jQuery("#orcid-search-results").empty();
+    jQuery('#orcid_contributor_search').modal('show');
 }
 
-$(document).ready(contributors_ready);
-$(document).on('page:load', contributors_ready);
+jQuery(document).ready(contributors_ready);
+jQuery(document).on('page:load', contributors_ready);
