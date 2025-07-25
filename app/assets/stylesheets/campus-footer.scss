@@ -1,13 +1,6 @@
 il-footer {
-  --il-footer-padding-left: calc(max(1.875rem, 50cqw - 35.625rem));
-  --il-footer-padding-right: calc(max(1.875rem, 50cqw - 35.625rem));
-}
-
-@media (max-width: 30rem) {
-  il-footer {
-    --il-footer-padding-left: 1.25rem;
-    --il-footer-padding-right: 1.25rem;
-  }
+  --il-footer-padding-left: 5rem;
+  --il-footer-padding-right: 5rem;
 }
 
 il-footer {
@@ -160,7 +153,7 @@ il-footer nav[slot=social] a[data-service=youtube] {
 
 il-footer nav[slot=social] a[data-service=facebook] {
 	--il-footer-social-icon: url(https://cdn.brand.illinois.edu/icons/solid/blue/facebook.svg);
-	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/facebook.svg)
+	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/facebook.svg);
 }
 
 il-footer nav[slot=social] a[data-service=instagram] {
