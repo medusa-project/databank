@@ -1,0 +1,20 @@
+# used by docker-run.sh
+
+version: "3.7"
+services:
+  databank-development:
+    build:
+      context: .
+      dockerfile: docker/databank/Dockerfile-development
+    depends_on: # docker-compose will NOT actually wait for these to start, hence the `sleep` in the command
+      - sunspot
+      - postgres
+      - rabbitmq
+      - memcached
+      - sqs-mock
+      - minio
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    command: bash -c 'sleep 40 && bundle exec rails db:drop db:create db:schema:load && curl "http://sunspot:8983/solr/admin/cores?action=CREATE&name=development&instanceDir=development" && bundle exec rails minio:ensure_local_buckets && bundle exec rails db:fixtures:load && bundle exec rails testing:store_seed_datafiles && bundle exec rails local_identity:make_testers && bundle exec rails sunspot:reindex && bin/delayed_job start && bundle exec rails server -b 0.0.0.0'

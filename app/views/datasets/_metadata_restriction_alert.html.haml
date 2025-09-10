@@ -1,0 +1,27 @@
+-if dataset.publication_state == Databank::PublicationState::PermSuppress::METADATA
+  .embargo-placeholder
+    This dataset is not available.
+    %a(href="/help?context=destroyed&key=#{@dataset.key}")
+      Contact the Research Data Service
+    with any questions.
+
+-elsif dataset.publication_state == Databank::PublicationState::TempSuppress::METADATA
+  .embargo-placeholder
+    This dataset is not available.
+    %a(href="/help?context=destroyed&key=#{@dataset.key}")
+      Contact the Research Data Service
+    with any questions.
+
+-elsif dataset.hold_state == Databank::PublicationState::TempSuppress::METADATA
+  .embargo-placeholder
+    This dataset is under curator review.
+    %a(href="/help?context=hold&key=#{@dataset.key}")
+      Contact the Research Data Service
+    with any questions.
+
+-elsif dataset.publication_state == Databank::PublicationState::Embargo::METADATA
+  .embargo-placeholder
+    ="This dataset will be available #{dataset.release_date}"
+    %a(href="/help?context=embargo&key=#{@dataset.key}")
+      Contact the Research Data Service
+    with any questions.

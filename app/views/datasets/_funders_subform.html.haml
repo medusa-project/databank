@@ -1,0 +1,30 @@
+%input(type="hidden" name="funder_index_max" id="funder_index_max" value="#{@dataset.funders.count.to_i}" )
+  %table(id="funder_table" class="table table-striped")
+    %thead
+      %tr(class="row" )
+        %th(class="col-md-4")
+          Name
+        %th(class="col-md-4" )
+        %th(class="col-md-3")
+          Grant Number
+        %th(class="col-md-1" )
+    %tbody
+      - @dataset.funders.each_with_index do |funder, i|
+        = f.fields_for :funders, funder do |ff|
+          %tr(class="item row" id="funder_index_#{i}" )
+            %td
+              =ff.hidden_field :_destroy, value: false
+              =ff.hidden_field :identifier
+              =ff.hidden_field :identifier_scheme
+              =ff.collection_select :code, @funder_info_arr, :code, :name, {prompt: true}, {class: "form-control dataset", onchange: "handleFunderChange(#{i})"}
+            %td
+
+              -if funder.code && funder.code == 'other'
+                =ff.text_field :name, :class=> "form-control dataset funder-text", placeholder: "[Funder Name]"
+              -else
+                =ff.text_field :name, :class=> "form-control dataset funder-text", placeholder: "[Funder Name]", style:"visibility: hidden;"
+            %td
+              =ff.text_field :grant, :class => "form-control dataset"
+            %td
+  %table(id="deleted_funder_table")
+    %tbody

@@ -1,0 +1,8 @@
+-if(can? :manage, @creator)
+  %h2 Debug:
+  =@creator.to_yaml
+  %h2 Experts Export:
+  =IllinoisExpertsClient.person_xml_doc(@creator.email)
+%p
+  %a{:href => "/help"} Contact the Research Data Service Team
+  with any questions.

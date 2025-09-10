@@ -1,0 +1,18 @@
+demo-rocky:
+  :download_url_base: "https://app.globus.org/file-manager?origin_id=3bc3f6f9-e940-4da5-a8ce-fcad14c096cb&origin_path=%2F"
+  :ingest_url_base: "https://app.globus.org/file-manager?origin_id=27efae19-3109-4009-a1ae-1842423b7c92&origin_path=%2Fdemo%2Fdatabank%2Fingest%2F"
+prod-rocky:
+  :download_url_base: "https://app.globus.org/file-manager?origin_id=7e8c5183-112b-472b-9f86-751a60dcfb75&origin_path=%2F"
+  :ingest_url_base: "https://app.globus.org/file-manager?origin_id=27efae19-3109-4009-a1ae-1842423b7c92&origin_path=%2Fproduction%2Fdatabank%2Fingest%2F"
+demo:
+  :download_url_base: "https://app.globus.org/file-manager?origin_id=3bc3f6f9-e940-4da5-a8ce-fcad14c096cb&origin_path=%2F"
+  :ingest_url_base: "https://app.globus.org/file-manager?origin_id=27efae19-3109-4009-a1ae-1842423b7c92&origin_path=%2Fdemo%2Fdatabank%2Fingest%2F"
+production:
+  :download_url_base: "https://app.globus.org/file-manager?origin_id=7e8c5183-112b-472b-9f86-751a60dcfb75&origin_path=%2F"
+  :ingest_url_base: "https://app.globus.org/file-manager?origin_id=27efae19-3109-4009-a1ae-1842423b7c92&origin_path=%2Fproduction%2Fdatabank%2Fingest%2F"
+development:
+  :download_url_base: "https://app.globus.org/file-manager?origin_id=development-download&origin_path=%2F"
+  :ingest_url_base: "https://app.globus.org/file-manager?origin_id=development-ingest&origin_path=%2Fdemo%2Fdatabank%2Fingest%2F"
+test:
+  :download_url_base: "https://app.globus.org/file-manager?origin_id=test-download&origin_path=%2F"
+  :ingest_url_base: "https://app.globus.org/file-manager?origin_id=test-ingest&origin_path=%2Fdemo%2Fdatabank%2Fingest%2F"

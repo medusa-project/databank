@@ -1,0 +1,22 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body
+    Name: #{@dataset.depositor_name}
+    %br/
+    Email: #{@dataset.depositor_email}
+    %br/
+    Topic: New Version Request
+    %hr/
+    %blockquote
+      The Research Data Service has received your request to publish a new version of your dataset:
+      %br/
+      %em
+        &nbsp;&nbsp;&nbsp
+        = "#{@dataset.title}"
+      %br/
+      We’re working on your request and will get back to you within 1-2 business days.
+      %br/
+      Reply to this email if you have any questions or need immediate assistance.
+

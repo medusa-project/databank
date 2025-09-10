@@ -1,0 +1,9 @@
+:ssl: false
+:port: 5671
+:host: rabbitmq
+:user: guest
+:password: guest
+:verify: verify_none
+:verify_peer: false
+:fail_if_no_peer_cert: false
+:heartbeat: 10

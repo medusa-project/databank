@@ -1,0 +1,42 @@
+- if can? :manage, @dataset
+  = render partial: 'landing'
+- elsif can?(:view_version_acknowledgement, @dataset)
+  = render partial: 'version_acknowledge'
+- elsif @dataset.metadata_public? || (can? :read, @dataset) || @shared_by_link
+  = render partial: 'landing'
+- else
+  = render partial: 'welcome/welcome'
+  .modal.fade{"id" => "login-prompt", "aria-hidden" => "true", "aria-labelledby" => "agreement-label", :role => "dialog", :tabindex => "-1"}
+    .modal-dialog
+      .modal-content
+        .modal-header
+          %h4.modal-title#prompt-title
+            Log in required to view restricted dataset
+        .modal-body.container-fluid
+          .row
+            .col-md-7
+              %button{onclick: "window.location = '/login'", type: "button", class: "btn btn-primary btn-block", 'data-dismiss' => "modal", id: "login-button"}>
+                %span.pull-left
+                  =image_tag 'favicon.ico'
+                  %span.glyphicon.glyphicon-log-in
+                  &nbsp;
+                  Log in with Illinois NetID
+          %br
+          .row
+            .col-md-7
+              %button{onclick: "window.location = '/data_curation_network/login'", type: "button", class: "btn btn-info btn-block", 'data-dismiss' => "modal", id: "login-button"}>
+                %span.pull-left
+                  %span.glyphicon.glyphicon-user
+                  %span.glyphicon.glyphicon-log-in
+                  &nbsp;
+                  Log in with Data Curation Network
+          %br
+          .row
+            .col-md-12
+              %span.pull-right
+                %button{:onclick => "window.location = '/help'", type: "button", class: "btn btn-success"}
+                  %span.glyphicon.glyphicon-question-sign
+                  Get Help
+                %button{:onclick => "window.location = '/'", type: "button", class: "btn btn-danger"}
+                  %span.glyphicon.glyphicon-remove
+                  Cancel

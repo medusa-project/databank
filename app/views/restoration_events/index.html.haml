@@ -1,0 +1,30 @@
+%h2 Restoration Events
+%table(class="table table-striped" )
+  %thead
+    %tr
+      %th date
+      %th map
+  %tbody
+    -@events.each do |event|
+      %tr
+        %td
+          = event.created_at.iso8601
+        %td
+          %table(class="table table-bordered" )
+            %thead
+              %tr
+                %th Class
+                %th Old ID
+                %th New ID
+            %tbody
+              - maps = event.restoration_id_maps
+
+              - event.restoration_id_maps.each do |m|
+
+                %tr
+                  %td
+                    = m.id_class
+                  %td
+                    = m.old_id
+                  %td
+                    = m.new_id

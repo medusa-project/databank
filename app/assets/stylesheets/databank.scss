@@ -1,0 +1,583 @@
+// uses variables from libguide-style.scss
+$one-line-header-height: 102px;
+$two-line-header-height: 137px;
+$minibar-height: 50px;
+
+//.idb-help ul {
+//  list-style-type: none !important;
+//}
+
+.contact-header {
+  text-align: center !important;
+}
+
+/* unvisited link */
+a.intense:link {
+  color: $color__orange-red;
+}
+
+/* visited link */
+a.intense:visited {
+  color: $color__orange-red;
+}
+
+/* mouse over link */
+a.intense:hover {
+  color: $color__orange-red;
+  text-weight: bold;
+  background-color: $color__lighter_blue;
+}
+
+/* selected link */
+a.intense:active {
+  color: $color__orange-red;
+}
+
+#relatedHeading, #citedHeading {
+  background-color: $color__light-grey !important;
+  color: black;
+}
+
+.resource-item{
+  margin-bottom: 5px;
+}
+
+.resource-label, .persistent-url{
+  text-align: right;
+}
+
+.idb-help p {
+  font-size: large;
+  line-height: 1.3;
+}
+
+.idb-help-section-head{
+  border-top: 1px solid $color__light-grey;
+  padding-top: 20px;
+  font-weight: bold;
+}
+.idb-help-item-head{
+  border-top: 1px solid $color__light-grey;
+  border-bottom: 1px solid $color__light-grey;
+}
+
+.idb-help {
+  padding-top: 10px;
+}
+
+li.current {
+  background-color: $color__light-blue;
+}
+
+a.bright{
+    color: $color__dark-orange;
+}
+.justify-content-center {
+  text-align: center;
+  padding-left: 10%;
+  padding-right: 10%;
+}
+// Place all the styles related to the home controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.faqHeader {
+  font-size: 27px;
+  margin: 20px;
+}
+
+.bg-subtle {
+  background-color: $color__lightest-grey;
+}
+
+.navbar-user {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  position: relative;
+  display: block;
+}
+
+.panel, .panel-group {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.add-file-controls {
+  line-height: 30px;
+  font-size: 16px;
+}
+
+div.alert.alert-alert {
+  padding: 15px;
+  background-color: $color__yellow;
+  position: relative;
+  //z-index: 2100;
+  margin-bottom: 0;
+}
+div.alert.alert-notice {
+  padding: 15px;
+  background-color: $color__light-blue;
+  position: relative;
+  //z-index: 2100;
+  margin-bottom: 0;
+}
+
+.idb-callout {
+  background: $color__yellow;
+  padding: 5px;
+  border: 1px solid $color__light-orange;
+}
+
+.completion-warning, .datacite-changes-warning {
+  background: $color__yellow;
+  padding: 5px;
+  margin-left: -5px;
+}
+
+pre {
+  background-color: $color__lightest-grey;
+  padding: 10px;
+  font-size: 11px;
+}
+
+div {
+  &.field, &.actions {
+    margin-bottom: 10px;
+  }
+}
+
+#notice {
+  color: green;
+}
+
+.metrics-border{
+  border: 1px solid $color__light-grey;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.field_with_errors {
+  padding: 2px;
+  background-color: $color__red;
+  display: table;
+}
+
+#error_explanation {
+  width: 450px;
+  border: 2px solid $color__red;
+  padding: 7px;
+  padding-bottom: 0;
+  margin-bottom: 20px;
+  background-color: $color__lightest-grey;
+  h2 {
+    text-align: left;
+    font-weight: bold;
+    padding: 5px 5px 5px 15px;
+    font-size: 12px;
+    margin: -7px;
+    margin-bottom: 0px;
+    background-color: $color__red;
+    color: #fff;
+  }
+  ul li {
+    font-size: 12px;
+    list-style: square;
+  }
+}
+
+//a.btn {
+//  color: $color__text-light;
+//&:visited {
+//    color: $color__text-light;
+//  }
+//  &:hover {
+//    color: $color__text-light;
+//    background-color: $color__dark-navy;
+//  }
+//}
+
+//a.btn {
+//  color: red;
+//  &:visited {
+//    color: purple;
+//  }
+//  &:hover {
+//    color: orange;
+//    background-color: yellow;
+//  }
+//}
+
+
+.bs-callout-info {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.help-big-question {
+  font-size: 24px;
+  text-align: center;
+}
+
+.flame-icon {
+  color: $color__red;
+}
+
+/* unvisited link */
+a.idb:link {
+  color: $color__text-light !important;
+}
+
+/* visited link */
+a.idb:visited {
+  color: $color__text-light !important;
+}
+
+/* mouse over link */
+a.idb:hover {
+  color: $color__text-light !important;
+}
+
+/* selected link */
+a.idb:active {
+  color: $color__text-light !important;
+}
+
+.idb-info-body {
+  margin-left: 25px;
+}
+
+.idb-info-header {
+  padding-left: 10px;
+  background-color: $color__light-grey;
+}
+
+//body {
+//  background-color: $color__lightest_blue;
+//}
+
+table.dataTable.no-footer {
+  border-color: $color__darker-grey;
+}
+
+table {
+  border-color: $color__darker-grey;
+}
+
+.switch-box {
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 15px;
+  padding-top: 15px;
+  margin-top: 15px;
+  background-color: $color__lightest-grey;
+}
+
+.idb-help-prompt{
+  font-weight: normal;
+}
+
+/*
+Firefox and fieldsets
+Firefox has some awkward fieldset styling involving width that interferes with the responsive table. This cannot be overridden without a Firefox-specific hack that we don't provide in Bootstrap:
+*/
+@-moz-document url-prefix() {
+  fieldset { display: table-cell; }
+}
+
+tr.row.idb-infographic-header > th{
+  vertical-align: top;
+}
+
+td {
+  vertical-align: top;
+}
+
+div#box-select{
+  display: inline-block;
+  position: relative;
+  top: 2px;
+}
+
+.file-btn-group{
+  vertical-align: middle;
+}
+
+#file-drop-area{
+  background-color: $color__lightest-grey;
+  display: inline-block;
+  border: 2px dashed $color__light-blue;
+  padding: 15px;
+}
+
+#copy-persistent-link{
+  padding-top: 10px;
+  padding-bottom: 5px;
+}
+.dataset-index-btn{
+  margin-bottom: 3px;
+}
+div.row.checkbox {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+#my_datasets-table th:nth-of-type(1) {
+   width: 75%;
+}
+#curator_datasets-table th:nth-of-type(2) {
+  width: 60%;
+}
+
+.idb-callout-lg{
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+}
+
+.fileinput-button{
+  height: 40px;
+  width: 305.4px;
+  position: relative;
+}
+.fileinput-button-content{
+  position: relative;
+  top: 3px;
+}
+
+#selectedFiles{
+ display: none;
+}
+
+.inline_formatted_text{
+  display:inline-block;
+  vertical-align: text-top;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.borderless * {
+  border: none !important;
+}
+#feedback-header-link{
+  text-decoration: underline;
+  color: $color__dark-link;
+  &:visited {
+    color: $color__dark-link
+  }
+  &:hover {
+    color: $color__text-light;
+    background-color: $color__dark-navy;
+  }
+}
+.beta-block{
+  position: relative;
+  top: -10px;
+  text-align: center;
+  color: $color__text-light;
+  background-color: $color__burnt-orange !important;
+  border-radius: 5px;
+  margin-bottom: -8px;
+  padding-bottom: 0;
+}
+
+div.panel-heading{
+  background-color: $color__light-blue-background !important;
+}
+table.deposit-agreement-selection-warning > tbody > tr > td {
+  padding-left: 5px;
+}
+.error-message{
+  padding: 5px;
+  border: solid 2px $color__red
+}
+
+.nudge-left-12{
+  margin-left: -12px;
+}
+
+.nudge-left-20{
+  margin-left: -20px;
+}
+
+.idb-infographic-subhead{
+  background-color: $color__lightest-grey;
+  font-weight: bold;
+}
+
+.large-text{
+  font-size: large;
+}
+.test-border{
+  border: 1px solid red;
+}
+.help-bottom-spacer{
+  height: 800px;
+}
+
+.label-as-badge-info {
+  color: $color__text-main;
+  background-color: $color__background-main-column;
+  border-radius: 2em;
+  padding: 3px;
+}
+
+.full-width{
+  width: 100%;
+  display: block;
+}
+.citation-example{
+  color: $color__text-main;
+  background-color: $color__background-main-column;
+  padding: 20px;
+  margin-bottom: .8em;
+}
+.citation{
+  padding: 2px;
+}
+.client-example{
+  font-family: monospace;
+}
+.indent{
+  margin-left: 15px;
+}
+.table-title{
+  background-color: $color__navy;
+  color: $color__text-light;
+}
+
+.instruction-box{
+  background-color: $color__yellow-background;
+  border: 1px solid $color__light-grey;
+  padding: 3px;
+  border-radius: 3px;
+}
+
+.featured-datasaet{
+  border: 1px solid $color__highlight-orange;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 15px;
+  margin-top: 30px;
+  background-color: $color__gray-background;
+}
+
+.example-site{
+  background-color: $color__highlight-orange;
+}
+.example-person{
+  background-color: $color__highlight-green;
+}
+
+.example.db-inner{
+  border: 2px solid $color__navy;
+  margin: 5px;
+}
+
+.db-inner{
+  border: 2px solid $color__burnt-orange;
+  margin: 10px;
+  padding: 10px;
+}
+
+.db-outer{
+  border: 2px solid $color__navy;
+  margin: 10px;
+}
+.curator-form-help>h3, .curator-form-help>h4{
+  font-weight: bold;
+}
+.welcome {
+  margin: 5px;
+}
+
+.featured-researcher{
+  border-left: 2px solid $color__gray-background;
+}
+
+.no-image-available{
+  padding: 20px;
+  text-align: center;
+  background-color: $color__gray-background;
+  font-size: large;
+}
+
+.featured-bio{
+  margin-top: 5px;
+}
+
+.elbow{
+  margin-top: 5px;
+}
+.more-elbow {
+  margin-top: 10px;
+}
+
+.bordercol{
+  border-left: 1px solid $color__light-grey;
+}
+
+.photo-preview {
+  padding: 10%;
+  margin: auto;
+  border-radius: 50%;
+}
+
+.photo-preview img {
+  margin: auto;
+}
+
+.featured-buttons{
+  margin-top: 5px;
+  margin-bottom: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.featured-buttons button{
+  width: 45%;
+  text-align: center;
+  margin: auto;
+}
+
+.featured-controls {
+  margin-top: 5px;
+}
+
+ul.no-bullets {
+  list-style-type: none;
+}
+
+li.row.listing {
+  padding: 2px;
+}
+
+#g-recaptcha-response {
+  display: block !important;
+  position: absolute;
+  margin: -78px 0 0 0 !important;
+  width: 302px !important;
+  height: 76px !important;
+  z-index: -999999;
+  opacity: 0;
+}
+
+@media print {
+  * { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; min-height: 0 !important;} /* Black prints faster: h5bp.com/s */
+  .hide-when-printing {visibility: hidden;}
+  a, a:visited { text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }  /* Don't show links for images, or javascript/internal links */
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  thead { display: table-header-group; } /* h5bp.com/t */
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page { margin: 0.5cm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+
+caption.policy-document-history, caption.info-table {
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  background-color: $color__dark-navy;
+}

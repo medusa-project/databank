@@ -1,0 +1,14 @@
+:dataset_downloads_json:
+  :relative_path: <%= Rails.root.join("public/dataset_downloads.json") %>
+:datafile_downloads_json:
+  :relative_path: <%= Rails.root.join("public/datafile_downloads.json") %>
+:datafiles_csv:
+  :relative_path: <%= Rails.root.join("public/datafiles.csv") %>
+:container_contents_csv:
+  :relative_path: <%= Rails.root.join("public/archive_file_contents.csv") %>
+:datasets_tsv:
+  :relative_path: <%= Rails.root.join("public/datasets.tsv") %>
+:related_materials_csv:
+  :relative_path: <%= Rails.root.join("public/related_materials.csv") %>
+:funders_csv:
+  :relative_path: <%= Rails.root.join("public/funders.csv") %>

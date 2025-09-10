@@ -1,0 +1,30 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body
+    Name: #{@dataset.depositor_name}
+    %br/
+    Email: #{@dataset.depositor_email}
+    %br/
+    Topic: New Version Request
+    %br/
+    Dataset:
+    %a{:href => "#{@dataset.databank_url}"}
+      = @dataset.databank_url
+    %hr/
+    %h2 New Version Request
+    %hr/
+    %blockquote
+      %strong Version Comment:
+      &nbsp;&nbsp;&nbsp;
+      = @dataset.version_comment
+      %br/
+      %strong Files:
+      %br/
+      - @dataset.version_files.each do |version_file|
+        - name = version_file.source_datafile.bytestream_name
+        - size = number_to_human_size(version_file.source_datafile.bytestream_size)
+        - selected = version_file.selected ? "Selected" : "Not Selected"
+        &nbsp;&nbsp;&nbsp;
+        = "#{name} | #{size} | #{selected}"

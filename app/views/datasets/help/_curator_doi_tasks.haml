@@ -1,0 +1,54 @@
+.curator-form-help
+  %h3 Specified DOI
+
+  %p Note: the parts of our DOIs are: 10.13012/suffix_V#
+
+  %h4 Summary
+  .indent
+    %p Only include the prefix/suffix in this field. This means do not put http or doi.org, etc. in the field. 10.13012 must remain our prefix. Only change suffix content when you are creating a new version of a dataset. Encoding semantic information into a DOI suffix other than the version number is not standard practice and must be discussed with the team. Check “Imported DOI” if you’re overwriting an existing DataCite record with an IDB dataset.
+
+  %h4 Details
+  .indent
+    %p Use the DOI as a URI (not URL), so just the prefix/suffix. If you put in URL stuff (https, doi.org/), it will not be a valid identifier, and you’ll get an error that will prevent publication.
+
+    %p If you place a DOI in this box, Illinois Data Bank will register or reserve that specific DOI with DataCite and associate it with that IDB record. This will create a new record if that DOI does not already exist in DataCite, or it will overwrite an existing record it if does exist in DataCite and you check the “Imported DOI” box.
+
+    %p If you check the Imported DOI box, then in the confirm/publish step Illinois Data Bank will try to update the DataCite record for the DOI you enter here. Imported DOIs are used when an IDB deposit is taking over the record of a DataCite DOI that has already been registered or reserved. So far, we have only imported DOIs when we have deposited data into the Illinois Data Bank that already has a DOI minted through our DataCite API system. Example: Dan Work’s original taxi dataset. In both cases, use the 10.13012 prefix, which is our PURDUE.UIUCLIB prefix. No need to specify a DOI when creating a test deposit. Just checking the box will cause the correct prefix to be used.
+
+    %p If you do not check the Imported DOI box, the Illinois Data Bank will try to create a record in DataCite with this DOI. The DOI you enter here must be within our registered shoulders. So far, we have only specified new DOIs when we are creating a new version. To use this in versioning, copy and paste the identifier from the previous version, and then just change the last number after the “v”. Any proposed new use case for specifying a new DOI should be discussed with the RDS team.
+
+    %p The DOI for a dataset will always be displayed in this curator-only field after publication, even if it was not a version or import situation. After publication, this field is read-only. If we want to do something super tricky with modifying this for a published dataset, we should probably convene the whole RDS team in front a whiteboard.
+
+
+  %h3 Imported DOI checkbox
+  .indent
+    %p Used to indicate if this dataset is receiving an imported DOI, which means that the DataCite record already exists and it will be overwritten with the IDB generated metadata upon confirmation of publication.
+
+  %h3 Test DOI checkbox
+  .indent
+    %p This is used to indicate whether this dataset is a test dataset. This is important for production, because a test dataset will not be displayed to guests and depositors. A test DOI will be generated, which will only work for a couple weeks.
+
+    %p It is not necessary to use this on rds-dev, except to test this feature, because all the DOIs are in the two-week-only test shoulder, and all the datasets on rds-dev are tests or examples on some level.
+
+  %h3 Version
+  .indent
+    %p The integer number of this dataset version, defaults to 1. This is used in DataCite metadata in the <version> field.  Only accepts integer values.
+
+  %h3 Version Comment
+  .indent
+    %p The comment regarding versioning for this dataset. This is only used in Illinois Data Bank, for the version table on the splash page.
+
+  %h3 Version Relationships
+  .indent
+  %p Version relationships are specified in a chain. We specify IsPreviousVersionOf and IsNewVersionOf relationships, but only one link away in the chain.
+  %table.table.table-bordered
+    %tr.row
+      %th Example with 3 versions
+    %tr.row
+      %td v1 IsPreviousVersionOf v2
+    %tr.row
+      %td v2 IsNewVersionOf v1
+    %tr.row
+      %td v2 IsPreviousVersionOf v3
+    %tr.row
+      %td v3 IsNewVersionOf v2

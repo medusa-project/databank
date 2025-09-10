@@ -1,0 +1,31 @@
+-if current_user && current_user.role == 'admin' && @dataset
+  .curator-only
+    %h3
+      Files for
+      =link_to "#{@dataset.plain_text_citation}", dataset_path(@dataset.key)
+
+    %hr
+    -@dataset.datafiles.each do |datafile|
+      .row
+        .col-md-5
+          =link_to datafile.bytestream_name, "/datasets/#{@dataset.key}/datafiles/#{datafile.web_id}"
+        .col-md-3
+          = datafile.bytestream? ? "exists in storage" : "does NOT exist in storage"
+        .col-md-2
+          = number_to_human_size(datafile.bytestream_size)
+        .col-md-2
+          %a.btn.btn-primary.btn-block.idb(href="#{IDB_CONFIG[:root_url_text]}/datafiles/#{datafile.web_id}/download_no_record")
+            %span(class="glyphicon glyphicon-download" )
+            Download
+      %hr
+
+-else
+  .dialog.text-center
+    %h2 The page you were looking for doesn't exist.
+    %hr
+    %p You may have mistyped the address or the page may have moved.
+    %p
+      Please
+      %a(href="/contact" target="_blank")
+        contact the Research Data Service Team
+      with questions.

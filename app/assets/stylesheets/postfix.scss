@@ -1,0 +1,12 @@
+html {
+    font-family: var(--il-font-montserrat);
+    font-size: 16px;
+    line-height: 1.42;
+    color: #333333;
+    background-color: #fff;
+}
+il-header *[slot=links] p.navitem {
+    padding: 0 .25rem;
+    color: var(--il-blue);
+    font: 700 1.25rem var(--il-font-sans);
+}

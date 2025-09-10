@@ -1,0 +1,225 @@
+{
+  "devsets": [
+    {
+      "title": "The Google Fonts: a preliminary analysis",
+      "publisher": "University of Illinois Urbana-Champaign",
+      "publication_year": "2016",
+      "description": "This dataset was created to answer the following question:  Is the Databank working properly as datasets and datafiles are propagated for testing.",
+      "license": "license.txt",
+      "keywords": "font; nonsense; test",
+      "depositor_name": "Heidi Imker",
+      "depositor_email": "imker@example.com",
+      "creators": [
+        {
+          "family_name": "Imker",
+          "given_name": "Heidi J.",
+          "email": "imker@example.com",
+          "is_contact": true,
+          "row_position": 1
+        }
+      ],
+      "funders": [
+        {
+          "name": "DOE",
+          "identifier": "10.13039/100000015",
+          "identifier_scheme": "DOI",
+          "grant": "RFA-Unicorns"
+        }
+      ],
+      "datafiles": [
+        {
+          "binary_name": "Quicksand.zip",
+          "storage_root": "draft",
+          "storage_key": "Quicksand.zip",
+          "mime_type": "application/zip"
+        },
+        {
+          "binary_name": "Cabin.tgz",
+          "storage_root": "draft",
+          "storage_key": "Cabin.tgz",
+          "mime_type": "application/gzip"
+        },
+        {
+          "binary_name": "Poppins.tar.xz",
+          "storage_root": "draft",
+          "storage_key": "Poppins.tar.xz",
+          "mime_type": "application/x-xz"
+        },
+        {
+          "binary_name": "Raleway.zip",
+          "storage_root": "draft",
+          "storage_key": "Raleway.zip",
+          "mime_type": "application/zip"
+        }
+      ]
+    },
+    {
+      "title": "The Google Fonts: a secondary analysis",
+      "publisher": "University of Illinois Urbana-Champaign",
+      "publication_year": "2016",
+      "description": "More files are needed for testing the Databank.",
+      "license": "CC01",
+      "keywords": "test; super; font",
+      "depositor_name": "Heidi Imker",
+      "depositor_email": "imker@example.com",
+      "creators": [
+        {
+          "family_name": "Imker",
+          "given_name": "Heidi",
+          "email": "imker@example.com",
+          "is_contact": true,
+          "row_position": 1
+        }
+      ],
+      "funders": [
+        {
+          "name": "US Army",
+          "identifier": "10.13039/100006751",
+          "identifier_scheme": "DOI",
+          "grant": "Superfishgrant"
+        }
+      ],
+      "related_materials": [
+        {
+          "material_type": "Article",
+          "availability": "Available",
+          "link": "www.amazon.com",
+          "uri": "doi:10.5250.nogangow",
+          "uri_type": "DOI"
+        }
+      ],
+      "datafiles": [
+        {
+          "binary_name": "Anton.7z",
+          "storage_root": "draft",
+          "storage_key": "Anton.7z",
+          "mime_type": "application/x-7z-compressed"
+        },
+        {
+          "binary_name": "Benne.zip",
+          "storage_root": "draft",
+          "storage_key": "Benne.zip",
+          "mime_type": "application/zip"
+        },
+        {
+          "binary_name": "Lato.tar",
+          "storage_root": "draft",
+          "storage_key": "Lato.tar",
+          "mime_type": "application/x-tar"
+        },
+        {
+          "binary_name": "Roboto.7z",
+          "storage_root": "draft",
+          "storage_key": "Roboto.7z",
+          "mime_type": "application/x-7z-compressed"
+        }
+      ]
+    },
+    {
+      "title": "The Google Fonts: a tertiary analysis",
+      "publisher": "University of Illinois Urbana-Champaign",
+      "publication_year": "2016",
+      "description": "Even more files are needed for testing the Databank.",
+      "license": "CCBY4",
+      "corresponding_creator_name": "Heidi Imker",
+      "keywords": "condensation domain; NRPS; test",
+      "depositor_name": "Heidi Imker",
+      "depositor_email": "imker@example.com",
+      "creators": [
+        {
+          "family_name": "Imker",
+          "given_name": "Heidi",
+          "email": "imker@example.com",
+          "is_contact": true,
+          "row_position": 1
+        }
+      ],
+      "funders": [
+        {
+          "name": "NIH",
+          "identifier": "10.13039/100000002",
+          "identifier_scheme": "DOI",
+          "grant": "GM715468"
+        }
+      ],
+      "datafiles": [
+        {
+          "binary_name": "Mukta.zip",
+          "storage_root": "draft",
+          "storage_key": "Mukta.zip",
+          "mime_type": "aapplication/zip"
+        },
+        {
+          "binary_name": "Open_Sans.tar.gz",
+          "storage_root": "draft",
+          "storage_key": "Open_Sans.tar.gz",
+          "mime_type": "application/gzip"
+        },
+        {
+          "binary_name": "Oswald.tar.xz",
+          "storage_root": "draft",
+          "storage_key": "Oswald.tar.xz",
+          "mime_type": "application/x-xz"
+        },
+        {
+          "binary_name": "Teko.tar.gz",
+          "storage_root": "draft",
+          "storage_key": "Teko.tar.gz",
+          "mime_type": "application/gzip"
+        }
+      ]
+    },
+    {
+      "title": "Brain regions and molecular pathways responding to food reward type and value in honey bees.",
+      "publisher": "University of Illinois Urbana-Champaign",
+      "publication_year": "2016",
+      "description": "This is the dataset corresponding to the article \"Brain regions and molecular pathways responding to food reward type and value in honey bees,\" published in Genes, Brain, and Behavior. PMID 26566901 DOI: 10.1111/gbb.12275 ",
+      "license": "CCBY4",
+      "keywords": "honey bees, brain regions, reward behavior",
+      "depositor_name": "Colleen Depositor",
+      "depositor_email": "colleen.depositor@example.com",
+      "creators": [
+        {
+          "family_name": "McNeill",
+          "given_name": "M",
+          "email": "mm@example.com",
+          "is_contact": true,
+          "row_position": 1
+        },
+        {
+          "family_name": "Robinson",
+          "given_name": "G",
+          "email": "rg@examle.com",
+          "is_contact": false,
+          "row_position": 2
+        }
+      ],
+      "datafiles": [
+        {
+          "binary_name": "README-McNeill-Robinson.txt",
+          "storage_root": "draft",
+          "storage_key": "README-McNeill-Robinson.txt",
+          "mime_type": "text/plain"
+        },
+        {
+          "binary_name": "BrainModel_and_Masks.zip",
+          "storage_root": "draft",
+          "storage_key": "BrainModel_and_Masks.zip",
+          "mime_type": "application/zip"
+        },
+        {
+          "binary_name": "FileFormatStatistics.csv",
+          "storage_root": "draft",
+          "storage_key": "FileFormatStatistics.csv",
+          "mime_type": "text/plain"
+        },
+        {
+          "binary_name": "FileFormatStatistics.pdf",
+          "storage_root": "draft",
+          "storage_key": "FileFormatStatistics.pdf",
+          "mime_type": "application/pdf"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,248 @@
+il-footer {
+  --il-footer-padding-left: 5rem;
+  --il-footer-padding-right: 5rem;
+}
+
+il-footer {
+  font: 400 1rem var(--il-font-sans);
+}
+
+il-footer a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+il-footer address {
+  all: inherit;
+  display: block;
+  font: 400 18px/30px var(--il-font-sans);
+}
+
+il-footer address p {
+  all: inherit;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+il-footer address a {
+  color: var(--il-blue);
+}
+
+il-footer a:hover,
+il-footer a:focus {
+  color: var(--il-altgeld);
+}
+
+il-footer *[slot=site-name] {
+  all: initial;
+  color: var(--il-blue);
+  font: normal 700 24px/30px var(--il-font-sans);
+}
+
+il-footer a[slot=site-name],
+il-footer *[slot=site-name] a {
+  color: var(--il-blue);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+il-footer a[slot=site-name]:hover,
+il-footer *[slot=site-name] a:hover {
+  text-decoration: underline;
+  color: var(--il-altgeld);
+}
+
+il-footer a[slot=site-name]:focus,
+il-footer *[slot=site-name] a:focus {
+  outline: 2px dotted;
+}
+
+il-footer *[slot=primary-unit] {
+  all: initial;
+  display: block;
+  margin-top: 30px;
+  color: var(--il-blue);
+  font: 700 18px/30px var(--il-font-sans);
+}
+
+il-footer a[slot=primary-unit],
+il-footer *[slot=primary-unit] a {
+  color: var(--il-blue);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+il-footer a[slot=primary-unit]:hover,
+il-footer *[slot=primary-unit] a:hover {
+  text-decoration: underline;
+  color: var(--il-altgeld);
+}
+
+il-footer a[slot=primary-unit]:focus,
+il-footer *[slot=primary-unit] a:focus {
+  color: var(--il-altgeld);
+  outline: 2px dotted;
+}
+
+il-footer nav[slot=social] {
+  all: initial;
+  display: block;
+  padding-bottom: 27px;
+}
+
+il-footer nav[slot=social]:last-child {
+  padding-bottom: 0;
+}
+
+il-footer nav[slot=social] ul {
+  all: initial;
+  position: relative;
+  margin-left: -.35rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: .25rem .25rem;
+}
+
+il-footer nav[slot=social] li {
+  all: initial;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+il-footer nav[slot=social] a {
+  all: initial;
+  position: relative;
+  display: none;
+  color: var(--il-blue);
+  font: 700 1rem var(--il-font-sans);
+  cursor: pointer;
+  background-image: var(--il-footer-social-icon);
+  width: calc(max(22px, 2.75rem));
+  height: calc(max(22px, 2.75rem));
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  text-indent: 3rem;
+  white-space: nowrap;
+}
+
+il-footer nav[slot=social] a:hover {
+  background-image: var(--il-footer-social-icon-hover);
+}
+
+il-footer nav[slot=social] a:focus {
+  background-image: var(--il-footer-social-icon-hover);
+  outline: 2px dotted var(--il-blue);
+}
+
+il-footer nav[slot=social] a[data-service=facebook],
+il-footer nav[slot=social] a[data-service=instagram],
+il-footer nav[slot=social] a[data-service=linkedin],
+il-footer nav[slot=social] a[data-service=pinterest],
+il-footer nav[slot=social] a[data-service=snapchat],
+il-footer nav[slot=social] a[data-service=twitter],
+il-footer nav[slot=social] a[data-service=weibo],
+il-footer nav[slot=social] a[data-service=whatsapp],
+il-footer nav[slot=social] a[data-service=x],
+il-footer nav[slot=social] a[data-service=youtube] {
+	display: block;
+}
+
+il-footer nav[slot=social] a[data-service=facebook] {
+	--il-footer-social-icon: url(https://cdn.brand.illinois.edu/icons/solid/blue/facebook.svg);
+	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/facebook.svg);
+}
+
+il-footer nav[slot=social] a[data-service=instagram] {
+	--il-footer-social-icon: url(https://cdn.brand.illinois.edu/icons/solid/blue/instagram.svg);
+	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/instagram.svg);
+}
+
+il-footer nav[slot=social] a[data-service=linkedin] {
+	--il-footer-social-icon: url(https://cdn.brand.illinois.edu/icons/solid/blue/linkedin.svg);
+	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/linkedin.svg);
+}
+
+il-footer nav[slot=social] a[data-service=pinterest] {
+	--il-footer-social-icon: url(https://cdn.brand.illinois.edu/icons/solid/blue/pinterest.svg);
+	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/pinterest.svg);
+}
+
+il-footer nav[slot=social] a[data-service=snapchat] {
+	--il-footer-social-icon: url(https://cdn.brand.illinois.edu/icons/solid/blue/snapchat.svg);
+	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/snapchat.svg);
+}
+
+il-footer nav[slot=social] a[data-service=twitter] {
+	--il-footer-social-icon: url(https://cdn.brand.illinois.edu/icons/solid/blue/twitter.svg);
+	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/twitter.svg);
+}
+
+il-footer nav[slot=social] a[data-service=weibo] {
+	--il-footer-social-icon: url(https://cdn.brand.illinois.edu/icons/solid/blue/weibo.svg);
+	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/weibo.svg);
+}
+
+il-footer nav[slot=social] a[data-service=whatsapp] {
+	--il-footer-social-icon: url(https://cdn.brand.illinois.edu/icons/solid/blue/whatsapp.svg);
+	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/whatsapp.svg);
+}
+
+il-footer nav[slot=social] a[data-service=x] {
+	--il-footer-social-icon: url(https://cdn.brand.illinois.edu/icons/solid/blue/x.svg);
+	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/x.svg);
+}
+
+il-footer nav[slot=social] a[data-service=youtube] {
+	--il-footer-social-icon: url(https://cdn.brand.illinois.edu/icons/solid/blue/youtube.svg);
+	--il-footer-social-icon-hover: url(https://cdn.brand.illinois.edu/icons/solid/orange/youtube.svg);
+}
+
+il-footer *[slot=actions] a {
+	all: initial;
+	display: inline-block;
+	background-color: var(--il-orange);
+	color: #fff;
+	margin-top: 0;
+	margin-left: .5rem;
+	padding: .5em 1em;
+	border-radius: .2em;
+	font: 600 1.25em/1 var(--il-font-sans);
+	cursor: pointer;
+}
+
+il-footer *[slot=actions] a:first-child {
+	margin-left: 0;
+}
+
+il-footer *[slot=actions] a:hover,
+il-footer *[slot=actions] a:focus {
+	background-color: var(--il-blue);
+}
+
+il-footer .il-footer-menu {
+	margin-bottom: 2em;
+}
+
+il-footer .il-footer-menu h2 {
+	all: initial;
+	display: block;
+	color: var(--il-blue);
+	font: 700 20px/25px var(--il-font-sans);
+	border-bottom: 1px solid var(--il-blue);
+}
+
+il-footer .il-footer-menu ul {
+	all: initial;
+	display: block;
+}
+
+il-footer .il-footer-menu li {
+	all: initial;
+	display: block;
+	margin: 12px 0 0;
+	font: 400 18px/25px var(--il-font-sans);
+}

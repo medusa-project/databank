@@ -1,0 +1,23 @@
+.modal.fade(id="remote-file-modal")
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button(class="close" data-dismiss="modal")
+          &times;
+        %h2 Import from a URL
+      .modal-body
+        = form_tag("/datafiles/create_from_remote", {id: "form_for_remote"}) do
+          = hidden_field_tag("dataset_key","#{@dataset.key}" )
+          .form-group.required
+            %label(class="control-label" ) Filename
+            %input(type="text" name="remote_filename" id="remote_filename" class="form-control" placeholder="myfile.csv" )
+          %br
+          .form-group.required
+            %label(class="control-label" ) URL
+            %input(type="text" name="remote_url" id="remote_url" class="form-control" placeholder="http://example.org/files?export=download&id=123" )
+        .container-fluid
+          .pull-right
+            %br
+            %button(onclick='create_from_remote()' type="button" class="btn btn-primary" data-dismiss="modal" id="help-button")
+              Start
+              %span(class="glyphicon glyphicon-triangle-right" )

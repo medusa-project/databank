@@ -1,0 +1,19 @@
+= form_for @extractor_error do |f|
+  - if @extractor_error.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@extractor_error.errors.count, "error")} prohibited this extractor_error from being saved:"
+      %ul
+        - @extractor_error.errors.full_messages.each do |message|
+          %li= message
+
+  .field
+    = f.label :extractor_response_id
+    = f.number_field :extractor_response_id
+  .field
+    = f.label :error_type
+    = f.text_field :error_type
+  .field
+    = f.label :report
+    = f.text_field :report
+  .actions
+    = f.submit 'Save'

@@ -1,0 +1,20 @@
+= render 'brief_record', dataset:@dataset
+-if @dataset.fileset_preserved?
+  %p
+    To view in Medusa:
+    %a(href="#{IDB_CONFIG['medusa']['datasets_url_base']}#{@dataset.medusa_dataset_dir}")
+      ="#{IDB_CONFIG['medusa']['datasets_url_base']}#{@dataset.medusa_dataset_dir}"
+-else
+  %p
+    This is not yet in Medusa, but when it is, it will be in Medusa's
+    %a(href="#{IDB_CONFIG['medusa']['file_group_url']}")
+      Illinois Data Bank file group
+.panel-group(id="medusa" role="tablist" aria-multiselectable="true")
+  .panel.panel-default
+    .panel-heading(role="tab" id="medusaHeading")
+      %h4.panel-title
+        %a(role="button" data-toggle="collapse" data-parent="#medusa" href="#medusaPanel" aria-expanded="false" aria-controls="medusaPanel" class="accordion-toggle collapsed")
+          %span.metadata-label Medusa Ingest Details
+    .panel-collapse.collapse.in(id="medusaPanel" role="tabpanel" aria-labelledby="medusaHeading")
+      .panel-body
+        =render partial: "show_medusa"

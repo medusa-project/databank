@@ -1,0 +1,70 @@
+-if @dataset.datafiles.count <= 500
+  %div(id="datafiles-form")
+    %input(type="hidden" name="datafile_index_max" id="datafile_index_max" value="#{@dataset.complete_datafiles.count.to_i}" )
+    .panel-group(id="files" role="tablist" aria-multiselectable="true" style="display: #{@dataset.complete_datafiles.count > 0 ? 'block' : 'none' }")
+      .panel.panel-default
+        .panel-heading(role="tab" id="filesHeading")
+          %h4(class="panel-title")
+            %a(class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#files" href="#collapseFiles" aria-expanded="true" aria-controls="collapseFiles" )
+              %span(class="metadata-label" ) Files
+        .panel-collapse.collapse.in(id="collapseFiles" role="tabpanel" aria-labelledby="filesHeading" )
+          .panel-body
+            %table(class="table table-striped" id="datafiles")
+              %tbody
+                -if current_user && current_user.role == 'admin'
+                  %tr
+                    %td.curator-only
+                      %span.col-md-4.col-md-offset-4
+                        %a(href="/datasets/#{@dataset.key}/datafiles" class="btn btn-primary btn-block idb")
+                          Advanced File Management
+                -draft = Databank::PublicationState::DRAFT_ARRAY.include?( @dataset.publication_state)
+                -can_edit = (can? :manage, @dataset ) || (can? :update, @dataset)
+
+                -if draft && can_edit
+                  %tr
+                    .row
+                      %span.col-md-4
+                        %button(class="btn btn-danger" type="button" onclick="deleteSelected()")
+                          Delete Selected
+                          %span.checkFileSelectedCount
+                          %span.glyphicon.glyphicon-trash
+
+                    .row
+                      %span.checkbox.col-md-4
+                        %label
+                          %input(type="checkbox" id="checkAllFiles" value="checkAllFiles")
+                            Select all
+                            =surround "(", ")" do
+                              %span(id = "datafilesCount")
+                                = @dataset.datafiles.count
+
+                -@dataset.sorted_datafiles.each_with_index do |datafile, i|
+                  = f.fields_for :datafiles, datafile do |df|
+                    %tr(id="datafile_index_#{i}")
+                      %td(class="#{datafile.upload_complete? ? 'uploadComplete' : 'completion-warning' }")
+                        .row.checkbox
+                          %span(class="col-md-8")
+                            -if draft && can_edit
+                              %label
+                                %input(type="checkbox" class="checkFile checkFileGroup" name="selected_files[]" value="#{i}" onchange="handleCheckFileGroupChange()" )
+                                =datafile.bytestream_name
+                            -else
+                              = datafile.bytestream_name
+                            %input(type="text" class="bytestream_name" value="#{datafile.bytestream_name}" )
+                          %span{class: "col-md-2"}
+                            -if datafile.upload_complete?
+                              = number_to_human_size(datafile.bytestream_size)
+                            -else
+                              = datafile.bytestream? ? "exists in storage" : "does NOT exist in storage"
+                          %span{class: "col-md-2"}
+                            - if draft && can_edit
+                              %button(type="button" id="remove_#{i}" class="btn btn-danger btn-sm" onclick="remove_file_row(#{i})")
+                                %span(class="glyphicon glyphicon-trash")
+                          = df.hidden_field :_destroy, value: false
+                          = df.hidden_field :web_id
+            %div(id="datafiles_upload_progress")
+-else
+  %jumbotron
+    Error displaying files, please
+    =link_to("contact", "/contact")
+    the Research Data Service

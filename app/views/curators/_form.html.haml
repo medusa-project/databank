@@ -1,0 +1,21 @@
+= form_for @user_ability do |f|
+  - if @user_ability.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@user_ability.errors.count, "error")} prohibited this deposit exception from being saved:"
+      %ul
+        - @user_ability.errors.full_messages.each do |message|
+          %li= message
+  .field
+    = f.label "email address"
+    = f.text_field :user_uid, placeholder: "netid@illinois.edu"
+  .field
+    - if Application.server_envs.include?(Rails.env)
+      = f.hidden_field :user_provider, value: "shibboleth"
+    -else
+      = f.hidden_field :user_provider, value: "developer"
+  .field
+    = f.hidden_field :resource_type, value: "Databank"
+  .field
+    = f.hidden_field :ability, value: "manage"
+  .actions
+    = f.submit 'Save', class: 'btn btn-success idb'

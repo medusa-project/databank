@@ -1,0 +1,214 @@
+draft1:
+  #<Dataset:0x00007efdc7ae6a98
+  id: 5
+  key: "TESTIDB-1423696"
+  title: "Measurements"
+  identifier: ""
+  publisher: "University of Illinois Urbana-Champaign"
+  description: "Heights, Weights, and Counts"
+  license: "CC01"
+  depositor_name: "researcher1"
+  depositor_email: "researcher1@mailinator.com"
+  corresponding_creator_name: "researcher1"
+  corresponding_creator_email: "researcher1@mailinator.com"
+  created_at: Fri, 23 Jun 2023 13:45:19.068584000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:45:37.132849000 UTC +00:00
+  publication_state: "draft"
+  curator_hold: false
+  embargo: "none"
+  is_test: false
+  is_import: false
+  have_permission: "yes"
+  removed_private: "na"
+  agree: "yes"
+  hold_state: "none"
+  medusa_dataset_dir: ""
+  dataset_version: "1"
+  suppress_changelog: false
+  version_comment: ""
+  subject: ""
+  org_creators: false
+  data_curation_network: false
+draft2:
+  id: 6
+  key: "TESTIDB-3569656"
+  title: "Phenomenon"
+  identifier: "10.70114/DEMOIDB-3569656_V1"
+  publisher: "University of Illinois Urbana-Champaign"
+  description: "Interesting Things that Happened"
+  license: "CCBY4"
+  depositor_name: "researcher2"
+  depositor_email: "researcher2@mailinator.com"
+  corresponding_creator_name: "researcher2"
+  corresponding_creator_email: "researcher2@mailinator.com"
+  created_at: Thu, 27 Apr 2023 19:00:09.800799000 UTC +00:00
+  updated_at: Thu, 11 May 2023 18:01:05.632297000 UTC +00:00
+  publication_state: "draft"
+  curator_hold: false
+  embargo: "none"
+  is_test: false
+  is_import: false
+  have_permission: "yes"
+  removed_private: "yes"
+  agree: "yes"
+  hold_state: "none"
+  medusa_dataset_dir: ""
+  dataset_version: "1"
+  suppress_changelog: false
+  version_comment: ""
+  subject: ""
+  org_creators: false
+  data_curation_network: false
+released1:
+  id: 1
+  key: "TESTIDB-5920542"
+  title: "More Import Exploration"
+  identifier: "10.70114/TESTIDB-5920542_V1"
+  publisher: "University of Illinois Urbana-Champaign"
+  license: "CC01"
+  depositor_name: "researcher1"
+  depositor_email: "researcher1@mailinator.com"
+  corresponding_creator_name: "researcher1"
+  corresponding_creator_email: "researcher1@mailinator.com"
+  created_at: Mon, 12 Jun 2023 17:36:27.541458000 UTC +00:00
+  updated_at: Mon, 12 Jun 2023 17:45:10.278806000 UTC +00:00
+  publication_state: "released"
+  curator_hold: false
+  release_date: Sun, 10 Mar 2002
+  embargo: "none"
+  is_test: false
+  is_import: true
+  have_permission: "yes"
+  removed_private: "na"
+  agree: "yes"
+  hold_state: "none"
+  dataset_version: "1"
+  suppress_changelog: false
+  version_comment: ""
+  subject: ""
+  org_creators: false
+  data_curation_network: false>
+released2:
+  id: 2
+  key: "TESTIDB-2153199"
+  title: "New to Us"
+  identifier: "10.70114/TESTIDB-2153199_V1"
+  publisher: "University of Illinois Urbana-Champaign"
+  description: ""
+  license: "CC01"
+  depositor_name: "researcher2"
+  depositor_email: "researcher2@mailinator.com"
+  corresponding_creator_name: "researcher2"
+  corresponding_creator_email: "researcher2@mailinator.com"
+  created_at: Thu, 06 Apr 2023 19:30:47.414060000 UTC +00:00
+  updated_at: Mon, 12 Jun 2023 17:36:10.482575000 UTC +00:00
+  keywords: ""
+  publication_state: "released"
+  curator_hold: false
+  release_date: Mon, 10 Jun 2002
+  embargo: "none"
+  is_test: false
+  is_import: false
+  have_permission: "yes"
+  removed_private: "na"
+  agree: "yes"
+  hold_state: "none"
+  dataset_version: "1"
+  suppress_changelog: false
+  version_comment: ""
+  subject: ""
+  org_creators: false
+  data_curation_network: false>]
+file_and_metadata_permanent_suppression:
+  id: 3
+  key: "TESTIDB-2239233"
+  title: "Example: File and Metadata Permanent Suppression"
+  identifier: "10.70114/TESTIDB-2239233_V1"
+  publisher: "University of Illinois Urbana-Champaign"
+  description: "Example of an Illinois Data Bank record with a File and Metadata Permanent Suppression."
+  license: "CC01"
+  depositor_name: "researcher1"
+  depositor_email: "researcher1@mailinator.com"
+  complete: true
+  corresponding_creator_name: "researcher1"
+  corresponding_creator_email: "researcher1@mailinator.com"
+  keywords: ""
+  publication_state: "metadata permanently suppressed"
+  curator_hold: false
+  release_date: Thu, 14 Jul 2016
+  embargo: "none"
+  is_test: false
+  is_import: false
+  tombstone_date: Thu, 14 Jul 2016
+  have_permission: "yes"
+  removed_private: "yes"
+  agree: "yes"
+  hold_state: "none"
+  dataset_version: "1"
+  suppress_changelog: false
+  org_creators: false
+  data_curation_network: false
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
+file_embargo_file_only_publication_delay:
+  id: 4
+  key: "TESTIDB-5720850"
+  title: "Example: File Embargo - File Only Publication Delay"
+  identifier: "10.70114/TESTIDB-5720850_V1"
+  publisher: "University of Illinois Urbana-Champaign"
+  description: "This is the embargo dataset example - file only publication delay. One year delay. "
+  license: "CC01"
+  depositor_name: "researcher1"
+  depositor_email: "researcher1@mailinator.com"
+  complete: true
+  corresponding_creator_name: "researcher1"
+  corresponding_creator_email: "researcher1@mailinator.com"
+  keywords: "Embargo; File Only Delay"
+  publication_state: "released"
+  curator_hold: false
+  release_date: Mon, 14 Aug 2017
+  embargo: "none"
+  is_test: false
+  is_import: false
+  have_permission: "yes"
+  removed_private: "na"
+  agree: "yes"
+  hold_state: "none"
+  dataset_version: "1"
+  suppress_changelog: false
+  org_creators: false
+  data_curation_network: false
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
+released3:
+  id: 13
+  key: "TESTIDB-9610843"
+  title: "New York City Taxi Trip Data (2010-2013)"
+  identifier: "10.70114/TESTIDB-J8PN93H8"
+  publisher: "University of Illinois Urbana-Champaign"
+  description: "This dataset contains records of four years of taxi operations in New York City and includes 697,622,444 trips. Each trip records the pickup and drop-off dates, times, and coordinates, as well as the metered distance reported by the taximeter. The trip data also includes fields such as the taxi medallion number, fare amount, and tip amount.  The dataset was obtained through a Freedom of Information Law request from the New York City Taxi and Limousine Commission.\r\n\r\nThe files in this dataset are optimized for use with the ‘decompress.py’ script included in this dataset.  This file has additional documentation and contact information that may be of help if you run into trouble accessing the content of the zip files."
+  license: "CC01"
+  depositor_name: "researcher1"
+  depositor_email: "researcher1@mailinator.com"
+  complete: true
+  corresponding_creator_name: "researcher1"
+  corresponding_creator_email: "researcher1@mailinator.com"
+  created_at: Wed, 18 May 2016 17:02:38.910381000 UTC +00:00
+  updated_at: Fri, 09 Feb 2018 16:00:43.988124000 UTC +00:00
+  keywords: "taxi;transportation;New York City;GPS"
+  publication_state: "released"
+  curator_hold: false
+  release_date: Thu, 19 May 2016
+  embargo: "none"
+  is_test: false
+  is_import: true
+  have_permission: "yes"
+  removed_private: "yes"
+  agree: "yes"
+  hold_state: "none"
+  dataset_version: "1"
+  suppress_changelog: false
+  version_comment: ""
+  subject: "Technology and Engineering"
+  org_creators: false
+  data_curation_network: false

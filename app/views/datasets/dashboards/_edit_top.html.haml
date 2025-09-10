@@ -1,0 +1,13 @@
+- if (can? :update, @dataset)
+  .idb-dashboard.panel.panel-warning
+    .panel-body
+      %span(class="glyphicon glyphicon-eye-open" )
+      = @dataset.visibility
+      %br
+      %span(class="glyphicon glyphicon-info-sign")
+      - if @dataset.publication_state == Databank::PublicationState::DRAFT || (can? :manage, @dataset)
+        Edit the dataset description and file set as needed, then save to review before publishing.
+      - else
+        You can edit the description for the dataset, but you would need to contact the
+        %a(href="/contact" )Research Data Service
+        if you need to change, update, or add files for any reason.

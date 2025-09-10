@@ -1,0 +1,29 @@
+<v1:datasets xmlns:v1="v1.dataset.pure.atira.dk" xmlns:v3="v3.commons.pure.atira.dk">
+    <!-- Minimal example  -->
+
+    <v1:dataset id="dataset1" type="dataset">
+        <!-- Title of the dataset -->
+        <v1:title>DataSet Title</v1:title>
+
+        <v1:managingOrganisation lookupId="organisation1"/>
+
+        <v1:persons>
+            <v1:person id="person1" contactPerson="true">
+                <v1:person lookupId="person1" />
+                <v1:role>datacollector</v1:role>
+                <v1:associationStartDate>2002-02-02</v1:associationStartDate>
+            </v1:person>
+        </v1:persons>
+
+        <!-- The data that the dataset has been made available -->
+        <v1:availableDate>
+            <v3:year>2013</v3:year>
+        </v1:availableDate>
+
+        <!-- A publisher is required to create a dataset, however, if a default publisher has been configured for datasets you need not state one here as we will use that if none are provided. -->
+        <v1:publisher lookupId="publisher1">
+            <v1:name>New Publisher</v1:name>
+            <v1:type>publisher</v1:type>
+        </v1:publisher>
+    </v1:dataset>
+</v1:datasets>

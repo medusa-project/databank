@@ -1,0 +1,29 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+    %title
+      = "Illinois Data Bank - Confirmation Email Not Sent"
+  %body
+    %h1 Confirmation email not sent
+    %h2 The following dataset has been successfully deposited in the Illinois Data Bank, but the confirmation email was not sent:
+    %blockquote
+      = @dataset.plain_text_citation
+    %h2 Here is some information about the deposited dataset:
+    %blockquote
+      %p
+        DataCite DOI: #{@dataset.identifier}
+      %p
+        Release date: #{@dataset.release_date}
+      %p
+        Depositor: #{@dataset.depositor_name}
+      %p
+        Contact person: #{@dataset.corresponding_creator_name}
+      %p
+        Deposit agreement link:
+        %a{:href => "#{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key}/review_deposit_agreement"}
+          = "#{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key}/review_deposit_agreement"
+    %p
+      Error:
+      =@err.message
+    = render partial: "sigblock_html"

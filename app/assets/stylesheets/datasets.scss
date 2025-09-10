@@ -1,0 +1,449 @@
+// Place all the styles related to the Datasets controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+.mainTitleText {
+  font-style: italic;
+  font-weight: bold;
+  font-size: large;
+}
+
+ul.dashed {
+  list-style-type: none;
+}
+ul.dashed > li {
+  text-indent: -5px;
+}
+ul.dashed > li:before {
+  content: "-";
+  text-indent: -5px;
+}
+
+#publicationNoticeButton {
+  display: inline !important;
+}
+
+.info-box {
+  background-color: $color__lightest-grey;
+}
+
+.metadata-label {
+  font-weight: bold;
+}
+
+.metadata-value {
+  font-style: normal;
+}
+
+.metadata-note {
+  font-style: italic;
+}
+
+div.citation-block {
+  background-color: $color__lightest-grey;
+  border: 1px solid $color__light-grey;
+  padding: 5px;
+}
+
+.metadata-block {
+  background-color: $color__background-main-column;
+  border: 1px solid $color__light-grey;
+  padding-left: 25px;
+}
+
+.form-group.required .control-label:after {
+  content: "*";
+  color: $color__red;
+}
+
+.file-description-textfield {
+  width: 100%;
+}
+
+.dropdown-menu.login-form {
+  z-index: 100;
+  padding-top: 5px;
+  padding-right: 10px;
+  padding-bottom: 0;
+  padding-left: 10px;
+}
+
+.blank-page {
+  height: 550px;
+}
+
+.border {
+  border: 1px solid $color__light-grey;
+  padding-left: 10px;
+}
+
+fieldset.metadata-border {
+  border: 1px groove $color__medium-grey !important;
+  padding: 0 1.4em 1.4em 1.4em !important;
+  margin: 0 0 1.5em 0 !important;
+  background-color: $color__light-grey;
+}
+
+legend.metadata-border {
+  width: inherit; /* Or auto */
+  padding: 0 10px; /* To give a bit of padding on the left and right */
+  border-bottom: none;
+  background-color: $color__text-light;
+}
+
+.deposit-agreement-warning, .deposit-agreement-selection-warning {
+  color: $color__red;
+  font-weight: bold;
+  font-style: italic;
+  // padding-bottom: 20px;
+  //font-size: 120%;
+}
+
+.request-review-response {
+  color: $color__yellow-background;
+}
+
+.drop-area {
+  background-color: $color__text-light;
+  margin: 50px;
+}
+
+.modal-dialog {
+  position: relative;
+  width: auto;
+  max-width: 600px;
+  margin: 10px;
+}
+
+.modal-sm {
+  max-width: 300px;
+}
+
+.modal-lg {
+  max-width: 900px;
+}
+
+.modal-xl{
+  max-width: 1200px;
+}
+
+@media (min-width: 768px) {
+  .modal-dialog {
+    margin: 30px auto;
+  }
+}
+
+@media (min-width: 320px) {
+  .modal-sm {
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+@media (min-width: 620px) {
+  .modal-dialog {
+    margin-right: auto;
+    margin-left: auto;
+  }
+  .modal-lg {
+    margin-right: 10px;
+    margin-left: 10px;
+  }
+}
+
+@media (min-width: 920px) {
+  .modal-lg {
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+.curator-only {
+  padding: 5px;
+  background-color: $color__highlight-orange;
+}
+.inline-block {
+  display: inline-block;
+}
+
+#creator_table {
+  border: 1px solid $color__medium-grey;
+}
+#contributor_table {
+  border: 1px solid $color__medium-grey;
+}
+
+.form-heading-required:after {
+  content: "*";
+  color: $color__red;
+}
+
+.input-field-required {
+  background-color: $color__yellow !important;
+}
+
+.test {
+  border: 2px solid $color__red;
+}
+
+.highlight {
+  color: $color__red;
+  font-weight: bold;
+}
+
+.control-label.required:after {
+  content: "*";
+  color: $color__red;
+}
+
+.license-info-column-header {
+  border-radius: 5px 5px 0 0;
+  border: 1px solid $color__dark-moderate-blue;
+  //min-height: 125px;
+  background-color: $color__dark-moderate-blue;
+  color: $color__text-light;
+  padding: 5px;
+}
+
+.license-info-column-middle-section {
+  border-radius: 0;
+  border-right: 1px solid $color__dark-moderate-blue;
+  border-left: 1px solid $color__dark-moderate-blue;
+  border-top: 1px solid $color__dark-moderate-blue;
+  //min-height: 175px;
+  padding: 5px;
+  background-color: $color__background-main-column;
+}
+
+.license-info-column-bottom-section {
+  border-radius: 0 0 5px 5px;
+  border: 1px solid $color__dark-moderate-blue;
+  //min-height: 200px;
+  padding: 5px;
+  background-color: $color__background-main-column;
+}
+
+.embargo-info-column-header {
+  border-radius: 5px 5px 0 0;
+  border: 1px solid $color__dark-moderate-blue;
+  background-color: $color__dark-moderate-blue;
+  color: $color__text-light;
+  padding: 10px;
+}
+
+.embargo-info-column-middle-section {
+  border-radius: 0;
+  border-right: 1px solid $color__dark-moderate-blue;
+  border-left: 1px solid $color__dark-moderate-blue;
+  border-top: 1px solid $color__dark-moderate-blue;
+  padding: 10px;
+  min-height: 125px;
+  background-color: $color__background-main-column;
+}
+
+.embargo-info-column-bottom-section {
+  border-radius: 0 0 5px 5px;
+  border: 1px solid #003dac;
+  padding: 10px;
+  min-height: 145px;
+  background-color: $color__background-main-column;
+}
+
+.idb-dashboard .panel-body {
+  background-color: $color__background-main-column;
+}
+
+.idb-dashboard .panel-heading {
+  color: black;
+}
+
+.panel-heading .accordion-toggle:after {
+  /* symbol for "opening" panels */
+  //font-family: 'FontAwesome';
+  //content: "[\f068]";
+  font-family: Helvetica, Arial, sans-serif;
+  content: "[-]";
+  float: left;
+  color: black;
+  margin-right: 10px;
+  /* don't rotate icon - override framework defaults  */
+  -webkit-transform: rotate(0);
+  -moz-transform: rotate(0);
+  -ms-transform: rotate(0);
+  -o-transform: rotate(0);
+  transform: rotate(0);
+}
+
+.panel-heading .accordion-toggle.collapsed:after {
+  font-family: Helvetica, Arial, sans-serif;
+  content: "[+]";
+  float: left;
+  color: black;
+  margin-right: 10px;
+  /* don't rotate icon - override framework defaults  */
+  -webkit-transform: rotate(0);
+  -moz-transform: rotate(0);
+  -ms-transform: rotate(0);
+  -o-transform: rotate(0);
+  transform: rotate(0);
+}
+
+.invalid-email {
+  border: 2px solid $color__red;
+}
+
+.dashboard-unicorn-image {
+  -moz-transform: scaleX(-1);
+  -o-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+  filter: FlipH;
+  -ms-filter: "FlipH";
+}
+
+.availability-msg {
+  padding: 10px;
+  background-color: $color__lightest-grey;
+  font-weight: bold;
+}
+
+.confirm-modal-text li {
+  font-size: 16px;
+  line-height: 22px;
+  margin: 10px;
+}
+
+.embargo-placeholder {
+  padding: 35px;
+  border: 15px solid $color__burnt-orange;
+  background-color: $color__yellow-background;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.dataset-title {
+  display: block;
+  font-size: 2em;
+}
+
+#creator_table > thead {
+  background-color: $color__lightest-grey;
+}
+
+#contributor_table > thead {
+  background-color: $color__lightest-grey;
+}
+
+.idb-infographic-header{
+  background-color: $color__dark-moderate-blue;
+  color: $color__text-light;
+}
+
+#upload-table{
+  border-collapse: collapse;
+  text-align: center;
+  margin-left: 20%;
+}
+
+#upload-table td {
+  vertical-align: middle;
+  text-align: center;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border: 1px solid $color__light-grey;
+}
+
+.upload-key td {
+  border: 1px solid $color__light-grey;
+  padding: 5px;
+  text-align: left !important;
+}
+
+.upload-form{
+  margin: 5px;
+}
+
+.highlight-background{
+  background-color: $color__yellow-background;
+}
+
+.search-control, clipboard-control{
+  padding-left: 0;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.search-count{
+  background-color: $color__lightest-grey;
+}
+
+//.preview{
+//
+//
+//}
+
+.preview{
+  padding-left: 15px;
+  background-color: $color__lightest-grey;
+  font-family: monospace;
+  margin-right: 15px;
+  max-height: 400px;
+  max-width: 10in;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+.markdown_preview{
+  padding-left: 15px;
+  background-color: $color__lightest-grey;
+  margin-right: 15px;
+  max-height: 400px;
+  max-width: 10in;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+//div#box-select{
+//  top: 15px !important;
+//}
+
+a.morelink {
+  text-decoration:none;
+  outline: none;
+}
+.morecontent span {
+  display: none;
+}
+
+.record {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 5px;
+  border-left: 3px solid $color__light-grey;
+
+}
+.selected-version{
+  background-color: $color__yellow-background !important;
+  font-weight: bold;
+}
+.boxed-alert{
+  margin: 2px;
+  padding: 3px;
+  border: 1px solid $color__burnt-orange;
+}
+tr.category, td.category {
+  font-weight: bold;
+  background-color: $color__lightest-grey;
+}
+
+tr.different {
+    background-color: $color__yellow-background;
+}
+
+#differnce_report td:not(:last-child) {
+  border-right: 1px solid $color__lightest-grey;
+}
+.facet_label{
+    font-weight: normal;
+}

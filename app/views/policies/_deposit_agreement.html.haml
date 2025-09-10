@@ -1,0 +1,83 @@
+#deposit_agreement.bs-callout.bs-callout-info.idb-help
+  %br/
+  %hr/
+  %h2 Deposit Agreement
+  %hr/
+  %p
+    To start depositing your Dataset, please answer the following questions, read the following deposit agreement,
+    and agree to this deposit agreement.
+  %p
+    %strong
+      Are you a Creator or have you been granted permission by a Creator to deposit this Dataset?
+  .indent
+    %p [ ] Yes
+    %p [ ] No
+  %p
+    %strong
+      Have you removed any private, confidential, or other legally protected information from the
+      Dataset?
+  .indent
+    %p [ ] Yes
+    %p [ ] No
+    %p [ ] Not applicable
+  %p
+    %strong Do you agree to the Illinois Data Bank Deposit Agreement in its entirety?
+  .indent
+    %p [ ] Yes
+    %p [ ] No
+  = render partial: 'deposit_agreement_body'
+  %hr/
+  %p
+    %a{:href => "#{IDB_CONFIG[:root_url_text]}/contact"} Contact Research Data Service staff
+    with questions or to request an addition or
+    revision to this policy.
+  %table.table.table-bordered
+    %caption.policy-document-history
+      %h3
+        Document History and Version Control Table for Deposit Agreement Policy
+    %thead
+      %tr
+        %th Version
+        %th Action
+        %th Approved By
+        %th Action Date
+    %tbody
+      %tr
+        %td 1.0
+        %td Policy issued.
+        %td Heidi Imker, Director, Research Data Service
+        %td 2016-05-03
+      %tr
+        %td 1.1
+        %td
+          Policy reviewed. Minor change made:
+          %br/
+          \-Versioning table added.
+        %td Heidi Imker, Director, Research Data Service
+        %td 2016-10-05
+      %tr
+        %td 1.1
+        %td
+          Policy reviewed.
+        %td Heidi Imker, Director, Research Data Service
+        %td 2017-03-02
+      %tr
+        %td 1.2
+        %td
+          Policy reviewed. Minor change made:
+          %br/
+          \-Revised language for clarity.
+        %td
+          Heidi Imker, Director, Research Data Service
+        %td 2019-06-20
+      %tr
+        %td 1.2
+        %td
+          Policy reviewed.
+        %td
+          Heidi Imker, Director, Research Data Service
+        %td 2021-09-13
+  %p
+    View past and current versions of this document in IDEALS:
+    = succeed "." do
+      %a{:href => "http://hdl.handle.net/2142/91039"} http://hdl.handle.net/2142/91039

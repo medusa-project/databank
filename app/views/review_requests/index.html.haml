@@ -1,0 +1,33 @@
+%h1 Pre-publication Review Requests
+
+%h3
+  %a(href="/review_requests/report" class="btn btn-primary idb" )
+    %span.glyphicon.glyphicon-download
+    Download Report
+
+%table.container.table
+  %thead
+    %tr.row
+      %th.col-md-6 Dataset
+      %th.col-md-3 Review Requested at
+      %th.col-md-1
+      %th.col-md-1
+      %th.col-md-1
+
+  %tbody
+    - @review_requests.each do |review_request|
+      %tr.row
+        %td
+          -if review_request.dataset
+            %a(href="/datasets/#{review_request.dataset_key}")
+              =review_request.dataset.plain_text_citation
+          -else
+            %a(href="/datasets/#{review_request.dataset_key}")
+              ="#{IDB_CONFIG[:root_url_text]}/datasets/#{review_request.dataset_key}"
+        %td= review_request.requested_at.iso8601
+        %td= link_to 'Show', review_request
+        %td= link_to 'Edit', edit_review_request_path(review_request)
+        %td= link_to 'Destroy', review_request, method: :delete, data: { confirm: 'Are you sure?' }
+%br
+
+= link_to 'Add new pre-publication review request record', new_review_request_path, class: "btn btn-primary idb"

@@ -1,0 +1,82 @@
+.container-fluid
+  .welcome
+    .row
+      .col-md-8
+        %h3 You are ready to deposit data if:
+        %ul
+          %li your data is in a final state and not expected to undergo revisions.
+          %li you have removed any private, confidential, or other legally protected information from your data.
+          %li you are a faculty member, staff member, or graduate student at the University of Illinois Urbana-Champaign.
+          %li you have permission to publicly distribute data from all creator(s) and/or copyright owner(s).
+
+        %h3 Published data:
+        %ul
+          %li is open to anyone in the world.
+          %li
+            =surround('receives a stable identifier (',  ') for easy reference and citation.') do
+              %a{href: "/guides#doi", target: "_blank"} DOI
+          %li is readily available for anyone to access for a minimum of 5 years.
+          %li is located in a stable environment that complies with many funder and publisher requirements.
+        %button(type="button" class="btn btn-default" onclick="window.open('/guides#submission')" )
+          Learn how to publish your data
+        %h3 Statement of Commitment
+        .indent
+          %p The Illinois Data Bank's mission is to centralize, preserve, and provide persistent and reliable access to the research data created by affiliates of the University of Illinois Urbana-Champaign, such as its faculty, academic staff, and graduate students. The Research Data Service at the University Library maintains and operates the Illinois Data Bank on behalf of the University of Illinois Urbana-Champaign campus.  The University Library has a long history of successfully supporting the preservation of and access to Illinois research outputs. The Illinois Data Bank operates within a robust policy framework that fully describes the University's commitment to providing persistent and reliable access to research data.
+        %button(type="button" class="btn btn-default" onclick="window.open('/policies')" )
+          Review our policies
+      .col-md-4.featured-researcher
+        %h3 Researcher Spotlight
+        .featured-bio
+          -if @featured_researcher.photo_url && @featured_researcher.photo_url != ""
+            .photo-preview
+              %img(src="#{@featured_researcher.photo_url}" class="img-responsive" alt="featured researcher photo" )
+
+          %h4
+            %strong
+              = @featured_researcher.name
+          = @featured_researcher.bio.html_safe
+
+        .featured-buttons
+          -if @featured_researcher.dataset_url && @featured_researcher.dataset_url != ''
+            %button(type="button" class="btn btn-primary btn-block" onclick="window.open('#{@featured_researcher.dataset_url}')" )
+              %span(class="glyphicon glyphicon-tasks" )
+              &nbsp;
+              dataset
+          -if @featured_researcher.article_url && @featured_researcher.article_url != ''
+            %button(type="button" class="btn btn-primary btn-block" onclick="window.open('#{@featured_researcher.article_url}')" )
+              %span(class="glyphicon glyphicon-file" )
+              &nbsp;
+              article
+
+        .featured-comment
+          %strong
+            = @featured_researcher.question
+          .elbow
+            = @featured_researcher.testimonial.html_safe
+        %hr
+
+        = form_for @featured_researcher do |f|
+
+          =f.hidden_field :name, value: @featured_researcher.name
+          =f.hidden_field :question, value: @featured_researcher.question
+          =f.hidden_field :dataset_url, value: @featured_researcher.dataset_url
+          =f.hidden_field :article_url, value: @featured_researcher.article_url
+          =f.hidden_field :bio, value: @featured_researcher.bio
+          =f.hidden_field :testimonial, value: @featured_researcher.testimonial
+          =f.hidden_field :photo_url, value: @featured_researcher.photo_url
+
+
+          -if @featured_researcher.is_active
+            =f.hidden_field :is_active, value: false
+            = f.submit 'Unpublish', class: "btn btn-primary btn-block"
+          -else
+            =f.hidden_field :is_active, value: true
+            = f.submit 'Publish', class: "btn btn-primary btn-block"
+
+        .featured-controls
+          %a(href="/featured_researchers/#{@featured_researcher.id}/edit" class="btn btn-success btn-block idb") Edit Researcher Spotlight
+          %a(href="/featured_researchers"  class="btn btn-info btn-block idb" ) List Researcher Spotlights
+
+
+
+

@@ -1,0 +1,33 @@
+.bs-callout.bs-callout-info.idb-help(id="#{item.anchor}")
+  %br
+  -if item.class.name == "Guide::Section" && item.guide_items.count.positive?
+    .idb-help-section-head
+      %h2
+        =item.heading
+  -else
+    .idb-help-item-head
+      %h3
+        =item.heading
+  -if (can? :manage, item)
+    .row.curator-only
+      .col-md-8
+        =item.heading
+      .col-md-4
+        -case item.class.name
+        -when 'Guide::Section'
+          %a(href="/guide/sections/#{item.id}" class="btn btn-primary btn-block idb")
+            %span(class="glyphicon glyphicon-edit")
+            Manage Section
+        -when 'Guide::Item'
+          %a(href="/guide/items/#{item.id}" class="btn btn-primary btn-block idb")
+            %span(class="glyphicon glyphicon-edit")
+            Manage Item
+        -when 'Guide::Subitem'
+          %a(href="/guide/subitems/#{item.id}" class="btn btn-primary btn-block idb")
+            %span(class="glyphicon glyphicon-edit")
+            Manage Subitem
+  -if item.body.present? && item.body != ""
+    .indent
+      = item.body.html_safe
+-unless item.class.name == "Guide::Section" && item.guide_items.count.positive?
+  %a(href="#top" class="pull-right" ) Go to Top

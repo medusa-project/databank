@@ -1,0 +1,70 @@
+.jumbotron
+  %title
+    Illinois Data Bank - Datafile
+  %h1.glyphicon.glyphicon-fire
+  This page exists to support carefully fixing some unexpected errors. It is possible to mess things up here.
+
+-if @dataset
+  %br
+  %button(type="button" class="btn btn-primary"  onclick='window.location = "/datasets/#{@dataset.key}"' )
+    %span(class="glyphicon glyphicon-arrow-left" )
+    Back
+  %h3
+    File For
+    =link_to "#{@dataset.title}", dataset_path(@dataset.key)
+  = @dataset.plain_text_citation
+  %br
+
+  %hr
+
+-if @datafile
+
+  = form_for @datafile do |f|
+    - if @datafile.errors.any?
+      %h2= "#{pluralize(@datafile.errors.count, "error")} prohibited this datafile from being saved:"
+      %ul
+        - @datafile.errors.full_messages.each do |msg|
+          %li= msg
+
+    .row
+      .col-md-6
+        .form-group
+          .field
+            = f.label :binary_name, :class => "control-label"
+            = f.text_field :binary_name, :class => "form-control dataset"
+    .row
+      .col-md-6
+        .form-group
+          .field
+            = f.label :storage_root, :class => "control-label"
+            = f.text_field :storage_root, :class => "form-control dataset"
+    .row
+      .col-md-6
+        .form-group
+          .field
+            = f.label :storage_key, :class => "control-label"
+            = f.text_field :storage_key, :class => "form-control dataset"
+    .row
+      .col-md-6
+        .form-group
+          .field
+            =f.label :peek_type, :class => "control-label"
+            =f.text_field :peek_type, :class => "form-control dataset"
+    .row
+      .col-md-12
+        .form-group
+          .field
+            =f.label :peek_text, :class => "control-label"
+            =f.text_area :peek_text, :rows => 3, :class => "form-control dataset"
+    .row
+      .col-md-2.col-md-offset-10
+        .form-group
+          .actions
+            = f.button 'Save', name: "update_datafile", id: "update_datafile", class: "btn btn-primary btn-block", type: "button"
+
+
+  .row
+    .col-md-2.col-md-offset-10
+      %a.btn.btn-primary.btn-block.idb(href="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@datafile.web_id}/download")
+        %span(class="glyphicon glyphicon-download" )
+        Download

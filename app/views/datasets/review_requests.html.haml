@@ -1,0 +1,38 @@
+= render 'brief_record', dataset:@dataset
+.panel-group(id="reviews" role="tablist" aria-multiselectable="true")
+  .panel.panel-default
+    .panel-heading(role="tab" id="reviewsHeading")
+      %h4(class="panel-title")
+        %a(role="button" data-toggle="collapse" data-parent="#access" href="#reviewsPanel" aria-expanded="false" aria-controls="reviewsPanel" class="accordion-toggle collapsed" )
+          %span( class="metadata-label" ) Pre-publication Review Requests
+    .panel-collapse.collapse.in(id="reviewsPanel" role="tabpanel" aria-labelledby="reviewsHeading" )
+      .panel-body
+        %a(href="/review_requests") See all review requests for all datasets
+        -if @dataset.review_requests.count > 0
+          %h3
+            Pre-publication review requested for this dataset at:
+          .indent
+
+            -@dataset.review_requests.each do |review|
+              =review.requested_at.strftime("%Y-%m-%d")
+              =" | "
+              =link_to 'Edit', edit_review_request_path(review), class: "btn btn-primary idb"
+              %br
+        -else
+          %br
+          No pre-publication review request records found for this dataset.
+        %hr
+        %h3
+          Add new pre-publication review request record for this dataset:
+        %em
+          (For requests made before such requests were recorded.)
+        .indent
+          = form_for @review_request do |f|
+            .field
+              = f.hidden_field :dataset_key, value: @dataset.key
+            .field
+              = f.label :requested_at
+              = f.datetime_select :requested_at
+            .actions
+              = f.submit 'Save', class: "btn btn-primary"
+

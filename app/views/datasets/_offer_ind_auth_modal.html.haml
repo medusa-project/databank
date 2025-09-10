@@ -1,0 +1,11 @@
+.modal.fade(id="offerIndAuthModal")
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button(class="close" data-dismiss="modal")
+          &times;
+        %br
+      .modal-body
+        If you would like one or more individuals to receive credit for authoring this dataset instead of crediting a named group, please contact us at
+        =succeed "." do
+          %a(href="mailto:researchdata@illinois.library.illinois.edu") researchdata@illinois.library.illinois.edu

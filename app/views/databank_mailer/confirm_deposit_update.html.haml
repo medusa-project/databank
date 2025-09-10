@@ -1,0 +1,19 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body
+    %p The following deposited dataset has been successfully updated in the Illinois Data Bank:
+    %blockquote
+      = @dataset.plain_text_citation
+    %p Here is some information about the deposited dataset:
+    %blockquote
+      %p
+        DataCite DOI: #{@dataset.identifier}
+      %p
+        Release date: #{@dataset.release_date}
+      %p
+        Depositor: #{@dataset.depositor_name}
+      %p
+        Contact person: #{@dataset.corresponding_creator_name}
+    = render partial: "sigblock_html"

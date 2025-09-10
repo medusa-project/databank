@@ -1,0 +1,323 @@
+= render 'brief_record', dataset:@dataset
+-if @previous.nil?
+  %em No previous version found for this dataset.
+-else
+  %hr/
+  %h3 List of files as selected by user. Curator makes adjustment as needed.
+  =form_for(@dataset, :url => {action: 'copy_version_files'}, html: {role: "form", method: :post, class: "input-append dataset-form" }) do |f|
+    .panel-group(id="vFiles" role="tablist" aria-multiselectable="true")
+      .panel.panel-default
+        .panel-heading(role="tab" id="vFilesHeading")
+          %h4(class="panel-title")
+            %a(role="button" data-toggle="collapse" data-parent="#access" href="#vFilesPanel" aria-expanded="false" aria-controls="vFilesPanel" class="accordion-toggle" )
+              %span( class="metadata-label" ) File Copy Selection
+        .panel-collapse.collapse.in(id="vFilesPanel" role="tabpanel" aria-labelledby="vFilesHeading" )
+          .panel-body
+            %table.table#versionfiles
+              %tbody
+                %tr.row
+                  %td
+                    %input#checkAllVFiles{type: "checkbox"}
+                      Select all
+                      =surround "(", ")" do
+                        %span#datafilesCount
+                          = @dataset.version_files.count
+                -@dataset.version_files.each do |version_file|
+                  = f.fields_for :version_files, version_file do |vf|
+                    %tr.row
+                      %td.col-md-2
+                        = vf.check_box :selected, class: 'checkVFile checkVFileGroup', disabled: version_file.initiated
+                      %td.col-md-4
+                        = version_file.source_datafile.bytestream_name
+                      %td.col-md-2
+                        = number_to_human_size(version_file.source_datafile.bytestream_size)
+                      %td.col-md-2
+                        -if version_file.initiated
+                          %span.label.label-warning
+                            Copy Initiated
+                        -else
+                          %span.label.label-info
+                            Copy Not Initiated
+                      %td.col-md-2
+                        -if version_file.complete?
+                          %span.label.label-success
+                            Copy Complete
+                        -elsif version_file.initiated
+                          %span.label.label-info
+                            Copy In Progress
+                    .row
+                %tr.row
+                  %td.col-md-2
+                  %td.col-md-4
+                  %td.col-md-2
+                  %td.col-md-4{colspan: "2"}
+                    -if @dataset.version_copies_complete?
+                      %span.label.label-success
+                        Version Copies Complete
+                    -elsif @dataset.version_copies_initiated?
+                      %span.label.label-default
+                        Version Copies Initiated
+                    -else
+                      %button#copyFilesBtn.btn.btn-lg.btn-primary.btn-block{type: "submit", disabled: false}
+                        %span.glyphicon.glyphicon-duplicate
+                        Copy Selected Files to Version
+
+  .panel-group(id="report" role="tablist" aria-multiselectable="true")
+    .panel.panel-default
+      .panel-heading(role="tab" id="reportHeading")
+        %h4(class="panel-title")
+          %a(role="button" data-toggle="collapse" data-parent="#report" href="#reportPanel" aria-expanded="false" aria-controls="reportPanel" class="accordion-toggle" )
+            %span( class="metadata-label" ) Difference Report (fields with differences are highlighted)
+      .panel-collapse.collapse.in(id="reportPanel" role="tabpanel" aria-labelledby="reportHeading" )
+        .panel-body
+          %table.table#differnce_report
+            %thead
+              %tr.row
+                %th
+                  %span.metadata-label
+                %th
+                  %span.metadata-label Current
+                %th
+                  %span.metadata-label Previous
+            %tbody
+              %tr.row.category
+                %td{colspan: "3"}
+                  %span.metadata-label
+                    Dataset Metadata
+              %tr.row{class: "#{(@dataset.title == @previous.title) ? 'same' : 'different'}"}
+                %td
+                  %span.metadata-label Title
+                %td
+                  = @dataset.title
+                %td
+                  = @previous.title
+              %tr.row{class: "#{(@dataset.description == @previous.description) ? 'same' : 'different'}"}
+                %td
+                  %span.metadata-label Description
+                %td
+                  = @dataset.description
+                %td
+                  = @previous.description
+              %tr.row{class: "#{(@dataset.depositor_name == @previous.depositor_name) ? 'same' : 'different'}"}
+                %td
+                  %span.metadata-label Depositor Name
+                %td
+                  = @dataset.depositor_name
+                %td
+                  = @previous.depositor_name
+              %tr.row{class: "#{(@dataset.depositor_email == @previous.depositor_email) ? 'same' : 'different'}"}
+                %td
+                  %span.metadata-label Depositor Email
+                %td
+                  = @dataset.depositor_email
+                %td
+                  = @previous.depositor_email
+              %tr.row{class: "#{(@dataset.corresponding_creator_name == @previous.corresponding_creator_name) ? 'same' : 'different'}"}
+                %td
+                  %span.metadata-label Corresponding Creator Name
+                %td
+                  = @dataset.corresponding_creator_name
+                %td
+                  = @previous.corresponding_creator_name
+              %tr.row{class: "#{(@dataset.corresponding_creator_email == @previous.corresponding_creator_email) ? 'same' : 'different'}"}
+                %td
+                  %span.metadata-label Corresponding Creator Email
+                %td
+                  = @dataset.corresponding_creator_email
+                %td
+                  = @previous.corresponding_creator_email
+              %tr.row{class: "#{(@dataset.license == @previous.license) ? 'same' : 'different'}"}
+                %td
+                  %span.metadata-label License
+                %td
+                  = @dataset.license
+                %td
+                  = @previous.license
+              %tr.row{class: "#{(@dataset.keywords == @previous.keywords) ? 'same' : 'different'}"}
+                %td
+                  %span.metadata-label Keywords
+                %td
+                  = @dataset.keywords
+                %td
+                  = @previous.keywords
+              %tr.row{class: "#{(@dataset.subject == @previous.subject) ? 'same' : 'different'}"}
+                %td
+                  %span.metadata-label Subject
+                %td
+                  = @dataset.subject
+                %td
+                  = @previous.subject
+              %tr.row.category
+                %td{colspan: "3"}
+                  %span.metadata-label Creators
+              -@previous.creators.each do |creator|
+                %tr.row
+                  %td
+                  %td
+                    %span.label.label-default
+                    = creator.display_info
+                  %td
+                    -current_creator = @dataset.creators.find_by(email: creator.email)
+                    -if current_creator.nil?
+                      %span.label.label-danger
+                        Not found in current version
+                    -else
+                      = current_creator.display_info
+              -@dataset.creators.each do |creator|
+                -if @previous.creators.find_by(email: creator.email).nil?
+                  %tr.row
+                    %td
+                    %td
+                      %span.label.label-danger
+                        Not found in previous version
+                    %td
+                      = creator.display_info
+              %tr.row.category
+                %td{colspan: "3"}
+                  %span.metadata-label Funders
+              -if @previous.funders.empty? && @dataset.funders.empty?
+                %tr.row
+                  %td
+                  %td{colspan: "2"}
+                    No funders found in current or previous version
+              -else
+                - @dataset.funders.each do |funder|
+                  - previous_funder = @previous.funders.find_by(name: funder.name)
+                  - if previous_funder.nil?
+                    %tr.row.different
+                    %td
+                    %td
+                      = funder.display_info
+                    %td
+                      New funder in current version
+                  -else
+                    %tr.row{class: "#{(funder.display_info == previous_funder.display_info) ? 'same' : 'different'}"}
+                    %td
+                    %td
+                      = funder.display_info
+                    %td
+                      = previous_funder.display_info
+                - @previous.funders.each do |previous_funder|
+                  - funder = @dataset.funders.find_by(name: previous_funder.name)
+                  - if funder.nil?
+                    %tr.row.different
+                    %td
+                    %td
+                      Funder removed in current version
+                    %td
+                      = previous_funder.display_info
+              %tr.row.category
+                %td{colspan: "3"}
+                  %span.metadata-label Relationships (non-version)
+              -if @previous.nonversion_related_materials.empty? && @dataset.nonversion_related_materials.empty?
+                %tr.row
+                  %td
+                  %td{colspan: "2"}
+                    No non-version relationships found in current or previous version
+              -else
+                -@dataset.nonversion_related_materials.each do |relationship|
+                  -if relationship.uri.present?
+                    -previous_relationship = @previous.related_materials.find_by(uri: relationship.uri)
+                  -elsif relationship.link.present?
+                    -previous_relationship = @previous.related_materials.find_by(link: relationship.link)
+                  -elsif relationship.citation.present?
+                    -previous_relationship = @previous.related_materials.find_by(citation: relationship.citation)
+                  -else previous_relationship = nil
+                  -if previous_relationship.nil?
+                    %tr.row.different
+                      %td
+                      %td
+                        = relationship.display_info
+                      %td
+                        New relationship in current version
+                  -else
+                    %tr.row{class: "#{relationship.display_info == previous_relationship.display_info ? 'same' : 'different'}"}
+                      %td
+                      %td
+                        = relationship.display_info
+                      %td
+                        = previous_relationship.display_info
+                -@previous.nonversion_related_materials.each do |previous_relationship|
+                  -relationship = @dataset.related_materials.find_by(uri: previous_relationship.uri)
+                  -if relationship.nil?
+                    %tr.row.different
+                      %td
+                      %td
+                        Relationship removed in current version
+                      %td
+                        = previous_relationship.display_info
+              %tr.row.category
+                %td{colspan: "3"}
+                  %span.metadata-label Files
+              -@previous.datafiles.each do |file|
+                -current_file = @dataset.datafiles.find_by(binary_name: file.binary_name)
+                %tr.row{class: "#{current_file.nil? ? 'different' : 'same'}"}
+                  %td
+                  %td
+                    = file.binary_name
+                  %td
+                    -if current_file.nil?
+                      Not in current version
+                    -else
+                      = current_file.binary_name
+              -@dataset.datafiles.each do |file|
+                -if @previous.datafiles.find_by(binary_name: file.binary_name).nil?
+                  %tr.row{class: "different"}
+                    %td
+                    %td
+                      = file.binary_name
+                    %td
+                      New file in current version
+    =form_tag("/datasets/#{@dataset.key}/suppression_action", id: "suppression_form") do |f|
+      %input(id="suppression_action" type="hidden" name="suppression_action" )
+      .panel-group(id="access" role="tablist" aria-multiselectable="true")
+        .panel.panel-default
+          .panel-heading(role="tab" id="accessHeading")
+            %h4(class="panel-title")
+              %a(role="button" data-toggle="collapse" data-parent="#access" href="#accessPanel" aria-expanded="false" aria-controls="accessPanel" class="accordion-toggle" )
+                %span( class="metadata-label" ) Version Control Buttons
+          .panel-collapse.collapse.in(id="accessPanel" role="tabpanel" aria-labelledby="accessHeading" )
+            .panel-body
+              %hr/
+              .row
+                .col-md-4
+                  -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+                    %button(id="suppressReviewBtn" type="button" class="btn btn-lg btn-success btn-block" onclick="unsuppressReview()" )
+                      Permit Pre-Publication Review
+                  -else
+                    %button(id="suppressReviewBtn" type="button" class="btn btn-lg btn-primary btn-block" onclick="suppressReview()" )
+                      Block Pre-Publication Review
+                .col-md-8
+                  %ul
+                    %li
+                      Change the hold state to permit or block pre-publication review.
+                      %br/
+                      All requested versions go through pre-publication review by the Curator team.
+                      This button reveals a "request pre-publication review" and permits related functionality
+                      for the depositor of this dataset.
+              %hr/
+              .row
+                .col-md-4
+                  -if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
+                    %button(id="publishOverideBtn" type="button" class="btn btn-lg btn-danger btn-block" onclick="version2draft()" )
+                      %span(class="glyphicon glyphicon-fire" )
+                      Permit Publish without Pre-Publication Review
+                  -elsif @dataset.publication_state == Databank::PublicationState::DRAFT
+                    %button(id="publishOverideBtn" type="button" class="btn btn-lg btn-primary btn-block" onclick="draft2version()" )
+                      Designate this Draft Dataset a Version (draft)
+                  -else
+                    %button(id="publishOverideBtn" type="button" class="btn btn-lg btn-default btn-block" disabled )
+                      Draft/Version toggle
+                    %em Publication state must be draft or version to use this button.
+                .col-md-8
+                  %ul
+                    %li
+                      Controls the publication state of this dataset.
+                      Can go from version draft to plain draft or from plain draft to version draft.
+                      Version drafts are
+                      %em required
+                      to go through pre-publication review.
+                    %li
+                      Designating a draft as a version draft will not copy metadata or do anything else to the dataset.
+              %hr/
+

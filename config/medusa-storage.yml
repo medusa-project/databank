@@ -1,0 +1,122 @@
+demo-rocky:
+  :storage:
+    - :name: draft
+      :type: s3
+      #      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      #      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
+    - :name: medusa
+      :type: s3
+      #      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      #      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:medusa_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:medusa_prefix] %>
+    - :name: globus_download
+      :type: s3
+      #      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      #      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:globus_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:globus_download_prefix] %>
+    - :name: globus_ingest
+      :type: s3
+      #      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      #      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
+    - :name: message
+      :type: s3
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: "messages/"
+    - :name: tmpfs
+      :type: filesystem
+      :path: /home/databank/mnt/databank-demo-main-rw
+
+production:
+  :storage:
+    - :name: draft
+      :type: s3
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
+      :copy_targets: ["globus_download"]
+    - :name: medusa
+      :type: s3
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:medusa_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:medusa_prefix] %>
+      :copy_targets: ["globus_download"]
+    - :name: globus_download
+      :type: s3
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:globus_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:globus_download_prefix] %>
+    - :name: globus_ingest
+      :type: s3
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
+      :copy_targets: ["draft"]
+    - :name: message
+      :type: s3
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: "messages/"
+    - :name: tmpfs
+      :type: filesystem
+      :path: /home/databank/mnt/databank-demo-main-rw
+
+prod-rocky:
+  :storage:
+    - :name: draft
+      :type: s3
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
+      :copy_targets: [ "globus_download" ]
+    - :name: medusa
+      :type: s3
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:medusa_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:medusa_prefix] %>
+      :copy_targets: [ "globus_download" ]
+    - :name: globus_download
+      :type: s3
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:globus_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:globus_download_prefix] %>
+    - :name: globus_ingest
+      :type: s3
+      :aws_access_key_id: <%= Rails.application.credentials[:aws][:access_key_id] %>
+      :aws_secret_access_key: <%= Rails.application.credentials[:aws][:secret_access_key] %>
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: <%= Rails.application.credentials[:storage][:draft_prefix] %>
+      :copy_targets: [ "draft" ]
+    - :name: message
+      :type: s3
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: "messages/"
+    - :name: tmpfs
+      :type: filesystem
+      :path: /home/databank/mnt/databank-demo-main-rw

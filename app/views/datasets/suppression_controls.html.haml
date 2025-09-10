@@ -1,0 +1,140 @@
+= render 'brief_record', dataset:@dataset
+=form_tag("/datasets/#{@dataset.key}/suppression_action", id: "suppression_form") do
+  %input(id="suppression_action" type="hidden" name="suppression_action" )
+.panel-group(id="access" role="tablist" aria-multiselectable="true")
+  .panel.panel-default
+    .panel-heading(role="tab" id="accessHeading")
+      %h4(class="panel-title")
+        %a(role="button" data-toggle="collapse" data-parent="#access" href="#accessPanel" aria-expanded="false" aria-controls="accessPanel" class="accordion-toggle collapsed" )
+          %span( class="metadata-label" ) Suppression Control Buttons
+    .panel-collapse.collapse.in(id="accessPanel" role="tabpanel" aria-labelledby="accessHeading" )
+      .panel-body
+        %h3
+          %span(class="far fa-balance-scale fa-2x" )
+          Review the
+          %a(href="/policies#preservation_review" )
+            Illinois Data Bank Preservation Review, Revision, Retention, and Withdrawal Procedures
+          document
+          %hr
+        .row
+
+          .col-md-4
+            -if @dataset.suppress_changelog?
+              %button(id="suppressChangelogBtn" type="btn" class="btn btn-lg btn-success btn-block" onclick="unsuppressChangelog()" )
+                UNSUPPRESS Changelog
+            -else
+              %button(id="suppressChangelogBtn" type="btn" class="btn btn-lg btn-success btn-block" onclick="suppressChangelog()" )
+                Suppress Changelog
+          .col-md-8
+            %ul
+              %li
+                Example Issue:
+                %br
+                Sensitive data was in metadata.  It has been changed, but the changelog contains sensitive data.
+        %hr
+        .row
+          .col-md-4
+            - case @dataset.visibility
+              -when 'Metadata and Files Published', 'Metadata and Files Publication Delayed (Embargoed)', 'Metadata Published, Files Publication Delayed (Embargoed)'
+                %button(id="tmpSuppressFilesBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="tmpSuppressFiles()")
+                  Temporarily Suppress File(s) Only
+              -when 'Metadata Published, Files Temporarily Suppressed'
+                %button(id="tmpSuppressFilesBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="unsuppress()")
+                  UNSUPPRESS File(s)
+              -when 'Metadata and Files Temporarily Suppressed', 'Metadata Published, Files Withdrawn', 'Withdrawn'
+                %button(disabled id="tmpSuppressFilesBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="tmpSuppressFiles()")
+                  Temporarily Suppress File(s) Only
+
+          .col-md-8
+            %ul
+              %li
+                Example Issue:
+                %br
+                A rare case, but our more common reaction to seeing something suspicious/funky deposited. We see that a file in a dataset appears to have included sensitive data. Suppress while waiting to hear from author about what it might be and steps to correct it.
+              %li Visibility: files are suppressed; metadata remains public
+              %li Tombstone: In IDB, display temporary message box instead of files in Files area of splash page, no EZID Tombstone
+              %li Retain Copy in IDB/Medusa:  Yes (anticipate re-release)
+              %li EZID Metadata: No Change
+              %li EZID DOI status: _status = public
+        %hr
+        .row
+          .col-md-4
+            - case @dataset.visibility
+              -when 'Metadata and Files Published', 'Metadata and Files Publication Delayed (Embargoed)', 'Metadata Published, Files Publication Delayed (Embargoed)', 'Metadata Published, Files Withdrawn', 'Metadata Published, Files Temporarily Suppressed'
+                %button(id="tmpSuppressMetadataBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="tmpSuppressMetadata()")
+                  Temporarily Suppress File(s) and Metadata
+              -when 'Metadata and Files Temporarily Suppressed'
+                %button(id="tmpSuppressMetadataBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="unsuppress()")
+                  UNSUPPRESS File(s) and Metadata
+              -when 'Withdrawn'
+                %button(disabled id="tmpSuppressMetadataBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="tmpSuppressMetadata()")
+                  Temporarily Suppress File(s) and Metadata
+
+          .col-md-8
+            %ul
+              %li
+                Example Issue:
+                %br
+                Generally this will be rare.
+                %ol
+                  %li appears to be malicious and we need to investigate, e.g. possibly as a step before permenant suppression
+                  %li appears to be something the author did not intend to publish yet
+              %li Visibility: both files and metadata are not public
+              %li Tombstone: In IDB, display temporary message box as only content on page, EZID Tombstone generated by _status
+              %li Retain Copy in IDB/Medusa:  Yes (anticipate re-release)
+              %li EZID Metadata: Replace all required DataCite values with "[redacted]" but retain original metadata to republish as appropriate
+              %li EZID DOI status: _status = unavailable [reason]
+
+        %hr
+          %h3
+            %span(class="far fa-fire fa-2x flame-icon" )
+            Do not select any of the following without team discussion.
+        %hr
+        .row
+          .col-md-4
+            -if [Databank::PublicationState::PermSuppress::METADATA, Databank::PublicationState::PermSuppress::FILE].include? @dataset.publication_state
+              %button(disabled id="permSuppressFilesBtn" type="button" class="btn btn-lg btn-danger btn-block" onclick="permSuppressFiles()")
+                Permanently Suppress File(s) Only
+            -else
+              %button(id="permSuppressFilesBtn" type="button" class="btn btn-lg btn-danger btn-block" onclick="permSuppressFiles()")
+                Permanently Suppress File(s) Only
+          .col-md-8
+            %ul
+              %li
+                Example Issues:
+                %ol
+                  %li Versioning to correct a Dataset with an inaccurate file
+                  %li Deprecated by new version of Dataset that corrects a sensitive data issue
+              %li Visibility: files are suppressed; metadata remains public
+              %li Tombstone: In IDB, display permanent message box instead of files in Files area of splash page, no EZID Tombstone
+              %li Retain Copy in IDB/Medusa: Yes (for provenance)
+              %li EZID Metadata: No Change
+              %li EZID DOI status: _status = public
+        %hr
+        .row
+          .col-md-4
+            -if @dataset.publication_state == Databank::PublicationState::PermSuppress::METADATA
+              %button(disabled id="permSuppressMetadataBtn" type="button" class="btn btn-lg btn-danger btn-block" onclick="permSuppressMetadata()")
+                Permanently Suppress File(s) and Metadata
+            -else
+              %button(id="permSuppressMetadataBtn" type="button" class="btn btn-lg btn-danger btn-block" onclick="permSuppressMetadata()")
+                Permanently Suppress File(s) and Metadata
+          .col-md-8
+            %ul
+              %li
+                Example Issue:
+                %br
+                high severity; should not have been published
+                %ul
+                  %li failure to meet the definition of research data as outlined in the Illinois Data Bank Accession Policy
+                  %li violations of copyright or publisher policy
+                  %li violations of contracts (e.g., Nondisclosure Agreement, Material Transfer Agreement, etc.)
+                  %li research misconduct (e.g., plagiarism, fabrication or falsification of data, etc.)
+                  %li legal requirements
+                  %li national security
+                  %li violation(s) of the University Code of Conduct
+              %li Visibility: both files and metadata are not public
+              %li Tombstone: In IDB, display permanent message box as only content on splash page, EZID Tombstone generated by _status
+              %li Retain Copy in IDB/Medusa:  Yes (for provenance)
+              %li EZID Metadata: Replace all required DataCite values with "[redacted]"
+              %li EZID DOI status: _status = unavailable [reason]

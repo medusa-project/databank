@@ -1,0 +1,21 @@
+=form_tag("/welcome/update_read_only_message") do
+  .field
+    .form-group
+      %label(class="control-label") Read Only Alert Custom Message Segment:
+      %br
+      %ul
+        %li A message saved here will be appended to the default alert message for file-only fallback mode.  This can be used to include instance-specific information, such as expected timeframe for resumption of normal operations.
+        %li The alert message will only show on deposit-relevant pages when the system is in read-only fallback mode.
+      %textarea(class="form-control" name="msg_middle" id="msg_middle")
+        -if SystemMessage.read_only_msg_middle.present?
+          ="#{SystemMessage.read_only_msg_middle}"
+  .actions
+    .row
+      .col-md-2.col-md-offset-10
+        %button(type="submit" class="btn btn-block btn-primary" ) Update
+        %button(type="button" class="btn btn-block btn-info" onclick="clear_msg_middle()" ) Clear Form
+      %p
+
+%strong Current alert (before Update):
+.alert.alert-alert
+  =SystemMessage.read_only_message.html_safe

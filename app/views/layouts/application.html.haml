@@ -1,0 +1,78 @@
+!!!
+%html{lang: "en"}
+  %head
+    -# Google Tag Manager
+    - if Rails.env.production? || Rails.env.prod_rocky?
+      :javascript
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
+        var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
+        j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+        f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-P5CT7JQ');
+    = javascript_include_tag :modernizr
+    %meta{:charset => "utf-8"}/
+    %meta{"http-equiv"=>"Content-Type", content: "text/html; charset=UTF-8"}/
+    %meta{ name: "viewport", :content => "width=device-width,initial-scale=1"}/
+    / Internet Explorer use the highest version available
+    %meta{:content => "IE=edge", "http-equiv" => "X-UA-Compatible"}
+    %link(rel="icon" href="https://cdn.brand.illinois.edu/favicon.ico")
+    %link(rel="apple-touch-icon" href="https://cdn.brand.illinois.edu/touch-icon-40x40.png")
+    %link(rel="apple-touch-icon" sizes="152x152" href="https://cdn.brand.illinois.edu/touch-icon-152x152.png")
+    %link(rel="apple-touch-icon" sizes="167x167" href="https://cdn.brand.illinois.edu/touch-icon-167x167.png")
+    %link(rel="apple-touch-icon" sizes="180x180" href="https://cdn.brand.illinois.edu/touch-icon-180x180.png")
+    %link(rel="dns-prefetch" href="//cdn.disability.illinois.edu")
+    %link(rel="stylesheet" href="https://cdn.toolkit.illinois.edu/3/toolkit.css")
+    %script(type="module" src="//cdn.toolkit.illinois.edu/3/toolkit.js")
+    %script{type: "module", async: true, src: "/idb-header.js"}
+    %script{type: "module", async: true, src: "https://cdn.brand.illinois.edu/components/il-footer.mjs"}
+    
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
+    = javascript_include_tag 'application', 'data-turbolinks-track' => true
+    = csrf_meta_tags
+
+    - if @dataset && @dataset.publication_state && @dataset.publication_state != Databank::PublicationState::DRAFT
+      %meta{:content => "#{@dataset.title}", :name => "citation_title"}/
+      %meta{:content => "#{@dataset.creator_list}", :name => "citation_author"}/
+      %meta{:content => "#{@dataset.publisher}", :name => "citation_publisher"}/
+      %meta{:content => "#{@dataset.publication_year}", :name => "citation_publication_date"}/
+      %meta{:content => "#{@dataset.identifier}", :name => "citation_doi"}/
+      %meta{:content => "en", :name => "citation_language"}/
+  %body(style="margin: 0; padding: 0;")
+    %ilw-page
+      -if Rails.env.production? || Rails.env.prod_rocky?
+        %noscript
+          %iframe{src: "https://www.googletagmanager.com/ns.html?id=GTM-P5CT7JQ",
+          height: "0",
+          width: "0",
+          style: "display:none;visibility:hidden"}
+      #page-top.idb-anchor
+      = render partial: 'shared/campus_header'
+      %main#main-content
+        - flash.each do |key, value|
+          %div{class: "alert alert-#{key}"}
+            = sanitize(value)
+        %div{id: "message"}
+        - if current_page?(root_path) || ( request.original_fullpath.include?('featured_researchers') && request.original_fullpath.include?('preview')  )
+          #welcome-image.hidden-xs
+            #welcome-overlay
+              %p The Illinois Data Bank is a public access repository for publishing research data from the University of Illinois Urbana-Champaign
+              %p
+                = link_to 'Learn how we meet trustworthy repository standards', "/guides#desirable_characteristics"
+        .container-fluid
+          = yield
+      = render partial: "shared/campus_footer"
+      - if @dataset
+        = javascript_tag do
+          window.dataset_key = "#{j @dataset.key}";
+          window.dataset_id = "#{j @dataset.id.to_s}";
+      - if @datafile
+        = javascript_tag do
+          window.datafile_web_id = "#{j @datafile.web_id}";
+      =javascript_tag do
+        window.rails_env = "#{Rails.env}";
+
+      - if current_user && current_user.role
+        = javascript_tag do
+          window.user_role = "#{j current_user.role}";
+      - else
+        = javascript_tag do
+          window.user_role = "#{j 'guest'}";

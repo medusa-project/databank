@@ -1,0 +1,34 @@
+%il-header(slot="header")
+  %a{slot: "site-name", href: "#{IDB_CONFIG[:root_url_text]}"} Illinois Data Bank
+  %nav{slot: "links", "aria-label": "Utility"}
+    %ul
+      -if current_user
+        %li
+          %a{href: "/datasets?editor=#{current_user.username}"}
+            %p.navitem
+              = current_user.name
+        %li
+          %a{href: "/logout"}
+            %p.navitem
+              Log out
+      -else 
+        %li
+          %a{href: "/"}
+            %p.navitem
+              Welcome
+        %li
+          %a{href: "/login"}
+            %p.navitem
+              Log in
+  %il-header-nav{slot: "navigation"}
+    %ul
+      %li
+        %a#deposit_link{href: "/datasets/pre_deposit"} Deposit Dataset
+      %li
+        %a{href: "/datasets"} Find Data
+      %li
+        %a{href: "/policies"} Policies
+      %li
+        %a{href: "/guides"} Guides
+      %li
+        %a{href: "/contact"} Contact Us

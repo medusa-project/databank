@@ -1,0 +1,20 @@
+# used by docker-local-test.sh
+
+version: "3.7"
+services:
+  databank-local-test:
+    build:
+      context: .
+      dockerfile: docker/databank/Dockerfile-local-test
+    depends_on: # docker-compose will NOT actually wait for these to start, hence the `sleep` in the command
+      - sunspot
+      - postgres
+      - rabbitmq
+      - memcached
+      - sqs-mock
+      - minio
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    command: bash -c 'sleep 40 && RAILS_ENV=test bundle exec rails db:drop db:create db:schema:load --trace && curl "http://sunspot:8983/solr/admin/cores?action=CREATE&name=test&instanceDir=test" && RAILS_ENV=test bundle exec rails minio:ensure_local_buckets && RAILS_ENV=test bundle exec rails db:fixtures:load && RAILS_ENV=test bundle exec rails testing:store_seed_datafiles && RAILS_ENV=test bundle exec rails sunspot:reindex && bin/delayed_job start && RAILS_ENV=test bundle exec rails server -b 0.0.0.0'

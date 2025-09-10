@@ -1,0 +1,110 @@
+:admin:
+  :netids: <%= Rails.application.credentials[:admin][:netids] %>
+  :tech_mail_list: <%= Rails.application.credentials[:admin][:tech_mail_list] %>
+  :materials_report_list: <%= Rails.application.credentials[:admin][:materials_report_list] %>
+  :localpass: <%= Rails.application.credentials[:admin][:localpass] %>
+  :contact_email: <%= Rails.application.credentials[:admin][:contact_email] %>
+  :temp_contact_email: <%= Rails.application.credentials[:admin][:temp_contact_email] %>
+
+:aws:
+  :s3_mode: <%= Rails.application.credentials[:aws][:s3_mode] %>
+  :queue_mode: <%= Rails.application.credentials[:aws][:queue_mode] %>
+  :region: us-east-2
+
+:datacite:
+  :endpoint: <%= Rails.application.credentials[:datacite][:endpoint] %>
+  :username: <%= Rails.application.credentials[:datacite][:username] %>
+  :password: <%= Rails.application.credentials[:datacite][:password] %>
+  :shoulder: <%= Rails.application.credentials[:datacite][:shoulder] %>
+  :url_base: <%= Rails.application.credentials[:datacite][:url_base] %>
+
+:datacite_test:
+  :endpoint: <%= Rails.application.credentials[:datacite_test][:endpoint] %>
+  :username: <%= Rails.application.credentials[:datacite_test][:username] %>
+  :password: <%= Rails.application.credentials[:datacite_test][:password] %>
+  :shoulder: <%= Rails.application.credentials[:datacite_test][:shoulder] %>
+  :url_base: <%= Rails.application.credentials[:datacite_test][:url_base] %>
+
+:delayed_job_pid_dir: <%= Rails.application.credentials[:delayed_job_pid_dir] %>
+
+downloader:
+  ssl: <%= Rails.application.credentials[:downloader][:ssl] %>
+  host: <%= Rails.application.credentials[:downloader][:host] %>
+  port: 8080
+  realm: <%= Rails.application.credentials[:downloader][:realm] %>
+  user: <%= Rails.application.credentials[:downloader][:user] %>
+  password: <%= Rails.application.credentials[:downloader][:password] %>
+  endpoint: <%= Rails.application.credentials[:downloader][:endpoint] %>
+
+:extractor:
+  :cluster: <%= Rails.application.credentials[:extractor][:cluster] %>
+  :subnets: <%= Rails.application.credentials[:extractor][:subnets] %>
+  :security_groups: <%= Rails.application.credentials[:extractor][:security_groups] %>
+  :container_name: <%= Rails.application.credentials[:extractor][:container_name] %>
+  :platform_version: <%= Rails.application.credentials[:extractor][:platform_version] %>
+  :task_definition: <%= Rails.application.credentials[:extractor][:task_definition] %>
+
+:globus_only_gb: <%= Rails.application.credentials[:globus_only_gb] %>
+
+:iiif:
+  :draft_base: <%= Rails.application.credentials[:iiif][:draft_base] %>
+  :medusa_base: <%= Rails.application.credentials[:iiif][:medusa_base] %>
+  :preview_root: <%= Rails.application.credentials[:iiif][:preview_root] %>
+
+:illinois_experts:
+  :key: <%= Rails.application.credentials[:illinois_experts][:key] %>
+  :endpoint: <%= Rails.application.credentials[:illinois_experts][:endpoint] %>
+  :org_id: <%= Rails.application.credentials[:illinois_experts][:org_id] %>
+  :publisher_id: <%= Rails.application.credentials[:illinois_experts][:publisher_id] %>
+  :illinois_external_org_id: <%= Rails.application.credentials[:illinois_experts][:illinois_external_org_id] %>
+
+:key_prefix: <%= Rails.application.credentials[:key_prefix] %>
+
+medusa:
+  outgoing_queue: <%= Rails.application.credentials[:medusa][:outgoing_queue] %>
+  incoming_queue: <%= Rails.application.credentials[:medusa][:incoming_queue] %>
+  medusa_path_root: <%= Rails.application.credentials[:medusa][:medusa_path_root] %>
+  file_group_url: <%= Rails.application.credentials[:medusa][:file_group_url] %>
+  datasets_url_base: <%= Rails.application.credentials[:medusa][:datasets_url_base] %>
+
+medusa_info:
+  ssl: <%= Rails.application.credentials[:medusa_info][:ssl] %>
+  host: <%= Rails.application.credentials[:medusa_info][:host] %>
+  port: 8080
+  user: <%= Rails.application.credentials[:medusa_info][:user] %>
+  password: <%= Rails.application.credentials[:medusa_info][:password] %>
+
+:orcid:
+  :endpoint_base: <%= Rails.application.credentials[:orcid][:endpoint_base] %>
+
+:queues:
+  :databank_to_medusa_url: <%= Rails.application.credentials[:queues][:databank_to_medusa_url] %>
+  :medusa_to_databank_url: <%= Rails.application.credentials[:queues][:medusa_to_databank_url] %>
+  :extractor_to_databank_url: <%= Rails.application.credentials[:queues][:extractor_to_databank_url] %>
+
+:rabbit_or_sqs: <%= Rails.application.credentials[:rabbit_or_sqs] %>
+
+:read_only_msg_path:  <%= Rails.root.join('public', 'read_only_msg_plus.txt') %>
+
+:reserve_doi_netid: <%= Rails.application.credentials[:reserve_doi_netid] %>
+:reserve_doi_role: <%= Rails.application.credentials[:reserve_doi_role] %>
+:root_url_text: <%= Rails.application.credentials[:root_url_text] %>
+
+:smtp:
+  :username: <%= Rails.application.credentials[:smtp][:username] %>
+  :password: <%= Rails.application.credentials[:smtp][:password] %>
+
+:storage_tmpdir: <%= Rails.application.credentials[:storage][:tmp_path] %>
+
+:system_user_name: <%= Rails.application.credentials[:system_user_name] %>
+:system_user_email: <%= Rails.application.credentials[:system_user_email] %>
+
+:tmpdir: <%= Rails.application.credentials[:tmpdir] %>
+
+
+
+
+
+
+
+:help_transition_filepath: <%= Rails.root.join('config', 'serializations', 'help_transition.txt') %>

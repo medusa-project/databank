@@ -1,0 +1,336 @@
+doc1:
+  id: 3498
+  description: nil
+  binary: nil
+  web_id: "eetmg"
+  dataset_id: 1
+  created_at: Fri, 23 Jun 2023 13:46:30.472532000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:30.472532000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "geometry_topics.docx"
+  binary_size: 14285
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "medusa"
+  storage_prefix: nil
+  storage_key: "DOI-10-70114-testidb-5920542_v1/dataset_files/geometry_topics.doc"
+  mime_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  task_id: nil
+doc2:
+  id: 3502
+  description: nil
+  binary: nil
+  web_id: "zw1yp"
+  dataset_id: 2
+  created_at: Fri, 23 Jun 2023 13:46:31.021330000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:31.021330000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "polyatonomy.docx"
+  binary_size: 15046
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "medusa"
+  storage_prefix: nil
+  storage_key: "11e7a1002f1221cbaeca8e6d1c4c7b1f"
+  mime_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  task_id: nil
+image1:
+  id: 3494
+  description: nil
+  binary: nil
+  web_id: "vdx0k"
+  dataset_id: 3
+  created_at: Fri, 23 Jun 2023 13:46:30.179458000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:30.179458000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "escher_lego.png"
+  binary_size: 718560
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "medusa"
+  storage_prefix: nil
+  storage_key: "661d48445cce654a6b3865d9041553cb"
+  mime_type: "image/png"
+  task_id: nil
+image2:
+  id: 3495
+  description: nil
+  binary: nil
+  web_id: "zm239"
+  dataset_id: 4
+  created_at: Fri, 23 Jun 2023 13:46:30.257281000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:30.257281000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "gull.jpg"
+  binary_size: 31181
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "medusa"
+  storage_prefix: nil
+  storage_key: "96af09dedc12a486a82993244095fdb4"
+  mime_type: "image/jpeg"
+  task_id: nil
+image3:
+  id: 3500
+  description: nil
+  binary: nil
+  web_id: "y7jq0"
+  dataset_id: 5
+  created_at: Fri, 23 Jun 2023 13:46:30.618355000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:30.618355000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "otterlock.jpg"
+  binary_size: 95466
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "draft"
+  storage_prefix: nil
+  storage_key: "a0cc39f084fd2dcb55f895e54b2bd653"
+  mime_type: "image/jpeg"
+  task_id: nil
+image5:
+  id: 3496
+  description: nil
+  binary: nil
+  web_id: "mwzvx"
+  dataset_id: 6
+  created_at: Fri, 23 Jun 2023 13:46:30.308809000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:30.308809000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "crane.jpg"
+  binary_size: 76868
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "draft"
+  storage_prefix: nil
+  storage_key: "b6ddf335a047d7248d2b324a6782e9ee"
+  mime_type: "image/jpeg"
+  task_id: nil
+image6:
+  id: 3503
+  description: nil
+  binary: nil
+  web_id: "he0gb"
+  dataset_id: 1
+  created_at: Fri, 23 Jun 2023 13:46:31.051893000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:31.051893000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "pooh.jpg"
+  binary_size: 135464
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "medusa"
+  storage_prefix: nil
+  storage_key: "6dbd4623385ce9307d3131c5e97ea123"
+  mime_type: "image/jpeg"
+  task_id: nil
+pdf1:
+  id: 3501
+  description: nil
+  binary: nil
+  web_id: "5amzg"
+  dataset_id: 2
+  created_at: Fri, 23 Jun 2023 13:46:30.663340000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:30.663340000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "pdf.pdf"
+  binary_size: 7148
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "medusa"
+  storage_prefix: nil
+  storage_key: "dc6a957da2e34d9188465895e538fdf2"
+  mime_type: "application/pdf"
+  task_id: nil
+script1:
+  id: 3499
+  description: nil
+  binary: nil
+  web_id: "n27xq"
+  dataset_id: 3
+  created_at: Fri, 23 Jun 2023 13:46:30.507513000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:30.507513000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "hello.sh"
+  binary_size: 36
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "medusa"
+  storage_prefix: nil
+  storage_key: "506870582e24246e3f268f6a5ad2c644"
+  mime_type: "text/x-sh"
+  task_id: nil
+script2:
+  id: 3497
+  description: nil
+  binary: nil
+  web_id: "8346n"
+  dataset_id: 4
+  created_at: Fri, 23 Jun 2023 13:46:30.379418000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:30.379418000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "hello.rb"
+  binary_size: 12
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "medusa"
+  storage_prefix: nil
+  storage_key: "21c1a7a17971d91febcc35033e0aac1c"
+  mime_type: "text/x-ruby-script"
+  task_id: nil
+text1:
+  id: 3504
+  description: nil
+  binary: nil
+  web_id: "hn55v"
+  dataset_id: 5
+  created_at: Fri, 23 Jun 2023 13:46:31.383301000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:31.383301000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "sample.txt"
+  binary_size: 16
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "draft"
+  storage_prefix: nil
+  storage_key: "7d41357d5f2f232a22ab1cad67c6f341"
+  mime_type: "text/plain"
+  task_id: nil
+image1b:
+  id: 9494
+  description: nil
+  binary: nil
+  web_id: "vdx0b"
+  dataset_id: 13
+  created_at: Fri, 23 Jun 2023 13:46:30.179458000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:30.179458000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "escher_lego.png"
+  binary_size: 718560
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "medusa"
+  storage_prefix: nil
+  storage_key: "661d48445cce654a6b3865d9041553bb"
+  mime_type: "image/png"
+  task_id: nil
+text1b:
+  id: 9504
+  description: nil
+  binary: nil
+  web_id: "hn55b"
+  dataset_id: 6
+  created_at: Fri, 23 Jun 2023 13:46:31.383301000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:31.383301000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "sample.txt"
+  binary_size: 16
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "draft"
+  storage_prefix: nil
+  storage_key: "7d41357d5f2f232a22ab1cad67c6f34b"
+  mime_type: "text/plain"
+  task_id: nil
+text_object:
+  id: 9999
+  description: nil
+  binary: nil
+  web_id: "testf"
+  dataset_id: 6
+  created_at: Fri, 23 Jun 2023 13:46:31.383302000 UTC +00:00
+  updated_at: Fri, 23 Jun 2023 13:46:31.383302000 UTC +00:00
+  job_id: nil
+  box_filename: nil
+  box_filesize_display: nil
+  medusa_id: nil
+  medusa_path: nil
+  binary_name: "sample_file.txt"
+  binary_size: 16
+  upload_file_size: nil
+  upload_status: nil
+  peek_type: "none"
+  peek_text: nil
+  storage_root: "draft"
+  storage_prefix: nil
+  storage_key: "testf/sample_file.txt"
+  mime_type: "text/plain"
+  task_id: nil

@@ -1,0 +1,92 @@
+.record
+
+  -if(can? :manage, dataset)
+    .curator-only
+      .label.label-default
+        ="updated: #{dataset.updated_datetime.to_date.iso8601}"
+      &nbsp;
+      .label.label-default
+        ="created: #{dataset.created_at.to_date.iso8601}"
+      &nbsp;
+      -if dataset.ingest_datetime
+        .label.label-default
+          ="ingested: #{dataset.ingest_datetime.to_date.iso8601}"
+      -else
+        .label.label-default
+          ="ingested: N/A"
+      &nbsp;
+      -if dataset.release_datetime
+        .label.label-default
+          ="released: #{dataset.release_datetime.to_date.iso8601}"
+      -else
+        .label.label-default
+          ="released: N/A"
+      &nbsp;
+      .label.label-default
+        =Dataset.visibility_name_from_code(dataset.visibility_code)
+      &nbsp;
+      .label.label-default
+        -if dataset.subject && dataset.subject != ""
+          =dataset.subject
+        -else
+          Uncategorized
+      &nbsp;
+      .label.label-default
+        = pluralize(dataset.notes.count, 'note')
+      &nbsp;
+  - if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+    .label.label-danger
+      version candidate under review
+    &nbsp;
+  - elsif dataset.in_pre_publication_review?
+    .label.label-danger
+      pre-publication review
+    &nbsp;
+  - elsif dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
+    .label.label-success
+      version candidate eligible to be submitted for pre-publication review
+    &nbsp;
+  -elsif !dataset.hold_state.nil? && dataset.hold_state != 'none'
+    .label.label-danger
+      suppressed by curator
+    &nbsp;
+  -if(can? :edit, dataset) && dataset.share_code && dataset.publication_state != Databank::PublicationState::RELEASED
+    .label.label-success
+      has sharing link
+    &nbsp;
+  -if(can? :edit, dataset) && dataset.publication_state == Databank::PublicationState::DRAFT
+    .label.label-default
+      draft
+    &nbsp;
+  -if(can? :read, dataset) && dataset.release_date && dataset.metadata_public?
+    .label.label-primary
+      -if dataset.release_date > Date.current()
+        planned publication date:
+      -elsif dataset.publication_state == Databank::PublicationState::RELEASED
+        published:
+      -else
+        release date:
+      =dataset.release_date.iso8601
+    &nbsp;
+
+  .record_citation
+    %a(href="/datasets/#{dataset.key}" )
+      %strong
+        =dataset.plain_text_citation
+
+  -if dataset.description && dataset.description != ""
+    %em
+      .more
+        =dataset.description
+
+  -if dataset.keywords && dataset.keywords != ""
+    .keyword_display
+      keywords:
+      %em
+        =dataset.keywords
+
+  -if(can? :manage, dataset)
+    .depositor_display
+      %span(class="metadata-label" ) Depositor:
+      = "#{dataset.depositor_name},"
+      = dataset.depositor_email

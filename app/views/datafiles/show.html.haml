@@ -1,0 +1,33 @@
+%h2
+  File For
+  =link_to "#{@dataset.title}", dataset_path(@dataset.key)
+  |
+  =link_to "#{@dataset.key}", dataset_path(@dataset.key)
+
+
+%hr
+
+.row
+  .col-md-4
+    = @datafile.bytestream_name
+  .col-md-2
+    = number_to_human_size(@datafile.bytestream_size)
+  .col-md-2
+    %a.btn.btn-success.btn-block.idb(href="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@datafile.web_id}/refresh_preview")
+      %span(class="glyphicon glyphicon-eye-open" )
+      &nbsp;
+      %span(class="glyphicon glyphicon-refresh" )
+      Refresh Preview
+  .col-md-2
+    %a.btn.btn-primary.btn-block.idb(href="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@datafile.web_id}/download")
+      %span(class="glyphicon glyphicon-download" )
+      Download
+  .col-md-2
+    =link_to datafile_path(@datafile.web_id), :method => :delete, :data => { :confirm => 'Are you sure?' }, :class => "btn btn-danger btn-block idb" do
+      %span(class="glyphicon glyphicon-trash" )
+      Delete
+
+-unless @datafile.extractor_task.nil?
+  =render "extractor_tasks/brief_record", extractor_task:@datafile.extractor_task
+=debug(@datafile)
+

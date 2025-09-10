@@ -1,0 +1,14 @@
+%p#notice= notice
+
+%p
+  %b Dataset key:
+  = @review_request.dataset_key
+%p
+  %b Requested at:
+  = @review_request.requested_at
+
+= link_to 'Edit', edit_review_request_path(@review_request)
+\|
+= link_to 'List', review_requests_path
+\|
+=link_to 'Dataset', "/datasets/#{@review_request.dataset_key}"

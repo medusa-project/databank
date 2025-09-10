@@ -1,0 +1,12 @@
+.alert.alert-notice
+  %p Thank you! A curator will contact you with any suggestions and/or concerns regarding your dataset, in 1-2 days.
+
+  %p
+    Here is the reserved DOI and full citation for your dataset:
+    %br
+    = @dataset.plain_text_citation
+
+  %p
+    To learn more about curation procedures:
+    %a(href="#{IDB_CONFIG[:root_url_text]}/guides#review")
+      ="#{IDB_CONFIG[:root_url_text]}/guides#review"

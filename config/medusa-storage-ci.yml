@@ -1,0 +1,53 @@
+:local_buckets:
+  - databank-local-main
+  - medusa-local-main
+  - globus-local-download
+:storage:
+  - :name: draft
+    :type: s3
+    :endpoint: "http://minio:9000"
+    :aws_access_key_id: "minioadmin"
+    :aws_secret_access_key: "minioadmin"
+    :force_path_style: true
+    :region: us-east-2
+    :bucket: databank-local-main
+    :prefix: 'uploads/'
+  - :name: medusa
+    :type: s3
+    :endpoint: "http://minio:9000"
+    :aws_access_key_id: "minioadmin"
+    :aws_secret_access_key: "minioadmin"
+    :force_path_style: true
+    :region: us-east-2
+    :bucket: medusa-local-main
+    :prefix: '156/182/'
+  - :name: globus_download
+    :type: s3
+    :endpoint: "http://minio:9000"
+    :aws_access_key_id: "minioadmin"
+    :aws_secret_access_key: "minioadmin"
+    :force_path_style: true
+    :region: us-east-2
+    :bucket: globus-local-download
+    :prefix: 'test/download/'
+  - :name: globus_ingest
+    :type: s3
+    :endpoint: "http://minio:9000"
+    :aws_access_key_id: "minioadmin"
+    :aws_secret_access_key: "minioadmin"
+    :force_path_style: true
+    :region: us-east-2
+    :bucket: databank-local-main
+    :prefix: 'uploads/'
+  - :name: message
+    :type: s3
+    :endpoint: "http://minio:9000"
+    :aws_access_key_id: "minioadmin"
+    :aws_secret_access_key: "minioadmin"
+    :force_path_style: true
+    :region: us-east-2
+    :bucket: databank-local-main
+    :prefix: "messages/"
+  - :name: tmpfs
+    :type: filesystem
+    :path: /tmp

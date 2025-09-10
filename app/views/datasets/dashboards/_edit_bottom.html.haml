@@ -1,0 +1,22 @@
+- if ((can? :update, @dataset) && (Databank::Application.file_mode == Databank::FileMode::WRITE_READ))
+  .row
+    .col-md-3.col-md-offset-9
+      - if [Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)
+        %button(type="button" class="btn btn-primary update save-button btn-block" id="update-save-button")
+          Save & Continue
+          %span(class="glyphicon glyphicon-triangle-right" )
+        %button(type="button" class="btn btn-info update save-button btn-block" id="save-exit-button")
+          %span(class="glyphicon glyphicon-pushpin" )
+          Save & Exit
+        = link_to(dataset_path(@dataset.key), method: :delete, data: {confirm: 'Are you sure?'}, :class => "btn idb btn-danger btn-block") do
+          %span(class="glyphicon glyphicon-trash" )
+          Delete
+      -else
+        %div(id="validation-warning")
+        %br
+        %button(type="button" id="update-confirm" class="btn btn-primary btn-block" onclick="confirm_update()" )
+          Confirm
+          %span(class="glyphicon glyphicon-triangle-right" )
+        %button(type="button" class="btn btn-danger btn-block" name="cancel" onclick='window.location = "/datasets?q=&depositors%5B%5D=#{current_user.name}"')
+          %span(class="glyphicon glyphicon-remove" )
+          Cancel

@@ -1,0 +1,99 @@
+%p Does this dataset support any articles, presentations, or theses (current or forthcoming)?  Was any code used in processing this dataset, or is this dataset designed to be processable by specific code?  Are there other datasets produced by the same project? To support discovery of relationships between this dataset and other resources (published in Illinois Data Bank or elsewhere), provide links (e.g., DOI, Handle, ARK, URL) to and/or citations for related resources.
+
+%input(type="hidden" name="material_index_max" id="material_index_max" value="#{@dataset.related_materials.count.to_i}" )
+  %table(id="material_table" class="table table-striped")
+    %thead
+      %tr(class="row" )
+        %th(colspan="2" class="col-md-4")
+          Related Resource Type
+        %th(class="col-md-3")
+          URL to Resource
+        %th(class="col-md-4" )
+          Citation
+        %th(class="col-md-1")
+    %tbody
+      - @dataset.related_materials.each_with_index do |material, i|
+        = f.fields_for :related_materials, material do |ff|
+          %tr(class="row item" id="material_index_#{i}" )
+            %td
+              =ff.hidden_field :_destroy, value: false
+              =ff.select :selected_type, options_for_select([Databank::MaterialType::ARTICLE, Databank::MaterialType::CODE, Databank::MaterialType::DATASET, Databank::MaterialType::PRESENTATION, Databank::MaterialType::THESIS, ["Other:",Databank::MaterialType::OTHER]], material.selected_type), {prompt: "Select..."}, {class: "form-control dataset", onchange: "handleMaterialChange(#{i})"}
+            %td(id="material_cell_#{i}")
+              -if material.selected_type == Databank::MaterialType::OTHER
+                =ff.text_field :material_type, {class: "form-control dataset material-text"}
+              -else
+                =ff.hidden_field :material_type
+            %td
+              =ff.text_field :link, {class: "form-control dataset", placeholder: "[ URL to resource, e.g:   http://hdl.handle.net/2142/46427 ]"}
+            %td
+              =ff.text_area :citation, {rows: 2, class: "form-control dataset", placeholder: %Q[[ related resource citation, e.g.:  Author(s). "Title of Article." Title of Periodical Date: pages. Medium of publication.  identifier ]]}
+            %td
+
+
+          - if (can? :manage, @dataset)
+            %tr(class="row datacite-relationship curator-only" id="datacite_material_index_#{i}" )
+
+              %td
+              %td
+                %h3
+                  This dataset...
+              %td
+
+                .form-group
+                  =ff.hidden_field :datacite_list
+                  - dataciteArr = nil
+                  - if material.datacite_list && material.datacite_list != ''
+
+                    -dataciteArr = material.datacite_list.split(',')
+                    -dataciteArr.map! {|item| item.strip}
+
+                  - if dataciteArr && dataciteArr.include?(Databank::Relationship::SUPPLEMENT_TO)
+                    %input(type="checkbox" name="datacite_relation" value="#{Databank::Relationship::SUPPLEMENT_TO}" class="material_checkbox_#{i}" onchange="handle_relationship_box(#{i})" checked )
+                      = Databank::Relationship::SUPPLEMENT_TO
+                  - else
+                    %input(type="checkbox" name="datacite_relation" value="#{Databank::Relationship::SUPPLEMENT_TO}" class="material_checkbox_#{i}" onchange="handle_relationship_box(#{i})" )
+                      = Databank::Relationship::SUPPLEMENT_TO
+                  %br
+                  - if dataciteArr && dataciteArr.include?(Databank::Relationship::SUPPLEMENTED_BY)
+                    %input(type="checkbox" name="datacite_relation" value="#{Databank::Relationship::SUPPLEMENTED_BY}" class="material_checkbox_#{i}" onchange="handle_relationship_box(#{i})" checked )
+                      = Databank::Relationship::SUPPLEMENTED_BY
+                  - else
+                    %input(type="checkbox" name="datacite_relation" value="#{Databank::Relationship::SUPPLEMENTED_BY}" class="material_checkbox_#{i}" onchange="handle_relationship_box(#{i})" )
+                      = Databank::Relationship::SUPPLEMENTED_BY
+                  %br
+                  - if dataciteArr  && dataciteArr.include?(Databank::Relationship::CITED_BY)
+                    %input(type="checkbox" name="datacite_relation" value="#{Databank::Relationship::CITED_BY}" class="material_checkbox_#{i}" onchange="handle_relationship_box(#{i})" checked )
+                      = Databank::Relationship::CITED_BY
+                  - else
+                    %input(type="checkbox" name="datacite_relation" value="#{Databank::Relationship::CITED_BY}" class="material_checkbox_#{i}" onchange="handle_relationship_box(#{i})" )
+                      = Databank::Relationship::CITED_BY
+
+                  %br
+                  - if dataciteArr  && dataciteArr.include?(Databank::Relationship::PREVIOUS_VERSION_OF)
+                    %input(type="checkbox" name="datacite_relation" value="#{Databank::Relationship::PREVIOUS_VERSION_OF}" class="material_checkbox_#{i}" onchange="handle_relationship_box(#{i})" checked )
+                      = Databank::Relationship::PREVIOUS_VERSION_OF
+                  - else
+                    %input(type="checkbox" name="datacite_relation" value="#{Databank::Relationship::PREVIOUS_VERSION_OF}" class="material_checkbox_#{i}" onchange="handle_relationship_box(#{i})" )
+                      = Databank::Relationship::PREVIOUS_VERSION_OF
+                  %br
+                  - if dataciteArr  && dataciteArr.include?(Databank::Relationship::NEW_VERSION_OF)
+                    %input(type="checkbox" name="datacite_relation" value="#{Databank::Relationship::NEW_VERSION_OF}" class="material_checkbox_#{i}" onchange="handle_relationship_box(#{i})" checked )
+                      = Databank::Relationship::NEW_VERSION_OF
+                  - else
+                    %input(type="checkbox" name="datacite_relation" value="#{Databank::Relationship::NEW_VERSION_OF}" class="material_checkbox_#{i}" onchange="handle_relationship_box(#{i})")
+                      = Databank::Relationship::NEW_VERSION_OF
+              %td
+
+                .form-group
+                  =ff.select :uri_type, options_for_select(["ARK","arXiv","bibcode","DOI","EAN13","EISSN","Handle","ISBN","ISSN","ISTC","LISSN","LSID","PMID","PURL","UPC","URL","URN"], material.uri_type), {prompt: "Select Type"}, {class: "form-control dataset"}
+                .form-group
+                  =ff.text_field :uri, {placeholder: "URI: For a DIO, the part that starts with 10. ", class: "form-control dataset"}
+                .form-group
+                  =ff.text_field :note, {placeholder: "brief additional explanation ", class: "form-control dataset"}
+
+              -# %td
+              -#   feature
+              -#   %br
+              -#   =ff.check_box :feature
+  %table(id="deleted_material_table")
+    %tbody

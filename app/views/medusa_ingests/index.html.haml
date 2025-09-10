@@ -1,0 +1,4 @@
+.pull-right
+  =button_to("Remove drafts if in Medusa", {action: "remove_draft_if_in_medusa", method: :post}, {class: "btn btn-primary"})
+- @medusa_ingests.each do |medusa_ingest|
+  = render 'brief_record', medusa_ingest: medusa_ingest

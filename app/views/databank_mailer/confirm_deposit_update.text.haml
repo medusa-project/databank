@@ -1,0 +1,9 @@
+The following dataset has been successfully updated in the Illinois Data Bank:
+= @dataset.plain_text_citation
+Here is some information about the deposited dataset:
+DataCite DOI: #{@dataset.identifier}
+Release date: #{@dataset.release_date}
+Depositor: #{@dataset.depositor_name}
+Contact person: #{@dataset.corresponding_creator_name}
+
+\#{render partial: "sigblock_txt"}

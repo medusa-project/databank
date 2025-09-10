@@ -1,0 +1,25 @@
+%h1 Listing extractor_errors
+
+%table
+  %thead
+    %tr
+      %th Extractor response
+      %th Error type
+      %th Report
+      %th
+      %th
+      %th
+
+  %tbody
+    - @extractor_errors.each do |extractor_error|
+      %tr
+        %td= extractor_error.extractor_response_id
+        %td= extractor_error.error_type
+        %td= extractor_error.report
+        %td= link_to 'Show', extractor_error
+        %td= link_to 'Edit', edit_extractor_error_path(extractor_error)
+        %td= link_to 'Destroy', extractor_error, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Extractor error', new_extractor_error_path

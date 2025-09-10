@@ -1,0 +1,122 @@
+:smtp:
+  :username: username
+  :password: password
+:orcid:
+  :endpoint_base: https://pub.orcid.org/v3.0/
+:primary_db:
+  :username: postgres
+  :password: postgres
+  :host: postgres
+:aws:
+  :s3_mode: local
+  :region: us-east-2
+  :queue_mode: local
+  :access_key_id: "minioadmin"
+  :secret_access_key: "minioadmin"
+:storage:
+  :draft_type: s3
+  :draft_path: na
+  :draft_bucket: databank-local-main
+  :draft_prefix: 'uploads/'
+  :medusa_type: s3
+  :medusa_path: na
+  :medusa_prefix: '156/182/'
+  :medusa_bucket: medusa-local-main
+  :tmp_path: /tmp
+:rabbit_or_sqs: sqs
+:queues:
+  :databank_to_medusa_url: http://localhost:9324/queue/databank-to-medusa
+  :medusa_to_databank_url: http://localhost:9324/queue/medusa-to-databank
+  :tasks_to_databank_url: http://localhost:9324/queue/extractor-to-databank
+:extractor:
+  :cluster:
+  :subnets:
+  :security_groups:
+  :container_name:
+  :platform_version:
+  :task_definition:
+:admin:
+  :netids: "admin"
+  :tech_mail_list: "databank_admin@mailinator.com"
+  :materials_report_list: "databank_admin@mailinator.com"
+  :localpass: localpass
+  :contact_email: "databank_admin@mailinator.com"
+  :temp_contact_email: "databank_admin@mailinator.com"
+:datacite:
+  :endpoint: endpoint
+  :username: username
+  :password: password
+  :shoulder: 10.shoulder/
+  :url_base: "https://www.example.org"
+  :fabrica_url: "https://www.example.org/"
+:datacite_test:
+  :endpoint: endpoint
+  :username: username
+  :password: password
+  :shoulder: 10.shoulder/
+  :url_base: "https://www.example.org"
+:illinois_experts:
+  :key: key
+  :endpoint: https://endpoint.example.org
+  :org_id: org_id
+  :publisher_id: publisher_id
+  :illinois_external_org_id: external_org_id
+:globus_only_gb: 2
+:delayed_job_pid_dir: /home/databank/shared/tmp/pids
+:tasks_url: deprecated
+:key_prefix: TEST
+:root_url_text: "http://localhost:3000"
+:tmpdir: /tmp
+:system_user_name: "Databank System"
+:system_user_email: "idb@mailinator.edu"
+:reserve_doi_netid: netid
+:reserve_doi_role: role
+:iiif:
+  :draft_base: /path/to/draft/base
+  :medusa_base: /path/to/medusa/base
+  :preview_root: http://example.org/
+:amqp:
+  :fail_if_no_peer_cert: false
+  :heartbeat: 10
+  :host: localhost
+  :password: guest
+  :port: 5672
+  :ssl: false
+  :user: guest
+  :verify: verify_none
+  :verify_peer: false
+
+# Used as the base secret for all MessageVerifiers in Rails, including the one protecting cookies.
+secret_key_base: secret_key_base
+
+#Configuration for the medusa integration
+medusa:
+  #AMQP queues to communicate with medusa server
+  outgoing_queue: medusa_outgoing_queue
+  incoming_queue: medusa_incoming_queue
+  medusa_path_root: medusa_path_root
+  file_group_url: http://example.org
+  datasets_url_base: https://localhost:3000/datasets/
+
+#Configuration for medusa downloader
+downloader:
+  ssl: true
+  host: host
+  port: 8080
+  realm: realm
+  user: user
+  password: password
+  endpoint: endpoint
+
+#Configuration for medusa info
+medusa_info:
+  ssl: true
+  host: host
+  port: 8080
+  user: user
+  password: password
+
+:testers: "tester@example.com,not_tester@example.com"
+
+:read_only_msg_path:  <%= Rails.root.join('public', 'read_only_msg_plus.txt') %>
+:help_transition_filepath: <%= Rails.root.join('config', 'serializations', 'help_transition.txt') %>

@@ -1,0 +1,49 @@
+curator1:
+  provider: developer
+  uid: $LABEL@mailinator.com
+  name: $LABEL
+  email: $LABEL@mailinator.com
+  role: admin
+  username: $LABEL
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
+
+curator2:
+  provider: developer
+  uid: $LABEL@mailinator.com
+  name: $LABEL
+  email: $LABEL@mailinator.com
+  role: admin
+  username: $LABEL
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
+
+researcher1:
+  provider: developer
+  uid: $LABEL@mailinator.com
+  name: $LABEL
+  email: $LABEL@mailinator.com
+  role: depositor
+  username: $LABEL
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
+
+researcher2:
+  provider: developer
+  uid: $LABEL@mailinator.com
+  name: $LABEL
+  email: $LABEL@mailinator.com
+  role: depositor
+  username: $LABEL
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>
+
+researcher3:
+  provider: developer
+  uid: $LABEL@mailinator.com
+  name: $LABEL
+  email: $LABEL@mailinator.com
+  role: depositor
+  username: $LABEL
+  created_at: <%= 5.day.ago.to_fs(:db) %>
+  updated_at: <%= 5.day.ago.to_fs(:db) %>

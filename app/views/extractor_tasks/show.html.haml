@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Web:
+  = @extractor_task.web_id
+%p
+  %b Response at:
+  = @extractor_task.response_at
+
+= link_to 'Edit', edit_extractor_task_path(@extractor_task)
+\|
+= link_to 'Back', extractor_tasks_path

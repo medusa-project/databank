@@ -1,0 +1,39 @@
+.panel-group(id="python" role="tablist" aria-multiselectable="true")
+  .panel.panel-default
+    .panel-heading(role="tab" id="pythonHeading")
+      %h4(class="panel-title")
+        %a( role="button" data-toggle="collapse" data-parent="#python" href="#pythonPanel" aria-expanded="false" aria-controls="pythonPanel" class="accordion-toggle collapsed" )
+          %span( class="metadata-label" ) Use our sample Python file upload script. (click to expand)
+    .panel-collapse.collapse(id="pythonPanel" role="tabpanel" aria-labelledby="pythonHeading" )
+      .panel-body
+
+        %p
+          Download our sample python client
+          %a(href="#{IDB_CONFIG[:root_url_text]}/databank_api_client_v2.py" target="_blank" ) databank_api_client_v2.py
+
+        %p
+          Requires recent version of
+          =succeed(",") do
+            %a(href="https://www.python.org/" ) python 2 or 3
+          %em works on files up to 2 TB.
+        %p Required Modules
+        %pre
+          %code
+            = simple_format("pip install tuspy\npip install requests\npip install urllib3[secure]")
+
+        %p Copy and paste this command example. Just change "myfile.csv" to your own data file's name.
+        .command-to-copy
+          %pre
+            %code
+              ="python databank_api_client.py #{dataset.key} [TOKEN] myfile.csv "
+
+        %p
+          For more help, and for notes on using this script on
+          =succeed(",") do
+            %strong biocluster2, AWS, or the Vitual Hosting Group on campus
+          see the
+          =succeed(",") do
+            %a(href="/guides#api" ) Command Line Tools / API Reference
+          or
+          =succeed(".") do
+            %a(href="/contact") Contact Us

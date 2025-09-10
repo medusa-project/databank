@@ -1,0 +1,15 @@
+DATASET CONFIRMATION EMAIL NOT SENT
+
+The following dataset has been successfully deposited in the Illinois Data Bank:
+= @dataset.plain_text_citation
+Here is some information about the deposited dataset:
+DataCite DOI: #{@dataset.identifier}
+Release date: #{@dataset.release_date}
+Depositor: #{@dataset.depositor_name}
+Contact person: #{@dataset.corresponding_creator_name}
+Deposit agreement link: #{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key}/review_deposit_agreement
+
+The error:
+=@err.message
+
+=render partial: 'sigblock_txt'

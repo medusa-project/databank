@@ -1,0 +1,10 @@
+Topic: Version Copy Complete
+Dataset: "#{@dataset.databank_url}"
+
+Version Copy Complete
+- @dataset.version_files.each do |version_file|
+  - name = version_file.source_datafile.bytestream_name
+  - size = number_to_human_size(version_file.source_datafile.bytestream_size)
+  - selected = version_file.selected ? "Selected" : "Not Selected"
+  - complete = version_file.selected && version_file.complete? ? "Complete" : "Not Complete"
+  = "#{name} | #{size} | #{selected} | #{complete}\n"

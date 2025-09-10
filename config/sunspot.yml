@@ -1,0 +1,27 @@
+development:
+  solr:
+    hostname: sunspot
+    port: 8983
+    log_level: WARNING
+    path: /solr/development
+
+test:
+  solr:
+    hostname: sunspot
+    port: 8983
+    log_level: WARNING
+    path: /solr/test
+
+demo-rocky:
+  solr:
+    hostname: rabbitmq-solr-demo-rocky.library.illinois.edu
+    port: 8983
+    log_level: WARNING
+    path: /solr/databank
+
+prod-rocky:
+  solr:
+    hostname: rabbitmq-solr-prod-rocky.library.illinois.edu
+    port: 8983
+    log_level: WARNING
+    path: /solr/databank

@@ -1,0 +1,28 @@
+The following dataset has been successfully deposited in the Illinois Data Bank:
+= @dataset.plain_text_citation
+Here is some information about the deposited dataset:
+= "DataCite DOI: #{@dataset.identifier}"
+= "Release date: #{@dataset.release_date}"
+-if @dataset.review_requests.count > 0
+  Pre-publication revew request
+  = succeed ':' do
+    ="date".pluralize(@dataset.review_requests.count)
+  -@dataset.review_requests.each_with_index do |request, i|
+    -if i < (@dataset.review_requests.count - 1)
+      = succeed ', ' do
+        =request.requested_at.strftime("%Y-%m-%d")
+    -else
+      =request.requested_at.strftime("%Y-%m-%d")
+= "Depositor: #{@dataset.depositor_name}"
+= "Contact person: #{@dataset.corresponding_creator_name}"
+= "Deposit agreement link: #{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key}/review_deposit_agreement"
+
+Suggested data availability statement (please check your journal for a specific guidance):
+= @dataset.availability_statement
+
+-if @dataset.review_requests.count == 0
+  A curator may contact you with questions about this dataset.
+
+Please contact us at databank@library.illinois.edu with any questions or if you believe you have received this message in error.
+
+=render partial: 'sigblock_txt'

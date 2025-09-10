@@ -1,0 +1,12 @@
+-if @dataset.in_pre_publication_review?
+  %button(type="button" id="show-review-h-modal-link" class="btn btn-primary btn-block" data-toggle="modal" data-target="#offer_review_h")
+    Continue
+    %span(class="glyphicon glyphicon-triangle-right" )
+-elsif @dataset.version_eligible_for_review?
+  %button(type="button" id="review-version-btn" class="btn btn-primary btn-block")
+    Submit for Pre-Publication Review
+    %span(class="glyphicon glyphicon-triangle-right" )
+-else
+  %button(type="button" id="show-review-h-modal-link" class="btn btn-primary btn-block" data-toggle="modal" data-target="#offer_review_h")
+    Continue
+    %span(class="glyphicon glyphicon-triangle-right" )

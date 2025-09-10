@@ -1,0 +1,404 @@
+-if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
+  =render partial: 'read_only_alert'
+-else
+  %div(id="main-form-top")
+    = form_for(@dataset, :html => {"data-toggle" => "validator", :multipart => true, :role => "form", :enctype => "multipart/form-data", :class => "input-append dataset-form" }) do |f|
+      =f.hidden_field :have_permission
+      =f.hidden_field :removed_private
+      =f.hidden_field :agree
+      =f.hidden_field :org_creators
+      =f.hidden_field :publication_state
+      .panel-group(id="description" role="tablist" aria-multiselectable="true")
+        .panel.panel-default
+          .panel-heading(role="tab" id="descriptionHeading")
+            %h4(class="panel-title")
+              %a(class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#description" href="#descriptionPanel" aria-expanded="true" aria-controls="descriptionPanel")
+                %span( class="metadata-label" )
+                  Description
+            %br
+            Citation Preview:
+            %span( id="creator-preview" )
+              = @dataset.creator_list && @dataset.creator_list != "" ? @dataset.creator_list : "[Creator List]"
+            %span( id="year-preview" )
+              = @dataset.publication_year && @dataset.publication_year != "" ? "(#{@dataset.publication_year})" : "(#{Time.now.year}):"
+            %span( id="title-preview" )
+              = @dataset.title && @dataset.title != "" ? "#{@dataset.title}." : "[The Title]."
+            University of Illinois Urbana-Champaign.
+            %span( id="doi-preview" )
+              = @dataset.identifier && @dataset.identifier != "" ? "#{@dataset.persistent_url}" : ""
+          .panel-collapse.collapse.in(id="descriptionPanel" role="tabpanel" aria-labelledby="descriptionHeading" )
+            .panel-body
+              - if @dataset.errors.any?
+                .error_explaination
+                  = "#{pluralize(@dataset.errors.count, "error")} prohibited this dataset from being saved."
+                  %ul
+                    - @dataset.errors.full_messages.each do |msg|
+                      %li
+                        = msg
+              .row
+                .col-md-6
+                  .form-group.required
+                    = f.label :title, "Dataset Title", :class => "control-label"
+                    %br
+                    = f.text_field :title, :class => "form-control dataset", :placeholder => "[e.g., Data for <insert article title>]"
+                .col-md-6
+                  .form-group.required
+                    = f.label :license, "License", :class => "control-label"
+                    %a(href="#" data-toggle="modal" data-target="#licenseModal" tabindex="-1" )
+                      %span(class="far fa-question-circle")
+                      what's a license?
+
+                    -if @dataset.publication_state == Databank::PublicationState::DRAFT
+                      = f.collection_select :license, LICENSE_INFO_ARR, :code, :name, {:prompt => true}, {:class => "form-control dataset"}
+
+                    -else
+                      = f.collection_select :license, LICENSE_INFO_ARR, :code, :name, {:prompt => true}, {:class => "form-control dataset", onchange: "license_change_warning()"}
+
+
+              -if @dataset.org_creators && @dataset.org_creators == true
+                =render partial: 'org_creators_subform', locals: {f: f}
+                =render partial: 'contributors_subform', locals: {f: f}
+              -else
+                = render partial: 'ind_creators_subform', locals: {f: f}
+
+              -if(can? :manage, @dataset)
+                -toggled_value = nil
+                -if @dataset.org_creators && @dataset.org_creators == true
+                  -toggled_value = "false"
+                -else
+                  -toggled_value = "true"
+                .row.curator-only
+                  %span(class="glyphicon glyphicon-warning-sign" )
+                  Switching creator type deletes all creators of current type and sumbits form, which saves any other changes.
+                  %button(type="button" class="btn btn-primary" onclick="setOrgCreators(#{@dataset.id.to_s}, #{toggled_value})")
+                    -if @dataset.org_creators && @dataset.org_creators == true
+                      Switch to Individual Creators
+                    -else
+                      Switch to Organization Creators
+
+              = f.hidden_field :publisher, :value=>"University of Illinois Urbana-Champaign"
+
+              .form-group
+                = f.label :description, "Dataset Description", :class => "control-label"
+                %br
+                = f.text_area :description, :rows => 3,  :class => "form-control dataset", :placeholder => "[Provide a brief description of the dataset you are publishing. This will be publicly displayed for visitors to your dataset's page. This information should inform another researcher how your dataset may be useful or what conclusions it may support. You may choose to repeat a portion of your main documentation file here as well. This information should describe your dataset, not summarize a paper that may be associated with it.]"
+                -if(can? :manage, @dataset)
+                  .row.curator-only
+                    .col-md-12
+                      .form-group
+                        =f.label :subject, "Subject", class: "control-label"
+                        %br
+                        =f.radio_button :subject, Databank::Subject::ARTS_HUMANITIES, checked: @dataset.subject == Databank::Subject::ARTS_HUMANITIES, class: "dataset", id: "arts"
+                        =label_tag('arts', Databank::Subject::ARTS_HUMANITIES)
+                        %br
+                        =f.radio_button :subject, Databank::Subject::LIFE_SCIENCES, checked: @dataset.subject == Databank::Subject::LIFE_SCIENCES, class: "dataset", id: "life"
+                        =label_tag('life', Databank::Subject::LIFE_SCIENCES)
+                        %br
+                        =f.radio_button :subject, Databank::Subject::PHYSICAL_SCIENCES, checked: @dataset.subject == Databank::Subject::PHYSICAL_SCIENCES, class: "dataset", id: 'physical'
+                        =label_tag('physical', Databank::Subject::PHYSICAL_SCIENCES)
+                        %br
+                        =f.radio_button :subject, Databank::Subject::SOCIAL_SCIENCES, checked: @dataset.subject == Databank::Subject::SOCIAL_SCIENCES, class: "dataset", id: 'social'
+                        =label_tag('social', Databank::Subject::SOCIAL_SCIENCES)
+                        %br
+                        =f.radio_button :subject, Databank::Subject::TECHNOLOGY_ENGINEERING, checked: @dataset.subject == Databank::Subject::TECHNOLOGY_ENGINEERING, class: "dataset", id:'tech'
+                        =label_tag('tech', Databank::Subject::TECHNOLOGY_ENGINEERING)
+                        %br
+                        =f.radio_button :subject, Databank::Subject::NONE, checked: @dataset.subject == Databank::Subject::NONE, class: "dataset", id:'none'
+                        =label_tag('none', 'None')
+
+              .row
+                .col-md-6
+
+                  .form-group
+
+                    - if @dataset.keywords && @dataset.keywords.length > 0
+
+                      = f.label :keywords, "Keywords (#{@dataset.keywords.split(';').length} -- semicolon separated)", class: "control-label", id: "keyword-label"
+                    - else
+                      = f.label :keywords, "Keywords", class: "control-label", id: "keyword-label"
+                    %br
+                    = f.text_field :keywords, class: "form-control dataset", id: "keyword-text", placeholder: "[Semicolon separated list of keywords or phrases, e.g.: institutional repositories; file formats]"
+
+                -if ( params[:action]=='new' || (can? :manage, @dataset) || ((can? :update, @dataset) && ([Databank::PublicationState::Embargo::METADATA, Databank::PublicationState::Embargo::FILE, Databank::PublicationState::DRAFT].include?(@dataset.publication_state))))
+                  .col-md-4
+                    .form-group
+                      =f.label :embargo, "Publication Delay (embargo)", class: "control-label"
+                      %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="-1" )
+                        %span(class="far fa-question-circle")
+                        what's an embargo?
+                      - if ((can? :manage, @dataset) || [Databank::PublicationState::DRAFT, Databank::PublicationState::Embargo::METADATA].include?(@dataset.publication_state))
+                        = f.select :embargo, options_for_select([["No Publication Delay", Databank::PublicationState::Embargo::NONE],["File Only Publication Delay", Databank::PublicationState::Embargo::FILE],["Metadata and File Publication Delay", Databank::PublicationState::Embargo::METADATA]], @dataset.embargo), {}, {class: "form-control dataset"}
+                      -else
+                        = f.select :embargo, options_for_select([["No Publication Delay", Databank::PublicationState::Embargo::NONE],["File Only Publication Delay", Databank::PublicationState::Embargo::FILE]], @dataset.embargo), {}, {class: "form-control dataset"}
+                  .col-md-2
+                    -#- if (can? :manage, @dataset)
+                    -#  .curator-only
+                    -#    %button(type="button" class="btn btn-block btn-primary" onclick="show_release_date()" )
+                    -#      Show Release Date
+                    %div(id="release-date-picker")
+                      =f.label :release_date, "Release Date (max 1 year)",  :class => "control-label"
+
+                      - if (can? :manage, @dataset)
+                        =f.date_field :release_date, class: "form-control dataset"
+                      -else
+                        =f.date_field :release_date, min: Date.current, max: (Date.current + 1.years), class: "form-control dataset", onblur: 'validateReleaseDate()'
+
+                -else
+                  .col-md-4
+                    .form-group
+                      =f.label :embargo, "Publication Delay (embargo)", class: "control-label"
+                      %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="-1" )
+                        %span(class="far fa-question-circle")
+                        what's an embargo?
+                      = f.select :embargo, options_for_select([["No Publication Delay", Databank::PublicationState::Embargo::NONE]], @dataset.embargo), {class: "form-control dataset"}
+                  .col-md-2
+                    =f.label :release_date, "Date Released",  :class => "control-label"
+                    =f.text_field :release_date, class: "form-control dataset"
+
+              = f.hidden_field :depositor_email, :class => "form-control", :id => "depositor_email", :title => "Must agree to deposit agreement to deposit data.", :required => true
+
+              = f.hidden_field :depositor_name, :class => "form-control", :id => "depositor_name"
+
+              =f.hidden_field :identifier
+
+              - if can? :manage, @dataset
+
+                .curator-only
+                  .row
+                    .col-md-6.form-group
+                      = f.label :identifier, "Specified DOI for version OR import -- just the 10.xx part", :class => "control-label"
+                      - if @dataset.publication_state == Databank::PublicationState::DRAFT
+                        = f.text_field :identifier, :class => "dataset form-control", :placeholder => "Leave blank for auto-generate."
+                      -else
+                        = f.text_field :identifier, :class => "dataset form-control", readonly: true
+
+                    .col-md-3
+                      =f.check_box :is_import, :class => "dataset"
+                      Imported DOI
+                    .col-md-3
+                      - if @dataset.publication_state == Databank::PublicationState::DRAFT
+                        =f.check_box :is_test, :class => "dataset"
+                      -else
+                        =f.check_box :is_test, class: "dataset", readonly: true
+                      Test DOI
+                        
+                  .row
+                    %span(class="col-md-1" )
+                      .form-group
+                        =f.label :dataset_version, "Version", class: "control-label"
+                        %br
+                        =f.text_field :dataset_version, class: "form-control dataset"
+                    %span(class="col-md-3" )
+
+                    %span(class="col-md-11" )
+                      .form-group
+                        =f.label :version_comment, "Version Comment", class: "control-label"
+                        %br
+                        =f.text_area :version_comment, :rows => 1, class: "form-control dataset"
+                  .row
+                    %span.col-md-6
+                      .form-group
+                        =f.label :external_files_link, "Link to Externally Stored Files", class: "control-label"
+                        %br
+                        =f.text_field :external_files_link, class: "form-control dataset", :placeholder => 'https://granite.example.edu/1234567890'
+                    %span(class="col-md-6" )
+                      .form-group
+                        =f.label :medusa_dataset_dir, "URL in Medusa (relative to #{IDB_CONFIG['medusa']['datasets_url_base']} )", class: "control-label"
+                        %br
+                        =f.text_field :medusa_dataset_dir, class: "form-control dataset", :placeholder => '/cfs_directories/number'
+                  .row
+                    %span.col-md-12
+                      .form-group
+                        =f.label :external_files_note, "Access Notes for Externally Stored Files", class: "control-label"
+                        %br
+                        =f.text_area :external_files_note, :rows => 4, class: "form-control dataset"
+
+
+      - if can? :manage, @dataset
+
+        .panel-group(id="curatorHelp" role="tablist" aria-multiselectable="true" class="curator-only")
+          .panel.panel-default
+            .panel-heading(role="tab" id="curatorHelpHeading")
+              %h4(class="panel-title")
+                %a( role="button" data-toggle="collapse" data-parent="#funder" href="#curatorHelpPanel" aria-expanded="false" aria-controls="curatorHelpPanel" class="accordion-toggle collapsed" )
+                  %span( class="metadata-label" ) Curator-only form elements help
+            .panel-collapse.collapse(id="curatorHelpPanel" role="tabpanel" aria-labelledby="curatorHelpHeading" )
+              .panel-body
+                = render partial: 'datasets/help/curator_doi_tasks'
+
+      .panel-group(id="funder" role="tablist" aria-multiselectable="true")
+        .panel.panel-default
+          .panel-heading(role="tab" id="funderHeading")
+            %h4(class="panel-title")
+              %a( role="button" data-toggle="collapse" data-parent="#funder" href="#funderPanel" aria-expanded="false" aria-controls="funderPanel" class="accordion-toggle collapsed" )
+                %span( class="metadata-label" ) Funder
+          .panel-collapse.collapse(id="funderPanel" role="tabpanel" aria-labelledby="funderHeading" )
+            .panel-body
+              = render partial: 'funders_subform', locals: {f: f}
+      .panel-group(id="materials" role="tablist" aria-multiselectable="true")
+        .panel.panel-default
+          .panel-heading(role="tab" id="materialsHeading")
+            %h4(class="panel-title")
+              %a(role="button" data-toggle="collapse" data-parent="#materials" href="#materialsPanel" aria-expanded="false" aria-controls="materialsPanel" class="accordion-toggle collapsed" )
+                %span( class="metadata-label" ) Relationships with articles, code, other datasets, and other resources
+          .panel-collapse.collapse(id="materialsPanel" role="tabpanel" aria-labelledby="materialsHeading" )
+            .panel-body
+              = render partial: 'materials_subform', locals: {f: f}
+      = render partial: 'datafiles_subform', locals: {f: f}
+
+  - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
+
+    .container-fluid
+
+      %table(id="upload-table" )
+        %thead
+          %tr.row
+            %td.col-md-4
+              %strong File Upload Options
+            %td.col-md-1
+              < 4 GB
+            %td.col-md-1
+              < 15 GB
+            %td.col-md-1
+              < 50 GB
+            %td.col-md-1
+              < 2 TB
+
+        %tbody
+          %tr.row
+            %td
+              %div(id="file-drop-area")
+                %i(class="fa fa-cloud-upload-alt fa-2x" aria-hidden="true" )
+                Drop files in this area
+            %td
+              %span(class="fas upload-consistent fa-circle")
+            %td
+              %span(class="fas upload-inconsistent fa-adjust")
+            %td
+              %span(class="far upload-unavailable fa-circle")
+            %td
+              %span(class="far upload-unavailable fa-circle")
+
+          %tr.row
+            %td.fileselect(id="file-select-area")
+              %label(class="btn btn-success fileinput-button")
+                %span(class="fileinput-button-content" )
+                  %span(class="fa fa-laptop fa-lg" )
+                  Select files from your computer
+            %td
+              %span(class="fas upload-consistent fa-circle")
+            %td
+              %span(class="fas upload-inconsisent fa-adjust")
+            %td
+              %span(class="far upload-unavailable fa-circle")
+            %td
+              %span(class="far upload-unavailable fa-circle")
+
+          -# %tr.row
+          -#   %td
+          -#     %div(id="box-select" data-link-type="direct" data-multiselect="true" data-client-id="r5tgofc05460skm84yjepz1ck16ptotr" role="button" )
+          -#   %td
+          -#     %span(class="fas upload-consistent fa-circle")
+          -#   %td
+          -#     %span(class="fas upload-consistent fa-circle")
+          -#   %td
+          -#     %span(class="far upload-unavailable fa-circle")
+          -#   %td
+          -#     %span(class="far upload-unavailable fa-circle")
+
+          - if can? :manage, @dataset
+            %tr.row
+              %td.curator-only
+                %button(type="button" class="btn btn-success fileinput-button" onclick="openRemoteFileModal()" )
+                  %span(class="glyphicon glyphicon-link")
+                  Provide a URL
+              %td.curator-only
+                %span(class="fas upload-consistent fa-circle")
+              %td.curator-only
+                %span(class="fas upload-consistent fa-circle")
+              %td.curator-only
+                %span(class="fas upload-inconsistent fa-adjust")
+              %td.curator-only
+                %span(class="far upload-unavailable fa-circle")
+
+          %tr.row
+            %td
+              .btn.btn-success.fileinput-button(id="api-modal-btn" role="button" )
+                %span(class="fileinput-button-content")
+                  %span(class="glyphicon glyphicon-open" )
+                  %span(id='token-button-text')
+                    - if @dataset.current_token.nil?
+                      Get token for command line tools
+                    - else
+                      View token for command line tools
+
+            %td
+              %span(class="fas upload-consistent fa-circle")
+            %td
+              %span(class="fas upload-consistent fa-circle")
+            %td
+              %span(class="fas upload-inconsisent fa-adjust")
+            %td
+              %span(class="far upload-unavailable fa-circle")
+
+          %tr.row
+            %td
+              =link_to("https://forms.illinois.edu/sec/1562600062", class: "btn btn-success fileinput-button idb", target: "_blank") do
+                %span(class="large-text" )
+                  &#x1f45f;
+                Requst large file transfer
+            %td
+              %span(class="fas upload-consistent fa-circle")
+            %td
+              %span(class="fas upload-consistent fa-circle")
+            %td
+              %span(class="fas upload-consistent fa-circle")
+            %td
+              %span(class="fas upload-consistent fa-circle")
+
+          - if can? :manage, @dataset
+            %tr.row
+              %td.curator-only
+                %button(type="button" class="btn btn-success fileinput-button" onclick="importFromGlobus()" )
+                  %span(class="glyphicon glyphicon-link")
+                  Import from Globus
+              %td.curator-only
+                %span(class="fas upload-consistent fa-circle")
+              %td.curator-only
+                %span(class="fas upload-consistent fa-circle")
+              %td.curator-only
+                %span(class="fas upload-inconsistent fa-circle")
+              %td.curator-only
+                %span(class="fas upload-unavailable fa-circle")
+
+    %hr
+    %div(id="divFiles")
+  .review-deposit-agreement.container-fluid
+    %hr
+    - if (params[:action] == 'new')
+      %div(id="review_link")
+        %a(href="/datasets/review_deposit_agreement" target="_blank" ) Review Deposit Agreement
+    - else
+      %a(href="/datasets/#{@dataset.key}/review_deposit_agreement?" target="_blank" ) Review Deposit Agreement
+
+  - if @dataset.org_creators
+    =render partial: 'orcid_contributor_search'
+  -else
+    =render partial: 'orcid_creator_search'
+
+  = render partial: 'datasets/help/license_help_modal'
+  = render partial: 'datasets/help/embargo_help_modal'
+
+  -# =render partial: 'template_upload'
+
+  %script(id="template-upload" type="text/x-tmpl")
+    .upload
+    {%=o.name%}
+    .progress
+      %div(class="bar progress-bar" style="width: 0%;")
+
+  - if !@dataset.depositor_email
+    %script
+      handleNotAgreed();
+      $("#agreement").modal('show');
+

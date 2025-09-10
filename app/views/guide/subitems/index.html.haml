@@ -1,0 +1,13 @@
+-Guide::Sections.all do |section|
+  %h2
+    ="Items for Section: #{section.label}"
+  -section.guide_items each do |item|
+    %h3
+      ="Subitems for Item: #{item.label}"
+    -locals_hash = {items: item.guide_subitems.order(:ordinal), guide_level: "subitems", parent_id: item.id}
+    =render partial: "guide/items/shared_index", locals: locals_hash
+  -Guide::Item.where(section_id: nil).each do |item|
+    %h3
+      ="Subitems for Item: #{item.label}"
+    -locals_hash = {items: item.guide_subitems.order(:ordinal), guide_level: "subitems", parent_id: item.id}
+    =render partial: "guide/items/shared_index", locals: locals_hash

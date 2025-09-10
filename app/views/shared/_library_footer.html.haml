@@ -1,0 +1,18 @@
+%footer.library-footer.hide-when-printing{:role => "contentinfo"}
+  .row.contact-area
+    %h2.sr-only library website footer information
+    %p
+      The Illinois Data Bank is a product of the
+      %a{:href => "https://www.library.illinois.edu/rds/"} Research Data Service
+      at the University Library.
+      See our
+      %a{:href => "/policies", :target => "_blank"} Access and Use Policy
+      and
+      = succeed "." do
+        %a{:href => "https://www.vpaa.uillinois.edu/resources/web_privacy"} Web Privacy Notice
+      %a{:href => "/contact", :target => "_blank"} Contact us
+      for questions and to provide feedback.
+  .row.info-area
+    =image_tag("footer.png", alt: "University of Illinois Library")
+    .footer-copyright.text-center.mt-3
+      %p Copyright © 2019 University of Illinois Board of Trustees. All rights reserved.

@@ -1,0 +1,25 @@
+= form_for @user_ability do |f|
+  - if @user_ability.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@user_ability.errors.count, "error")} prohibited this user_ability from being saved:"
+      %ul
+        - @user_ability.errors.full_messages.each do |message|
+          %li= message
+
+  .field
+    = f.label :user_uid
+    = f.text_field :user_uid
+  .field
+    = f.label :user_provider
+    = f.text_field :user_provider
+  .field
+    = f.label :resource_type
+    = f.text_field :resource_type
+  .field
+    = f.label :resource_id
+    = f.number_field :resource_id
+  .field
+    = f.label :ability
+    = f.text_field :ability
+  .actions
+    = f.submit 'Save'

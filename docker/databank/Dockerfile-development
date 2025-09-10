@@ -1,0 +1,31 @@
+FROM ubuntu:22.04
+FROM ruby:3.3.6
+
+ARG rails_env=development
+ENV RAILS_ENV=development
+ENV RAILS_LOG_TO_STDOUT=true
+
+RUN apt-get update && apt-get install -y \
+    systemd \
+    nodejs \
+    libmemcached-dev \
+    libmagic-dev \
+    yarn \
+    postgresql-client \
+    memcached \
+    emacs-nox
+
+EXPOSE 3000
+
+# This is a host volume.
+WORKDIR /app
+
+COPY Gemfile /tmp
+COPY Gemfile.lock /tmp
+RUN cd /tmp \
+    && gem install bundler \
+    && bundle install \
+    && cd /app
+
+# Everything else has to be done in the entry command because /app will be
+# empty until we launch via docker compose.

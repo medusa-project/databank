@@ -1,0 +1,10 @@
+.welcome-div
+  = render partial: 'welcome'
+  - if current_user && current_user.system_admin?
+    .curator-only.row
+      .col-md-4.col-md-offset-4
+        =link_to "/admin", class:"btn btn-primary btn-block idb" do
+          Curator and Admin Dashboard
+          %span( class="glyphicon glyphicon-wrench" )
+  - elsif current_user && current_user.role == 'admin'
+    = render partial: 'role_switch_form'

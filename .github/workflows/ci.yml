@@ -1,0 +1,17 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+jobs:
+  build:
+    name: Test in Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Run the tests
+        run: docker compose -f docker-compose.yml -f docker-compose.test.yml up --build --exit-code-from databank-test

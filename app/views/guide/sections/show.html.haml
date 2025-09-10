@@ -1,0 +1,17 @@
+%p#notice= notice
+%title
+  Illinois Data Bank - Guide
+  = @guide_section.label.titleize
+%h1
+  ="Section #{@guide_section.label.titleize}"
+=render partial: 'guide/items/preview', locals: {item: @guide_section}
+.row
+  .col-md-3.col-md-offset-9
+    =link_to "Edit", edit_guide_section_path(id: @guide_section.id), class: "btn btn-success btn-block idb"
+%hr
+%h2
+="Items for Section: #{@guide_section.label}"
+=render partial: "guide/items/shared_index", locals: {items: @guide_section.guide_items.order(:ordinal), guide_level: "items", parent_id: "#{@guide_section.id}"}
+.row
+  .col-md-offset-9.col-md-3
+    = link_to "Add Item to this Section", "/guide/items/new?guide_item_section_id=#{@guide_section.id}", class: "btn btn-success btn-block idb"

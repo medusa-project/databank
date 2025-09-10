@@ -1,0 +1,6 @@
+.container-fluid
+
+  = render 'form'
+  .row
+    .col-md-2.col-md-offset-10
+      =link_to '<button class="btn btn-danger btn-block idb elbow ">Delete</button>'.html_safe, @featured_researcher, :method => :delete, :data => { :confirm => 'Are you sure?' }

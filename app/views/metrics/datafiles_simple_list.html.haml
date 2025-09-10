@@ -1,0 +1,6 @@
+-@datafiles.each do |datafile|
+  =datafile.bytestream_name
+  ="| dataset:"
+  %a(href="/datasets/#{datafile.dataset_key}" )
+    =datafile.dataset_key
+  %br

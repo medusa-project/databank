@@ -1,0 +1,114 @@
+%title Illinois Data Bank - Dataset
+%h1 aria-label="dataset"
+- if @dataset.metadata_public?
+  = @dataset.structured_data.html_safe
+= render partial: 'download_link_modal'
+- if (can? :update, @dataset)
+  = render partial: 'offer_review_h_modal'
+  = render partial: 'confirm_deposit_modal'
+  = render partial: 'datasets/dashboards/show'
+  = render partial: 'incomplete_deposit_modal'
+-if (can? :manage, @dataset) 
+  .curator-only
+    %h3 Curator Control Links
+    = link_to("Permissions", "/datasets/#{@dataset.key}/permissions")
+    &nbsp;|&nbsp;
+    = link_to("Review Requests", "/datasets/#{@dataset.key}/review_requests")
+    &nbsp;|&nbsp;
+    = link_to("Suppression Controls", "/datasets/#{@dataset.key}/suppression_controls")
+    &nbsp;|&nbsp;
+    = link_to("Version Controls", "/datasets/#{@dataset.key}/version_controls")
+    &nbsp;|&nbsp;
+    = link_to("Medusa Details", "/datasets/#{@dataset.key}/medusa_details")
+
+#main-show-div
+
+  - if @dataset.has_newer_version?
+    .selected-version.boxed-alert
+      A newer version of this dataset is available.
+      %a(href: "#{@dataset.version_group.latest_published_version.databank_url}")
+        View the latest version.
+ - if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION && @dataset.hold_state == Databank::PublicationState::TempSuppress::NONE
+  .selected-version.boxed-alert
+    This version is ready for editing. Please use the green edit button to modify your dataset and then continue.
+   = render partial: 'metadata_restriction_alert', locals: {dataset: @dataset}
+
+  - if @dataset.metadata_public? || (can? :read, @dataset) || @shared_by_link
+    = render partial: 'show_metadata', locals: {dataset: @dataset}
+    #versionGroup.panel-group{role: "tablist", aria: {multiselectable: "true"}}
+      .panel.panel-default
+        #versionGroupHeading.panel-heading{role="tab"}
+          .panel-title
+            - if @dataset.version_group.group_hash[:entries].length > 1
+              %a{role="button" data-toggle="collapse", data-parent="#versionGroup", href="#versionGroupPanel", aria-expanded="true", aria-controls="versionGroupPanel", class="accordion-toggle"}
+                %span.metadata-label Versions in Illinois Data Bank
+            - else
+              %a{role="button" data-toggle="collapse", data-parent="#versionGroup", href="#versionGroupPanel", aria-expanded="false", aria-controls="versionGroupPanel", class="accordion-toggle collapsed"}
+                %span.metadata-label Versions
+        .panel-collapse.collapse{id: "versionGroupPanel", role: "tabpanel", aria: {labelledby: "versionGroupHeading"}, class: (@dataset.version_group.group_hash[:entries].length > 1 ? "in" : "")}
+          .panel-body
+            -if @dataset.version_group.group_hash[:status] == 'error'
+              = @dataset.version_group.group_hash[:error]
+            -else
+              %table.table.table-striped
+                %thead
+                %tr
+                  %th class="text-center">Version
+                  %th>DOI
+                  %th>Comment
+                  %th>Publication Date
+                %tbody
+                  - @dataset.version_group.group_hash[:entries].each do |entry|
+                    - if entry[:publication_state] == Databank::PublicationState::DRAFT
+                      - if (can? :manage, @dataset)
+                        %tr
+                          %td class="text-center curator-only"= entry[:version]
+                          %td class="curator-only"
+                            = link_to entry[:doi], "#{IDB_CONFIG[:root_url_text]}/datasets/#{entry[:key]}"
+                          %td class="curator-only"= entry[:version_comment]
+                          %td class="curator-only"= entry[:publication_date]
+                    - else
+                      %tr{class: (entry[:selected] ? "selected-version" : "")}
+                        %td.text-center= entry[:version]
+                        %td= link_to entry[:doi], "#{@dataset.persistent_url_base}/#{entry[:doi]}"
+                        %td= entry[:version_comment]
+                        %td= entry[:publication_date]
+    = render partial: 'datasets/show_files', locals: {dataset: @dataset, globus_only: @dataset.is_too_big?, shared_by_link: @shared_by_link}
+  - if @dataset.publication_state != Databank::PublicationState::DRAFT
+    - if (can? :manage, @dataset) || ([Databank::PublicationState::RELEASED, Databank::PublicationState::PermSuppress::FILE, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state) && @dataset.hold_state != Databank::PublicationState::TempSuppress::METADATA && !@dataset.suppress_changelog)
+      #changelog.panel-group{role="tablist", aria-multiselectable="true"}
+        .panel.panel-default
+          #changelogHeading.panel-heading{role="tab"}
+            .panel-title
+              %a{role="button", data-toggle="collapse", data-parent="#changelog", href="#changelogPanel", aria-expanded="false", aria-controls="changelogPanel", class="accordion-toggle collapsed"}
+                %span.metadata-label Change Log
+          #changelogPanel.panel-collapse.collapse{role="tabpanel", aria-labelledby="changelogHeading"}
+            .panel-body
+              %p
+                - changelog_help_url = "/help?context=changelog&key=#{@dataset.key}"
+                %a(href="#{changelog_help_url}")"
+                  Contact the Research Data Service
+                for help interpreting this log.</p>
+              = render partial: "show_changelog"
+  - if (can? :update, @dataset)
+    - review_agreement_url = "/datasets/<%= @dataset.key %>/review_deposit_agreement"
+    %a(href="#{review_agreement_url}")
+      Review Deposit Agreement
+
+- if can? :manage, @dataset && @dataset.publication_state != Databank::PublicationState::DRAFT
+  .curator-only
+    - unless @datacite_fabrica_url.include?("test")
+      %p DOIs will be indexed into DataCite Search 8 to 24 hrs after being created.
+      - datacite_url = "https://search.datacite.org/works/#{@dataset.identifier}"
+      %p
+        Once it is available, see DataCite Search result at:
+        %a(href="#{datacite_url}")
+          = datacite_url
+    %p
+      Log into
+      %a(href="#{@datacite_fabrica_url}")
+        DataCite Fabrica interface
+      for more details about DataCite's test record for this DOI.
+- if (@dataset.title) && (@dataset.title.downcase.include? 'unicorn') && ((can? :update, @dataset) && [Databank::PublicationState::RELEASED, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state))
+  .pull-right
+    = image_tag('Rainbow_Unicorn.png')

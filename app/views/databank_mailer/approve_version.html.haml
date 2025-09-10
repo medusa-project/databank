@@ -1,0 +1,22 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body
+    Name: #{@dataset.depositor_name}
+    %br/
+    Email: #{@dataset.depositor_email}
+    %br/
+    Topic: New Version Request Approved
+    %br/
+    Dataset:
+    %a{:href => "#{@dataset.databank_url}"}
+      = @dataset.databank_url
+    %hr/
+    %p
+      = "Dear #{@dataset.depositor_name},"
+    %p Thank you for requesting a new version of your published dataset. Your request has been approved, and a draft has been created for you.
+    %p You can access and edit your new draft at the above URL. Once you have made any necessary changes to the descriptive information and files, please submit your draft for pre-publication review.
+    %p During the pre-publication review, a curator will ensure all versions of your publication are linked to each other correctly. This typically takes a few business days.
+
+

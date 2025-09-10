@@ -1,0 +1,541 @@
+article1:
+  id: 2
+  material_type: "Article"
+  link: "http://arxiv.org/abs/1507.06011"
+  uri: "1507.06011"
+  uri_type: "arXiv"
+  citation:
+      "B. Donovan and D. Work. “Using coarse GPS data to quantify city-scale transportation system resilience to extreme events.” presented at the Transportation Research Board 94th Annual Meeting August 2014."
+  dataset_id: 13
+  created_at: Wed 18 May 2016 19:28:53.179205000 UTC +00:00
+  updated_at: Wed 18 May 2016 19:28:53.179205000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsSupplementTo,IsCitedBy"
+  feature: true
+  note: "Placeholder for brief description of related resource and the relationship."
+dataset1:
+  id: 8
+  material_type: "Dataset"
+  link: "https://doi.org/10.13012/B2IDB-4900670_V1"
+  uri: "10.13012/B2IDB-4900670_V1"
+  uri_type: "DOI"
+  citation:
+      "Donovan Brian; Mori Alec; Agrawal Nimit; Meng Yalan; Lee Jong; Work Daniel (2016): New York City Hourly Traffic Estimates (2010-2013). University of Illinois Urbana-Champaign. https://doi.org/10.13012/B2IDB-4900670_V1"
+  dataset_id: 13
+  created_at: Wed 29 Jun 2016 20:06:19.373154000 UTC +00:00
+  updated_at: Mon 12 Jun 2017 18:50:17.878883000 UTC +00:00
+  selected_type: "Dataset"
+  datacite_list: "IsSupplementTo"
+thesis1:
+  id: 9
+  material_type: "Thesis"
+  link: "http://purl.stanford.edu/bz752gf4249"
+  uri: "http://purl.stanford.edu/bz752gf4249"
+  uri_type: "PURL"
+  citation:
+      "Zhu Chenguang. (2015).  Analysis and modeling of large-scale systems: taxis and social polling (Doctoral dissertation).  Stanford University Stanford CA."
+  dataset_id: 13
+  created_at: Thu 07 Jul 2016 21:54:03.172153000 UTC +00:00
+  updated_at: Thu 07 Jul 2016 21:54:03.172153000 UTC +00:00
+  selected_type: "Thesis"
+  datacite_list: "IsSupplementTo,IsCitedBy"
+article2:
+  id: 59
+  material_type: "Article"
+  link: "http://doi.org/10.1016/j.trc.2017.03.002"
+  uri: "10.1016/j.trc.2017.03.002"
+  uri_type: "DOI"
+  citation:
+      "Donovan B. & Work D. \"Empirically quantifying city-scale transportation system resilience to extreme events.\" Transportation Research Part C: Emerging Technologies Volume 79 June 2017 Pages 333-346 doi:10.1016/j.trc.2017.03.002."
+  dataset_id: 13
+  created_at: Wed 19 Apr 2017 13:56:52.393239000 UTC +00:00
+  updated_at: Wed 19 Apr 2017 13:56:52.393239000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsSupplementTo,IsCitedBy"
+article3:
+  id: 22
+  material_type: "Article"
+  link: "http://dx.doi.org/10.1007/s00180-016-0686-y"
+  uri: "10.1007/s00180-016-0686-y"
+  uri_type: "DOI"
+  citation:
+      "Grzegorczyk M. & Shafiee Kamalabad. (2016).  \"Comparative evaluation of various frequentist and Bayesian non-homogeneous Poisson counting models.\"  Computational Statistics. doi:10.1007/s00180-016-0686-y"
+  dataset_id: 13
+  created_at: Tue 11 Oct 2016 15:04:23.585267000 UTC +00:00
+  updated_at: Tue 11 Oct 2016 15:07:18.159642000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsSupplementTo"
+article4:
+  id: 25
+  material_type: "Article"
+  link: "http://dx.doi.org/10.1371/journal.pone.0167267"
+  uri: "10.1371/journal.pone.0167267"
+  uri_type: "DOI"
+  citation:
+      "Guan X Chen C Work D (2016) Tracking the Evolution of Infrastructure Systems and Mass Responses Using Publically Available Data. PLoS ONE 11(12): e0167267. doi:10.1371/journal.pone.0167267"
+  dataset_id: 13
+  created_at: Tue 06 Dec 2016 14:31:52.502696000 UTC +00:00
+  updated_at: Tue 06 Dec 2016 14:31:52.502696000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsSupplementTo,IsCitedBy"
+code1:
+  id: 3
+  material_type: "Code"
+  link: "https://github.com/Lab-Work/gpsresilience"
+  dataset_id: 13
+  created_at: Thu 19 May 2016 19:49:47.226333000 UTC +00:00
+  updated_at: Thu 15 Sep 2022 15:59:48.875378000 UTC +00:00
+  selected_type: "Code"
+  datacite_list: "IsSupplementedBy"
+article5:
+  id: 60
+  material_type: "Article"
+  link: "http://dx.doi.org/10.1109/GlobalSIP.2016.7906046"
+  uri: "10.1109/GlobalSIP.2016.7906046"
+  uri_type: "DOI"
+  citation:
+      "Deri Joya A. & Moura Jose M. F. (2016 December). \"New York city taxi analysis with graph signal processing.\" Paper presented at 2016 IEEE Global Conference on Signal and Information Processing (GlobalSIP) Washington DC USA.  doi:10.1109/GlobalSIP.2016.7906046."
+  dataset_id: 13
+  created_at: Thu 11 May 2017 21:25:22.384080000 UTC +00:00
+  updated_at: Thu 11 May 2017 21:25:22.384080000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsSupplementTo,IsCitedBy"
+article6:
+  id: 65
+  material_type: "Article"
+  link: "https://doi.org/10.1016/j.dss.2017.05.008"
+  uri: "10.1016/j.dss.2017.05.008"
+  uri_type: "DOI"
+  citation:
+      " B. Barann et al. An open-data approach for quantifying the potential of taxi ridesharing Decision Support Systems\r\n(2017) http://dx.doi.org/10.1016/j.dss.2017.05.008"
+  dataset_id: 13
+  created_at: Tue 06 Jun 2017 21:14:18.643367000 UTC +00:00
+  updated_at: Tue 06 Jun 2017 21:14:18.643367000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsSupplementTo,IsCitedBy"
+article7:
+  id: 61
+  material_type: "Article"
+  link: "http://dx.doi.org/10.1007/s00180-016-0686-y"
+  uri: "10.1007/s00180-016-0686-y"
+  uri_type: "DOI"
+  citation: "Grzegorczyk M. & Shafiee Kamalabad M. Comput Stat (2017) 32: 1. doi:10.1007/s00180-016-0686-y"
+  dataset_id: 13
+  created_at: Thu 11 May 2017 21:34:50.059618000 UTC +00:00
+  updated_at: Mon 12 Jun 2017 18:50:17.902722000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsSupplementTo"
+article8:
+  id: 67
+  material_type: "Article"
+  link: "http://dx.doi.org/10.1145/3070607.3075961"
+  uri: "10.1145/3070607.3075961"
+  uri_type: "DOI"
+  citation:
+      "Jacek Sroka Artur Leśniewski Mirosław Kowaluk Krzysztof Stencel and Jerzy Tyszkiewicz. 2017. Towards minimal algorithms for big data analytics with spreadsheets. In Proceedings of the 4th Algorithms and Systems on MapReduce and Beyond (BeyondMR'17). ACM New York NY USA Article 1 4 pages. DOI: https://doi.org/10.1145/3070607.3075961"
+  dataset_id: 13
+  created_at: Thu 15 Jun 2017 14:55:26.618408000 UTC +00:00
+  updated_at: Thu 15 Jun 2017 14:55:26.618408000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsSupplementTo,IsCitedBy"
+article9:
+  id: 129
+  material_type: "Article"
+  link: "https://doi.org/10.1016/j.trc.2017.12.017"
+  uri: "10.1016/j.trc.2017.12.017"
+  uri_type: "DOI"
+  citation:
+      "Liang Hu Jing Dong Zhenhong Lin Jie Yang Analyzing battery electric vehicle feasibility from taxi travel patterns: The case study of New York City USA Transportation Research Part C: Emerging Technologies Volume 87 February 2018 Pages 91-104 ISSN 0968-090X https://doi.org/10.1016/j.trc.2017.12.017."
+  dataset_id: 13
+  created_at: Mon 08 Jan 2018 16:36:40.077723000 UTC +00:00
+  updated_at: Mon 08 Jan 2018 16:36:40.077723000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsSupplementTo,IsCitedBy"
+article10:
+  id: 214
+  material_type: "Article"
+  link: "https://doi.org/10.1145/3219819.3220055"
+  uri: "10.1145/3219819.3220055"
+  uri_type: "DOI"
+  citation:
+      "Nandani Garg and Sayan Ranu. 2018. Route Recommendations for Idle Taxi Drivers: Find Me the Shortest Route to a Customer!. In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (KDD '18). ACM New York NY USA 1425-1434. DOI: https://doi.org/10.1145/3219819.3220055"
+  dataset_id: 13
+  created_at: Wed 25 Jul 2018 03:32:09.466240000 UTC +00:00
+  updated_at: Wed 25 Jul 2018 03:32:09.466240000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article11:
+  id: 659
+  material_type: "Article"
+  link: "https://doi.org/10.1016/j.cor.2020.105065"
+  uri: "10.1016/j.cor.2020.105065"
+  uri_type: "DOI"
+  citation:
+      "C.S. Sartori L.S. Buriol A Study on the Pickup and Delivery Problem with TimeWindows: Matheuristics and New Instances Computers and Operations Research (2020) doi: https://doi.org/10.1016/j.cor.2020.105065"
+  dataset_id: 13
+  created_at: Tue 04 Aug 2020 21:44:36.450819000 UTC +00:00
+  updated_at: Wed 02 Sep 2020 16:45:26.952872000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article12:
+  id: 672
+  material_type: "Article"
+  link: "https://doi.org/10.1109/FUZZ48607.2020.9177668"
+  uri: "10.1109/FUZZ48607.2020.9177668"
+  uri_type: "DOI"
+  citation:
+      "A. Kiersztyn P. Karczmarek K. Kiersztyn and W. Pedrycz \"The Concept of Detecting and Classifying Anomalies in Large Data Sets on a Basis of Information Granules\" 2020 IEEE International Conference on Fuzzy Systems (FUZZ-IEEE) Glasgow United Kingdom 2020 pp. 1-7 doi: 10.1109/FUZZ48607.2020.9177668."
+  dataset_id: 13
+  created_at: Wed 02 Sep 2020 16:45:26.959983000 UTC +00:00
+  updated_at: Wed 02 Sep 2020 16:45:26.959983000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article13:
+  id: 256
+  material_type: "Article"
+  link: "https://doi.org/10.1016/j.seps.2018.08.001"
+  uri: "10.1016/j.seps.2018.08.001"
+  uri_type: "DOI"
+  citation:
+      "Andrew S. Manikas James R. Kroes Thomas F. Gattiker. Misalignment between societal well-being and business profit maximization: The case of New York taxis drivers' incentive system Socio-Economic Planning Sciences 2018. https://doi.org/10.1016/j.seps.2018.08.001"
+  dataset_id: 13
+  created_at: Mon 13 Aug 2018 18:11:16.795893000 UTC +00:00
+  updated_at: Mon 13 Aug 2018 18:11:16.795893000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article14:
+  id: 261
+  material_type: "Article"
+  link: "http://alonsomora.com/docs/18-wallar-iros.pdf"
+  uri: "http://alonsomora.com/docs/18-wallar-iros.pdf"
+  uri_type: "URL"
+  citation:
+      "A. Wallar M. van der Zee J. Alonso-Mora and D. Rus \"Vehicle Rebalancing for Mobility-on-Demand Systems with Ride-Sharing\" in Proc. of the IEEE/RSJ Conf. on Robotics and Intelligent Systems (IROS) October 2018"
+  dataset_id: 13
+  created_at: Wed 05 Sep 2018 16:58:53.992538000 UTC +00:00
+  updated_at: Wed 05 Sep 2018 16:58:53.992538000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+paper1:
+  id: 333
+  material_type: "Conference paper"
+  link: "http://wallar.me/publications/wallar-icra-fleet-2019.pdf"
+  uri: "http://wallar.me/publications/wallar-icra-fleet-2019.pdf"
+  uri_type: "URL"
+  citation: "A. Wallar J. Alonso-Mora and D. Rus (2019): Optimizing Vehicle Distributions and Fleet Sizes for Mobility-on-Demand 2019 IEEE International Conference on Robotics and Automation (ICRA)"
+  dataset_id: 13
+  created_at: Mon 11 Feb 2019 16:17:08.839706000 UTC +00:00
+  updated_at: Mon 11 Feb 2019 16:17:08.839706000 UTC +00:00
+  selected_type: "Other"
+  datacite_list: "IsCitedBy"
+paper2:
+  id: 375
+  material_type: "Conference paper"
+  link: "https://doi.org/10.1145/3308558.3313465"
+  uri: "10.1145/3308558.3313465"
+  uri_type: "DOI"
+  citation: "Chak Fai Yuen Abhishek Pratap Singh Sagar Goyal Sayan Ranu and Amitabha Bagchi. 2019. Beyond Shortest Paths: Route Recommendations for Ride-sharing. In The World Wide Web Conference (WWW '19) Ling Liu and Ryen White (Eds.). ACM New York NY USA 2258-2269. DOI: https://doi.org/10.1145/3308558.3313465"
+  dataset_id: 13
+  created_at: Mon 20 May 2019 14:55:46.692198000 UTC +00:00
+  updated_at: Mon 20 May 2019 14:55:46.692198000 UTC +00:00
+  selected_type: "Other"
+  datacite_list: "IsCitedBy"
+article15:
+  id: 376
+  material_type: "Article"
+  link: "https://doi.org/10.1016/j.trb.2019.05.005"
+  uri: "10.1016/j.trb.2019.05.005"
+  uri_type: "DOI"
+  citation:
+      "R.X. Zhong X.X. Xie and J.C. Luo et al. Modeling double time-scale travel time processes with application to assessing the resilience of transportation systems Transportation Research Part B https://doi.org/10.1016/j.trb.2019.05.005\r\n"
+  dataset_id: 13
+  created_at: Tue 21 May 2019 15:10:10.418310000 UTC +00:00
+  updated_at: Tue 21 May 2019 15:10:42.078171000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article16:
+  id: 396
+  material_type: "Article"
+  link: "http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-384588"
+  uri: "http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-384588"
+  uri_type: "URL"
+  citation:
+      "Bränström A. & Söderberg J. (2019). A package deal for the future: Vehicle-to-Grid combined with Mobility as a Service (Dissertation). Retrieved from http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-384588"
+  dataset_id: 13
+  created_at: Tue 18 Jun 2019 15:08:18.979765000 UTC +00:00
+  updated_at: Tue 18 Jun 2019 15:08:18.979765000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article17:
+  id: 481
+  material_type: "Article"
+  link: "https://doi.org/10.1016/j.trc.2019.09.020"
+  uri: "10.1016/j.trc.2019.09.020"
+  uri_type: "DOI"
+  citation:
+      "Carmody Daniel R. Sowers Richard B. Tradeoffs between safety and time: A routing view. Transportation Research Part C: Emerging Technologies. Volume 108 November 2019 Pages 357-377 https://doi.org/10.1016/j.trc.2019.09.020"
+  dataset_id: 13
+  created_at: Wed 23 Oct 2019 18:45:01.996737000 UTC +00:00
+  updated_at: Wed 23 Oct 2019 18:45:01.996737000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsSupplementTo,IsCitedBy"
+article18:
+  id: 499
+  material_type: "Article"
+  link: "https://doi.org/10.1109/ITSC.2019.8916904"
+  uri: "10.1109/ITSC.2019.8916904"
+  uri_type: "DOI"
+  citation:
+      "A. Wallar W. Schwarting J. Alonso-Mora and D. Rus \"Optimizing Multi-class Fleet Compositions for Shared Mobility-as-a-Service\" 2019 IEEE Intelligent Transportation Systems Conference (ITSC) Auckland New Zealand 2019 pp. 2998-3005.\r\ndoi: 10.1109/ITSC.2019.8916904"
+  dataset_id: 13
+  created_at: Tue 03 Dec 2019 20:25:29.762049000 UTC +00:00
+  updated_at: Tue 03 Dec 2019 20:25:29.762049000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article19:
+  id: 520
+  material_type: "Article"
+  link: "https://doi.org/10.1016/j.trc.2019.12.020"
+  uri: "10.1016/j.trc.2019.12.020"
+  uri_type: "DOI"
+  citation:
+      "Leyi Duan Yuguang Wei Jinchuan Zhang Yang Xia entralized and decentralized autonomous dispatching strategy for dynamic autonomous taxi operation in hybrid request mode. Transportation Research Part C: Emerging Technologies Volume 111 2020 pg 397-420 doi: https://doi.org/10.1016/j.trc.2019.12.020"
+  dataset_id: 13
+  created_at: Mon 13 Jan 2020 16:42:04.243608000 UTC +00:00
+  updated_at: Mon 13 Jan 2020 16:42:04.243608000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article20:
+  id: 572
+  material_type: "Article"
+  link: "https://doi.org/10.1016/j.jtte.2019.07.002"
+  uri: "10.1016/j.jtte.2019.07.002"
+  uri_type: "DOI"
+  citation:
+      "Luo H et al. A multi-task deep learning model for short-term taxi demand forecasting consideringspatiotemporal dependences Journal of Traffic and Transportation Engineering (English Edition) https://doi.org/10.1016/j.jtte.2019.07.002"
+  dataset_id: 13
+  created_at: Wed 08 Apr 2020 15:39:43.923137000 UTC +00:00
+  updated_at: Wed 08 Apr 2020 15:39:43.923137000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article21:
+  id: 729
+  material_type: "Article"
+  link: "https://doi.org/10.1109/TITS.2020.3029141"
+  uri: "10.1109/TITS.2020.3029141"
+  uri_type: "DOI"
+  citation:
+      "L. Hu and J. Dong \"An Artificial-Neural-Network-Based Model for Real-Time Dispatching of Electric Autonomous Taxis\" in IEEE Transactions on Intelligent Transportation Systems doi: 10.1109/TITS.2020.3029141."
+  dataset_id: 13
+  created_at: Mon 09 Nov 2020 17:21:00.299077000 UTC +00:00
+  updated_at: Mon 09 Nov 2020 17:21:00.299077000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article22:
+  id: 789
+  material_type: "Article"
+  link: "https://cs.haifa.ac.il/~dkeren/ICDE2021_Reducing_Communication_Bandwidth_in_Geometric_Monitoring.pdf"
+  uri: "https://cs.haifa.ac.il/~dkeren/ICDE2021_Reducing_Communication_Bandwidth_in_Geometric_Monitoring.pdf"
+  uri_type: "URL"
+  citation:
+      "Y. Alfassi M. Gabel G. Yehuda and D. Keren. A Distance-Based Scheme for Reducing Bandwidth in Distributed Geometric Monitoring. 37th IEEE International Conference on Data Engineering (ICDE) 2021"
+  dataset_id: 13
+  created_at: Fri 26 Feb 2021 01:12:16.434068000 UTC +00:00
+  updated_at: Fri 26 Feb 2021 01:12:16.434068000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+thesis2:
+  id: 820
+  material_type: "Thesis"
+  link: "https://research.tue.nl/en/studentTheses/continuous-dynamic-time-warping-for-clustering-curves"
+  uri: "https://research.tue.nl/en/studentTheses/continuous-dynamic-time-warping-for-clustering-curves"
+  uri_type: "URL"
+  citation:
+      "Klaren K. R. Continuous Dynamic Time Warping for Clustering Curves. 14 Aug 2020. Student thesis: Master. "
+  dataset_id: 13
+  created_at: Sat 03 Apr 2021 20:49:13.580715000 UTC +00:00
+  updated_at: Sat 03 Apr 2021 20:49:13.580715000 UTC +00:00
+  selected_type: "Thesis"
+  datacite_list: "IsCitedBy"
+article23:
+  id: 1010
+  material_type: "Article"
+  link: "https://doi.org/10.1016/j.cie.2022.108187"
+  uri: "10.1016/j.cie.2022.108187"
+  uri_type: "DOI"
+  citation:
+      "Tran D.H. Leyman P. Causmaecker P.D. Adaptive passenger-finding recommendation system for taxi drivers with load balancing problem Computers & Industrial Engineering\r\n(2022) doi: https://doi.org/10.1016/j.cie.2022.108187."
+  dataset_id: 13
+  created_at: Tue 26 Apr 2022 20:15:34.158984000 UTC +00:00
+  updated_at: Tue 26 Apr 2022 20:15:34.158984000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article24:
+  id: 881
+  material_type: "Article"
+  link: "https://arxiv.org/abs/2106.14827"
+  uri: "abs/2106.14827"
+  uri_type: "arXiv"
+  citation:
+      "Zardini Gioele Nicolas Lanzetti M. Pavone and Emilio Frazzoli. “Analysis and Control of Autonomous Mobility-on-Demand Systems: A Review.” ArXiv abs/2106.14827 (2021): n. pag."
+  dataset_id: 13
+  created_at: Fri 02 Jul 2021 18:02:41.062018000 UTC +00:00
+  updated_at: Fri 02 Jul 2021 18:02:41.062018000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article25:
+  id: 837
+  material_type: "Article"
+  link: "https://doi.org/10.1109/TFUZZ.2021.3076265"
+  uri: "10.1109/TFUZZ.2021.3076265"
+  uri_type: "DOI"
+  citation:
+      "A. Kiersztyn P. Karczmarek K. Kiersztyn and W. Pedrycz \"Detection and Classification of Anomalies in Large Data Sets on the Basis of Information Granules\" in IEEE Transactions on Fuzzy Systems doi: 10.1109/TFUZZ.2021.3076265."
+  dataset_id: 13
+  created_at: Tue 04 May 2021 16:58:40.411847000 UTC +00:00
+  updated_at: Fri 02 Jul 2021 18:03:49.308075000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article26:
+  id: 884
+  material_type: "Article"
+  link: "https://doi.org/10.1145/3449726.3459433"
+  uri: "10.1145/3449726.3459433"
+  uri_type: "DOI"
+  citation:
+      "Jiaze Sun Nan Han Jianbin Huang and Jiahui Deng. 2021. Landmark-based multi-objective route planning for large-scale road net. In Proceedings of the Genetic and Evolutionary Computation Conference Companion (GECCO '21). Association for Computing Machinery New York NY USA 193–194. DOI:https://doi.org/10.1145/3449726.3459433"
+  dataset_id: 13
+  created_at: Tue 13 Jul 2021 00:35:48.000039000 UTC +00:00
+  updated_at: Tue 13 Jul 2021 00:35:48.000039000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+unknown1:
+  id: 888
+  material_type: "Article"
+  link: "https://doi.org/10.1287/trsc.2021.1068"
+  uri: "10.1287/trsc.2021.1068"
+  uri_type: "DOI"
+  citation:
+      "Keji Wei Vikrant Vaze Alexandre Jacquillat. (2021). Transit Planning Optimization Under Ride-Hailing Competition and Traffic Congestion. Transportation Science 0 (0)  https://doi.org/10.1287/trsc.2021.1068"
+  dataset_id: 13
+  created_at: Tue 20 Jul 2021 15:48:14.038791000 UTC +00:00
+  updated_at: Tue 20 Jul 2021 15:48:14.038791000 UTC +00:00
+  selected_type: ""
+  datacite_list: "IsCitedBy"
+article27:
+  id: 900
+  material_type: "Article"
+  link: "https://my.ece.msstate.edu/faculty/skhan/pub/K_K_2021_IC2E.pdf"
+  uri: "https://my.ece.msstate.edu/faculty/skhan/pub/K_K_2021_IC2E.pdf"
+  uri_type: "URL"
+  citation:
+      "Kang Peng Palden Lama and Samee U. Khan. \"SLO-aware Virtual Rebalancing for Edge Stream Processing.\""
+  dataset_id: 13
+  created_at: Mon 16 Aug 2021 15:25:03.024503000 UTC +00:00
+  updated_at: Mon 16 Aug 2021 15:25:03.024503000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article28:
+  id: 911
+  material_type: "Article"
+  link: "https://doi.org/10.1007/978-3-030-86383-8_49"
+  uri: "10.1007/978-3-030-86383-8_49"
+  uri_type: "DOI"
+  citation:
+      "Chen J. Zhang S. Chen X. Jiang Q. Huang H. Gu C. (2021) Learning Traffic as Videos: A Spatio-Temporal VAE Approach for Traffic Data Imputation. In: Farkaš I. Masulli P. Otte S. Wermter S. (eds) Artificial Neural Networks and Machine Learning – ICANN 2021. ICANN 2021. Lecture Notes in Computer Science vol 12895. Springer Cham. https://doi.org/10.1007/978-3-030-86383-8_49"
+  dataset_id: 13
+  created_at: Tue 14 Sep 2021 14:39:38.102182000 UTC +00:00
+  updated_at: Tue 14 Sep 2021 14:39:38.102182000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article29:
+  id: 912
+  material_type: "Article"
+  link: "https://doi.org/10.1145/3474717.3484209"
+  uri: "10.1145/3474717.3484209"
+  uri_type: "DOI"
+  citation:
+      "Ruiyuan Li Rubin Wang et al.. 2021. Distributed Spatio-Temporal 𝑘 Nearest\r\nNeighbors Join. In 29th International Conference on Advances in Geographic Information Systems (SIGSPATIAL ’21) November 2–5 2021 Beijing China.\r\nACM New York NY USA 11 pages. https://doi.org/10.1145/3474717.3484209"
+  dataset_id: 13
+  created_at: Tue 14 Sep 2021 14:46:53.387457000 UTC +00:00
+  updated_at: Tue 14 Sep 2021 14:46:53.387457000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article30:
+  id: 28
+  material_type: "Article"
+  link: "http://www2.cs.uic.edu/~urbcomp2013/urbcomp2016/papers/Reducing.pdf"
+  uri: "http://www2.cs.uic.edu/~urbcomp2013/urbcomp2016/papers/Reducing.pdf"
+  uri_type: "URL"
+  citation:
+      "Zhu C. & Prabhakar B. (2016 August).  \"Reducing Inefficiencies in Taxi Systems.\"  Paper presented at UrbComp’16 August 14 2016 San Francisco USA. "
+  dataset_id: 13
+  created_at: Tue 03 Jan 2017 17:10:04.216486000 UTC +00:00
+  updated_at: Thu 28 Oct 2021 18:27:48.814842000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article31:
+  id: 1044
+  material_type: "Article"
+  link: "https://doi.org/10.1016/j.joep.2022.102535"
+  uri: "10.1016/j.joep.2022.102535"
+  uri_type: "DOI"
+  citation:
+      "Hanna Hoover. 2022. Nudges as norms: Evidence from the NYC taxi cab industry. Journal of Economic Psychology. doi: https://doi.org/10.1016/j.joep.2022.102535"
+  dataset_id: 13
+  created_at: Mon 27 Jun 2022 16:33:16.965642000 UTC +00:00
+  updated_at: Mon 27 Jun 2022 16:33:16.965642000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article32:
+  id: 1078
+  material_type: "Article"
+  link: " https://doi.org/10.48550/arXiv.2207.14440"
+  uri: "10.48550/arXiv.2207.14440"
+  uri_type: "DOI"
+  citation:
+      "Mahendran A. Thompson H. & McGree J.M. (2022). A model robust sub-sampling approach for Generalised Linear Models in Big data settings. doi:\r\nhttps://doi.org/10.48550/arXiv.2207.14440\r\n"
+  dataset_id: 13
+  created_at: Mon 08 Aug 2022 16:43:22.527204000 UTC +00:00
+  updated_at: Mon 08 Aug 2022 16:43:22.527204000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article33:
+  id: 1099
+  material_type: "Article"
+  link: "https://doi.org/10.3390/su141710648"
+  uri: "10.3390/su141710648"
+  uri_type: "DOI"
+  citation:
+      "Tubagus Robbi Megantara Sudradjat Supian and Diah Chaerani. 2022. \"Strategies to Reduce Ride-Hailing Fuel Consumption Caused by Pick-Up Trips: A Mathematical Model Under Uncertainty.\" Sustainability 14 (17): 10648. doi:https://doi.org/10.3390/su141710648."
+  dataset_id: 13
+  created_at: Tue 20 Sep 2022 20:48:36.072743000 UTC +00:00
+  updated_at: Tue 20 Sep 2022 20:48:36.072743000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article34:
+  id: 1100
+  material_type: "Article"
+  link: "https://doi.org/10.1109/FUZZ-IEEE55066.2022.9882567"
+  uri: "10.1109/FUZZ-IEEE55066.2022.9882567"
+  uri_type: "DOI"
+  citation:
+      "K. Kiersztyn and A. Kiersztyn \"Fuzzy Rule-based Outlier Detector\" 2022 IEEE International Conference on Fuzzy Systems (FUZZ-IEEE) 2022 pp. 1-7 doi: 10.1109/FUZZ-IEEE55066.2022.9882567."
+  dataset_id: 13
+  created_at: Tue 20 Sep 2022 20:50:52.088293000 UTC +00:00
+  updated_at: Tue 20 Sep 2022 20:50:52.088293000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsCitedBy"
+article35:
+  id: 1233
+  material_type: "Article"
+  link: "https://doi.org/10.1049/itr2.12376"
+  uri: "10.1049/itr2.12376"
+  uri_type: "DOI"
+  citation:
+      "Xue S. Song R. He S. Li G. Chi J.: Passenger-perception dynamic ridesharing service based on parallel technology. IET Intell. Transp.\r\nSyst. 1–20 (2023). https://doi.org/10.1049/itr2.12376"
+  dataset_id: 13
+  created_at: Wed 24 May 2023 20:21:21.937216000 UTC +00:00
+  updated_at: Wed 24 May 2023 20:21:21.937216000 UTC +00:00
+  selected_type: "Article"
+  datacite_list: "IsSupplementTo,IsCitedBy"

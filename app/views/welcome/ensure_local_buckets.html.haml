@@ -1,0 +1,9 @@
+%h2 Local Buckets
+
+%p
+  current environment:
+  = Rails.env
+%p
+  -if Rails.env.development? || Rails.env.test?
+    local buckets ensured:
+    =@local_buckets_ensured

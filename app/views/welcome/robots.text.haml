@@ -1,0 +1,15 @@
+= "User-agent: Amazonbot"               # Amazon's user agent
+= "Disallow: /\n"            # disallow all
+
+- if Rails.env == "production" || Rails.env == "prod-rocky"
+  = "User-agent: *"
+  = "Disallow: /datafiles"
+  = "Disallow: */download"
+  = "Disallow: */preview"
+  = "Disallow: */view"
+- else
+  = "User-agent: *"
+  = "noindex: /\n"
+  = "Disallow: /\n"
+
+= "\nSitemap: #{root_url}sitemap.xml"

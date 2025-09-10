@@ -1,0 +1,46 @@
+.table-responsive
+  %table(id="embargo_info_table" class="table table-bordered" )
+    %thead
+      %tr(class="row idb-infographic-header" )
+        %th(class="col-md-4")
+          %h2 CC0
+          %p CC0 1.0 Universal public domain dedication
+        %th(class="col-md-4" )
+          %h2 CC BY
+          %p Creative Commons Attribution 4.0 International license
+        %th(class="col-md-4")
+          %h2 Other License
+          %p A license.txt file must be uploaded as part of dataset.
+
+    %tbody
+      %tr(class="row" )
+        %td
+          %h4
+            %strong Derivative works are allowed
+          Most open license with no restriction.
+        %td
+          %h4
+            %strong Attribution a legal requirement
+          Partially open license with restriction.
+        %td
+          %h4
+            %strong Other CC licenses may create reuse difficulties
+          CC NC, CC SA, and CC ND impose restrictions that may create incompatibilities and licensing
+          difficulties for the reuse of research data.
+          %br
+          More restrictions depending on which license is chosen.
+      %tr(class="row" )
+        %td
+          %h4
+            %strong Request for attribution
+          Attribution is not required but creators can ask for it by including citation requests or other attribution
+          information in the documentation of the dataset.
+        %td
+          %h4
+            %strong May create reuse difficulties
+          =surround(%Q[Known as "], %Q[", which is an unwieldy accumulation of citations and authors.]) do
+            %a(href="https://web.archive.org/web/20160426155458/http://wir.okfn.org/2012/01/27/attribution-stacking-as-a-barrier-to-reuse/" target="_blank" )attribution stacking
+        %td
+          %h4
+            %strong Custom licensing considerations
+          Writing a custom license requires legal expertise and non-standard licenses complicate reuse.

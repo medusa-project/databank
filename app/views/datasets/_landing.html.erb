@@ -1,0 +1,174 @@
+<title>Illinois Data Bank - Dataset</title>
+<h1 aria-label="dataset"></h1>
+<% if current_user&.provider == 'identity' && current_user.role == Databank::UserRole::NETWORK_REVIEWER %>
+  <%= render partial: 'data_curation_network/heading' %>
+<% end %>
+
+<% if [Databank::PublicationState::RELEASED, Databank::PublicationState::TempSuppress::FILE, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state) %>
+  <%= @dataset.structured_data.html_safe %>
+<% end %>
+
+<%= render partial: 'download_link_modal' %>
+<% if (can? :update, @dataset) %>
+  <%= render partial: 'offer_review_h_modal' %>
+  <%= render partial: 'confirm_deposit_modal' %>
+  <%= render partial: 'datasets/dashboards/show' %>
+  <%= render partial: 'incomplete_deposit_modal' %>
+<% end %>
+<% if (can? :manage, @dataset) %>
+  <div class="curator-only">
+    <h3>Curator Control Links</h3>
+    <%= link_to("Permissions", "/datasets/#{@dataset.key}/permissions") %>
+    &nbsp;|&nbsp;
+    <%= link_to("Review Requests", "/datasets/#{@dataset.key}/review_requests") %>
+    &nbsp;|&nbsp;
+    <%= link_to("Suppression Controls", "/datasets/#{@dataset.key}/suppression_controls")%>
+    &nbsp;|&nbsp;
+    <%= link_to("Version Controls", "/datasets/#{@dataset.key}/version_controls")%>
+    &nbsp;|&nbsp;
+    <%= link_to("Medusa Details", "/datasets/#{@dataset.key}/medusa_details")%>
+  </div>
+<% end %>
+
+<div id="main-show-div">
+
+  <% if @dataset.has_newer_version? %>
+    <div class="selected-version boxed-alert">
+      A newer version of this dataset is available.
+      <a href="<%= @dataset.version_group.latest_published_version.databank_url %>">View the latest version.</a>
+    </div>
+  <% end %>
+  <% if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION &&
+    @dataset.hold_state == Databank::PublicationState::TempSuppress::NONE %>
+    <div class="selected-version boxed-alert">
+      This version is ready for editing. Please use the green edit button to modify your dataset and then continue.
+    </div>
+  <% end %>
+
+  <%= render partial: 'metadata_restriction_alert', locals: {dataset: @dataset} %>
+
+  <% if @dataset.metadata_public? || (can? :read, @dataset) || @shared_by_link %>
+    <%= render partial: 'show_metadata', locals: {dataset: @dataset} %>
+    <div class="panel-group" id="versionGroup" role="tablist" aria-multiselectable="true">
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="versionGroupHeading">
+          <div class="panel-title">
+            <% if @dataset.version_group.group_hash[:entries].length > 1 %>
+              <a role="button" data-toggle="collapse" data-parent="#versionGroup" href="#versionGroupPanel" aria-expanded="true" aria-controls="versionGroupPanel" class="accordion-toggle">
+                <span class="metadata-label">Versions in Illinois Data Bank</span>
+              </a>
+            <% else %>
+              <a role="button" data-toggle="collapse" data-parent="#versionGroup" href="#versionGroupPanel" aria-expanded="false" aria-controls="versionGroupPanel" class="accordion-toggle collapsed">
+                <span class="metadata-label">Versions</span>
+              </a>
+            <% end %>
+          </div>
+        </div>
+        <div class="panel-collapse collapse
+        <% if @dataset.version_group.group_hash[:entries].length > 1 %> in
+        <% end %>" id="versionGroupPanel" role="tabpanel" aria-labelledby="versionGroupHeading">
+          <div class="panel-body">
+
+            <% if @dataset.version_group.group_hash[:status] == 'error' %>
+              <%= @dataset.version_group.group_hash[:error] %>
+            <% else %>
+
+              <table class="table table-striped">
+                <thead>
+                <tr>
+                  <th class="text-center">Version</th>
+                  <th>DOI</th>
+                  <th>Comment</th>
+                  <th>Publication Date</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <% @dataset.version_group.group_hash[:entries].each do |entry| %>
+                  <% if Databank::PublicationState::DRAFT_ARRAY.include?(entry[:publication_state]) %>
+                    <% if (can? :manage, @dataset) %>
+                      <tr>
+                        <td class="text-center curator-only"><%= entry[:version] %></td>
+                        <td class="curator-only"><a href="<%= IDB_CONFIG[:root_url_text] %>/datasets/<%= entry[:key] %>"><%= entry[:doi] %></a></td>
+                        <td class="curator-only"><%= entry[:version_comment] %></td>
+                        <td class="curator-only"><%= entry[:publication_date] %></td>
+                      </tr>
+                    <% end %>
+                  <% else %>
+                    <tr
+                      <% if entry[:selected] %> class="selected-version"
+                      <% end %> >
+                      <td class="text-center"><%= entry[:version] %></td>
+                      <td><a href="<%= @dataset.persistent_url_base %>/<%= entry[:doi] %>"><%= entry[:doi] %></a></td>
+                      <td><%= entry[:version_comment] %></td>
+                      <td><%= entry[:publication_date] %></td>
+                    </tr>
+                  <% end %>
+                <% end %>
+                </tbody>
+              </table>
+
+            <% end %>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BEGIN file section -->
+
+    <%= render partial: 'datasets/show_files', locals: {dataset: @dataset, globus_only: @dataset.is_too_big?, shared_by_link: @shared_by_link} %>
+
+    <!-- END file section -->
+  <% end %>
+
+  <% if @dataset.publication_state != Databank::PublicationState::DRAFT %>
+
+    <% if (can? :manage, @dataset) || ([Databank::PublicationState::RELEASED, Databank::PublicationState::PermSuppress::FILE, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state) && @dataset.hold_state != Databank::PublicationState::TempSuppress::METADATA && !@dataset.suppress_changelog) %>
+      <div class="panel-group" id="changelog" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="changelogHeading">
+            <div class="panel-title">
+              <a role="button" data-toggle="collapse" data-parent="#changelog" href="#changelogPanel" aria-expanded="false" aria-controls="changelogPanel" class="accordion-toggle collapsed">
+                <span class="metadata-label">Change Log</span>
+              </a>
+            </div>
+          </div>
+          <div class="panel-collapse collapse" id="changelogPanel" role="tabpanel" aria-labelledby="changelogHeading">
+            <div class="panel-body">
+              <p><a href="/help?context=changelog&key=<%= @dataset.key %>">Contact the Research Data Service</a> for
+                help interpreting this log.</p>
+
+              <%= render partial: "show_changelog" %>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <% end %>
+
+  <% end %>
+
+  <% if can? :update, @dataset %>
+    <a href="/datasets/<%= @dataset.key %>/review_deposit_agreement">Review Deposit Agreement</a>
+  <% end %>
+
+</div>
+
+<% if can? :manage, @dataset && @dataset.publication_state != Databank::PublicationState::DRAFT %>
+
+  <div class="curator-only">
+    <% unless @datacite_fabrica_url.include?("test") %>
+      <p>DOIs will be indexed into DataCite Search 8 to 24 hrs after being created.</p>
+      <p>Once it is available, see DataCite Search result at: <a href="https://search.datacite.org/works/<%= @dataset.identifier %>"><%="https://search.datacite.org/works/#{@dataset.identifier}"%></a></p>
+    <% end %>
+    <p>Log into <a href="<%=@datacite_fabrica_url%>">DataCite Fabrica interface</a> for more details about DataCite's test record for this DOI.</p>
+  </div>
+<% end %>
+
+<% if (@dataset.title) && (@dataset.title.downcase.include? 'unicorn') && ((can? :update, @dataset) && [Databank::PublicationState::RELEASED, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state)) %>
+  <div class="pull-right">
+    <%= image_tag('Rainbow_Unicorn.png') %>
+  </div>
+<% end %>

@@ -1,0 +1,140 @@
+-if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
+  .alert.alert-alert
+    =SystemMessage.read_only_message.raw
+
+- if (can? :update, @dataset) && (Databank::Application.file_mode == Databank::FileMode::WRITE_READ)
+  .idb-dashboard.panel.panel-warning
+    .panel-body
+      .row
+        .col-md-8
+          .container
+            .row
+              -if (can? :manage, @dataset)
+                .curator-only
+                  .col-md-4
+                    &nbsp;
+                    -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
+                      .label.label-danger
+                        version candidate under review
+                    -elsif @dataset.in_pre_publication_review?
+                      .label.label-danger
+                        pre-publication review
+                    - elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
+                      .label.label-success
+                        version candidate eligible to be submitted for pre-publication review
+                    -elsif !@dataset.hold_state.nil? && @dataset.hold_state != 'none'
+                      .label.label-danger
+                        suppressed by curator
+
+                    .label.label-default
+                      ="updated: #{@dataset.updated_datetime.to_date.iso8601}"
+                    &nbsp;
+                  .col-md-4
+                    -if @dataset.ingest_datetime
+                      .label.label-default
+                        ="ingested: #{@dataset.ingest_datetime.to_date.iso8601}"
+                    -else
+                      .label.label-default
+                        ="ingested: N/A"
+                    &nbsp;
+                  -if @dataset.release_datetime
+                    .label.label-default
+                      ="released: #{@dataset.release_datetime.to_date.iso8601}"
+                  -else
+                    .label.label-default
+                      ="released: N/A"
+                  &nbsp;
+                  = " | "
+                  -if Databank::PublicationState::PUB_ARRAY.include? @dataset.publication_state
+                    =button_to('Send Publication Notice',
+                    {controller: "datasets", action: "send_publication_notice", method: :post, params: {id: @dataset.key}},
+                    {id: 'publicationNoticeButton', class: 'btn btn-primary'})
+                %br
+
+          - if @completion_check == 'ok'
+            - if ((can? :manage, @dataset) && (@dataset.publication_state != Databank::PublicationState::DRAFT) && (@dataset.publication_state != Databank::PublicationState::Embargo::METADATA) && (@dataset.embargo == Databank::PublicationState::Embargo::METADATA))
+              %span(class="glyphicon glyphicon-alert" )
+              Embargo placeholders have not yet replaced DataCite metadata. Confirm to complete changes.
+              %br
+            -elsif (@dataset.publication_state == Databank::PublicationState::Embargo::METADATA) && (@dataset.embargo != Databank::PublicationState::Embargo::METADATA)
+              .datacite-changes-warning
+                %span(class="glyphicon glyphicon-alert" )
+                This dataset record has not yet been published.  Confirm to complete changes.
+                %br
+          -elsif @completion_check && @completion_check.length > 0
+            .completion-warning
+              %span(class="glyphicon glyphicon-alert" )
+              = @completion_check
+              - if @dataset.publication_state == Databank::PublicationState::DRAFT || (can? :manage, @dataset)
+                Edit to complete dataset.
+                %br
+          %span(class="glyphicon glyphicon-eye-open" )
+
+          .row
+            .col-md-6
+              = @dataset.visibility
+              -if @dataset.in_pre_publication_review?
+                &nbsp;
+                .label.label-danger
+                  pre-publication review
+                &nbsp;
+              -if(can? :edit, @dataset) && @dataset.share_code && @dataset.publication_state != Databank::PublicationState::RELEASED
+                .label.label-success
+                  has sharing link
+                &nbsp;
+            -if (can? :manage, @dataset)
+              .col-md-6.curator-only
+                = link_to "Go to Notes", dataset_notes_path(@dataset), class: "btn idb btn-primary", target: "_blank"
+                = "(There #{@dataset.notes.count == 1 ? 'is' : 'are'} currently #{pluralize(@dataset.notes.count, 'note')} for this dataset.)"
+          - unless @dataset.share_code.nil?
+            .panel.panel-default
+              .panel-body
+                Private Sharing Link:
+                .row
+                  .col-md-11
+                    .input-group.clipboard-control
+                      %input(type="text" id="sharing-link" class="form-control" value="#{@dataset.sharing_link}" )
+                      %span(class="input-group-btn" )
+                        %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#sharing-link' aria-label="copy sharing link to clipboard" )
+                          %span(class="glyphicon glyphicon-copy")
+                  -if(can? :edit, @dataset)
+                    .col-md-1
+                      -msg = "Are you sure? This permanently removes this sharing link. Another can be generated after."
+                      = link_to("/datasets/#{@dataset.key}/remove_sharing_link", method: :delete, data: {confirm: msg},
+                      class: "btn idb btn-danger remove-share-btn") do
+                        %span(class="glyphicon glyphicon-trash")
+        .col-md-4
+          - if @dataset.show_publish_only?
+            %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
+              Continue
+              %span(class="glyphicon glyphicon-triangle-right" )
+          - elsif @completion_check == 'ok'
+            -if (can? :edit, @dataset) && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
+              =render partial: 'datasets/offer_review_btn'
+          -else
+            %button(type="button" id="show-confirm-modal-link" class="btn btn-default btn-block" data-toggle="modal" data-target="#incomplete")
+              Confirm
+              %span(class="glyphicon glyphicon-triangle-right" )
+          = link_to(edit_dataset_path(@dataset), :class => "btn idb btn-success btn-block") do
+            %span(class="glyphicon glyphicon-edit")
+            Edit
+          -unless @dataset.metadata_public?
+            = link_to(share_dataset_path(@dataset), class: "btn idb btn-block btn-share") do
+              %span(class="glyphicon glyphicon-link")
+              Generate private sharing link
+          -if @dataset.publication_state == Databank::PublicationState::DRAFT
+            %button(type="button" class="btn btn-info btn-block" name="cancel" onclick='window.location = "/datasets?q=editor=%5B%5D=#{current_user.name}&context=exit_draft"' )
+              %span(class="glyphicon glyphicon-pushpin" )
+              Exit this saved dataset
+          -else
+            %button(type="button" class="btn btn-info btn-block" name="cancel" onclick='window.location = "/datasets?q=editor=%5B%5D==#{current_user.name}&context=exit_doi"' )
+              %span(class="glyphicon glyphicon-pushpin" )
+              Exit this saved dataset
+          - if [Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)
+            = link_to(dataset_path(@dataset.key), method: :delete, data: {confirm: 'Are you sure? This removes all files and metadata.'}, class: "btn idb btn-danger btn-block") do
+              %span(class="glyphicon glyphicon-trash" )
+              Delete
+          - if @dataset.eligible_for_version?
+            = link_to(version_dataset_path(@dataset.key), :class => "btn idb btn-primary btn-block") do
+              %span(class="glyphicon glyphicon-plus-sign" )
+              Create a version of this published dataset

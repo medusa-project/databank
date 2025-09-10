@@ -1,0 +1,24 @@
+%h2 New Version Request Form
+.container-fluid
+  = form_for(@dataset, :url => {action: 'version_confirm'}, html: {role: "form", class: "input-append dataset-form" }) do |f|
+    = f.hidden_field :id
+    = f.hidden_field :previous_id, value: @previous.id
+    .form-group.required
+      - version_comment_label = "In 1-2 sentences, please summarize why you would like to create a new version of this dataset:"
+      = f.label :version_comment, version_comment_label, class: "control-label"
+      %br
+      = f.text_area :version_comment, rows: 3, cols: 80, class: "form-control dataset", required: true, placeholder: "Purpose Summary"
+    = render partial: 'datasets/version_files_subform', locals: {f: f}
+    .row
+      .col-md-3.col-md-offset-9
+        = button_tag(class: "btn btn-primary btn-block idb", type: "submit") do
+          Request New Version
+          %span.glyphicon.glyphicon-triangle-right
+        =link_to("/contact", class: "btn btn-success btn-block idb") do
+          %span.glyphicon.glyphicon-question-sign
+          Get Help
+        = link_to(dataset_path(@dataset.key), method: :delete, :class => "btn idb btn-danger btn-block") do
+          %span.glyphicon.glyphicon-remove
+          Cancel
+        %br
+

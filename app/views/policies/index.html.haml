@@ -1,0 +1,32 @@
+.row(id="help-layout")
+  %nav(class="col-xs-3 bs-docs-sidebar" aria-label="policy navigation" )
+    %ul(id="sidebar" class="nav nav-stacked" )
+      %li
+        %a(href="#top" )
+          %strong Policies
+      %li
+        %a(href="#access_and_use") Access & Use
+      %li
+        %a(href="#accession_policy") Accession
+      %li
+        %a(href="#deposit_agreement") Deposit Agreement
+      %li
+        %a(href="#preservation_policy") Preservation
+      %li
+        %a(href="#preservation_review") Review Procedures
+      %li
+        %a(href="#withdrawal_guidelines") Withdrawal
+      %li
+        %a(href="#preservation_guidelines") Review Guidelines
+  .col-xs-9
+    %title Illinois Data Bank - Policy Framework and Definitions
+    %h1 Illinois Data Bank Policy Framework and Definitions
+    = render partial: 'framework_and_definitions'
+    = render partial: 'access_and_use'
+    = render partial: 'accession'
+    = render partial: 'deposit_agreement'
+    = render partial: 'preservation'
+    = render partial: 'preservation_review'
+    = render partial: 'withdrawal_guidelines'
+    = render partial: 'preservation_guidelines'
+

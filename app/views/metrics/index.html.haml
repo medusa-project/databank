@@ -1,0 +1,268 @@
+-modified_times = @modified_times || {dataset_downloads_json:  "not found",
+       datafile_downloads_json: "not found",
+       datafiles_csv:           "not found",
+       datasets_tsv:            "not found",
+       container_contents_csv:  "not found",
+       related_materials_csv:   "not found",
+       funders_csv:             "not found"}
+
+%h2 Metrics
+.metrics-border
+  %h3
+    =link_to("Metrics Dashboard", "/metrics_dashboard.html")
+  .indent
+    %p
+      Charts and tables analyzing dataset count, size, subject, file type, and downloads over time from May 2016 through December 2023.
+.metrics-border
+  %h3
+    -link = '<a href="/dataset_downloads.json" >Dataset downloads json</a>'.html_safe
+    = modified_times[:dataset_downloads_json] == "not found" ? "Dataset downloads json not currently available" : link
+  %p.inline-block
+    Modified:
+    = modified_times[:dataset_downloads_json]
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
+      %a{href: "/metrics/refresh_dataset_downloads", class: "btn btn-success btn-sm idb"}
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Dataset downloads json
+  .indent
+    %p
+      A json string detailing downloads calculated per
+      %strong dataset
+      per day.
+.metrics-border
+  %h3
+    -link = '<a href="/datafile_downloads.json">Datafile downloads json</a>'.html_safe
+    = modified_times[:datafile_downloads_json] == "not found" ? "Datafile downloads json not currently available" : link
+  %p.inline-block
+    Modified:
+    = modified_times[:datafile_downloads_json]
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
+      %a{href: "/metrics/refresh_datafile_downloads", class: "btn btn-success btn-sm idb"}
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Datafile downloads json
+  .indent
+    %p
+      A json string detailing downloads calculated per
+      %strong datafile
+      per day.
+.metrics-border
+  %h3
+    %a(href="/metrics/datafiles_simple_list") Datafiles listing
+  .indent
+    %p A listing of datafiles with associated links to their respective datasets.
+
+.metrics-border
+  %h3
+    -if modified_times[:datasets_tsv] == "not found"
+      Datafiles listing not found
+    -else
+      %a(href="/datasets.tsv" class="btn btn-primary idb" )
+        %span.glyphicon.glyphicon-download
+        Datasets TSV
+  %p.inline-block
+    Modified:
+    = modified_times[:datasets_tsv]
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
+      %a(href="/metrics/refresh_datasets_tsv" class="btn btn-success btn-sm idb" )
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Datasets TSV
+  .indent
+    %p
+      Button triggers a tab-separated-values (TSV) file download of select dataset features.
+      %em (datasets)
+
+    %strong Column Headings
+    %ul
+      %li
+        %strong doi:
+        DOI that identifies this dataset
+      %li
+        %strong ingest_date:
+        Date this dataset was deposited into Illinois Data Bank.
+      %li
+        %strong release_date:
+        Date the files in this dataset were first available for download
+      %li
+        %strong num_files:
+        Total number of datafiles in this dataset
+      %li
+        %strong num_bytes:
+        Combined total size for all files in this dataset, in bytes
+      %li
+        %strong total_downloads:
+        Number of downloads for this dataset, calculated as described in our metrics help section:
+        %a(href="https://databank.illinois.edu/guides#metrics") https://databank.illinois.edu/guides#metrics
+      %li
+        %strong num_relationships:
+        Number of related materials, excluding other versions of this dataset
+      %li
+        %strong num_creators:
+        Number of creators of this dataset
+      %li
+        %strong subject:
+        Subject Area of this dataset
+      %li
+        %strong citation_text:
+        Plain text citation of this dataset as displayed in Illinois Data Bank
+
+.metrics-border
+  %h3
+    -if modified_times[:datafiles_csv] == "not found"
+      Datafiles CSV not available
+    -else
+      %a(href="/datafiles.csv" class="btn btn-primary idb" )
+        %span.glyphicon.glyphicon-download
+        Datafiles CSV
+  %p.inline-block
+    modified:
+    = modified_times[:datafiles_csv]
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
+      %a(href="/metrics/refresh_datafiles_csv" class="btn btn-success btn-sm idb" )
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Datafiles CSV
+  .indent
+    %p
+      Button triggers a csv file download of datafile details.
+      %em (data files)
+
+    %strong Column Headings
+    %ul
+      %li
+        %strong doi:
+        DOI that identifies the dataset this file is part of
+      %li
+        %strong pub_date:
+        Date this file was first made available for download
+      %li
+        %strong filename:
+        Name of the file, with extension
+      %li
+        %strong file_format:
+        Mime type (file format from the left column in the Medusa “statistics” view)
+      %li
+        %strong num_bytes:
+        Size of this files, in bytes
+      %li
+        %strong total_downloads:
+        Number of downloads for this file, calculated as described in our metrics help section:
+        %a{href: "https://databank.illinois.edu/guides#metrics"}
+          https://databank.illinois.edu/guides#metrics
+
+.metrics-border
+  %h3
+    -if modified_times[:container_contents_csv] == "not found"
+      Container Contents CSV not available
+    -else
+      %a{href: "/archive_file_contents.csv", class: "btn btn-primary idb"}
+        %span.glyphicon.glyphicon-download
+        Container File Contents (zip) CSV
+  %p.inline-block
+    modified:
+    = modified_times[:container_contents_csv]
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
+      %a{href: "/metrics/refresh_container_contents_csv", class: "btn btn-success btn-sm idb"}
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Container File Contents CSV
+  .indent
+    %p
+      Button triggers a csv file download of contents details for files in complex container formats (.zip, .tar.gz, .7z).
+
+    %strong Column Headings
+    %ul
+      %li
+        %strong doi:
+        DOI that identifies the dataset this file is part of
+      %li
+        %strong container_filename:
+        Filename of the container file
+      %li
+        %strong content_filepath:
+        Full path of the file, in the context of the container file
+      %li
+        %strong content_filename:
+        Filename of content file within the archive file
+        %br
+        %em Duplicate filenames from different branches may be present.
+      %li
+        %strong file_format:
+        Mime type of the content file
+
+.metrics-border
+  %h3
+    -if modified_times[:related_materials_csv] == "not found"
+      Related Materials CSV not available
+    -else
+      %a(href="/related_materials.csv" class="btn btn-primary idb" )
+        %span.glyphicon.glyphicon-download
+        Related Materials CSV
+  %p.inline-block
+    modified:
+    = modified_times[:related_materials_csv]
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
+      %a(href="/metrics/refresh_related_materials_csv" class="btn btn-success btn-sm idb")
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Related Materials CSV
+  .indent
+    %p
+      Button triggers a csv file download.
+      %em (related materials)
+
+    %strong Column Headings
+
+    %ul
+      %li
+        %strong doi:
+        The DOI that identifies THIS dataset in Illinois Data Bank
+      %li
+        %strong datacite_relationship:
+        The relationship registered with DataCite
+      %li
+        %strong material_id_type:
+        The related material identifier type (e.g., DOI, URL)
+      %li
+        %strong material_id:
+        The related material identifier
+      %li
+        %strong material_type:
+        Type of related material (e.g., article, thesis)
+
+
+.metrics-border
+  %h3
+    -if modified_times[:funders_csv] == "not found"
+      Funders CSV not available
+    -else  
+      %a(href="/funders.csv" class="btn btn-primary idb" )
+        %span.glyphicon.glyphicon-download
+        Funders CSV
+  %p.inline-block
+    modified:
+    = modified_times[:funders_csv]
+  -if current_user && current_user.role == 'admin'
+    .curator-only.inline-block
+      %a(href="/metrics/refresh_funders_csv" class="btn btn-success btn-sm idb")
+        %span.glyphicon.glyphicon-refresh
+        Regenerate Funders CSV
+  .indent
+    %p
+      Button triggers a csv file download.
+      %em (funder and grant info)
+    %strong Column Headings
+    %ul
+      %li
+        %strong doi:
+        The DOI that identifies THIS dataset in Illinois Data Bank
+      %li
+        %strong funder:
+        The funder name
+      %li
+        %strong grant:
+        The grant identifier
+
+

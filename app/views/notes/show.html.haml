@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Dataset:
+  = render 'datasets/brief_record', dataset: @note.dataset
+%p
+  %b Body:
+  = @note.body
+%p
+  %b Author:
+  = @note.author
+
+= link_to 'Edit', "/datasets/#{@dataset.key}/notes/#{@note.id}/edit"
+\|
+= link_to 'Back to notes for this dataset', dataset_notes_path(@dataset)

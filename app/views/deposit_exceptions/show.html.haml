@@ -1,0 +1,24 @@
+%p#notice= notice
+
+%p
+  %b User uid:
+  = @user_ability.user_uid
+%p
+  %b User provider:
+  = @user_ability.user_provider
+%p
+  %b User name:
+  = @user.name
+%p
+  %b Resource type:
+  = @user_ability.resource_type
+%p
+  %b Resource id:
+  = @user_ability.resource_id.to_s
+%p
+  %b Ability:
+  = @user_ability.ability
+
+= link_to 'Edit', edit_depositor_exception_path(@user_ability)
+\|
+= link_to 'Back', depositor_exceptions_path

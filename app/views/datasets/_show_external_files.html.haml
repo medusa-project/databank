@@ -1,0 +1,16 @@
+.dataset-files
+  .panel-group(id="externalFiles" role="tablist" aria-multiselectable="true")
+    .panel.panel-default
+      .panel-heading(role="tab" id="headingExternalFiles")
+        .panel-title
+          %a(role="button" data-toggle="collapse" data-parent="#externalFles" href="#collapseExternalFiles" aria-expanded="true" aria-controls="collapseExternalFiles" class="accordion-toggle")
+            %span(class="metadata-label" id="external-files-label") Accessing Externally Stored Files
+      %div(class="panel-collapse.collapse.in" id="collapseExternalFiles" role="tabpanel" aria-labelledby="headingExternalFiles")
+        .panel-body
+          %p
+            = dataset.external_files_note 
+          -if dataset.external_files_link
+            .row
+              .col-md-4.col-md-offset-8
+                =link_to "Access Associated Large Files", "#{dataset.external_files_link}", target: "_blank", class: "btn btn-primary idb"
+              

@@ -1,0 +1,2 @@
+module ExtractorResponsesHelper
+end

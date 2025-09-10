@@ -1,0 +1,98 @@
+<h3>
+  To start your
+  <%= params.has_key?('context') && params['context']=='version' ? 'new version' : 'data deposit' %>
+  please review the deposit agreement and answer the following questions:</h3>
+<hr/>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="panel-title">
+      <a class="accordion-toggle collapsed" data-toggle="collapse" href="#collapseOne ">
+        <strong>Illinois Data Bank Deposit Agreement</strong> (click to expand)
+      </a>
+    </h4>
+  </div>
+  <div id="collapseOne" class="panel-collapse collapse
+        <% if @dataset && @dataset.depositor_email %>in
+        <% end %> ">
+    <div class="panel-body idb-help">
+      <%= render partial: 'policies/deposit_agreement_body' %>
+    </div>
+  </div>
+</div>
+<hr/>
+<div class="container-fluid">
+
+  <form role="form" id="agree-form">
+
+    <div class="form-group">
+      <span class="metadata-label">Are you a creator of this dataset or have you been granted permission by the creator to deposit this dataset?</span>
+      <span data-toggle="tooltip" data-html="true" title="Deposit into the Illinois Data Bank requires that the depositor be the creator of the dataset or have permission." tabindex="-1" )>
+        <span class="glyphicon glyphicon-info-sign tip-target"></span></span>
+      <div class="checkbox">
+        <label><input type="checkbox" class="agree" id="owner-yes" onclick="handleOwnerYes()">Yes</label>
+        <br/>
+        <label><input type="checkbox" class="agree" id="owner-no" onclick="handleOwnerNo()">No</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <span class="metadata-label">Have you removed any private, confidential, or other legally protected information from the dataset?</span>
+      <span data-toggle="tooltip" data-html="true" title="Deposit into Illinois Data Bank requires removal of any private, confidential or legally protected information that is in the dataset. A selection of Not applicable indicates that either the dataset never included any such information, while a selection of yes indicates that such informaiton has been removed." tabindex="-1" )>
+        <span class="glyphicon glyphicon-info-sign tip-target"></span></span>
+
+      <div class="checkbox">
+        <label><input type="checkbox" class="private-checkbox agree" id="private-yes" onclick="handlePrivateYes()">Yes</label>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" class="private-checkbox agree" id="private-no" onclick="handlePrivateNo()">No</label>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" class="private-checkbox agree" id="private-na" onclick="handlePrivateNA()">Not
+          applicable</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <span class="metadata-label">Do you agree to the Illinois Data Bank Deposit Agreement in its entirety?</span>
+      <span data-toggle="tooltip" data-html="true" title="Deposit into Illinois Data Bank requires agreement to the Deposit Agreement. Click on the Deposit Agreement heading above to view the full agreement." tabindex="-1" )>
+        <span class="glyphicon glyphicon-info-sign tip-target"></span></span>
+      <div class="checkbox">
+        <label><input type="checkbox" class="agree" id="agree-yes" onclick="handleAgreeYes()">Yes</label>
+        <br/>
+        <label><input type="checkbox" class="agree" id="agree-no" onclick="handleAgreeNo()">No</label>
+      </div>
+    </div>
+
+  </form>
+
+  <hr/>
+  <div class="row">
+    <div class="col-md-10">
+      <table class="deposit-agreement-selection-warning">
+        <tbody>
+        <tr>
+          <td><span class="glyphicon glyphicon-alert"></span></td>
+          <td>The selections you have made indicate that you are not ready to deposit your dataset.</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>Illinois Data bank curators are available to discuss your dataset with you. Please
+            <a href="#{IDB_CONFIG[:root_url_text]}/contact">contact us</a>!</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-md-2">
+      <% current_user_name = current_user.name.gsub(/'/, {"'" => "\\'"}) %>
+      <button onclick="handleAgreeModal('<%= current_user.email %>', '<%= current_user_name %>')" type="button" class="btn btn-block btn-primary" id="agree-button">
+        <span class="glyphicon glyphicon-check"></span> Submit
+      </button>
+      <%= link_to "/help", class: "btn btn-block btn-success idb" do %>
+        <span class="glyphicon glyphicon-question-sign"></span> Get Help
+      <% end %>
+      <% cancel_to = params.has_key?('context') && params['context']=='version' ? "/datasets/#{@previous_key}" : "/" %>
+      <%= link_to cancel_to, class: "btn btn-block btn-danger idb", id: 'cancel-button' do %>
+        <span class="glyphicon glyphicon-remove"></span> Cancel
+      <% end %>
+    </div>
+  </div>
+</div>

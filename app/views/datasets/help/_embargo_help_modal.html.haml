@@ -1,0 +1,20 @@
+.modal.fade(id="embargoModal")
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %button(class="close" data-dismiss="modal")
+          &times;
+        %h2 Publication Delay (Embargo)
+      .modal-body
+        %p
+          Publishers and funders may have varying requirements for your dataset publication. For example, they may require that you delay the publication of your files only or your entire dataset, which includes files and metadata. Check with your publisher and feel free to
+          =succeed "." do
+            %a(href="/contact") contact us
+        =render partial: '/datasets/help/embargo_infographic'
+
+        .container-fluid
+          .pull-right
+            %br
+            %button(onclick='window.open("/guides#embargo")' type="button" class="btn btn-success" data-dismiss="modal" id="help-button")
+              %span(class="glyphicon glyphicon-question-sign")
+              Learn more about delaying your dataset publication

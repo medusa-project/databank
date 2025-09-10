@@ -1,0 +1,56 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # http://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test: &test
+  <<: *default
+  database: databank_test
+  username: postgres
+  password: postgres
+  host: postgres
+  port: 5432
+
+development:
+  <<: *default
+  database: databank
+  username: postgres
+  password: postgres
+  host: postgres
+  port: 5432
+
+production:
+  <<: *default
+  database: databank
+  username: <%= Rails.env.production? ? Rails.application.credentials[:primary_db][:username] : "username" %>
+  password: <%= Rails.env.production? ? Rails.application.credentials[:primary_db][:password] : "password" %>
+  host: <%= Rails.env.production? ? Rails.application.credentials[:primary_db][:host] : "host" %>
+
+prod-rocky:
+  <<: *default
+  database: databank
+  username: <%= (Rails.env == "prod-rocky") ? Rails.application.credentials[:primary_db][:username] : "username" %>
+  password: <%= (Rails.env == "prod-rocky") ? Rails.application.credentials[:primary_db][:password] : "password" %>
+  host: <%= (Rails.env == "prod-rocky") ? Rails.application.credentials[:primary_db][:host] : "host" %>
+
+demo:
+  <<: *default
+  database: databank
+  username: <%= Rails.env.demo? ? Rails.application.credentials[:primary_db][:username] : "username" %>
+  password: <%= Rails.env.demo? ? Rails.application.credentials[:primary_db][:password] : "password" %>
+  host: <%= Rails.env.demo? ? Rails.application.credentials[:primary_db][:host] : "host" %>
+
+demo-rocky:
+  <<: *default
+  database: databank
+  username: <%= (Rails.env == "demo-rocky") ? Rails.application.credentials[:primary_db][:username] : "username" %>
+  password: <%= (Rails.env == "demo-rocky") ? Rails.application.credentials[:primary_db][:password] : "password" %>
+  host: <%= (Rails.env == "demo-rocky") ? Rails.application.credentials[:primary_db][:host] : "host" %>
+
+cucumber:
+  <<: *test

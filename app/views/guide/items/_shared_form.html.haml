@@ -1,0 +1,47 @@
+.form-group.row
+  .col-md-6
+    .field
+      = f.label :anchor, class: "control-label"
+      %em Anchor must be unique within the system of guides at all levels to get expected results.
+      = f.text_field :anchor, class: "form-control"
+  .col-md-6
+    =render partial: 'guide/sections/anchors'
+.form-group.row
+  .col-md-12
+    .field
+      = f.label :label, class: "control-label"
+      %em This is what shows up in the left navigation sidebar.
+      = f.text_field :label, class: "form-control"
+.form-group.row
+  .col-md-12
+    .field
+      = f.label :ordinal, class: "control-label"
+      %em This is the order number within this level. Most convenient reorder is on the view for the parent.
+      = f.number_field :ordinal, class: "form-control"
+.form-group.row
+  .col-md-12
+    .field
+      = f.label :heading, class: "control-label"
+      %em This is the title within the right-side body for this guide.
+      = f.text_field :heading, class: "form-control"
+.form-group.row
+  .col-md-12
+    .field
+      = f.label :body, class: "control-label"
+      %em
+        This is the body of the guide that shows within the right-side.
+        Html tags should work, but newlines will have unexpected display results.
+        If you create the html in another tool (recommended) you can remove the newlines using an online tool.
+        Because of Illinois Data Bank-specific css, how it looks in another tool may be different than it looks here.
+      %a(href="https://www.textfixer.com/tools/remove-line-breaks.php" )
+        https://www.textfixer.com/tools/remove-line-breaks.php
+      = f.text_area :body, class: "form-control"
+.form-group.row
+  .col-md-3
+    .field
+      = f.label :public, class: "control-label"
+      %em Check this box when this guide is ready to be public, or uncheck this box to hide this guide.
+      = f.check_box :public, class: "form-control"
+.row
+  .col-md-2.col-md-offset-10
+    = f.submit 'Save and Preview', class: "btn btn-primary btn-block"

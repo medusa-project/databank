@@ -1,0 +1,9 @@
+= form_for @guide_section do |f|
+  - if @guide_section.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@guide_section.errors.count, "error")} prohibited this guide_section from being saved:"
+      %ul
+        - @guide_section.errors.full_messages.each do |message|
+          %li= message
+
+  =render partial: 'guide/items/shared_form', locals: {f: f}

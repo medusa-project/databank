@@ -1,0 +1,41 @@
+.modal.fade.modal-lg(id="api_modal" role="dialog" )
+  .modal-content
+    .modal-header
+      %a(href="#" class="close" data-dismiss="modal")
+        &times;
+      %title
+        Illinois Data Bank - Command Line Tools
+      %h1 Command Line Tools
+
+    .modal-body
+
+      %h2(id='token-header') Here is your token:
+      .indent
+        .current-token
+        %strong Dataset identifier:
+        =@dataset.key
+        (Unique and persistent identifier for this dataset within Illinois Data Bank)
+        .instruction-box
+          Your token and dataset identifier are pre-populated into example commands in sections below.
+          %br
+          Expand Python or cURL section to see the example command for that option.
+          %br
+      %h3 NOTES:
+      = render partial: 'zipping_panel'
+      = render partial: 'grouping_panel'
+      = render partial: 'api_campus_panel'
+      %h3 OPTIONS: Python, cURL, or custom script
+      = render partial: 'api_python_panel', locals: {dataset: @dataset}
+      = render partial: 'api_curl_panel'
+      = render partial: 'api_custom_panel'
+
+      %p
+        %strong
+          You can see this screen again by clicking the command line tools token option again from the edit dataset screen, as you did to get here this time.
+
+    .modal-footer
+      .control-group
+        .controls
+          %button(type="button" class="btn btn-danger" data-dismiss="modal")
+            %span(class="glyphicon glyphicon-remove" )
+            Close

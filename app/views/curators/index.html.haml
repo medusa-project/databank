@@ -1,0 +1,60 @@
+- if current_user && current_user.system_admin?
+  %h1 Curators
+  %p
+    People who access curation features.
+  %h2 Admins from configuration
+  %ul.no-bullets.container
+    - @config_admin_uids.each do |uid|
+      - user = User.find_by(uid: uid)
+      %li.row.listing
+        %span.col-md-4
+          = user.name if user
+        %span.col-md-4
+          %span.pull-right
+            = uid
+  - unless @curators || @curator_ability_user_not_found
+    %h2 No added curators.
+  - if @curators && @curators.any?
+    %h2 Curators managed in this interface
+    %ul.no-bullets.container
+      - @curators.each do |user|
+        - user_ability = user.associated_curator_ability
+        %li.row.listing
+          %span.col-md-4
+            = user.name
+          %span.col-md-4
+            %span.pull-right
+              = user_ability.user_uid if user_ability
+          %span.col-md-2
+            =link_to "/curators/#{user_ability.id}/edit", class: "btn btn-success btn-block idb" do
+              %span(class="glyphicon glyphicon-edit" )
+              Edit
+          %span.col-md-2
+            = link_to "/curators/#{user_ability.id}", class: "btn btn-danger btn-block idb", method: :delete, data: { confirm: 'Are you sure?' } do
+              %span(class="glyphicon glyphicon-trash" )
+              Delete
+  - if @curator_ability_user_not_found && @curator_ability_user_not_found.any?
+    %h2 Curators specified but no user found (error)
+    %ul.no-bullets.container
+      - @curator_ability_user_not_found.each do |user_ability|
+        %li.row.listing
+          %span.col-md-4
+            %em User not found
+          %span.col-md-4
+            %span.pull-right
+              = user_ability.user_uid
+          %span.col-md-2
+            =link_to "/curators/#{user_ability.id}/edit", class: "btn btn-success btn-block idb" do
+              %span(class="glyphicon glyphicon-edit" )
+              Edit
+          %span.col-md-2
+            = link_to "/curators/#{user_ability.id}", class: "btn btn-danger btn-block idb", method: :delete, data: { confirm: 'Are you sure?' } do
+              %span(class="glyphicon glyphicon-trash" )
+              Delete
+
+  .text-center
+    = link_to "Add Curator", "/curators/new", class: "btn btn-primary idb"
+- else
+  %h1 Unauthorized
+  %p
+    You are not authorized to view this page.

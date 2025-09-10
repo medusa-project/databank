@@ -1,0 +1,29 @@
+%h1 Listing user_abilities
+
+%table
+  %thead
+    %tr
+      %th User uid
+      %th User provider
+      %th Resource type
+      %th Resource id
+      %th Ability
+      %th
+      %th
+      %th
+
+  %tbody
+    - @user_abilities.each do |user_ability|
+      %tr
+        %td= user_ability.user_uid
+        %td= user_ability.user_provider
+        %td= user_ability.resource_type
+        %td= user_ability.resource_id.to_s
+        %td= user_ability.ability
+        %td= link_to 'Show', user_ability
+        %td= link_to 'Edit', edit_user_ability_path(user_ability)
+        %td= link_to 'Destroy', user_ability, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New User ability', new_user_ability_path

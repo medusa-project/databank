@@ -1,0 +1,113 @@
+development:
+  host: localhost
+  uid_field: eppn
+  extra_fields:
+    - eppn
+    - unscoped-affiliation
+    - uid
+    - sn
+    - nickname
+    - mail
+    - givenName
+    - displayName
+    - iTrustAffiliation
+    - uiucEduStudentLevelCode
+  request_type: header
+  info_fields:
+    name: displayName
+    email: mail
+
+demo:
+  host: demo.databank.illinois.edu
+  uid_field: eppn
+  extra_fields:
+    - eppn
+    - unscoped-affiliation
+    - uid
+    - sn
+    - nickname
+    - mail
+    - givenName
+    - displayName
+    - iTrustAffiliation
+    - uiucEduStudentLevelCode
+  request_type: header
+  info_fields:
+    name: displayName
+    email: mail
+
+demo-rocky:
+  host: demo.databank.illinois.edu
+  uid_field: eppn
+  extra_fields:
+    - eppn
+    - unscoped-affiliation
+    - uid
+    - sn
+    - nickname
+    - mail
+    - givenName
+    - displayName
+    - iTrustAffiliation
+    - uiucEduStudentLevelCode
+  request_type: header
+  info_fields:
+    name: displayName
+    email: mail
+
+production:
+  host: databank.illinois.edu
+  uid_field: eppn
+  extra_fields:
+    - eppn
+    - unscoped-affiliation
+    - uid
+    - sn
+    - nickname
+    - mail
+    - givenName
+    - displayName
+    - iTrustAffiliation
+    - uiucEduStudentLevelCode
+  request_type: header
+  info_fields:
+    name: displayName
+    email: mail
+
+prod-rocky:
+  host: databank.illinois.edu
+  uid_field: eppn
+  extra_fields:
+    - eppn
+    - unscoped-affiliation
+    - uid
+    - sn
+    - nickname
+    - mail
+    - givenName
+    - displayName
+    - iTrustAffiliation
+    - uiucEduStudentLevelCode
+  request_type: header
+  info_fields:
+    name: displayName
+    email: mail
+
+test:
+  host: localhost
+  uid_field: eppn
+  extra_fields:
+    - eppn
+    - unscoped-affiliation
+    - uid
+    - sn
+    - nickname
+    - mail
+    - givenName
+    - displayName
+    - iTrustAffiliation
+    - uiucEduStudentLevelCode
+  request_type: header
+  info_fields:
+    name: displayName
+    email: mail

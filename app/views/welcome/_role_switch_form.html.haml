@@ -1,0 +1,16 @@
+.switch-box
+  %h2
+    Switch Role
+  %p As a curator, you can choose to experience the site from the perspective of another type of user.  To get back to curator role, log out, then log back in again.
+
+  =form_tag '/role_switch' do
+    .row
+      .col-md-5
+        = select_tag('role', options_for_select(['depositor', 'guest', ['undergrad, or other authenticated but not authorized agent', 'no_deposit']], current_user.role), class: "form-control")
+      .col-md-2
+        %button(class="btn btn-primary btn-block")
+          Switch
+          %span( class="glyphicon glyphicon-user" )
+          %span( class="glyphicon glyphicon-certificate" )
+          %span( class="glyphicon glyphicon-arrow-right" )
+          %span( class="glyphicon glyphicon-user" )

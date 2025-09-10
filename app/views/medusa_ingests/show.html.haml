@@ -1,0 +1,43 @@
+= render 'brief_record', medusa_ingest: @medusa_ingest
+-if @medusa_ingest.datafile_web_id.present?
+  .row
+    .col-md-8
+      associated_datafile:
+      %a(href="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@medusa_ingest.idb_identifier}")
+        ="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@medusa_ingest.idb_identifier}"
+-if @medusa_ingest.datafile_web_id.present?
+  .row
+    .col-md-8
+      associated_datafile:
+      %a(href="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@medusa_ingest.idb_identifier}")
+        ="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@medusa_ingest.idb_identifier}"
+%p
+  %strong Idb class:
+  = @medusa_ingest.idb_class
+%p
+  %strong Idb identifier:
+  = @medusa_ingest.idb_identifier
+%p
+  %strong Request status:
+  = @medusa_ingest.request_status
+%p
+  %strong Medusa path:
+  = @medusa_ingest.medusa_path
+%p
+  %strong Medusa uuid:
+  = @medusa_ingest.medusa_uuid
+%p
+  %strong Response time:
+  = @medusa_ingest.response_time
+%p
+  %strong Error text:
+  = @medusa_ingest.error_text
+
+-if @ingest_responses&.count.positive?
+  %hr
+  -@ingest_responses.each do |ingest_response|
+    =ingest_response.as_text
+  %hr
+-else
+  %br
+  no ingest response records found      

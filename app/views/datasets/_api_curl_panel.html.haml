@@ -1,0 +1,30 @@
+.panel-group(id="cURL" role="tablist" aria-multiselectable="true")
+  .panel.panel-default
+    .panel-heading(role="tab" id="cURLHeading")
+      %h4(class="panel-title")
+        %a( role="button" data-toggle="collapse" data-parent="#cURL" href="#cURLPanel" aria-expanded="false" aria-controls="cURLPanel" class="accordion-toggle collapsed" )
+          %span( class="metadata-label" ) Execute a cURL command. (click to expand)
+    .panel-collapse.collapse(id="cURLPanel" role="tabpanel" aria-labelledby="cURLHeading" )
+      .panel-body
+        %p
+          Requires
+          =succeed(",") do
+            %a(href="https://curl.haxx.se/" target="_blank" ) cURL
+          %em works on files up to 4 GB.
+
+        %p Copy and paste this command example. Where it says "binary=@myfile.csv", replace myfile.csv with your data file's name. Keep "binary=@" as it is.
+
+        .curl-to-copy
+          %pre
+            %code
+              = %Q[curl -F "binary=@my_datafile.csv" -H "Authorization: Token token=authentication_token" -H "Transfer-Encoding: chunked" -X POST #{IDB_CONFIG[:root_url_text]}/api/dataset/dataset_key/datafile -o output.txt]
+              -if IDB_CONFIG[:root_url_text].include?("dev")
+                = %Q[-k]
+
+        %p
+          For more help, see the
+          =succeed(",") do
+            %a(href="/guides#api" ) Command Line Tools / API Reference
+          or
+          =succeed(".") do
+            %a(href="/contact") Contact Us

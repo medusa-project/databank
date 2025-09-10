@@ -1,0 +1,5 @@
+Hello,
+
+Thank you for depositing your dataset in the Illinois Data Bank on #{(@dataset.ingest_datetime).to_date.iso8601}. We are writing to let you know that your release date, #{(@dataset.release_date).to_date.iso8601}, is coming up in one month. If you need to change your release date, you may be able to do so here: #{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key}/edit . The maximum amount of time a dataset may be embargoed is one year from the date of initial deposit, so the system will not allow you to extend the date longer than that. If you have any questions, please email us at databank@library.illinois.edu.
+
+\#{render partial: 'sigblock_txt'}

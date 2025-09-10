@@ -1,0 +1,12 @@
+= render partial: "confirm_update_modal"
+= render partial: 'datasets/help/license_change_modal'
+= render partial: 'datasets/dashboards/edit_top'
+= render partial: 'form'
+= render partial: 'datasets/dashboards/edit_bottom'
+= render partial: 'shared/loading_modal'
+= render partial: 'remote_file_modal'
+= render partial: 'api_modal'
+-if @dataset.org_creators
+  =render partial: 'offer_ind_auth_modal'
+-else
+  =render partial: 'offer_org_auth_modal'

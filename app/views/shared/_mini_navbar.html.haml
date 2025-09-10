@@ -1,0 +1,41 @@
+.hide-when-printing
+  / Static navbar
+  %div{"aria-hidden" => "true"}
+    %nav.navbar.navbar-mini
+      #minibar
+        %ul.nav.navbar-nav
+          %li.minibar-brand
+            %a{:href => "/"} Home
+          %li
+            %a{:href => "/datasets/new"}
+              %span.glyphicon.glyphicon-plus
+              Deposit
+          %li
+            %a{:href => "/datasets"}
+              %span.glyphicon.glyphicon-search
+              Find
+          %li
+            %a{:href => "/policies"}
+              %span.glyphicon.glyphicon-info-sign
+              Policies
+          %li
+            %a{:href => "/guides"}
+              %span.glyphicon.glyphicon-question-sign
+              Guides
+          %li
+            %a{:href => "/contact"}
+              %span.glyphicon.glyphicon-envelope
+              Contact
+        %ul.nav.navbar-nav.navbar-right
+          - if current_user
+            %li
+              %a(href="/datasets?editor=#{current_user.username}")
+                =current_user.name
+            %li
+              %a{href: "/logout"}
+                Log out
+          - else
+            %li
+              %a{href: "/login"}
+                Log in
+    / /.nav-collapse

@@ -1,0 +1,8 @@
+%title
+  = "Illinois Data Bank - Guide Sections"
+%h1 Listing Guide Sections
+=render partial: "guide/items/shared_index", locals: {items: @guide_sections, guide_level: "sections"}
+.row
+  .col-md-offset-9.col-md-3
+    = link_to "Add Section", "/guide/sections/new", class: "btn btn-success btn-block idb"
+

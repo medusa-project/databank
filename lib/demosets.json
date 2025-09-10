@@ -1,0 +1,121 @@
+{
+  "demosets": [
+    {
+      "title": "The Unicorn in LIS Literature: a preliminary analysis",
+      "publisher": "University of Illinois Urbana-Champaign",
+      "publication_year": "2016",
+      "description": "This dataset was created to answer the following question:  Does the word 'unicorn', occur in titles of Web of Science records in the 'INFORMATION SCIENCE LIBRARY SCIENCE' category?  This question was asked because the Research Data Service is developing a data repository and we enjoy using unicorns in our example deposits. We also enjoy candy.",
+      "license": "license.txt",
+      "keywords": "unicorns; nonsense; test",
+      "depositor_name": "Heidi Imker",
+      "depositor_email": "imker@example.com",
+      "creators": [
+        {
+          "family_name": "Imker",
+          "given_name": "Heidi J.",
+          "email": "imker@example.com",
+          "is_contact": true,
+          "row_position": 1
+        }
+      ],
+      "funders": [
+        {
+          "name": "DOE",
+          "identifier": "10.13039/100000015",
+          "identifier_scheme": "DOI",
+          "grant": "RFA-Unicorns"
+        }
+      ]
+    },
+    {
+      "title": "Characterization of enlO in the central metabolism of superfish",
+      "publisher": "University of Illinois Urbana-Champaign",
+      "publication_year": "2016",
+      "description": "Superfish need to metabolize stuff.",
+      "license": "CC01",
+      "keywords": "superfish; super; fish; enolase",
+      "depositor_name": "Heidi Imker",
+      "depositor_email": "imker@example.com",
+      "creators": [
+        {
+          "family_name": "Imker",
+          "given_name": "Heidi",
+          "email": "imker@example.com",
+          "is_contact": true,
+          "row_position": 1
+        }
+      ],
+      "funders": [
+        {
+          "name": "US Army",
+          "identifier": "10.13039/100006751",
+          "identifier_scheme": "DOI",
+          "grant": "Superfishgrant"
+        }
+      ],
+      "related_materials": [
+        {
+          "material_type": "Article",
+          "availability": "Available",
+          "link": "www.amazon.com",
+          "uri": "doi:10.5250.nogangow",
+          "uri_type": "DOI"
+        }
+      ]
+    },
+    {
+      "title": "Phylogenic Analysis of Condensation Domains in the AMB Biosynthetic Pathway",
+      "publisher": "University of Illinois Urbana-Champaign",
+      "publication_year": "2016",
+      "description": "The condensation domains in the NRPS biosynthetic gene clusters for production of antimetabolite L -2-amino-4-methoxy-trans-3-butenoic acid (AMB) in Pseudomonas aeruginosa have low homology to \"traditional\" condensation domains.  This dataset contains the FASTA sequences for phylogenetic analysis of these unusual domains as well as the tree diagram representations.    ",
+      "license": "CCBY4",
+      "corresponding_creator_name": "Heidi Imker",
+      "keywords": "condensation domain; NRPS; biosynthetic gene cluster",
+      "depositor_name": "Heidi Imker",
+      "depositor_email": "imker@example.com",
+      "creators": [
+        {
+          "family_name": "Imker",
+          "given_name": "Heidi",
+          "email": "imker@example.com",
+          "is_contact": true,
+          "row_position": 1
+        }
+      ],
+      "funders": [
+        {
+          "name": "NIH",
+          "identifier": "10.13039/100000002",
+          "identifier_scheme": "DOI",
+          "grant": "GM715468"
+        }
+      ]
+    },
+    {
+      "title": "Brain regions and molecular pathways responding to food reward type and value in honey bees.",
+      "publisher": "University of Illinois Urbana-Champaign",
+      "publication_year": "2016",
+      "description": "This is the dataset corresponding to the article \"Brain regions and molecular pathways responding to food reward type and value in honey bees,\" published in Genes, Brain, and Behavior. PMID 26566901 DOI: 10.1111/gbb.12275 ",
+      "license": "CCBY4",
+      "keywords": "honey bees, brain regions, reward behavior",
+      "depositor_name": "Colleen Depositor",
+      "depositor_email": "colleen.depositor@example.com",
+      "creators": [
+        {
+          "family_name": "McNeill",
+          "given_name": "M",
+          "email": "mm@example.com",
+          "is_contact": true,
+          "row_position": 1
+        },
+        {
+          "family_name": "Robinson",
+          "given_name": "G",
+          "email": "rg@examle.com",
+          "is_contact": false,
+          "row_position": 2
+        }
+      ]
+    }
+  ]
+}
