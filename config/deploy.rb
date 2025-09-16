@@ -2,7 +2,7 @@
 lock '3.19.2'
 
 set :application, 'databank'
-set :repo_url, 'git@github.com:medusa-project/databank.git'
+set :repo_url, 'https://github.com/medusa-project/databank.git'
 
 set :passenger_restart_with_touch, true
 
