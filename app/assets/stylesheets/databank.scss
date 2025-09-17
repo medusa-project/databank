@@ -610,3 +610,10 @@ caption.policy-document-history, caption.info-table {
     border-left: none;
   }
 }
+
+.glyphicon-warning-sign{
+  color: $color__red;
+  margin-left: 5px;
+  vertical-align: text-top;
+  cursor: help;
+}

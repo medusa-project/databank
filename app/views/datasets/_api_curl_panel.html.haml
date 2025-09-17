@@ -8,9 +8,12 @@
       .panel-body
         %p
           Requires
-          =succeed(",") do
+          =succeed(".") do
             %a(href="https://curl.haxx.se/" target="_blank" ) cURL
-          %em works on files up to 4 GB.
+        %p
+          For our pipeline, cURL method only works on files
+          %strong up to 4 GB.
+          %span(class="glyphicon glyphicon-warning-sign" aria-hidden="true")
 
         %p Copy and paste this command example. Where it says "binary=@myfile.csv", replace myfile.csv with your data file's name. Keep "binary=@" as it is.
 
