@@ -250,11 +250,11 @@ function initFileUpload() {
 
     // support drag-and-drop file upload
 
-    var dropElement = document.getElementById("file-drop-area");
+    // var dropElement = document.getElementById("file-drop-area");
 
-    if (dropElement !== null){
-      makeDroppable(dropElement, uploadSelectedFiles);
-    }
+    // if (dropElement !== null){
+    //   makeDroppable(dropElement, uploadSelectedFiles);
+    // }
 
     var selectElement = document.getElementById("file-select-area");
 

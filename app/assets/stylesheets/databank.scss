@@ -581,3 +581,32 @@ caption.policy-document-history, caption.info-table {
   color: white;
   background-color: $color__dark-navy;
 }
+
+.container-fluid.upload-options {
+  border: 1px solid $color__light-grey;
+  border-radius: 0;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.container-fluid.upload-options .row {
+  border-top: 1px solid $color__light-grey;
+  &:first-child {
+    border-top: none;
+  }
+}
+
+.container-fluid.upload-options .row .col-md-5,
+.container-fluid.upload-options .row .col-md-7 {
+  border-left: 1px solid $color__light-grey;
+  border-right: none;
+  border-bottom: none;
+  padding-top: 15px;
+  padding-left: 15px;
+  &:first-child {
+    border-left: none;
+  }
+}

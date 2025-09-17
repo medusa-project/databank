@@ -10,11 +10,15 @@
           %ul.list-unstyled
             %li
               Files larger than 50GB require special handling,
-              = link_to("submit a large file transfer request", "https://forms.illinois.edu/sec/1813779862").concat('.')
-            %li Files < 50GB can be uploaded via API (see command line tools for a sample script).
-            %li Files 4–15GB may be affected by your network; < 4GB can be reliably uploaded directly or via cURL.
+              = succeed "." do
+                = link_to("submit a large file transfer request", "https://forms.illinois.edu/sec/1813779862")
+            %li Files smaller than 50GB can be uploaded via API (see command line tools for a sample script).
+            %li Drag and drop or file selector is reliable for files less than 4GB (Files sized 4 to 15GB may depend on your network connection.)
             %li Limit 100 files per dataset; fewer is better for usability.
-            %li Use our File Grouping guide for folders or > 12 files.
+            %li
+              Use our
+              =link_to("File Grouping guide", "/guides#group")
+              for folders or more than 12 files.
 
   %div(id="datafiles-form")
     %input(type="hidden" name="datafile_index_max" id="datafile_index_max" value="#{@dataset.complete_datafiles.count.to_i}" )
