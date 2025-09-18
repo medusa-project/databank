@@ -1,25 +1,4 @@
 -if @dataset.datafiles.count <= 500
-  .panel-group(id="uploadGuide" role="tablist" aria-multiselectable="true")
-    .panel.panel-default
-      .panel-heading(role="tab" id="uploadGuideHeading")
-        %h4(class="panel-title")
-          %a(role="button" data-toggle="collapse" data-parent="#uploadGuide" href="#uploadGuidePanel" aria-expanded="#{@dataset.has_datafiles? ? 'false' : 'true'}" aria-controls="uploadGuidePanel" class="accordion-toggle#{@dataset.has_datafiles? ? ' collapsed' : ''}")
-            %span( class="metadata-label" ) File Upload General Guidance
-      %div(id="uploadGuidePanel" role="tabpanel" aria-labelledby="uploadGuideHeading" class="panel-collapse#{@dataset.has_datafiles? ? ' collapse' : ''}")
-        .panel-body
-          %ul.list-unstyled
-            %li
-              Files larger than 50GB require special handling,
-              = succeed "." do
-                = link_to("submit a large file transfer request", "https://forms.illinois.edu/sec/1813779862")
-            %li Files smaller than 50GB can be uploaded via API (see command line tools for a sample script).
-            %li Drag and drop or file selector is reliable for files less than 4GB (Files sized 4 to 15GB may depend on your network connection.)
-            %li Limit 100 files per dataset; fewer is better for usability.
-            %li
-              Use our
-              =link_to("File Grouping guide", "/guides#group")
-              for folders or more than 12 files.
-
   %div(id="datafiles-form")
     %input(type="hidden" name="datafile_index_max" id="datafile_index_max" value="#{@dataset.complete_datafiles.count.to_i}" )
     .panel-group(id="files" role="tablist" aria-multiselectable="true" style="display: #{@dataset.complete_datafiles.count > 0 ? 'block' : 'none' }")
