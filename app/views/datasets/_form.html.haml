@@ -247,25 +247,30 @@
       = render partial: 'datafiles_subform', locals: {f: f}
 
   - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
-
-    %ul.list-unstyled
-      %li Limit 100 files per dataset; fewer is better for usability.
-      %li
-        Use our
-        =link_to("File Grouping guide", "/guides#group")
-        for folders or more than 12 files.
-      %li For larger files or command line tools, open the advanced upload panel below.
     .container-fluid.upload-options
       .row
         .col-md-5
           %div(id="file-select-area")
             %i(class="fa fa-cloud-upload-alt fa-2x" aria-hidden="true" )
-            %label(for="file-select-area") Drop files here or click for file selector
+            %label(for="file-select-area")
+              Drop files here or
+              %button(type="button" class="btn btn-success")
+                %span(class="fa fa-laptop fa-lg" )
+                Select files from your computer
         .col-md-7
           %p
             Drag and drop or file selector is reliable for files
             %strong up to 4 GB.
           %p Files sized 4 to 15GB may experience upload timeouts or failures due to network instability.
+    %ul.list-unstyled
+      %li
+        %strong Limit 100 files per dataset;
+        fewer is better for usability.
+      %li
+        Use our
+        =link_to("File Grouping guide", "/guides#group")
+        for folders or more than 12 files.
+      %li For larger files or command line tools, open the advanced upload panel below.
     .panel-group(id="advancedUpload" role="tablist" aria-multiselectable="true")
       .panel.panel-default
         .panel-heading(role="tab" id="advancedUploadHeading")
