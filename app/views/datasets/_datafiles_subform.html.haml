@@ -6,7 +6,7 @@
 -if @dataset.datafiles.count <= 500
   %div(id="datafiles-form")
     %input(type="hidden" name="datafile_index_max" id="datafile_index_max" value="#{@dataset.complete_datafiles.count.to_i}" )
-    .panel-group(id="files" role="tablist" aria-multiselectable="true" style="display: #{@dataset.complete_datafiles.count > 0 ? 'block' : 'none' }")
+    .panel-group(id="files" role="tablist" aria-multiselectable="true")
       .panel.panel-default
         .panel-heading(role="tab" id="filesHeading")
           %h4(class="panel-title")
@@ -14,6 +14,31 @@
               %span(class="metadata-label" ) Files
         .panel-collapse.collapse.in(id="collapseFiles" role="tabpanel" aria-labelledby="filesHeading" )
           .panel-body
+            - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
+              .container-fluid.upload-options
+                .row
+                  .col-md-5
+                    %div(id="file-select-area")
+                      %i(class="fa fa-cloud-upload-alt fa-2x" aria-hidden="true" )
+                      %label(for="file-select-area")
+                        Drop files here or
+                        %button(type="button" class="btn btn-success")
+                          %span(class="fa fa-laptop fa-lg" )
+                          Select files from your computer
+                  .col-md-7
+                    %p
+                      Drag and drop or file selector is reliable for files
+                      %strong up to 4 GB.
+                    %p Files sized 4 to 15 GB may experience upload timeouts or failures due to network instability.
+              %ul.list-unstyled.upload-hints
+                %li
+                  %strong Limit 100 files per dataset;
+                  fewer is better for usability.
+                %li
+                  Use our
+                  =link_to("File Grouping guide", "/guides#group")
+                  for folders or more than 12 files.
+                %li For larger files or command line tools, open the advanced upload panel above.
             %table(class="table table-striped" id="datafiles")
               %tbody
 
