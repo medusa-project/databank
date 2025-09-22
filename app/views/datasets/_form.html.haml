@@ -244,82 +244,82 @@
           .panel-collapse.collapse(id="materialsPanel" role="tabpanel" aria-labelledby="materialsHeading" )
             .panel-body
               = render partial: 'materials_subform', locals: {f: f}
-      = render partial: 'datafiles_subform', locals: {f: f}
+      - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
+        = render partial: 'datafiles_subform', locals: {f: f}
+        %div(id="divFiles")
+        .container-fluid.upload-options
+          .row
+            .col-md-5
+              %div(id="file-select-area")
+                %i(class="fa fa-cloud-upload-alt fa-2x" aria-hidden="true" )
+                %label(for="file-select-area")
+                  Drop files here or
+                  %button(type="button" class="btn btn-success")
+                    %span(class="fa fa-laptop fa-lg" )
+                    Select files from your computer
+            .col-md-7
+              %p
+                Drag and drop or file selector is reliable for files
+                %strong up to 4 GB.
+              %p Files sized 4 to 15 GB may experience upload timeouts or failures due to network instability.
+        %ul.list-unstyled.upload-hints
+          %li
+            %strong Limit 100 files per dataset;
+            fewer is better for usability.
+          %li
+            Use our
+            =link_to("File Grouping guide", "/guides#group")
+            for folders or more than 12 files.
+          %li For larger files or command line tools, open the advanced upload panel below.
+        .panel-group(id="advancedUpload" role="tablist" aria-multiselectable="true")
+          .panel.panel-default
+            .panel-heading(role="tab" id="advancedUploadHeading")
+              %h4(class="panel-title")
+                %a(role="button" data-toggle="collapse" data-parent="#advancedUpload" href="#advancedUploadPanel" aria-expanded="false" aria-controls="advancedUploadPanel" class="accordion-toggle collapsed")
+                  %span( class="metadata-label" ) Advanced Upload Options
+            %div(id="advancedUploadPanel" role="tabpanel" aria-labelledby="advancedUploadHeading" class="panel-collapse collapse")
+              .panel-body
+                .container-fluid.upload-options
+                  .row
+                    .col-md-5
+                      .btn.btn-success.fileinput-button(id="api-modal-btn" role="button" )
+                        %span(class="fileinput-button-content")
+                          %span(class="glyphicon glyphicon-open" )
+                          %span(id='token-button-text')
+                            - if @dataset.current_token.nil?
+                              Get token for command line tools
+                            - else
+                              View token for command line tools
+                    .col-md-7
+                      %p
+                        for Illinois Data Bank, cURL can be used only for files
+                        %strong up to 4 GB.
+                      %p
+                        The API, as used in the included Python script, can be used for files
+                        %strong up to 50 GB.
 
-  - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
-    .container-fluid.upload-options
-      .row
-        .col-md-5
-          %div(id="file-select-area")
-            %i(class="fa fa-cloud-upload-alt fa-2x" aria-hidden="true" )
-            %label(for="file-select-area")
-              Drop files here or
-              %button(type="button" class="btn btn-success")
-                %span(class="fa fa-laptop fa-lg" )
-                Select files from your computer
-        .col-md-7
-          %p
-            Drag and drop or file selector is reliable for files
-            %strong up to 4 GB.
-          %p Files sized 4 to 15GB may experience upload timeouts or failures due to network instability.
-    %ul.list-unstyled
-      %li
-        %strong Limit 100 files per dataset;
-        fewer is better for usability.
-      %li
-        Use our
-        =link_to("File Grouping guide", "/guides#group")
-        for folders or more than 12 files.
-      %li For larger files or command line tools, open the advanced upload panel below.
-    .panel-group(id="advancedUpload" role="tablist" aria-multiselectable="true")
-      .panel.panel-default
-        .panel-heading(role="tab" id="advancedUploadHeading")
-          %h4(class="panel-title")
-            %a(role="button" data-toggle="collapse" data-parent="#advancedUpload" href="#advancedUploadPanel" aria-expanded="false" aria-controls="advancedUploadPanel" class="accordion-toggle collapsed")
-              %span( class="metadata-label" ) Advanced Upload Options
-        %div(id="advancedUploadPanel" role="tabpanel" aria-labelledby="advancedUploadHeading" class="panel-collapse collapse")
-          .panel-body
-            .container-fluid.upload-options
-              .row
-                .col-md-5
-                  .btn.btn-success.fileinput-button(id="api-modal-btn" role="button" )
-                    %span(class="fileinput-button-content")
-                      %span(class="glyphicon glyphicon-open" )
-                      %span(id='token-button-text')
-                        - if @dataset.current_token.nil?
-                          Get token for command line tools
-                        - else
-                          View token for command line tools
-                .col-md-7
-                  %p
-                    for Illinois Data Bank, cURL can be used only for files
-                    %strong up to 4 GB.
-                  %p
-                    The API, as used in the included Python script, can be used for files
-                    %strong up to 50 GB.
+                  .row
+                    .col-md-5
+                      =link_to("https://forms.illinois.edu/sec/1813779862", class: "btn btn-success fileinput-button idb", target: "_blank") do
+                        %span(class="large-text" aria-hidden="true")
+                          &#x1f45f;
+                        %span.sr-only Request large file transfer
+                        Request large file transfer
+                    .col-md-7
+                      %p Files larger than 50GB require special handling.
+                      %p See the large file transfer request form for details.
+                  - if can? :manage, @dataset
+                    .row.curator-only
+                      .col-md-5
+                        %button(type="button" class="btn btn-success fileinput-button" onclick="importFromGlobus()" )
+                          %span(class="glyphicon glyphicon-link")
+                          Import from Globus
+                      .col-md-7
+                        %p This is a curator tool. After a Globus transfer is complete, clicking this button will import the files into the dataset.
+                        %p This needs to be done after any Globus transfer. If additional files are added, this button can be clicked again to import the new files.
+                        %p This will not duplicate imports of files with the same name; this is checked during the process, so only new files will be imported.
+                        %p After clicking this button, the curator must refresh the page to see the imported files.
 
-              .row
-                .col-md-5
-                  =link_to("https://forms.illinois.edu/sec/1813779862", class: "btn btn-success fileinput-button idb", target: "_blank") do
-                    %span(class="large-text" aria-hidden="true")
-                      &#x1f45f;
-                    %span.sr-only Request large file transfer
-                    Request large file transfer
-                .col-md-7
-                  %p Files larger than 50GB require special handling.
-                  %p See the large file transfer request form for details.
-              - if can? :manage, @dataset
-                .row.curator-only
-                  .col-md-5
-                    %button(type="button" class="btn btn-success fileinput-button" onclick="importFromGlobus()" )
-                      %span(class="glyphicon glyphicon-link")
-                      Import from Globus
-                  .col-md-7
-                    %p This is a curator tool. After a Globus transfer is complete, clicking this button will import the files into the dataset.
-                    %p This needs to be done after any Globus transfer. If additional files are added, this button can be clicked again to import the new files.
-                    %p This will not duplicate imports of files with the same name; this is checked during the process, so only new files will be imported.
-                    %p After clicking this button, the curator must refresh the page to see the imported files.
-      %div(id="divFiles")
   .review-deposit-agreement.container-fluid
     - if (params[:action] == 'new')
       %div(id="review_link")

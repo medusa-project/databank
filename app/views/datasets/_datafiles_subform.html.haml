@@ -1,3 +1,8 @@
+-if current_user && current_user.role == 'admin'
+  .row
+    .col-md-4.col-md-offset-4.curator-only
+      %a(href="/datasets/#{@dataset.key}/datafiles" class="btn btn-primary btn-block idb")
+        Advanced File Management
 -if @dataset.datafiles.count <= 500
   %div(id="datafiles-form")
     %input(type="hidden" name="datafile_index_max" id="datafile_index_max" value="#{@dataset.complete_datafiles.count.to_i}" )
@@ -11,12 +16,7 @@
           .panel-body
             %table(class="table table-striped" id="datafiles")
               %tbody
-                -if current_user && current_user.role == 'admin'
-                  %tr
-                    %td.curator-only
-                      %span.col-md-4.col-md-offset-4
-                        %a(href="/datasets/#{@dataset.key}/datafiles" class="btn btn-primary btn-block idb")
-                          Advanced File Management
+
                 -draft = Databank::PublicationState::DRAFT_ARRAY.include?( @dataset.publication_state)
                 -can_edit = (can? :manage, @dataset ) || (can? :update, @dataset)
 

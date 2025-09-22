@@ -587,9 +587,15 @@ caption.policy-document-history, caption.info-table {
   border-radius: 0;
   margin-top: 15px;
   margin-bottom: 15px;
+  margin-right: 20%;
+  margin-left: 20%;
   padding-top: 0;
   padding-bottom: 0;
   overflow: hidden;
+}
+.upload-hints {
+  margin-left: 20%;
+  margin-right: 20%;
 }
 
 .container-fluid.upload-options .row {
