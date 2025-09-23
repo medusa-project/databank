@@ -20,7 +20,7 @@
                 -draft = Databank::PublicationState::DRAFT_ARRAY.include?( @dataset.publication_state)
                 -can_edit = (can? :manage, @dataset ) || (can? :update, @dataset)
 
-                -if draft && can_edit
+                -if draft && can_edit && @dataset.datafiles.count > 0
                   %tr
                     .row
                       %span.col-md-4
