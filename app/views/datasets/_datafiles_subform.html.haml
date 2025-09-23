@@ -84,7 +84,7 @@
                           %span{class: "col-md-2"}
                             - if draft && can_edit
                               %button(type="button" id="remove_#{i}" class="btn btn-danger btn-sm" onclick="remove_file_row(#{i})")
-                                %span(class="glyphicon glyphicon-trash")
+                                Delete
                           = df.hidden_field :_destroy, value: false
                           = df.hidden_field :web_id
             %div(id="datafiles_upload_progress")

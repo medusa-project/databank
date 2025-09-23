@@ -148,15 +148,15 @@ function handleCreatorTable(creator_type) {
             jQuery("#dataset_creators_attributes_" + creator_index + "_row_position").val(i);
             if ((i + 1) === (jQuery("#creator_table tr").length)) {
                 if (creator_type === org_creators_type){
-                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 1 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_institution_creator()' type='button'><span class='glyphicon glyphicon-plus'></span></button>");
+                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 1 )' type='button'>remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_institution_creator()' type='button'>new</button>");
                 } else {
-                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 0  )' type='button'><span class='glyphicon glyphicon-trash'></span></button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_person_creator()' type='button'><span class='glyphicon glyphicon-plus'></span></button>");
+                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 0  )' type='button'>remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_person_creator()' type='button'>new</button>");
                 }
             } else {
                 if (creator_type === org_creators_type) {
-                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 1  )' type='button'><span class='glyphicon glyphicon-trash'></span></button>");
+                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 1  )' type='button'>remove</button>");
                 } else {
-                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 0  )' type='button'><span class='glyphicon glyphicon-trash'></span></button>");
+                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 0  )' type='button'>remove</button>");
                 }
             }
         }
