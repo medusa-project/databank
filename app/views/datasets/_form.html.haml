@@ -245,6 +245,7 @@
             .panel-body
               = render partial: 'materials_subform', locals: {f: f}
       - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
+        = render partial: 'datafiles_subform', locals: {f: f}
         .panel-group(id="advancedUpload" role="tablist" aria-multiselectable="true")
           .panel.panel-default
             .panel-heading(role="tab" id="advancedUploadHeading")
@@ -293,7 +294,6 @@
                         %p This needs to be done after any Globus transfer. If additional files are added, this button can be clicked again to import the new files.
                         %p This will not duplicate imports of files with the same name; this is checked during the process, so only new files will be imported.
                         %p After clicking this button, the curator must refresh the page to see the imported files.
-        = render partial: 'datafiles_subform', locals: {f: f}
         %div(id="divFiles")
   .review-deposit-agreement.container-fluid
     - if (params[:action] == 'new')

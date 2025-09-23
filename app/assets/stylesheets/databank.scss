@@ -623,3 +623,7 @@ caption.policy-document-history, caption.info-table {
   vertical-align: text-top;
   cursor: help;
 }
+.line-above {
+  border-top: 1px solid $color__light-grey;
+  padding-top: 5px;
+}
