@@ -111,9 +111,9 @@ function handleFunderTable() {
             var funder_index = split_id[2];
 
             if ((i + 1 ) == (jQuery("#funder_table tr").length)) {
-                jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_funder_row(\x22" + funder_index + "\x22 )' type='button'>remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_funder_row()' type='button'>new</button>");
+                jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_funder_row(\x22" + funder_index + "\x22 )' type='button'>Remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_funder_row()' type='button'>New</button>");
             } else {
-                jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_funder_row(\x22" + funder_index + "\x22 )' type='button'>remove</button>");
+                jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_funder_row(\x22" + funder_index + "\x22 )' type='button'>Remove</button>");
             }
         }
     });

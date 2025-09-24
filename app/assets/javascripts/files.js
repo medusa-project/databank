@@ -124,7 +124,7 @@ function create_from_remote_unknown_size(){
             if (file.error) {
                 row = row + '<button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-warning-sign"></span>';
             } else {
-                row = row + '<button type="button" class="btn btn-danger btn-sm" onclick="remove_file_row(' + newId + ')">remove</button></span>';
+                row = row + '<button type="button" class="btn btn-danger btn-sm" onclick="remove_file_row(' + newId + ')">Remove</button></span>';
             }
 
             row = row + '</span></div></td></tr>';
@@ -486,7 +486,7 @@ function appendFileRow(newFile){
     if (file.error) {
         row = row + '<button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-warning-sign"></span>';
     } else {
-        row = row + '<button type="button" class="btn btn-danger btn-sm" onclick="remove_file_row(' + newId + ')">remove</button></span>';
+        row = row + '<button type="button" class="btn btn-danger btn-sm" onclick="remove_file_row(' + newId + ')">Remove</button></span>';
     }
 
     row = row + '</span></div></td></tr>';
