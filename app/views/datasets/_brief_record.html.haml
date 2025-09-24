@@ -70,10 +70,12 @@
     &nbsp;
 
   .record_citation
-    %a(href="/datasets/#{dataset.key}" )
-      %strong
-        =dataset.plain_text_citation
-
+    %h3.dataset-title
+      %a(href="/datasets/#{dataset.key}" )
+        %strong
+          =dataset.title
+    =dataset.creator_list
+    ="(#{dataset.publication_year})"
   -if dataset.description && dataset.description != ""
     %em
       .more

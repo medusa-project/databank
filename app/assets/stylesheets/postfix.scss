@@ -10,3 +10,17 @@ il-header *[slot=links] p.navitem {
     color: var(--il-blue);
     font: 700 1.25rem var(--il-font-sans);
 }
+h3.dataset-title {
+  margin-top: 0;
+  margin-bottom: 2px;
+  font-size: 1em;
+}
+h3.filter-heading {
+  margin: 0;
+  font-size: 1em;
+}
+h2.subhead {
+  margin: 0;
+  padding: 0;
+  font-size: 1.3em;
+}

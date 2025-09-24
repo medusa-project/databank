@@ -1,11 +1,12 @@
-%form(action="/datasets" id="searchForm" accept-charset="UTF-8" method="get" )
+%h1 Dataset Search
+%form(action="/datasets" id="searchForm" role="search" accept-charset="UTF-8" method="get" )
   .row
     .col-md-4
       .input-group.search-control
         -if params.has_key?('q') && params['q'] && params['q'].length > 0
-          %input(type="text" class="form-control q" name="q" aria-label="search input box" value="#{params['q']}" )
+          %input(type="search" class="form-control q" name="q" aria-label="search input box" value="#{params['q']}" )
         -else
-          %input(type="text" class="form-control q" name="q" aria-label="search input box" placeholder="search for datasets" )
+          %input(type="search" class="form-control q" name="q" aria-label="search input box" placeholder="search for datasets" )
         %span(class="input-group-btn" )
           %button(type="submit" class="btn btn-primary" id="submitSearch" aria-label="submit search" )
             %span(class="glyphicon glyphicon-search" aria-hidden="true" )
@@ -25,7 +26,7 @@
           %span(class="input-group-btn" )
             %button(class="btn btn-primary" aria-label="submit per page" )
               Go
-
+  %h2.subhead Filters
   .row
     .col-md-4
       %button(type="button" class="btn btn-success" onclick="clearFilters()")
@@ -76,7 +77,7 @@
               .panel.panel-default
                 .panel-heading
                   %legend(class="panel-title")
-                    Depositor
+                    %h3.filter-heading Depositor
                 .panel-body
                   -for row in @search.facet(:depositor).rows
                     -row_arr = row.value.split("|")
@@ -93,7 +94,7 @@
             .panel.panel-default
               .panel-heading
                 %legend(class="panel-title")
-                  Subject Area
+                  %h3.filter-heading Subject Area
               .panel-body
                 -for row in @search.facet(:subject_text).rows
                   - safe_value = row.value.gsub(' ', '_')
@@ -116,7 +117,7 @@
             .panel.panel-default
               .panel-heading
                 %legend(class="panel-title")
-                  Funder
+                  %h3.filter-heading Funder
               .panel-body
                 -for row in @search.facet(:funder_codes).rows
                   .facet
@@ -131,7 +132,7 @@
             .panel.panel-default
               .panel-heading
                 %legend(class="panel-title")
-                  Publication Year
+                  %h3.filter-heading Publication Year
               .panel-body
                 -@search.facet(:publication_year).rows.each do |row|
                   - if row.value != ""
@@ -148,7 +149,7 @@
             .panel.panel-default
               .panel-heading
                 %legend(class="panel-title")
-                  License
+                  %h3.filter-heading License
               .panel-body
                 -@search.facet(:license_code).rows.each do |row|
                   - if row.value != ""
@@ -166,7 +167,7 @@
               .panel.panel-default
                 .panel-heading
                   %legend(class="panel-title")
-                    Visibility
+                    %h3.filter-heading Visibility
                 .panel-body
                   -for row in @search.facet(:visibility_code).rows
                     .facet
@@ -180,7 +181,7 @@
     .col-md-8
       %title
         = "Illinois Data Bank Dataset Search Results"
-      %h1
-        Dataset Search Results
+      %h2.subhead
+        Results
       -@search.each_hit_with_result do |hit, dataset|
         = render 'brief_record', dataset:dataset
