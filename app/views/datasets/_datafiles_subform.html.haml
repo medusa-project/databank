@@ -65,10 +65,7 @@
             %div(id="datafiles_upload_progress")
             - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
               .text-center.line-above
-                %p
-                  Use our
-                  =link_to("File Grouping guide", "/guides#group")
-                  for folders or more than 12 files.
+                
               .container-fluid.upload-options
                 .row
                   .col-md-3.col-md-offset-2
@@ -82,16 +79,17 @@
                   .col-md-5
                     %ul.list-unstyled
                       %li
+                        Use our
+                        =link_to("File Grouping guide", "/guides#group")
+                        for folders or more than 12 files.
+                      %li
                         Drag and drop or file selector is reliable for files
                         %strong up to 4 GB.
                       %li Files sized 4 to 15 GB may experience upload timeouts or failures due to network instability.
-                      
-              .text-center
-                %p
-                  %strong Limit 100 files per dataset;
-                  fewer is better for usability.
-                %p For larger files or command line tools, open the Advanced Upload Options panel below.
-                
+                      %li
+                        %strong Limit 100 files per dataset;
+                        fewer is better for usability.
+                      %li For larger files or command line tools, open the Advanced Upload Options panel below.
 -else
   %jumbotron
     Error displaying files, please

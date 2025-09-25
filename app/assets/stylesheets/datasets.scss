@@ -365,6 +365,15 @@ legend.metadata-border {
   margin: 5px;
 }
 
+#file-select-area{
+  margin: 0;
+  padding-top: 20px;
+  background-color: $color__lightest-grey;
+  border: 2px dashed $color__medium-grey;
+  min-height: 100px;
+  text-align: center;
+}
+
 .highlight-background{
   background-color: $color__yellow-background;
 }
@@ -378,11 +387,6 @@ legend.metadata-border {
 .search-count{
   background-color: $color__lightest-grey;
 }
-
-//.preview{
-//
-//
-//}
 
 .preview{
   padding-left: 15px;
@@ -404,10 +408,6 @@ legend.metadata-border {
   overflow-y: scroll;
   overflow-x: scroll;
 }
-
-//div#box-select{
-//  top: 15px !important;
-//}
 
 a.morelink {
   text-decoration:none;

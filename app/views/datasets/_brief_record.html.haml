@@ -73,7 +73,7 @@
     %h3.dataset-title
       %a(href="/datasets/#{dataset.key}" )
         %strong
-          =dataset.title
+          =dataset.title || "(Untitled)"
     =dataset.creator_list
     ="(#{dataset.publication_year})"
   -if dataset.description && dataset.description != ""
