@@ -26,14 +26,14 @@
           %span(class="input-group-btn" )
             %button(class="btn btn-primary" aria-label="submit per page" )
               Go
-  %h2.subhead Filters
   .row
     .col-md-4
+      %h2.subhead{style: "display: inline-block; margin-right: 10px;"} Filters
       %button(type="button" class="btn btn-success" onclick="clearFilters()")
         Clear Filters
       -if @search && @search.total.positive?
         %button(type="button" class="btn btn-primary" onclick="generateReport()" )
-          Generate Report from Search Results
+          Generate Report from Search Results 
       -if @search && @search.total < 1
         .indent
           %em no results found
