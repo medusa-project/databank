@@ -129,3 +129,4 @@ node_modules
 .idea
 
 /config/credentials/demo-rockjy.key
+/app/views/guide/scratch.html
