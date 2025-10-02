@@ -2,5 +2,7 @@
 
 class PoliciesController < ApplicationController
   # Responds to `GET /policies`
-  def index; end
+  def index
+    @title = "Illinois Data Bank Policies"
+  end
 end

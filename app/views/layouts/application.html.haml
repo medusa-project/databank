@@ -1,6 +1,10 @@
 !!!
 %html{lang: "en"}
   %head
+    -if @title
+      %title= @title
+    -else
+      %title Illinois Data Bank
     -# Google Tag Manager
     - if Rails.env.production? || Rails.env.prod_rocky?
       :javascript
@@ -24,7 +28,6 @@
     %script(type="module" src="//cdn.toolkit.illinois.edu/3/toolkit.js")
     %script{type: "module", async: true, src: "/idb-header.js"}
     %script{type: "module", async: true, src: "https://cdn.brand.illinois.edu/components/il-footer.mjs"}
-    
     = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
     = javascript_include_tag 'application', 'data-turbolinks-track' => true
     %script{src: "https://cdn.disability.illinois.edu/skipto.min.js"}

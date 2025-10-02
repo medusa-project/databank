@@ -1,4 +1,3 @@
-<title><%= "#{@dataset.title || 'Untitled Dataset'}" %></title>
 <h1 aria-label="#{@dataset.title || 'Untitled Dataset'}"></h1>
 <% if [Databank::PublicationState::RELEASED, Databank::PublicationState::TempSuppress::FILE, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state) %>
   <%= @dataset.structured_data.html_safe %>

@@ -109,6 +109,7 @@ collaborators to access the data files while the dataset is not public.</li>
       user = nil
     end
     @datasets = Dataset.select(&:metadata_public?) # used for public json response
+    @title = "Illinois Data Bank Datasets"
     @search = Dataset.filtered_list(user_role: user_role, user: user, params: params)
     @report = Dataset.citation_report(@search, request.original_url, current_user)
     send_data @report, filename: "report.txt" if params.has_key?("download") && params["download"] == "now"
@@ -126,6 +127,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.ensure_version_group
     set_file_mode
     @dataset.handle_related_materials
+    @title = @dataset.title || "Untitled Dataset"
   end
 
   def suppression_action
@@ -183,6 +185,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.funders.build
     @dataset.related_materials.build
     set_file_mode
+    @title = "Deposit Agreement"
   end
 
   # GET /datasets/1/edit
@@ -209,7 +212,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @license_info_arr = LICENSE_INFO_ARR
 
     @dataset.subject = Databank::Subject::NONE unless @dataset.subject
-    authorize! :update, @dataset
+    @title = "Edit Dataset"
   end
 
   def get_new_token
@@ -362,6 +365,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def pre_deposit
     @dataset = Dataset.new
+    @title = "Pre-Deposit Considerations"
     set_file_mode
   end
 
@@ -369,8 +373,8 @@ collaborators to access the data files while the dataset is not public.</li>
     @previous = Dataset.find_by(key: params[:id])
     @previous ||= Dataset.find(params[:dataset_id])
     raise ActiveRecord::RecordNotFound unless @previous
-
     @dataset = Dataset.new
+    @title = "New Dataset Version"
     set_file_mode
   end
 
