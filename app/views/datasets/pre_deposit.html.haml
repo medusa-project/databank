@@ -7,7 +7,7 @@
   .panel.panel-default
     .panel-heading(role="tab" id="largeHeading")
       %a( role="button" data-toggle="collapse" data-parent="#large" href="#largePanel" aria-expanded="false" aria-controls="largePanel" class="accordion-toggle collapsed" )
-        %h2.panel-title{style: "display: inline-block; margin-right: 10px;"} Large Files
+        %h2.panel-title Large Files
         %span( class="metadata-label" )Files larger than 50 GB require special handling. (click to expand)
     .panel-collapse.collapse(id="largePanel" role="tabpanel" aria-labelledby="largeHeading" )
       .panel-body
@@ -22,8 +22,8 @@
   .panel.panel-default
     .panel-heading(role="tab" id="licenseHeading")
       %a( role="button" data-toggle="collapse" data-parent="#license" href="#licensePanel" aria-expanded="false" aria-controls="licensePanel" class="accordion-toggle collapsed" )
-        %h2.panel-title{style: "display: inline-block; margin-right: 10px;"} License Selection
-        %span( class="metadata-label" )You will need to select a license for your dataset. (click to expand)
+        %h2.panel-title License Selection
+        %span.panel-title( class="metadata-label" )You will need to select a license for your dataset. (click to expand)
     .panel-collapse.collapse(id="licensePanel" role="tabpanel" aria-labelledby="licenseHeading" )
       .panel-body
         %p
@@ -48,7 +48,7 @@
   .panel.panel-default
     .panel-heading(role="tab" id="contactHeading")
       %a( role="button" data-toggle="collapse" data-parent="#contact" href="#contactPanel" aria-expanded="false" aria-controls="contactPanel" class="accordion-toggle collapsed" )
-        %h2.panel-title{style: "display: inline-block; margin-right: 10px;"} Select Primary Contact
+        %h2.panel-title Select Primary Contact
         %span( class="metadata-label" ) You will need to select a long-term primary contact for your dataset. (click to expand)
     .panel-collapse.collapse(id="contactPanel" role="tabpanel" aria-labelledby="contactHeading" )
       .panel-body
@@ -58,7 +58,7 @@
   .panel.panel-default
     .panel-heading(role="tab" id="embargoHeading")
       %a( role="button" data-toggle="collapse" data-parent="#embargo" href="#embargoPanel" aria-expanded="false" aria-controls="embargoPanel" class="accordion-toggle collapsed" )
-        %h2.panel-title{style: "display: inline-block; margin-right: 10px;"} Delaying Publication
+        %h2.panel-title Delaying Publication
         %span( class="metadata-label" ) You will be offered the option to delay publication of your dataset. (click to expand)
     .panel-collapse.collapse(id="embargoPanel" role="tabpanel" aria-labelledby="embargoHeading" )
       .panel-body

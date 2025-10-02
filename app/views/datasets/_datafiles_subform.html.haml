@@ -9,9 +9,8 @@
     .panel-group(id="files" role="tablist" aria-multiselectable="true")
       .panel.panel-default
         .panel-heading(role="tab" id="filesHeading")
-          %h4(class="panel-title")
-            %a(class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#files" href="#collapseFiles" aria-expanded="true" aria-controls="collapseFiles" )
-              %span(class="metadata-label" ) Files
+          %a(class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#files" href="#collapseFiles" aria-expanded="true" aria-controls="collapseFiles" )
+            %h2.panel-title.metadata-label Files
         .panel-collapse.collapse.in(id="collapseFiles" role="tabpanel" aria-labelledby="filesHeading" )
           .panel-body
             %table(class="table table-striped" id="datafiles")

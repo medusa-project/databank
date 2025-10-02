@@ -59,7 +59,8 @@
             #welcome-overlay
               %p The Illinois Data Bank is a public access repository for publishing research data from the University of Illinois Urbana-Champaign
               %p
-                = link_to 'Learn how we meet trustworthy repository standards', "/guides#desirable_characteristics"
+                %a.underline{href: "/guides#desirable_characteristics"}
+                  Learn how we meet trustworthy repository standards
         .container-fluid
           = yield
       = render partial: "shared/campus_footer"

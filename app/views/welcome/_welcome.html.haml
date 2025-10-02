@@ -17,7 +17,7 @@
           %li is open to anyone in the world.
           %li
             =surround('receives a stable identifier (',  ') for easy reference and citation.') do
-              %a{href: "/guides#doi", target: "_blank"} DOI
+              %a.underline{href: "/guides#doi", target: "_blank"} DOI
           %li is readily available for anyone to access for a minimum of 5 years.
           %li is located in a stable environment that complies with many funder and publisher requirements.
         %button(type="button" class="btn btn-default" onclick="window.open('/guides#submission')" )
@@ -54,7 +54,7 @@
 
           %hr
           %p
-            %a(href="/researcher_spotlights") See all researcher spotlights
+            %a(href="/researcher_spotlights" class="btn btn-default") See all researcher spotlights
       -else
         .col-md-4.featured-researcher
           %h2 Researcher Spotlight
@@ -62,5 +62,5 @@
             The Illinois Data Bank features researchers who deposit data. Check back soon for our next spotlight.
           %hr
           %p
-            %a(href="/researcher_spotlights") See all researcher spotlights
+            %a(href="/researcher_spotlights" class="btn btn-default") See all researcher spotlights
 

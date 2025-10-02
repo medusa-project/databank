@@ -24,7 +24,7 @@ a.intense:visited {
 /* mouse over link */
 a.intense:hover {
   color: $color__orange-red;
-  text-weight: bold;
+  font-weight: bold;
   background-color: $color__lighter_blue;
 }
 
@@ -184,29 +184,6 @@ div {
     list-style: square;
   }
 }
-
-//a.btn {
-//  color: $color__text-light;
-//&:visited {
-//    color: $color__text-light;
-//  }
-//  &:hover {
-//    color: $color__text-light;
-//    background-color: $color__dark-navy;
-//  }
-//}
-
-//a.btn {
-//  color: red;
-//  &:visited {
-//    color: purple;
-//  }
-//  &:hover {
-//    color: orange;
-//    background-color: yellow;
-//  }
-//}
-
 
 .bs-callout-info {
   padding-bottom: 10px;

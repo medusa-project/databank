@@ -1,9 +1,5 @@
-<title>Illinois Data Bank - Dataset</title>
-<h1 aria-label="dataset"></h1>
-<% if current_user&.provider == 'identity' && current_user.role == Databank::UserRole::NETWORK_REVIEWER %>
-  <%= render partial: 'data_curation_network/heading' %>
-<% end %>
-
+<title><%= "#{@dataset.title || 'Untitled Dataset'}" %></title>
+<h1 aria-label="#{@dataset.title || 'Untitled Dataset'}"></h1>
 <% if [Databank::PublicationState::RELEASED, Databank::PublicationState::TempSuppress::FILE, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state) %>
   <%= @dataset.structured_data.html_safe %>
 <% end %>
@@ -52,17 +48,15 @@
     <div class="panel-group" id="versionGroup" role="tablist" aria-multiselectable="true">
       <div class="panel panel-default">
         <div class="panel-heading" role="tab" id="versionGroupHeading">
-          <div class="panel-title">
-            <% if @dataset.version_group.group_hash[:entries].length > 1 %>
-              <a role="button" data-toggle="collapse" data-parent="#versionGroup" href="#versionGroupPanel" aria-expanded="true" aria-controls="versionGroupPanel" class="accordion-toggle">
-                <span class="metadata-label">Versions in Illinois Data Bank</span>
-              </a>
-            <% else %>
-              <a role="button" data-toggle="collapse" data-parent="#versionGroup" href="#versionGroupPanel" aria-expanded="false" aria-controls="versionGroupPanel" class="accordion-toggle collapsed">
-                <span class="metadata-label">Versions</span>
-              </a>
-            <% end %>
-          </div>
+          <% if @dataset.version_group.group_hash[:entries].length > 1 %>
+            <a role="button" data-toggle="collapse" data-parent="#versionGroup" href="#versionGroupPanel" aria-expanded="true" aria-controls="versionGroupPanel" class="accordion-toggle">
+              <div class="panel-title metadata-label">Versions in Illinois Data Bank</div>
+            </a>
+          <% else %>
+            <a role="button" data-toggle="collapse" data-parent="#versionGroup" href="#versionGroupPanel" aria-expanded="false" aria-controls="versionGroupPanel" class="accordion-toggle collapsed">
+              <h2 class="panel-title metadata-label">Versions</h2>
+            </a>
+          <% end %>
         </div>
         <div class="panel-collapse collapse
         <% if @dataset.version_group.group_hash[:entries].length > 1 %> in
@@ -123,31 +117,26 @@
   <% end %>
 
   <% if @dataset.publication_state != Databank::PublicationState::DRAFT %>
-
     <% if (can? :manage, @dataset) || ([Databank::PublicationState::RELEASED, Databank::PublicationState::PermSuppress::FILE, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state) && @dataset.hold_state != Databank::PublicationState::TempSuppress::METADATA && !@dataset.suppress_changelog) %>
       <div class="panel-group" id="changelog" role="tablist" aria-multiselectable="true">
         <div class="panel panel-default">
           <div class="panel-heading" role="tab" id="changelogHeading">
-            <div class="panel-title">
-              <a role="button" data-toggle="collapse" data-parent="#changelog" href="#changelogPanel" aria-expanded="false" aria-controls="changelogPanel" class="accordion-toggle collapsed">
-                <span class="metadata-label">Change Log</span>
-              </a>
-            </div>
+            <a role="button" data-toggle="collapse" data-parent="#changelog" href="#changelogPanel" aria-expanded="false" aria-controls="changelogPanel" class="accordion-toggle collapsed">
+              <h2 class="panel-title metadata-label">Change Log</h2>
+            </a>
           </div>
+
           <div class="panel-collapse collapse" id="changelogPanel" role="tabpanel" aria-labelledby="changelogHeading">
             <div class="panel-body">
               <p><a href="/help?context=changelog&key=<%= @dataset.key %>">Contact the Research Data Service</a> for
                 help interpreting this log.</p>
 
               <%= render partial: "show_changelog" %>
-
             </div>
           </div>
         </div>
       </div>
-
     <% end %>
-
   <% end %>
 
   <% if can? :update, @dataset %>

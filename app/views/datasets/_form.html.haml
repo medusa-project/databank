@@ -1,6 +1,16 @@
 -if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
   =render partial: 'read_only_alert'
 -else
+  - if @dataset.errors.any?
+    .error_explaination
+      = "#{pluralize(@dataset.errors.count, "error")} prohibited this dataset from being saved."
+      %ul
+        - @dataset.errors.full_messages.each do |msg|
+          %li
+            = msg
+  
+%span( id="doi-preview" )
+  = @dataset.identifier && @dataset.identifier != "" ? "#{@dataset.persistent_url}" : ""          
   %div(id="main-form-top")
     = form_for(@dataset, :html => {"data-toggle" => "validator", :multipart => true, :role => "form", :enctype => "multipart/form-data", :class => "input-append dataset-form" }) do |f|
       =f.hidden_field :have_permission
@@ -11,11 +21,9 @@
       .panel-group(id="description" role="tablist" aria-multiselectable="true")
         .panel.panel-default
           .panel-heading(role="tab" id="descriptionHeading")
-            %h4(class="panel-title")
-              %a(class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#description" href="#descriptionPanel" aria-expanded="true" aria-controls="descriptionPanel")
-                %span( class="metadata-label" )
-                  Description
-            %br
+            %a(class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#description" href="#descriptionPanel" aria-expanded="true" aria-controls="descriptionPanel")
+              %h2.panel-title.metadata-label Description
+          .indent
             Citation Preview:
             %span( id="creator-preview" )
               = @dataset.creator_list && @dataset.creator_list != "" ? @dataset.creator_list : "[Creator List]"
@@ -24,17 +32,8 @@
             %span( id="title-preview" )
               = @dataset.title && @dataset.title != "" ? "#{@dataset.title}." : "[The Title]."
             University of Illinois Urbana-Champaign.
-            %span( id="doi-preview" )
-              = @dataset.identifier && @dataset.identifier != "" ? "#{@dataset.persistent_url}" : ""
           .panel-collapse.collapse.in(id="descriptionPanel" role="tabpanel" aria-labelledby="descriptionHeading" )
             .panel-body
-              - if @dataset.errors.any?
-                .error_explaination
-                  = "#{pluralize(@dataset.errors.count, "error")} prohibited this dataset from being saved."
-                  %ul
-                    - @dataset.errors.full_messages.each do |msg|
-                      %li
-                        = msg
               .row
                 .col-md-6
                   .form-group.required
@@ -219,9 +218,8 @@
         .panel-group(id="curatorHelp" role="tablist" aria-multiselectable="true" class="curator-only")
           .panel.panel-default
             .panel-heading(role="tab" id="curatorHelpHeading")
-              %h4(class="panel-title")
-                %a( role="button" data-toggle="collapse" data-parent="#curatorHelp" href="#curatorHelpPanel" aria-expanded="false" aria-controls="curatorHelpPanel" class="accordion-toggle collapsed" )
-                  %span( class="metadata-label" ) Curator-only form elements help
+              %a( role="button" data-toggle="collapse" data-parent="#curatorHelp" href="#curatorHelpPanel" aria-expanded="false" aria-controls="curatorHelpPanel" class="accordion-toggle collapsed" )
+                %h2.panel-title.metadata-label Curator-only form elements help
             .panel-collapse.collapse(id="curatorHelpPanel" role="tabpanel" aria-labelledby="curatorHelpHeading" )
               .panel-body
                 = render partial: 'datasets/help/curator_doi_tasks'
@@ -229,18 +227,16 @@
       .panel-group(id="funder" role="tablist" aria-multiselectable="true")
         .panel.panel-default
           .panel-heading(role="tab" id="funderHeading")
-            %h4(class="panel-title")
-              %a( role="button" data-toggle="collapse" data-parent="#funder" href="#funderPanel" aria-expanded="false" aria-controls="funderPanel" class="accordion-toggle collapsed" )
-                %span( class="metadata-label" ) Funder
+            %a( role="button" data-toggle="collapse" data-parent="#funder" href="#funderPanel" aria-expanded="false" aria-controls="funderPanel" class="accordion-toggle collapsed" )
+              %h2.panel-title.metadata-label Funder
           .panel-collapse.collapse(id="funderPanel" role="tabpanel" aria-labelledby="funderHeading" )
             .panel-body
               = render partial: 'funders_subform', locals: {f: f}
       .panel-group(id="materials" role="tablist" aria-multiselectable="true")
         .panel.panel-default
           .panel-heading(role="tab" id="materialsHeading")
-            %h4(class="panel-title")
-              %a(role="button" data-toggle="collapse" data-parent="#materials" href="#materialsPanel" aria-expanded="false" aria-controls="materialsPanel" class="accordion-toggle collapsed" )
-                %span( class="metadata-label" ) Relationships with articles, code, other datasets, and other resources
+            %a(role="button" data-toggle="collapse" data-parent="#materials" href="#materialsPanel" aria-expanded="false" aria-controls="materialsPanel" class="accordion-toggle collapsed" )
+              %h2.panel-title.metadata-label Relationships with articles, code, other datasets, and other resources
           .panel-collapse.collapse(id="materialsPanel" role="tabpanel" aria-labelledby="materialsHeading" )
             .panel-body
               = render partial: 'materials_subform', locals: {f: f}
@@ -249,9 +245,8 @@
         .panel-group(id="advancedUpload" role="tablist" aria-multiselectable="true")
           .panel.panel-default
             .panel-heading(role="tab" id="advancedUploadHeading")
-              %h4(class="panel-title")
-                %a(role="button" data-toggle="collapse" data-parent="#advancedUpload" href="#advancedUploadPanel" aria-expanded="false" aria-controls="advancedUploadPanel" class="accordion-toggle collapsed")
-                  %span( class="metadata-label" ) Advanced Upload Options
+              %a(role="button" data-toggle="collapse" data-parent="#advancedUpload" href="#advancedUploadPanel" aria-expanded="false" aria-controls="advancedUploadPanel" class="accordion-toggle collapsed")
+                %h2.panel-title.metadata-label Advanced Upload Options
             %div(id="advancedUploadPanel" role="tabpanel" aria-labelledby="advancedUploadHeading" class="panel-collapse collapse")
               .panel-body
                 .container-fluid.upload-options
