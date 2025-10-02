@@ -1,4 +1,6 @@
-<h1 aria-label="#{@dataset.title || 'Untitled Dataset'}"></h1>
+<h1>
+  <%= @dataset.title || "Untitled Dataset" %>
+</h1>
 <% if [Databank::PublicationState::RELEASED, Databank::PublicationState::TempSuppress::FILE, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state) %>
   <%= @dataset.structured_data.html_safe %>
 <% end %>
@@ -12,7 +14,7 @@
 <% end %>
 <% if (can? :manage, @dataset) %>
   <div class="curator-only">
-    <h3>Curator Control Links</h3>
+    <h2>Curator Control Links</h3>
     <%= link_to("Permissions", "/datasets/#{@dataset.key}/permissions") %>
     &nbsp;|&nbsp;
     <%= link_to("Review Requests", "/datasets/#{@dataset.key}/review_requests") %>

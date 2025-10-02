@@ -1,8 +1,5 @@
 .panel.panel-default
   .splash-metadata.panel-body
-
-    %span(class="dataset-title")
-      = (!dataset.title || dataset.title.empty?) ? "[Title not provided]" : dataset.title
     .citation-block
       .citation
         .metadata-label
@@ -44,6 +41,8 @@
               This link will not resolve until the dataset is published.
 
     .metadata-block
+      %h2.section-title
+        Metadata
       %table(class="table borderless" aria-label="dataset metadata" )
         %thead
           %tr
@@ -53,14 +52,14 @@
           -if dataset.description && dataset.description != ''
             %tr
               %td.resource-label
-                %span.metadata-label
+                %h3.metadata-label
                   Dataset Description
               %td
                 = simple_format(dataset.description)
           -if dataset.subject && dataset.subject != ''
             %tr
               %td.resource-label
-                %span.metadata-label
+                %h3.metadata-label
                   Subject
               %td
                 %a(href="#{IDB_CONFIG[:root_url_text]}/datasets?sort_by=sort_updated_desc&q=&subjects%5B%5D=#{CGI.escape(dataset.subject)}" )
@@ -68,32 +67,29 @@
           -if dataset.keywords && !dataset.keywords.empty?
             %tr
               %td.resource-label
-                %span.metadata-label Keywords
+                %h3.metadata-label Keywords
               %td
                 = dataset.keywords
           %tr
             %td.resource-label
-              %span.metadata-label License
+              %h3.metadata-label License
             %td
               = dataset.license_name
           - if [Databank::PublicationState::Embargo::METADATA, Databank::PublicationState::Embargo::FILE].include?(dataset.publication_state) || (dataset.publication_state == Databank::PublicationState::DRAFT && dataset.release_date && dataset.release_date > Date.current())
             %tr
               %td.resource-label
-                %span(class="metadata-label")
-                  Release Date
+                %h3.metadata-label Release Date
               %td
                 = dataset.release_date
           - dataset.funders.each do |funder|
             %tr
               %td.resource-label
-                %span.metadata-label
-                  Funder
+                %h3.metadata-label Funder
               %td
                 = funder.display_info
           %tr
             %td.resource-label
-              %span.metadata-label
-                Corresponding Creator
+              %h3.metadata-label Corresponding Creator
             %td
               -if (!dataset.corresponding_creator_name || dataset.corresponding_creator_name.empty?)
                 ="[corresponding creator name not provided]"
@@ -102,31 +98,30 @@
           -if dataset.contributor_list && dataset.contributor_list != ''
             %tr
               %td.resource-label
-                %span.metadata-label
-                  Additional Contact(s)
+                %h3.metadata-label Additional Contact(s)
               %td
                 =dataset.contributor_list
           -if can? :manage, dataset
             %tr.curator-only
               %td.resource-label
-                %span.metadata-label Depositor:
+                %h3.metadata-label Depositor:
               %td
                 = dataset.depositor_name
             %tr.curator-only
               %td.resource-label
-                %span.metadata-label Corresponding Creator Email
+                %h3.metadata-label Corresponding Creator Email
               %td
                 = (!dataset.corresponding_creator_email || dataset.corresponding_creator_email.empty?) ? "[corresponding creator email not provided]" : dataset.corresponding_creator_email
             %tr.curator-only
               %td.resource-label
-                %span.metadata-label Depositor Email:
+                %h3.metadata-label Depositor Email:
               %td
                 = dataset.depositor_email
 
           -if dataset.total_downloads > 0
             %tr
               %td.resource-label
-                %span.metadata-label Downloaded
+                %h3.metadata-label Downloaded
               %td
                 = pluralize(dataset.total_downloads, 'time')
           %tr
@@ -135,10 +130,9 @@
                 .panel-group(id="related" role="tablist" aria-multiselectable="true")
                   .panel.panel-default
                     .panel-heading.subdued-heading(role="tab" id="relatedHeading")
-                      .panel-title
-                        %a( role="button" data-toggle="collapse" data-parent="#related" href="#relatedPanel" aria-expanded="false" aria-controls="relatedPanel" class="accordion-toggle collapsed" )
-                          %span( class="metadata-label" )
-                            = "Related Materials (#{dataset.materials_related.length})"
+                      %a( role="button" data-toggle="collapse" data-parent="#related" href="#relatedPanel" aria-expanded="false" aria-controls="relatedPanel" class="accordion-toggle collapsed" )
+                        %h3.panel-title.metadata-label
+                          = "Related Materials (#{dataset.materials_related.length})"
                     .panel-collapse.collapse(id="relatedPanel" role="tabpanel" aria-labelledby="relatedHeading" )
                       .panel-body
                         = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_related}
@@ -148,10 +142,9 @@
                   .panel-group(id="cited" role="tablist" aria-multiselectable="true")
                     .panel.panel-default
                       .panel-heading.subdued-heading(role="tab" id="citedHeading")
-                        .panel-title
-                          %a( role="button" data-toggle="collapse" data-parent="#cited" href="#citedPanel" aria-expanded="false" aria-controls="citedPanel" class="accordion-toggle collapsed" )
-                            %span( class="metadata-label" )
-                              = "Cited By (#{dataset.materials_cited_by.length})"
+                        %a( role="button" data-toggle="collapse" data-parent="#cited" href="#citedPanel" aria-expanded="false" aria-controls="citedPanel" class="accordion-toggle collapsed" )
+                          %h3.panel-title.metadata-label
+                            = "Cited By (#{dataset.materials_cited_by.length})"
                       .panel-collapse.collapse(id="citedPanel" role="tabpanel" aria-labelledby="citedHeading" )
                         .panel-body
                           = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_cited_by}
