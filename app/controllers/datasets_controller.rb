@@ -109,7 +109,7 @@ collaborators to access the data files while the dataset is not public.</li>
       user = nil
     end
     @datasets = Dataset.select(&:metadata_public?) # used for public json response
-    @title = "Illinois Data Bank Datasets"
+    @title = "Datasets"
     @search = Dataset.filtered_list(user_role: user_role, user: user, params: params)
     @report = Dataset.citation_report(@search, request.original_url, current_user)
     send_data @report, filename: "report.txt" if params.has_key?("download") && params["download"] == "now"
@@ -212,7 +212,11 @@ collaborators to access the data files while the dataset is not public.</li>
     @license_info_arr = LICENSE_INFO_ARR
 
     @dataset.subject = Databank::Subject::NONE unless @dataset.subject
-    @title = "Edit Dataset"
+    if @dataset.title
+      @title = "Edit #{@dataset.title}"
+    else
+      @title = "Edit Untitled Dataset"
+    end
   end
 
   def get_new_token
@@ -374,7 +378,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @previous ||= Dataset.find(params[:dataset_id])
     raise ActiveRecord::RecordNotFound unless @previous
     @dataset = Dataset.new
-    @title = "New Dataset Version"
+    @title = "New Version"
     set_file_mode
   end
 

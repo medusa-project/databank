@@ -3,6 +3,6 @@
 class PoliciesController < ApplicationController
   # Responds to `GET /policies`
   def index
-    @title = "Illinois Data Bank Policies"
+    @title = "Policies"
   end
 end
