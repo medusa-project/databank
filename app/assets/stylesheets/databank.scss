@@ -569,3 +569,17 @@ caption.policy-document-history, caption.info-table {
   border-top: 1px solid $color__light-grey;
   padding-top: 5px;
 }
+h2.button-label, h3.button-label {
+  display: inline-block;
+  margin-left: 5px;
+  margin-bottom: 0;
+  margin-top: 0;
+  padding: 0;
+  font-size: 1em;
+  font-weight: normal;
+}
+
+.button-row {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

@@ -127,7 +127,11 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.ensure_version_group
     set_file_mode
     @dataset.handle_related_materials
-    @title = @dataset.title || "Untitled Dataset"
+    if @dataset.metadata_public? || @shared_by_link 
+      @title = @dataset.title || "Untitled Dataset"
+    else
+      @title = "Restricted Dataset"
+    end
   end
 
   def suppression_action
@@ -147,7 +151,6 @@ collaborators to access the data files while the dataset is not public.</li>
     authorize! :manage, @dataset
     @previous = @dataset.previous_idb_dataset
   end
-
 
   def review_requests
     authorize! :manage, @dataset
@@ -256,8 +259,6 @@ collaborators to access the data files while the dataset is not public.</li>
       end
     end
   end
-
-
 
   # PATCH/PUT /datasets/1
   # PATCH/PUT /datasets/1.json
@@ -543,7 +544,6 @@ collaborators to access the data files while the dataset is not public.</li>
       end
     end
   end
-
 
   def permanently_suppress_metadata
     authorize! :manage, @dataset
