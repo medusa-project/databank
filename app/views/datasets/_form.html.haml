@@ -18,9 +18,9 @@
       =f.hidden_field :agree
       =f.hidden_field :org_creators
       =f.hidden_field :publication_state
-      .panel-group(id="description" role="tablist" aria-multiselectable="true")
+      .panel-group(id="description" aria-multiselectable="true")
         .panel.panel-default
-          .panel-heading(role="tab" id="descriptionHeading")
+          .panel-heading(id="descriptionHeading")
             %a(class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#description" href="#descriptionPanel" aria-expanded="true" aria-controls="descriptionPanel")
               %h2.panel-title.metadata-label Description
           .indent
@@ -215,26 +215,26 @@
 
       - if can? :manage, @dataset
 
-        .panel-group(id="curatorHelp" role="tablist" aria-multiselectable="true" class="curator-only")
+        .panel-group(id="curatorHelp" aria-multiselectable="true" class="curator-only")
           .panel.panel-default
-            .panel-heading(role="tab" id="curatorHelpHeading")
+            .panel-heading(id="curatorHelpHeading")
               %a( role="button" data-toggle="collapse" data-parent="#curatorHelp" href="#curatorHelpPanel" aria-expanded="false" aria-controls="curatorHelpPanel" class="accordion-toggle collapsed" )
                 %h2.panel-title.metadata-label Curator-only form elements help
             .panel-collapse.collapse(id="curatorHelpPanel" role="tabpanel" aria-labelledby="curatorHelpHeading" )
               .panel-body
                 = render partial: 'datasets/help/curator_doi_tasks'
 
-      .panel-group(id="funder" role="tablist" aria-multiselectable="true")
+      .panel-group(id="funder" aria-multiselectable="true")
         .panel.panel-default
-          .panel-heading(role="tab" id="funderHeading")
+          .panel-heading(id="funderHeading")
             %a( role="button" data-toggle="collapse" data-parent="#funder" href="#funderPanel" aria-expanded="false" aria-controls="funderPanel" class="accordion-toggle collapsed" )
               %h2.panel-title.metadata-label Funder
           .panel-collapse.collapse(id="funderPanel" role="tabpanel" aria-labelledby="funderHeading" )
             .panel-body
               = render partial: 'funders_subform', locals: {f: f}
-      .panel-group(id="materials" role="tablist" aria-multiselectable="true")
+      .panel-group(id="materials" aria-multiselectable="true")
         .panel.panel-default
-          .panel-heading(role="tab" id="materialsHeading")
+          .panel-heading(id="materialsHeading")
             %a(role="button" data-toggle="collapse" data-parent="#materials" href="#materialsPanel" aria-expanded="false" aria-controls="materialsPanel" class="accordion-toggle collapsed" )
               %h2.panel-title.metadata-label Relationships with articles, code, other datasets, and other resources
           .panel-collapse.collapse(id="materialsPanel" role="tabpanel" aria-labelledby="materialsHeading" )
@@ -242,9 +242,9 @@
               = render partial: 'materials_subform', locals: {f: f}
       - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
         = render partial: 'datafiles_subform', locals: {f: f}
-        .panel-group(id="advancedUpload" role="tablist" aria-multiselectable="true")
+        .panel-group(id="advancedUpload" aria-multiselectable="true")
           .panel.panel-default
-            .panel-heading(role="tab" id="advancedUploadHeading")
+            .panel-heading(id="advancedUploadHeading")
               %a(role="button" data-toggle="collapse" data-parent="#advancedUpload" href="#advancedUploadPanel" aria-expanded="false" aria-controls="advancedUploadPanel" class="accordion-toggle collapsed")
                 %h2.panel-title.metadata-label Advanced Upload Options
             %div(id="advancedUploadPanel" role="tabpanel" aria-labelledby="advancedUploadHeading" class="panel-collapse collapse")

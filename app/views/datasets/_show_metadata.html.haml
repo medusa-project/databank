@@ -39,9 +39,9 @@
             %span(class="glyphicon glyphicon-exclamation-sign" )
             This link will not resolve until the dataset is published.
 
-.panel-group(id="metadata" role="tablist" aria-multiselectable="true")
+.panel-group(id="metadata" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading.subdued-heading(role="tab" id="metadataHeading")
+    .panel-heading.subdued-heading(id="metadataHeading")
       %a( role="button" data-toggle="collapse" data-parent="#metadata" href="#metadataPanel" aria-expanded="true" aria-controls="metadataPanel" class="accordion-toggle" )
         %h2.panel-title.metadata-label Metadata
     .panel-collapse(id="metadataPanel" role="tabpanel" aria-labelledby="metadataHeading" )
@@ -130,9 +130,9 @@
             %tr
               %td(colspan="2" )
                 -if dataset.materials_related.length.positive?
-                  .panel-group(id="related" role="tablist" aria-multiselectable="true")
+                  .panel-group(id="related" aria-multiselectable="true")
                     .panel.panel-default
-                      .panel-heading.subdued-heading(role="tab" id="relatedHeading")
+                      .panel-heading.subdued-heading(id="relatedHeading")
                         %a( role="button" data-toggle="collapse" data-parent="#related" href="#relatedPanel" aria-expanded="false" aria-controls="relatedPanel" class="accordion-toggle collapsed" )
                           %h3.panel-title.metadata-label
                             = "Related Materials (#{dataset.materials_related.length})"
@@ -142,9 +142,9 @@
               %tr
                 %td(colspan="2" )
                   -if dataset.materials_cited_by.length.positive?
-                    .panel-group(id="cited" role="tablist" aria-multiselectable="true")
+                    .panel-group(id="cited" aria-multiselectable="true")
                       .panel.panel-default
-                        .panel-heading.subdued-heading(role="tab" id="citedHeading")
+                        .panel-heading.subdued-heading(id="citedHeading")
                           %a( role="button" data-toggle="collapse" data-parent="#cited" href="#citedPanel" aria-expanded="false" aria-controls="citedPanel" class="accordion-toggle collapsed" )
                             %h3.panel-title.metadata-label
                               = "Cited By (#{dataset.materials_cited_by.length})"

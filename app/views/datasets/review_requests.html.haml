@@ -1,7 +1,7 @@
 = render 'brief_record', dataset:@dataset
-.panel-group(id="reviews" role="tablist" aria-multiselectable="true")
+.panel-group(id="reviews" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading(role="tab" id="reviewsHeading")
+    .panel-heading(id="reviewsHeading")
       %h4(class="panel-title")
         %a(role="button" data-toggle="collapse" data-parent="#access" href="#reviewsPanel" aria-expanded="false" aria-controls="reviewsPanel" class="accordion-toggle collapsed" )
           %span( class="metadata-label" ) Pre-publication Review Requests

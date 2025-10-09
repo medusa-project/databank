@@ -46,7 +46,7 @@
 
   <% if @dataset.metadata_public? || (can? :read, @dataset) || @shared_by_link %>
     <%= render partial: 'show_metadata', locals: {dataset: @dataset} %>
-    <div class="panel-group" id="versionGroup" role="tablist" aria-multiselectable="true">
+    <div class="panel-group" id="versionGroup" aria-multiselectable="true">
       <div class="panel panel-default">
         <div class="panel-heading" role="tab" id="versionGroupHeading">
           <% if @dataset.version_group.group_hash[:entries].length > 1 %>
@@ -119,7 +119,7 @@
 
   <% if @dataset.publication_state != Databank::PublicationState::DRAFT %>
     <% if (can? :manage, @dataset) || ([Databank::PublicationState::RELEASED, Databank::PublicationState::PermSuppress::FILE, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state) && @dataset.hold_state != Databank::PublicationState::TempSuppress::METADATA && !@dataset.suppress_changelog) %>
-      <div class="panel-group" id="changelog" role="tablist" aria-multiselectable="true">
+      <div class="panel-group" id="changelog" aria-multiselectable="true">
         <div class="panel panel-default">
           <div class="panel-heading" role="tab" id="changelogHeading">
             <a role="button" data-toggle="collapse" data-parent="#changelog" href="#changelogPanel" aria-expanded="false" aria-controls="changelogPanel" class="accordion-toggle collapsed">

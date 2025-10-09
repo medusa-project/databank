@@ -6,9 +6,9 @@
 -if @dataset.datafiles.count <= 500
   %div(id="datafiles-form")
     %input(type="hidden" name="datafile_index_max" id="datafile_index_max" value="#{@dataset.complete_datafiles.count.to_i}" )
-    .panel-group(id="files" role="tablist" aria-multiselectable="true")
+    .panel-group(id="files" aria-multiselectable="true")
       .panel.panel-default
-        .panel-heading(role="tab" id="filesHeading")
+        .panel-heading(id="filesHeading")
           %a(class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#files" href="#collapseFiles" aria-expanded="true" aria-controls="collapseFiles" )
             %h2.panel-title.metadata-label Files
         .panel-collapse.collapse.in(id="collapseFiles" role="tabpanel" aria-labelledby="filesHeading" )

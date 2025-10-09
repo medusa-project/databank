@@ -5,9 +5,9 @@
   %hr/
   %h3 List of files as selected by user. Curator makes adjustment as needed.
   =form_for(@dataset, :url => {action: 'copy_version_files'}, html: {role: "form", method: :post, class: "input-append dataset-form" }) do |f|
-    .panel-group(id="vFiles" role="tablist" aria-multiselectable="true")
+    .panel-group(id="vFiles" aria-multiselectable="true")
       .panel.panel-default
-        .panel-heading(role="tab" id="vFilesHeading")
+        .panel-heading(id="vFilesHeading")
           %h4(class="panel-title")
             %a(role="button" data-toggle="collapse" data-parent="#access" href="#vFilesPanel" aria-expanded="false" aria-controls="vFilesPanel" class="accordion-toggle" )
               %span( class="metadata-label" ) File Copy Selection
@@ -62,9 +62,9 @@
                         %span.glyphicon.glyphicon-duplicate
                         Copy Selected Files to Version
 
-  .panel-group(id="report" role="tablist" aria-multiselectable="true")
+  .panel-group(id="report" aria-multiselectable="true")
     .panel.panel-default
-      .panel-heading(role="tab" id="reportHeading")
+      .panel-heading(id="reportHeading")
         %h4(class="panel-title")
           %a(role="button" data-toggle="collapse" data-parent="#report" href="#reportPanel" aria-expanded="false" aria-controls="reportPanel" class="accordion-toggle" )
             %span( class="metadata-label" ) Difference Report (fields with differences are highlighted)
@@ -270,9 +270,9 @@
                       New file in current version
     =form_tag("/datasets/#{@dataset.key}/suppression_action", id: "suppression_form") do |f|
       %input(id="suppression_action" type="hidden" name="suppression_action" )
-      .panel-group(id="access" role="tablist" aria-multiselectable="true")
+      .panel-group(id="access" aria-multiselectable="true")
         .panel.panel-default
-          .panel-heading(role="tab" id="accessHeading")
+          .panel-heading(id="accessHeading")
             %h4(class="panel-title")
               %a(role="button" data-toggle="collapse" data-parent="#access" href="#accessPanel" aria-expanded="false" aria-controls="accessPanel" class="accordion-toggle" )
                 %span( class="metadata-label" ) Version Control Buttons
