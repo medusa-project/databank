@@ -58,13 +58,6 @@
           %div{class: "alert alert-#{key}"}
             = sanitize(value)
         %div{id: "message"}
-        - if current_page?(root_path) || ( request.original_fullpath.include?('featured_researchers') && request.original_fullpath.include?('preview')  )
-          #welcome-image.hidden-xs
-            #welcome-overlay
-              %p The Illinois Data Bank is a public access repository for publishing research data from the University of Illinois Urbana-Champaign
-              %p
-                %a.underline{href: "/guides#desirable_characteristics"}
-                  Learn how we meet trustworthy repository standards
         .container-fluid
           = yield
       = render partial: "shared/campus_footer"

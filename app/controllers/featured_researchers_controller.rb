@@ -36,7 +36,7 @@ class FeaturedResearchersController < ApplicationController
     @featured_researcher = FeaturedResearcher.new(featured_researcher_params)
     respond_to do |format|
       if @featured_researcher.save
-        format.html { render :preview }
+        format.html { redirect_to preview_featured_researcher_path(@featured_researcher), notice: 'Featured researcher entry was successfully created.' }
         format.json { render json: to_fileupload, content_type: request.format, :layout => false }
       else
         format.html { render :new }

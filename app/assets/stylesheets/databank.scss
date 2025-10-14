@@ -583,3 +583,23 @@ h2.button-label, h3.button-label {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+h1.naked, h2.naked, h3.naked {
+  font-size: 1em;
+  font-weight: normal;
+  display: inline;
+  &:hover,
+  &:focus {
+    padding: 2px;
+    background-color: $color__lightest-grey;
+    color: black;
+    font-weight: bold;
+    border: 1px dashed $color__dark-navy;
+    cursor: pointer;
+  }
+}
+
+h2.spotlight-name {
+  font-size: 1.2em;
+  font-weight: bold;
+}
