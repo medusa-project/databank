@@ -14,11 +14,11 @@ class ApiDatasetController < ApplicationController
   # Responds to `POST /api/datasets/:dataset_key/datafile`
   def datafile
 
-    @dataset = Dataset.find_by_key(params['dataset_key'])
+    @dataset = Dataset.find_by(key: params['dataset_key'])
+
+    Rails.logger.warn "dataset NOT FOUND during API upload to dataset_key=#{params['dataset_key']}" unless @dataset
 
     raise ActiveRecord::RecordNotFound unless @dataset
-
-    # Rails.logger.warn params.to_yaml
 
     if params.has_key?('binary')
 
