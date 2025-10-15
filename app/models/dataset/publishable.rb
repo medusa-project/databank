@@ -55,8 +55,8 @@ module Dataset::Publishable
     return true if publication_state == Databank::PublicationState::DRAFT
 
     # if the dataset is not in a state that is ok to publish, return false
-    Rails.logger.warn( "Dataset is not ok to publish. Dataset: #{key} publication_state: #{publication_state} hold_state: #{hold_state}" )
-    Rails.logger.warn( self.to_yaml )
+    #Rails.logger.warn( "Dataset is not ok to publish. Dataset: #{key} publication_state: #{publication_state} hold_state: #{hold_state}" )
+    #Rails.logger.warn( self.to_yaml )
     false
   end
 
