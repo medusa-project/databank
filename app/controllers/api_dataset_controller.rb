@@ -78,7 +78,7 @@ class ApiDatasetController < ApplicationController
     # Rails.logger.warn params
     if params.has_key?(:dataset_key)
       @dataset = Dataset.find_by_key(params[:dataset_key])
-      if @dataset  && @dataset.publication_state == Databank::PublicationState::DRAFT
+      if @dataset  && Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
         authenticate_token || render_unauthorized
       else
         render_not_found
