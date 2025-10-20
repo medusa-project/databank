@@ -60,8 +60,7 @@ class DatasetsController < ApplicationController
                                      :unsuppress_review,
                                      :suppress_review,
                                      :version_to_draft,
-                                     :draft_to_version,
-                                     :restricted
+                                     :draft_to_version
   ]
 
   @@num_box_ingest_deamons = 10

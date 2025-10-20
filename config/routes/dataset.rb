@@ -28,7 +28,6 @@ resources :datasets do
     delete 'remove_sharing_link'
     get "request_review", defaults: {format: 'html'}
     get 'reserve_doi', defaults: {format: 'json'}
-    get 'restricted'
     get 'review_deposit_agreement'
     get 'review_requests'
     post 'send_publication_notice'
