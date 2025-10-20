@@ -84,4 +84,4 @@ class SessionsController < ApplicationController
     Rails.logger.warn(session[:login_return_referer]) 
     Rails.logger.warn(params.to_yaml) 
     session[:login_return_uri] || session[:login_return_referer] || root_path
-  end
+  end 
