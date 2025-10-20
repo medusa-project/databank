@@ -60,7 +60,8 @@ class DatasetsController < ApplicationController
                                      :unsuppress_review,
                                      :suppress_review,
                                      :version_to_draft,
-                                     :draft_to_version
+                                     :draft_to_version,
+                                     :restricted
   ]
 
   @@num_box_ingest_deamons = 10
@@ -116,6 +117,7 @@ collaborators to access the data files while the dataset is not public.</li>
   end
 
   def show
+    # authorize! :read, @dataset
     @shared_by_link = (params.has_key?("code") && (params["code"] == @dataset.current_share_code))
     @datacite_fabrica_url = if Rails.env.aws_production?
                               "https://doi.datacite.org/"
@@ -127,11 +129,6 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.ensure_version_group
     set_file_mode
     @dataset.handle_related_materials
-    if @dataset.metadata_public? || @shared_by_link 
-      @title = @dataset.title || "Untitled Dataset"
-    else
-      @title = "Restricted Dataset"
-    end
   end
 
   def suppression_action
@@ -394,6 +391,10 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render json: {error: "Unexpected Error"}, status: :unprocessable_entity }
       end
     end
+  end
+
+  def restricted
+    @title = "Restricted Access"
   end
 
   def suppress_changelog

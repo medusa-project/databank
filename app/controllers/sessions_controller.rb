@@ -78,12 +78,10 @@ class SessionsController < ApplicationController
   protected
 
   def return_url
+    # Temporary DEBUG logging
+    Rails.logger.warn("uri, referer, parmams:")
+    Rails.logger.warn(session[:login_return_uri])
+    Rails.logger.warn(session[:login_return_referer]) 
+    Rails.logger.warn(params.to_yaml) 
     session[:login_return_uri] || session[:login_return_referer] || root_path
   end
-
-
-  def shibboleth_login_path(host)
-    "/Shibboleth.sso/Login?target=https://#{host}/auth/shibboleth/callback"
-  end
-
-end
