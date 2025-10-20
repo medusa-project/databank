@@ -78,7 +78,6 @@ class SessionsController < ApplicationController
   protected
 
   def return_url
-    Rails.logger.warn("return_url DEBUG: #{session[:login_return_uri]}, #{session[:login_return_referer]}, #{root_path}")
     session[:login_return_uri] || session[:login_return_referer] || root_path
   end
 
