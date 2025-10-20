@@ -393,10 +393,6 @@ collaborators to access the data files while the dataset is not public.</li>
     end
   end
 
-  def restricted
-    @title = "Restricted Access"
-  end
-
   def suppress_changelog
     authorize! :manage, @dataset
     @dataset.suppress_changelog = true
