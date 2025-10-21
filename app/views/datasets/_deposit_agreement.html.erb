@@ -81,18 +81,28 @@
       </table>
     </div>
 
-    <div class="col-md-2">
-      <% current_user_name = current_user.name.gsub(/'/, {"'" => "\\'"}) %>
-      <button onclick="handleAgreeModal('<%= current_user.email %>', '<%= current_user_name %>')" type="button" class="btn btn-block btn-primary" id="agree-button">
-        <span class="glyphicon glyphicon-check"></span> Submit
-      </button>
-      <%= link_to "/help", class: "btn btn-block btn-success idb" do %>
-        <span class="glyphicon glyphicon-question-sign"></span> Get Help
-      <% end %>
-      <% cancel_to = params.has_key?('context') && params['context']=='version' ? "/datasets/#{@previous_key}" : "/" %>
-      <%= link_to cancel_to, class: "btn btn-block btn-danger idb", id: 'cancel-button' do %>
-        <span class="glyphicon glyphicon-remove"></span> Cancel
-      <% end %>
+    <div class="col-md-2 progress-buttons">
+      <nav aria-label="Progress" data-skip-to-info="landmark navigation" data-skip-to-acc-name="Progress" data-skip-to-id="100">
+        <ul class="list-unstyled">
+          <li class="navitem">
+            <% current_user_name = j(current_user.name) %>
+            <%= link_to "#", class: "btn btn-block btn-primary", id: "agree-button", onclick: "handleAgreeModal('#{current_user.email}', '#{current_user_name}'); return false;", type: "button" do %>
+              <span class="glyphicon glyphicon-check"></span> Submit
+            <% end %>
+          </li>
+          <li class="navitem">
+            <%= link_to "/help", class: "btn btn-block btn-success idb" do %>
+              <span class="glyphicon glyphicon-question-sign"></span> Get Help
+            <% end %>
+          </li>
+          <li class="navitem">
+            <% cancel_to = params.has_key?('context') && params['context']=='version' ? "/datasets/#{@previous_key}" : "/" %>
+            <%= link_to cancel_to, class: "btn btn-block btn-danger idb", id: 'cancel-button' do %>
+              <span class="glyphicon glyphicon-remove"></span> Cancel
+            <% end %>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </div>

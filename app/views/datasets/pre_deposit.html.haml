@@ -97,11 +97,14 @@
         email us
 -if Databank::Application.file_mode != Databank::FileMode::READ_ONLY
   .row.line-above
-    .col-md-3.col-md-offset-9
-      %button(type="button" class="btn btn-primary btn-block" onclick='window.location = "/datasets/new"' )
-        Continue
-        %span(class="glyphicon glyphicon-triangle-right" )
-      %button(type="button" class="btn btn-danger btn-block" name="cancel" onclick='window.location = "/"' )
-        %span(class="glyphicon glyphicon-remove" )
-        Cancel
-      %br
+    .col-md-3.col-md-offset-9.progress-buttons
+      %nav(aria-label="Progress" data-skip-to-info="landmark navigation" data-skip-to-acc-name="Progress" data-skip-to-id="100")
+        %ul.list-unstyled
+          %li.navitem
+            = link_to "/datasets/new", class: "btn btn-primary btn-block idb", name: "continue" do
+              Continue
+              %span(class="glyphicon glyphicon-triangle-right")
+          %li.navitem
+            = link_to "/", class: "btn btn-danger btn-block idb", name: "cancel" do
+              %span(class="glyphicon glyphicon-remove")
+              Cancel
