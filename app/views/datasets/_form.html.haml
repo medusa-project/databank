@@ -43,7 +43,7 @@
                 .col-md-6
                   .form-group.required
                     = f.label :license, "License", :class => "control-label"
-                    %a(href="#" data-toggle="modal" data-target="#licenseModal" tabindex="-1" )
+                    %a(href="#" data-toggle="modal" data-target="#licenseModal" tabindex="0" )
                       %span(class="far fa-question-circle")
                       what's a license?
 
@@ -122,7 +122,7 @@
                   .col-md-4
                     .form-group
                       =f.label :embargo, "Publication Delay (embargo)", class: "control-label"
-                      %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="-1" )
+                      %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="0" )
                         %span(class="far fa-question-circle")
                         what's an embargo?
                       - if ((can? :manage, @dataset) || [Databank::PublicationState::DRAFT, Databank::PublicationState::Embargo::METADATA].include?(@dataset.publication_state))
@@ -146,7 +146,7 @@
                   .col-md-4
                     .form-group
                       =f.label :embargo, "Publication Delay (embargo)", class: "control-label"
-                      %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="-1" )
+                      %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="0" )
                         %span(class="far fa-question-circle")
                         what's an embargo?
                       = f.select :embargo, options_for_select([["No Publication Delay", Databank::PublicationState::Embargo::NONE]], @dataset.embargo), {class: "form-control dataset"}
