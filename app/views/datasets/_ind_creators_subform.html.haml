@@ -22,7 +22,7 @@
       %th(class="col-md-2")
         ORCiD®
         %a(href="#" data-toggle="modal" data-target="#orcidHelpModal" tabindex="0" )
-          =image_tag 'iD_icon_16x16.png'
+          =image_tag 'iD_icon_16x16.png', alt: "ORCiD icon"
           %span.idb-help-prompt
             what's an ORCiD?
       %th(class="col-md-1")
@@ -61,7 +61,7 @@
           %button(type="button" class="btn btn-primary btn-block orcid-search-btn" onclick="showCreatorOrcidSearchModal('#{i}')" )
             %span(class="glyphicon glyphicon-search" )
             Look Up &nbsp;
-            =image_tag 'iD_icon_16x16.png'
+            =image_tag 'iD_icon_16x16.png', alt: "ORCiD icon"
         %td(class="col-md-2")
           = cf.email_field :email, class: "form-control dataset creator-email", placeholder: "[e.g.: netid@illinois.edu]", onchange: "handle_creator_email_change(this)"
         %td(class="col-md-1" align="center" )
