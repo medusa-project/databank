@@ -354,6 +354,9 @@ function showCreatorOrcidSearchModal(creator_index) {
     jQuery("#creator-family").val(creatorFamilyName);
     jQuery("#creator-given").val(creatorGivenName);
     jQuery("#orcid-search-results").empty();
+    jQuery('#orcid_creator_search').on('shown.bs.modal', function () {
+        jQuery('#creator-family').focus();
+    });
     jQuery('#orcid_creator_search').modal('show');
 }
 
