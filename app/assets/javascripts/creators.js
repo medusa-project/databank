@@ -346,18 +346,49 @@ function getOrcidAffiliation(orcid){
 function enableOrcidImport() {
     jQuery('#orcid-import-btn').prop('disabled', false);
 }
+
 function showCreatorOrcidSearchModal(creator_index) {
-    jQuery('#orcid-import-btn').prop('disabled', true);
-    jQuery("#creator-index").val(creator_index);
-    let creatorFamilyName = jQuery("#dataset_creators_attributes_" + creator_index + "_family_name").val();
-    let creatorGivenName = jQuery("#dataset_creators_attributes_" + creator_index + "_given_name").val();
-    jQuery("#creator-family").val(creatorFamilyName);
-    jQuery("#creator-given").val(creatorGivenName);
-    jQuery("#orcid-search-results").empty();
-    jQuery('#orcid_creator_search').on('shown.bs.modal', function () {
-        jQuery('#creator-family').focus();
+  jQuery('#orcid-import-btn').prop('disabled', true);
+  jQuery("#creator-index").val(creator_index);
+  let creatorFamilyName = jQuery("#dataset_creators_attributes_" + creator_index + "_family_name").val();
+  let creatorGivenName = jQuery("#dataset_creators_attributes_" + creator_index + "_given_name").val();
+  jQuery("#creator-family").val(creatorFamilyName);
+  jQuery("#creator-given").val(creatorGivenName);
+  jQuery("#orcid-search-results").empty();
+  jQuery('#orcid_creator_search').on('shown.bs.modal', function () {
+    jQuery('#creator-family').focus();
+
+    // Trap focus within modal
+    const modal = document.getElementById('orcid_creator_search');
+    const focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
+    const focusableElements = modal.querySelectorAll(focusableSelectors);
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+
+    function trapFocus(e) {
+      if (e.key === 'Tab') {
+        if (e.shiftKey) {
+          if (document.activeElement === firstFocusable) {
+            e.preventDefault();
+            lastFocusable.focus();
+          }
+        } else {
+          if (document.activeElement === lastFocusable) {
+            e.preventDefault();
+            firstFocusable.focus();
+          }
+        }
+      }
+    }
+
+    modal.addEventListener('keydown', trapFocus);
+
+    // Remove event listener when modal is hidden
+    jQuery('#orcid_creator_search').on('hidden.bs.modal', function () {
+      modal.removeEventListener('keydown', trapFocus);
     });
-    jQuery('#orcid_creator_search').modal('show');
+  });
+  jQuery('#orcid_creator_search').modal('show');
 }
 
 jQuery(document).ready(creators_ready);
