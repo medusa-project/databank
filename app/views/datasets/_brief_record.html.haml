@@ -71,15 +71,14 @@
 
   .record_citation
     %h3.dataset-title
-      %a(href="/datasets/#{dataset.key}" )
+      %a(href="/datasets/#{dataset.key}" class="dataset-link" id="link#{dataset.key}")
         %strong
           =dataset.title || "(Untitled)"
     =dataset.creator_list
     ="(#{dataset.publication_year})"
   -if dataset.description && dataset.description != ""
-    %em
-      .more
-        =dataset.description
+    %div(class="more #{dataset.key}")
+      =dataset.description
 
   -if dataset.keywords && dataset.keywords != ""
     .keyword_display

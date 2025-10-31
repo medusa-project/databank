@@ -88,31 +88,42 @@ ready = function () {
     var moretext = "more description";
     var lesstext = "less description";
     jQuery('.more').each(function () {
-        var content = jQuery(this).html();
+      var content = jQuery(this).html();
 
-        if (content.length > showChar) {
+      if (content.length > showChar) {
 
-            var c = content.substr(0, showChar);
-            var h = content.substr(showChar, content.length - showChar);
+        var c = content.substr(0, showChar);
+        var h = content.substr(showChar, content.length - showChar);
 
-            var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+        var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
 
-            jQuery(this).html(html);
-        }
+        jQuery(this).html(html);
+      }
 
     });
 
     jQuery(".morelink").click(function () {
-        if (jQuery(this).hasClass("less")) {
-            jQuery(this).removeClass("less");
-            jQuery(this).html(moretext);
+      if (jQuery(this).hasClass("less")) {
+        jQuery(this).removeClass("less");
+        jQuery(this).html(moretext);
+      } else {
+        jQuery(this).addClass("less");
+        jQuery(this).html(lesstext);
+
+        // move focus to the anchor with the dataset-link class that comes before this element
+        var $moreclasses = jQuery(this).parent().parent().attr('class');
+        var morekey = $moreclasses.replace('more', '').trim();
+        var $focusElement = jQuery('#link' + morekey);
+        if ($focusElement.length) {
+            $focusElement.focus();
         } else {
-            jQuery(this).addClass("less");
-            jQuery(this).html(lesstext);
+          console.log("Focus element not found.");
+          console.log("Focus element with id link" + morekey + " not found.");
         }
-        jQuery(this).parent().prev().toggle();
-        jQuery(this).prev().toggle();
-        return false;
+      }
+      jQuery(this).parent().prev().toggle();
+      jQuery(this).prev().toggle();
+      return false;
     });
 
     jQuery(".upload-consistent").tooltip({

@@ -408,9 +408,25 @@ legend.metadata-border {
   overflow-x: scroll;
 }
 
+.dataset-link{
+  // add outline when focused for accessibility
+  &:focus {
+    outline: 2px solid $color__dark-moderate-blue;
+    outline-offset: 2px;
+  }
+}
+
+.more{
+  font-style: italic;
+}
+
 a.morelink {
   text-decoration:none;
-  outline: none;
+  // add outline when focused for accessibility
+  &:focus {
+    outline: 2px solid $color__dark-moderate-blue;
+    outline-offset: 2px;  
+  }
 }
 .morecontent span {
   display: none;
