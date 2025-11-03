@@ -19,7 +19,7 @@
       -# .col-md-4
       -#   = will_paginate @search.results, previous_label: "<".html_safe, next_label: ">".html_safe, renderer: BootstrapPagination::Rails
       %nav.col-md-4
-        = will_paginate @search.results, previous_label: h('<span aria-label="Previous page">&lt;</span>'), next_label: h('<span aria-label="Next page">&gt;</span>'), renderer: BootstrapPagination::Rails
+        = will_paginate @search.results, previous_label: '<span aria-label="Previous page">&lt;</span>', next_label: '<span aria-label="Next page">&gt;</span>', renderer: BootstrapPagination::Rails
 
       .col-md-2
         .input-group.search-control
