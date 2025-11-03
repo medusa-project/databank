@@ -16,9 +16,10 @@
       - sr = @search.results
       .col-md-2.search-count(aria-live="polite")
         = "Displaying #{sr.offset + 1} - #{sr.offset + sr.length} of #{sr.total_entries} in total"
-
-      .col-md-4
-        = will_paginate @search.results, previous_label: "<".html_safe, next_label: ">".html_safe, renderer: BootstrapPagination::Rails
+      -# .col-md-4
+      -#   = will_paginate @search.results, previous_label: "<".html_safe, next_label: ">".html_safe, renderer: BootstrapPagination::Rails
+      %nav.col-md-4
+        = will_paginate @search.results, previous_label: h('<span aria-label="Previous page">&lt;</span>'), next_label: h('<span aria-label="Next page">&gt;</span>'), renderer: BootstrapPagination::Rails
 
       .col-md-2
         .input-group.search-control
@@ -39,144 +40,109 @@
           %em no results found
       -else
         -if current_user && current_user.role == 'depositor'
-
-          .panel-group
-            .panel.panel-default
-              .panel-heading
-                %h4(class="panel-title")
-                  My Datasets
-
-              .panel-body
-                - mine = params.has_key?('editor') && params['editor'] == current_user.username
-                %input(id="justMine" type="checkbox" class="checkFacet checkFacetGroup" name="editor" value="#{current_user.username}" onchange="handleFilterChange()" checked=mine)
-                Just My Datasets
+          %fieldset.search-facet
+            %legend(class="panel-title")
+              %h3.filter-heading My Datasets
+            - mine = params.has_key?('editor') && params['editor'] == current_user.username
+            %input(id="justMine" type="checkbox" class="checkFacet checkFacetGroup" name="editor" value="#{current_user.username}" onchange="handleFilterChange()" checked=mine)
+            Just My Datasets
 
           -if current_user && current_user.role == 'depositor' && params.has_key?('depositors') && params['depositors'].include?(current_user.username)
-            .indent
-              .panel-group
-                .panel.panel-default
-                  .panel-heading
-                    %h4(class="panel-title")
-                      My Datasets By Visibility
-                  .panel-body
+            %fieldset.search-facet
+              %legend(class="panel-title")
+                %h3.filter-heading My Datasets By Visibility
+              -for row in @search.facet(:visibility_code).rows
+                .facet
 
-                    -for row in @search.facet(:visibility_code).rows
-                      .facet
-
-                        -if params.has_key?('visibility_codes') && params['visibility_codes'].include?(row.value)
-                          %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
-                          = Dataset.visibility_name_from_code(row.value)
-                          ="(#{row.count})"
-                        -else
-                          %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
-                          = Dataset.visibility_name_from_code(row.value)
-                          ="(#{row.count})"
+                  -if params.has_key?('visibility_codes') && params['visibility_codes'].include?(row.value)
+                    %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
+                    = Dataset.visibility_name_from_code(row.value)
+                    ="(#{row.count})"
+                  -else
+                    %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
+                    = Dataset.visibility_name_from_code(row.value)
+                    ="(#{row.count})"
         -if current_user && current_user.role == 'admin'
-          %fieldset
-            .panel-group
-              .panel.panel-default
-                .panel-heading
-                  %legend(class="panel-title")
-                    %h3.filter-heading Depositor
-                .panel-body
-                  -for row in @search.facet(:depositor).rows
-                    -row_arr = row.value.split("|")
-                    .facet
-                      -if params.has_key?('depositors') && params['depositors'].include?(row_arr[0])
-                        %input(type="checkbox" class="checkFacet checkFacetGroup depositor_facet" id="dep_#{row_arr[1]}" name="depositors[]" value="#{row_arr[0]}" onchange="handleFilterChange()" checked=true)
-                          =label_tag "dep_#{row_arr[1]}", "#{row_arr[1]} (#{row.count})", class: 'facet_label'
-                      -else
-                        %input(type="checkbox" class="checkFacet checkFacetGroup depositor_facet" id="dep_#{row_arr[1]}" name="depositors[]" value="#{row_arr[0]}" onchange="handleFilterChange()" checked=false)
-                          =label_tag "dep_#{row_arr[1]}", "#{row_arr[1]} (#{row.count})", class: 'facet_label'
+          %fieldset.search-facet
+            %legend(class="panel-title")
+              %h3.filter-heading Depositor
+            -for row in @search.facet(:depositor).rows
+              -row_arr = row.value.split("|")
+              .facet
+                -if params.has_key?('depositors') && params['depositors'].include?(row_arr[0])
+                  %input(type="checkbox" class="checkFacet checkFacetGroup depositor_facet" id="dep_#{row_arr[1]}" name="depositors[]" value="#{row_arr[0]}" onchange="handleFilterChange()" checked=true)
+                    =label_tag "dep_#{row_arr[1]}", "#{row_arr[1]} (#{row.count})", class: 'facet_label'
+                -else
+                  %input(type="checkbox" class="checkFacet checkFacetGroup depositor_facet" id="dep_#{row_arr[1]}" name="depositors[]" value="#{row_arr[0]}" onchange="handleFilterChange()" checked=false)
+                    =label_tag "dep_#{row_arr[1]}", "#{row_arr[1]} (#{row.count})", class: 'facet_label'
 
-        %fieldset
-          .panel-group
-            .panel.panel-default
-              .panel-heading
-                %legend(class="panel-title")
-                  %h3.filter-heading Subject Area
-              .panel-body
-                -for row in @search.facet(:subject_text).rows
-                  - safe_value = row.value.gsub(' ', '_')
-                  .facet
-                    -if params.has_key?('subjects') && !params['subjects'].nil? && params['subjects'].include?(row.value)
-                      %input(type="checkbox" class="checkFacet checkFacetGroup subject_facet" id="sub_#{safe_value}" name="subjects[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
-                        - if row.value =='None'
-                          =label_tag "sub_#{safe_value}", "Uncategorized", class: 'facet_label'
-                        -else
-                          =label_tag "sub_#{safe_value}", "#{row.value} (#{row.count})", class: 'facet_label'
-                    -else
-                      %input(type="checkbox" class="checkFacet checkFacetGroup subject_facet" id="sub_#{safe_value}" name="subjects[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
-                        - if row.value =='None'
-                          =label_tag "sub_#{safe_value}", "Uncategorized", class: 'facet_label'
-                        -else
-                          =label_tag "sub_#{safe_value}", "#{row.value} (#{row.count})", class: 'facet_label'
+        %fieldset.search-facet
+          %legend(class="panel-title")
+            %h3.filter-heading Subject Area
+          -for row in @search.facet(:subject_text).rows
+            - safe_value = row.value.gsub(' ', '_')
+            .facet
+              -if params.has_key?('subjects') && !params['subjects'].nil? && params['subjects'].include?(row.value)
+                %input(type="checkbox" class="checkFacet checkFacetGroup subject_facet" id="sub_#{safe_value}" name="subjects[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
+                  - if row.value =='None'
+                    =label_tag "sub_#{safe_value}", "Uncategorized", class: 'facet_label'
+                  -else
+                    =label_tag "sub_#{safe_value}", "#{row.value} (#{row.count})", class: 'facet_label'
+              -else
+                %input(type="checkbox" class="checkFacet checkFacetGroup subject_facet" id="sub_#{safe_value}" name="subjects[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
+                  - if row.value =='None'
+                    =label_tag "sub_#{safe_value}", "Uncategorized", class: 'facet_label'
+                  -else
+                    =label_tag "sub_#{safe_value}", "#{row.value} (#{row.count})", class: 'facet_label'
 
-        %fieldset
-          .panel-group
-            .panel.panel-default
-              .panel-heading
-                %legend(class="panel-title")
-                  %h3.filter-heading Funder
-              .panel-body
-                -for row in @search.facet(:funder_codes).rows
-                  .facet
-                    -if params.has_key?('funder_codes') && params['funder_codes'].include?(row.value)
-                      %input(type="checkbox" class="checkFacet checkFacetGroup funder_facet" id="fund_#{row.value}" name="funder_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
-                        = label_tag "fund_#{row.value}", "#{Dataset.funder_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
-                    -else
-                      %input(type="checkbox" class="checkFacet checkFacetGroup funder_facet" id="fund_#{row.value}" name="funder_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
-                        = label_tag "fund_#{row.value}", "#{Dataset.funder_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
-        %fieldset
-          .panel-group
-            .panel.panel-default
-              .panel-heading
-                %legend(class="panel-title")
-                  %h3.filter-heading Publication Year
-              .panel-body
-                -@search.facet(:publication_year).rows.each do |row|
-                  - if row.value != ""
-                    .facet
-                      -if params.has_key?('publication_years') && params['publication_years'].include?(row.value)
-                        %input(type="checkbox" class="checkFacet checkFacetGroup publication_year_facet" id="year_#{row.value}" name="publication_years[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
-                          = label_tag "year_#{row.value}", "#{row.value} (#{row.count})", class: 'facet_label'
-                      -else
-                        %input(type="checkbox" class="checkFacet checkFacetGroup publication_year_facet" id="year_#{row.value}" name="publication_years[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
-                          = label_tag "year_#{row.value}", "#{row.value} (#{row.count})", class: 'facet_label'
-
-        %fieldset
-          .panel-group
-            .panel.panel-default
-              .panel-heading
-                %legend(class="panel-title")
-                  %h3.filter-heading License
-              .panel-body
-                -@search.facet(:license_code).rows.each do |row|
-                  - if row.value != ""
-                    .facet
-                      -if params.has_key?('license_codes') && params['license_codes'].include?(row.value)
-                        %input(type="checkbox" class="checkFacet checkFacetGroup license_facet" id="lic_#{row.value}" name="license_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
-                          =label_tag "lic_#{row.value}", "#{Dataset.license_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
-                      -else
-                        %input(type="checkbox" class="checkFacet checkFacetGroup license_facet" id="lic_#{row.value}" name="license_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
-                          =label_tag "lic_#{row.value}", "#{Dataset.license_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
+        %fieldset.search-facet
+          %legend(class="panel-title")
+            %h3.filter-heading Funder
+          -for row in @search.facet(:funder_codes).rows
+            .facet
+              -if params.has_key?('funder_codes') && params['funder_codes'].include?(row.value)
+                %input(type="checkbox" class="checkFacet checkFacetGroup funder_facet" id="fund_#{row.value}" name="funder_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
+                  = label_tag "fund_#{row.value}", "#{Dataset.funder_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
+              -else
+                %input(type="checkbox" class="checkFacet checkFacetGroup funder_facet" id="fund_#{row.value}" name="funder_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
+                  = label_tag "fund_#{row.value}", "#{Dataset.funder_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
+        %fieldset.search-facet
+          %legend(class="panel-title")
+            %h3.filter-heading Publication Year
+          -@search.facet(:publication_year).rows.each do |row|
+            - if row.value != ""
+              .facet
+                -if params.has_key?('publication_years') && params['publication_years'].include?(row.value)
+                  %input(type="checkbox" class="checkFacet checkFacetGroup publication_year_facet" id="year_#{row.value}" name="publication_years[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
+                    = label_tag "year_#{row.value}", "#{row.value} (#{row.count})", class: 'facet_label'
+                -else
+                  %input(type="checkbox" class="checkFacet checkFacetGroup publication_year_facet" id="year_#{row.value}" name="publication_years[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
+                    = label_tag "year_#{row.value}", "#{row.value} (#{row.count})", class: 'facet_label'
+        %fieldset.search-facet
+          %legend(class="panel-title")
+            %h3.filter-heading License
+          -@search.facet(:license_code).rows.each do |row|
+            - if row.value != ""
+              .facet
+                -if params.has_key?('license_codes') && params['license_codes'].include?(row.value)
+                  %input(type="checkbox" class="checkFacet checkFacetGroup license_facet" id="lic_#{row.value}" name="license_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
+                    =label_tag "lic_#{row.value}", "#{Dataset.license_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
+                -else
+                  %input(type="checkbox" class="checkFacet checkFacetGroup license_facet" id="lic_#{row.value}" name="license_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
+                    =label_tag "lic_#{row.value}", "#{Dataset.license_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
 
         -if current_user && current_user.role == 'admin'
-          %fieldset
-            .panel-group
-              .panel.panel-default
-                .panel-heading
-                  %legend(class="panel-title")
-                    %h3.filter-heading Visibility
-                .panel-body
-                  -for row in @search.facet(:visibility_code).rows
-                    .facet
-                      -if params.has_key?('visibility_codes') && params['visibility_codes'].include?(row.value)
-                        %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" id="vis_#{row.value}" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
-                          =label_tag "vis_#{row.value}", "#{Dataset.visibility_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
-                      -else
-                        %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" id="vis_#{row.value}" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
-                          =label_tag "vis_#{row.value}", "#{Dataset.visibility_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
+          %fieldset.search-facet
+            %legend(class="panel-title")
+              %h3.filter-heading Visibility
+            -for row in @search.facet(:visibility_code).rows
+              .facet
+                -if params.has_key?('visibility_codes') && params['visibility_codes'].include?(row.value)
+                  %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" id="vis_#{row.value}" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=true)
+                    =label_tag "vis_#{row.value}", "#{Dataset.visibility_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
+                -else
+                  %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" id="vis_#{row.value}" name="visibility_codes[]" value="#{row.value}" onchange="handleFilterChange()" checked=false)
+                    =label_tag "vis_#{row.value}", "#{Dataset.visibility_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
 
     .col-md-8
       %title

@@ -468,3 +468,32 @@ tr.different {
   text-align: center;
 }
 
+fieldset.search-facet {
+  //style like bootstrap panel
+  border: 1px solid $color__light-grey;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+legend.panel-title{
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 5px;
+  border-radius: 4px 4px 0 0;
+  border-bottom: 1px solid $color__light-grey;
+  background-color: $color__lightest-blue;
+}
+
+h3.filter-heading {
+  margin: 0;
+  padding: 10px;
+  border-bottom: 1px solid $color__light-grey;
+  background-color: $color__lightest-blue;
+  font-weight: bold;
+  &:hover,
+  &:focus {
+    font-weight: bold;
+    color: black;
+  }
+}
