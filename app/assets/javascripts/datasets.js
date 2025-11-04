@@ -608,6 +608,19 @@ function offerDownloadLink() {
                     if (Number(result.total_size) > zip64_threshold) {
                         jQuery('.download-help').html("<p>For selections of files larger than 4GB, the zip file will be in zip64 format. To open a zip64 formatted file on OS X (Mac) requires additional software not built into the operating system since version 10.11. Options include 7zX and The Unarchiver. If a Windows system has trouble opening the zip file, 7-Zip can be used.</p>")
                     }
+                    jQuery('#downloadLinkModal').on('shown.bs.modal', function () {
+                      var $anchor = jQuery('.download-link a');
+                      if ($anchor.length) {
+                        $anchor[0].focus();
+                      }
+                      // Trap focus inside the modal using the shared trapFocus function
+                      var modalElement = document.getElementById('downloadLinkModal');
+                      if (modalElement) {
+                        modalElement.addEventListener('keydown', trapFocus);
+                      }
+                      // Remove the event handler after first use
+                      jQuery(this).off('shown.bs.modal');
+                    });
                     jQuery('#downloadLinkModal').modal('show');
                 } else {
                     console.log(result);
