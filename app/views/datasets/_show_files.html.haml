@@ -85,11 +85,11 @@
                         %a(href="/datafiles/#{datafile.web_id}/download" class="btn btn-primary btn-sm idb" aria-label="download #{datafile.bytestream_name}" )
                           %span.glyphicon.glyphicon-download
                           File
-                        .row
-                          .indent
-                            .preview(id="preview_#{datafile.web_id}")
-                        .row.loading.text-center
-                          %i(class="far fa-spinner fa-spin fa-4x view-load-spinner spinner_#{datafile.web_id}" )
+                      .row
+                        .indent
+                          .preview(id="preview_#{datafile.web_id}")
+                      .row.loading.text-center
+                        %i(class="far fa-spinner fa-spin fa-4x view-load-spinner spinner_#{datafile.web_id}" )
                       - if dataset.incomplete_datafiles.count.positive? && (can? :update, dataset)
                         %jumbotron
                         Incomplete files uploads found, please
