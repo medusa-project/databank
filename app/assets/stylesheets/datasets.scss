@@ -497,3 +497,9 @@ h3.filter-heading {
     color: black;
   }
 }
+
+// style like a row in a bootstrap table
+.filerow {
+  border-bottom: 1px solid $color__light-grey;
+  padding: 10px 0;
+}
