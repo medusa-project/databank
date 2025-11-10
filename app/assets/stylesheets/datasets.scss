@@ -408,6 +408,11 @@ legend.metadata-border {
   overflow-x: scroll;
 }
 
+a {
+  &:focus {
+    outline-offset: 1px;
+  }
+}
 .dataset-link{
   // add outline when focused for accessibility
   &:focus {
