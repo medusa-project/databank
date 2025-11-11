@@ -1,0 +1,88 @@
+%h1 Illinois Data Bank Deposit Agreement
+%em
+  To start your
+  - if params.key?('context') && params['context'] == 'version'
+    new version
+  - else
+    data deposit
+  please review the deposit agreement and answer the following questions:
+.panel.panel-default
+  .panel-heading
+    %a.accordion-toggle.collapsed{"data-toggle" => "collapse", :href => "#collapseOne"}
+      %h2.panel-title
+        Full Text
+      (click to expand)
+  #collapseOne.panel-collapse.collapse{class: ("in" if @dataset && @dataset.depositor_email)}
+    .panel-body.idb-help
+      = render partial: 'policies/deposit_agreement_body'
+.container-fluid
+  %h2 Required Responses
+  %form{role: "form", id: "agree-form"}
+    %fieldset
+      %p Are you a creator of this dataset or have you been granted permission by the creator to deposit this dataset?
+      .div.radio
+        %label
+          %input{type: "radio", class: "agree", id: "owner-yes", name: "owner-permission", onclick: "handleOwnerYes()"}
+          Yes
+        %br/
+        %label
+          %input{type: "radio", class: "agree", id: "owner-no", name: "owner-permission", onclick: "handleOwnerNo()"}
+          No
+    %fieldset
+      %p Have you removed any private, confidential, or other legally protected information from the dataset?
+      .div.radio
+        %label
+          %input{type: "radio", class: "private-checkbox agree", id: "private-yes", name: "private-info", onclick: "handlePrivateYes()"}
+          Yes
+      .div.radio
+        %label
+          %input{type: "radio", class: "private-checkbox agree", id: "private-no", name: "private-info", onclick: "handlePrivateNo()"}
+          No
+      .div.radio
+        %label
+          %input{type: "radio", class: "private-checkbox agree", id: "private-na", name: "private-info", onclick: "handlePrivateNA()"}
+          Not applicable
+    %fieldset
+      %p Do you agree to the Illinois Data Bank Deposit Agreement in its entirety?
+      .div.radio
+        %label
+          %input{type: "radio", class: "agree", id: "agree-yes", name: "deposit-agreement", onclick: "handleAgreeYes()"}
+          Yes
+      .div.radio
+        %label
+          %input{type: "radio", class: "agree", id: "agree-no", name: "deposit-agreement", onclick: "handleAgreeNo()"}
+          No
+  .row
+    .col-md-10
+      %table.deposit-agreement-selection-warning
+        %caption
+          %h2 Selection Alert
+        %tbody
+          %tr
+            %td
+              %span.glyphicon.glyphicon-alert
+            %td
+              The selections you have made indicate that you are not ready to deposit your dataset.
+          %tr
+            %td
+            %td
+              Illinois Data bank curators are available to discuss your dataset with you. Please
+              %a{href: "#{IDB_CONFIG[:root_url_text]}/contact"} contact us
+              !
+    .col-md-2.progress-buttons
+      %nav{"aria-label" => "Progress", "data-skip-to-info" => "landmark navigation", "data-skip-to-acc-name" => "Progress", "data-skip-to-id" => "100"}
+        %ul.list-unstyled
+          %li.navitem
+            - current_user_name = j(current_user.name)
+            = link_to "#", class: "btn btn-block btn-primary", id: "agree-button", onclick: "handleAgreeModal('#{current_user.email}', '#{current_user_name}'); return false;", type: "button" do
+              %span.glyphicon.glyphicon-check
+              Submit
+          %li.navitem
+            = link_to "/help", class: "btn btn-block btn-success idb" do
+              %span.glyphicon.glyphicon-question-sign
+              Get Help
+          %li.navitem
+            - cancel_to = params.has_key?('context') && params['context']=='version' ? "/datasets/#{@previous_key}" : "/"
+            = link_to cancel_to, class: "btn btn-block btn-danger idb", id: 'cancel-button' do
+              %span.glyphicon.glyphicon-remove
+              Cancel
