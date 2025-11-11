@@ -122,7 +122,7 @@ function handlecontributorTable() {
             //jQuery("td:first", this).html("<span style='display:inline;'>  " + i + "     </span><span style='display:inline;' class='glyphicon glyphicon-resize-vertical'></span>" );
 
             if ((i + 1) == (jQuery("#contributor_table tr").length)) {
-                jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_contributor_row(\x22" + contributor_index + "\x22 )' type='button'>Remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_contributor_row()' type='button'>New</button>");
+                jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_contributor_row(\x22" + contributor_index + "\x22 )' type='button'>Remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_contributor_row()' type='button'>Add</button>");
             } else {
                 jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_contributor_row(\x22" + contributor_index + "\x22 )' type='button'>Remove</button>");
             }

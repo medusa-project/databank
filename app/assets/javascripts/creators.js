@@ -148,9 +148,9 @@ function handleCreatorTable(creator_type) {
             jQuery("#dataset_creators_attributes_" + creator_index + "_row_position").val(i);
             if ((i + 1) === (jQuery("#creator_table tr").length)) {
                 if (creator_type === org_creators_type){
-                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 1 )' type='button'>Remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_institution_creator()' type='button'>New</button>");
+                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 1 )' type='button'>Remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_institution_creator()' type='button'>Add</button>");
                 } else {
-                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 0  )' type='button'>Remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_person_creator()' type='button'>New</button>");
+                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 0  )' type='button'>Remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_person_creator()' type='button'>Add</button>");
                 }
             } else {
                 if (creator_type === org_creators_type) {
