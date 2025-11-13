@@ -92,7 +92,7 @@
               = render partial: "show_changelog"
   - if (can? :update, @dataset)
     - review_agreement_url = "/datasets/<%= @dataset.key %>/review_deposit_agreement"
-    %a(href="#{review_agreement_url}")
+    %a(href="#{review_agreement_url}", class="underline")
       Review Deposit Agreement
 
 - if can? :manage, @dataset && @dataset.publication_state != Databank::PublicationState::DRAFT
