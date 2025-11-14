@@ -13,10 +13,10 @@
       .panel-body
         %p
           For files larger than 50 GB, please fill out our
-          %a(href= "/datasets/file_transfer_request" )
+          %a(href= "/datasets/file_transfer_request" class="underline" )
             large file transfer request form
           or
-          %a(href="mailto:databank@library.illinois.edu") email us
+          %a(href="mailto:databank@library.illinois.edu" class="underline") email us
           to learn more about file transfer options. 
 .panel-group(id="license" aria-multiselectable="true")
   .panel.panel-default
@@ -36,9 +36,9 @@
           Your dataset license options in Illinois Data Bank are:
         =render partial: '/datasets/help/license_infographic'
         %p
-          %a(href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" ) Find out more about CCO
+          %a(href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" class="underline" ) Find out more about CCO
           %br
-          %a(href="https://creativecommons.org/licenses/by/4.0/" target="_blank" ) Find out more about CC BY
+          %a(href="https://creativecommons.org/licenses/by/4.0/" target="_blank" class="underline" ) Find out more about CC BY
           %br
           %span(class="strong") If you choose to use a license.txt file, upload it with your other dataset files.
 
@@ -66,7 +66,7 @@
           Due to publisher or other requirements, researchers may need to deposit their dataset but make it temporarily unavailable for download.
           %br
           For more guidance, review our help section on the topic:
-          %a(href="#{IDB_CONFIG[:root_url_text]}/guides#embargo") Delaying Publication of/embargoing your dataset
+          %a(href="#{IDB_CONFIG[:root_url_text]}/guides#embargo" class="underline") Delaying Publication of/embargoing your dataset
         %p
           By default, there is no publication delay.  Your other options are:
           =render partial: '/datasets/help/embargo_infographic'
@@ -77,23 +77,23 @@
   %h3 Guides
   %p
     Guidance will continue to be available to you throughout this process.  To review any of this information, open the
-    %a(href="#{IDB_CONFIG[:root_url_text]}/guides" )
+    %a(href="#{IDB_CONFIG[:root_url_text]}/guides" class="underline" )
       %span.glyphicon.glyphicon-question-sign
       Guides
     menu at the top of each page.
   %p
     For context-specific help, click the question icon
-    %a(href="#{IDB_CONFIG[:root_url_text]}/guides" )
+    %a(href="#{IDB_CONFIG[:root_url_text]}/guides")
       %span.far.fa-question-circle
     near form elements for additional details.
   %h3 Contact Us
   %p
     If you have questions or need assistance, please fill out our
-    %a(href="https://forms.illinois.edu/sec/1628290621" )
+    %a(href="https://forms.illinois.edu/sec/1628290621" class="underline" )
       consultation request form
     or
     = succeed "." do
-      %a(href="mailto: databank@library.illinois.edu")
+      %a(href="mailto: databank@library.illinois.edu" class="underline")
         email us
 -if Databank::Application.file_mode != Databank::FileMode::READ_ONLY
   .row.line-above
