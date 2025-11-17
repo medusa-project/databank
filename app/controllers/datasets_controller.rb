@@ -109,7 +109,11 @@ collaborators to access the data files while the dataset is not public.</li>
       user = nil
     end
     @datasets = Dataset.select(&:metadata_public?) # used for public json response
-    @title = "Datasets"
+    if params[:q].present?
+      @title = "Datasets: #{params[:q]}"
+    else
+      @title = "Datasets"
+    end
     @search = Dataset.filtered_list(user_role: user_role, user: user, params: params)
     @report = Dataset.citation_report(@search, request.original_url, current_user)
     send_data @report, filename: "report.txt" if params.has_key?("download") && params["download"] == "now"
