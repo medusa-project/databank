@@ -364,16 +364,16 @@ fieldset[disabled] .btn-success.active {
 
 
 .btn-info {
-  background-color: #c86128;
-  border-color: #c86128;
+  background-color: #eb5400;
+  border-color: #eb5400;
 }
 
 .btn-info:hover,
 .btn-info:focus,
 .btn-info:active,
 .btn-info.active {
-  background-color: #b35724;
-  border-color: #9e4c20;
+  background-color: #d14b00;
+  border-color: #ff5f05;
 }
 
 .btn-info.disabled:hover,
@@ -388,8 +388,9 @@ fieldset[disabled] .btn-info:hover,
 fieldset[disabled] .btn-info:focus,
 fieldset[disabled] .btn-info:active,
 fieldset[disabled] .btn-info.active {
-  background-color: #c86128;
-  border-color: #c86128;
+  color: #252525;
+  background-color: #f4f4f4;
+  border-color: #f4f4f4;
 }
 
 .btn-warning {
