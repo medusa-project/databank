@@ -240,7 +240,7 @@
           .panel-collapse.collapse(id="materialsPanel" role="tabpanel" aria-labelledby="materialsHeading" )
             .panel-body
               = render partial: 'materials_subform', locals: {f: f}
-      - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
+      - if (Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)) && ( (can? :update, @dataset ) ) ||  (can? :update, @dataset)
         = render partial: 'datafiles_subform', locals: {f: f}
         .panel-group(id="advancedUpload" aria-multiselectable="true")
           .panel.panel-default
