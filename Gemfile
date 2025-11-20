@@ -16,7 +16,7 @@ gem "terser"
 # gem 'therubyracer', platforms: :ruby
 
 # Use in-house storage gem to manage flexible storage on filesystems and s3 buckets
-gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "master"
+gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "feature-1"
 
 # Use aws-sdk to manage signed urls for downloads
 gem "aws-sdk"
