@@ -51,6 +51,9 @@ gem "rchardet"
 # User iconv to convert between encodings
 gem "iconv"
 
+# Use io-like for IO utilities
+gem "io-like"
+
 # Use roda for routing magic
 gem "roda"
 
