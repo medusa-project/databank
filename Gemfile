@@ -5,7 +5,7 @@ ruby '3.3.6'
 gem 'rails', '~> 7.2.2'
 
 # Use postgresql as the database for Active Record
-gem "pg"
+gem "pg", force_ruby_platform: true
 # Use SCSS for stylesheets
 gem "sass-rails"
 # Use terser as compressor for JavaScript assets
