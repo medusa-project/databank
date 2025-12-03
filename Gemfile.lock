@@ -10,7 +10,7 @@ GIT
 GIT
   remote: https://github.com/medusa-project/medusa_storage.git
   revision: 99bc7236fd2f4652988ed0185acac35a53a78517
-  branch: feature-1
+  branch: main
   specs:
     medusa_storage (0.6.6)
       aws-sdk-s3
