@@ -36,7 +36,7 @@
     </div>
   <% end %>
   <% if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION &&
-    @dataset.hold_state == Databank::PublicationState::TempSuppress::NONE %>
+    @dataset.hold_state == Databank::PublicationState::TempSuppress::NONE && (can? :update, @dataset) %>
     <div class="selected-version boxed-alert">
       This version is ready for editing. Please use the green edit button to modify your dataset and then continue.
     </div>

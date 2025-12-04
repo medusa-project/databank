@@ -121,7 +121,13 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def show
     # authorize! :read, @dataset
-    @shared_by_link = (params.has_key?("code") && (params["code"] == @dataset.current_share_code))
+    has_share_code = params.has_key?("code")
+    # special case redirect for share code with dataset IDB-5266692
+    if has_share_code && @dataset.key = "IDB-5266692"
+      # redirect to dataset with key of "IDB-1985555" and add querey string of the code
+      redirect_to dataset_path("IDB-1985555", code: params["code"]) and return
+    end
+    @shared_by_link = has_share_code && (params["code"] == @dataset.current_share_code))
     @datacite_fabrica_url = if Rails.env.aws_production?
                               "https://doi.datacite.org/"
                             else
