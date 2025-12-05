@@ -32,7 +32,7 @@
                           %span(class="idb-help-prompt" )
                             what's this?
 
-                -if dataset.datafiles.count > 0 && dataset.datafiles.count <= 100
+                -if dataset.datafiles.count > 0 && dataset.datafiles.count <= 200
                   - dataset.complete_datafiles.each do |datafile|
                     .row.checkbox.filerow
                       %span.col-md-6(aria-label="Download")
@@ -109,9 +109,9 @@
                       -#           %a.btn.btn-primary.btn-block.idb{href: "#{IDB_CONFIG[:root_url_text]}/datafiles/#{datafile.web_id}/download_no_record", "aria-label": "download #{datafile.bytestream_name}" }
                       -#             %span{class: "glyphicon glyphicon-download"}
                       -#             File
-                -elsif dataset.datafiles.count > 100
+                -elsif dataset.datafiles.count > 200
                   %jumbotron
-                    Error displaying files because there are more than 100, please
+                    Error displaying files because there are more than 200, please
                     =link_to("contact", "/contact")
                     the Research Data Service
                 -elsif dataset.datafiles.count.zero?
