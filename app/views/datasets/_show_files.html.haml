@@ -95,20 +95,20 @@
                         Incomplete files uploads found, please
                         =link_to("contact", "/contact")
                         the Research Data Service for help if this is unexpected.
-                      - if (can? :update, dataset)
-                        - dataset.incomplete_datafiles.each do |datafile|
-                          .row(class="#{datafile.upload_complete? ? 'uploadComplete' : 'completion-warning' }")
-                            %span.col-md-6
-                              = datafile.bytestream_name
-                            %span.col-md-3
-                              = datafile.bytestream? ? "exists in storage" : "incomplete--edit dataset to manage"
-                            -if datafile.bytestream?
-                              .col-md-2
-                                = number_to_human_size(datafile.bytestream_size)
-                              .col-md-2
-                                %a.btn.btn-primary.btn-block.idb{href: "#{IDB_CONFIG[:root_url_text]}/datafiles/#{datafile.web_id}/download_no_record", "aria-label": "download #{datafile.bytestream_name}" }
-                                  %span{class: "glyphicon glyphicon-download"}
-                                  File
+                      -# - if (can? :update, dataset)
+                      -#   - dataset.incomplete_datafiles.each do |datafile|
+                      -#     .row(class="#{datafile.upload_complete? ? 'uploadComplete' : 'completion-warning' }")
+                      -#       %span.col-md-6
+                      -#         = datafile.bytestream_name
+                      -#       %span.col-md-3
+                      -#         = datafile.bytestream? ? "exists in storage" : "incomplete--edit dataset to manage"
+                      -#       -if datafile.bytestream?
+                      -#         .col-md-2
+                      -#           = number_to_human_size(datafile.bytestream_size)
+                      -#         .col-md-2
+                      -#           %a.btn.btn-primary.btn-block.idb{href: "#{IDB_CONFIG[:root_url_text]}/datafiles/#{datafile.web_id}/download_no_record", "aria-label": "download #{datafile.bytestream_name}" }
+                      -#             %span{class: "glyphicon glyphicon-download"}
+                      -#             File
                 -elsif dataset.datafiles.count > 500
                   %jumbotron
                     Error displaying files because there are more than 500, please

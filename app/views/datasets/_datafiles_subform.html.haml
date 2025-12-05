@@ -53,8 +53,8 @@
                           %span{class: "col-md-2"}
                             -if datafile.upload_complete?
                               = number_to_human_size(datafile.bytestream_size)
-                            -else
-                              = datafile.bytestream? ? "exists in storage" : "does NOT exist in storage"
+                            -# -else
+                            -#   = datafile.bytestream? ? "exists in storage" : "does NOT exist in storage"
                           %span{class: "col-md-2"}
                             - if draft && can_edit
                               %button(type="button" id="remove_#{i}" class="btn btn-danger btn-sm" onclick="remove_file_row(#{i})")
