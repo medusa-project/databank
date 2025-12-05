@@ -32,7 +32,7 @@
                           %span(class="idb-help-prompt" )
                             what's this?
 
-                -if dataset.datafiles.count > 0 && dataset.datafiles.count <= 500
+                -if dataset.datafiles.count > 0 && dataset.datafiles.count <= 100
                   - dataset.complete_datafiles.each do |datafile|
                     .row.checkbox.filerow
                       %span.col-md-6(aria-label="Download")
