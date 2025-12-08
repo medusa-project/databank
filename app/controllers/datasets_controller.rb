@@ -134,6 +134,8 @@ collaborators to access the data files while the dataset is not public.</li>
                               "https://doi.test.datacite.org/"
                             end
     @completion_check = Dataset.completion_check(@dataset)
+    @globus_downloadable = @dataset.globus_downloadable?
+    @dataset_preserved = @dataset.fileset_preserved?
     @dataset.ensure_embargo
     @dataset.ensure_version_group
     set_file_mode

@@ -15,7 +15,7 @@
                 -if dataset.aggregate_downloadable?
                   .row.filerow
                     .col-md-4
-                      -if dataset.fileset_preserved?
+                      -if @dataset_preserved
                         %button(class="btn btn-primary" type="button" onclick="offerDownloadLink()")
                           %span.glyphicon.glyphicon-download
                           Get Custom Zip and Download Link for Selected
@@ -25,7 +25,7 @@
                           %input(type="checkbox" id="checkAllFiles" value="checkAllFiles")
                           Select all
                     .col-md-4
-                      -if dataset.globus_downloadable?
+                      -if @globus_downloadable
                         =link_to "#{image_tag("globus.png", size: "24x18", "aria-hidden": true, "alt": "Globus logo")} Open in Globus".html_safe, "/datasets/#{dataset.key}/open_in_globus", target: "_blank", class: "btn btn-primary idb"
                         %a(href="/guides#upload_globus" target="_blank" )
                           %span(class="far fa-question-circle")
@@ -37,7 +37,7 @@
                     .row.checkbox.filerow
                       %span.col-md-6(aria-label="Download")
                         -# check globus_only
-                        -if dataset.fileset_preserved?
+                        -if @dataset_preserved
                           %label(for="#{datafile.web_id}_file_name")
                             %input(type="checkbox" class="checkFile checkFileGroup" id="#{datafile.web_id}_file_name" name="selected_files[]" value="#{datafile.web_id}" onchange="handleCheckFileGroupChange()")
                             = datafile.bytestream_name
@@ -48,42 +48,39 @@
                         = number_to_human_size(datafile.bytestream_size)
 
                       %span.col-md-2(aria-label="Preview")
-                        - if dataset.hide_datafile_preview?
-                          Preview suppressed
-                        -else
-                          -if datafile.all_txt? || datafile.markdown?
-                            %span
-                              %button(type='button' id="preview_btn_#{datafile.web_id}" class='btn btn-sm btn-success' aria-expanded='false' onclick='preview("#{datafile.web_id}")')
-                                %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
-                                View
+                        -if datafile.all_txt? || datafile.markdown?
+                          %span
+                            %button(type='button' id="preview_btn_#{datafile.web_id}" class='btn btn-sm btn-success' aria-expanded='false' onclick='preview("#{datafile.web_id}")')
+                              %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
+                              View
 
-                          -if datafile.part_txt?
-                            %span
-                              %button(type='button' id="preview_btn_#{datafile.web_id}" class='btn btn-sm btn-success' aria-expanded='false' onclick='preview("#{datafile.web_id}")')
-                                %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
-                                View First Lines
+                        -if datafile.part_txt?
+                          %span
+                            %button(type='button' id="preview_btn_#{datafile.web_id}" class='btn btn-sm btn-success' aria-expanded='false' onclick='preview("#{datafile.web_id}")')
+                              %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
+                              View First Lines
 
-                          -elsif datafile.archive? && datafile.peek_text && datafile.peek_text != ""
-                            %span
-                              %button(type='button' id="preview_btn_#{datafile.web_id}" class='btn btn-sm btn-success' aria-expanded='false' onclick='preview("#{datafile.web_id}")')
-                                %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
-                                List Contents
+                        -elsif datafile.archive? && datafile.peek_text && datafile.peek_text != ""
+                          %span
+                            %button(type='button' id="preview_btn_#{datafile.web_id}" class='btn btn-sm btn-success' aria-expanded='false' onclick='preview("#{datafile.web_id}")')
+                              %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
+                              List Contents
 
-                          -elsif datafile.pdf?
-                            %span(id="preview_btn_#{datafile.web_id}")
-                              %a(href="/datafiles/#{datafile.web_id}/view" target="_blank" class="btn btn-sm btn-success idb")
-                                %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
-                                View
-                          -elsif datafile.microsoft?
-                            %span(id="preview_btn_#{datafile.web_id}")
-                              %a(href="#{datafile.microsoft_preview_url}" target="_blank" class="btn btn-sm btn-success idb")
-                                %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
-                                View
-                          -elsif datafile.image?
-                            %span(id="preview_img_btn_#{datafile.web_id}")
-                              %button(type='button' aria-expanded='false' class='btn btn-sm btn-success' onclick='preview_image("#{IDB_CONFIG[:iiif][:preview_root]}","#{datafile.web_id}")')
-                                %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
-                                View
+                        -elsif datafile.pdf?
+                          %span(id="preview_btn_#{datafile.web_id}")
+                            %a(href="/datafiles/#{datafile.web_id}/view" target="_blank" class="btn btn-sm btn-success idb")
+                              %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
+                              View
+                        -elsif datafile.microsoft?
+                          %span(id="preview_btn_#{datafile.web_id}")
+                            %a(href="#{datafile.microsoft_preview_url}" target="_blank" class="btn btn-sm btn-success idb")
+                              %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
+                              View
+                        -elsif datafile.image?
+                          %span(id="preview_img_btn_#{datafile.web_id}")
+                            %button(type='button' aria-expanded='false' class='btn btn-sm btn-success' onclick='preview_image("#{IDB_CONFIG[:iiif][:preview_root]}","#{datafile.web_id}")')
+                              %span.glyphicon.glyphicon-eye-open(id="preview_glyph_#{datafile.web_id}")
+                              View
                       %span.col-md-2(aria-label="Download")
                         %a(href="/datafiles/#{datafile.web_id}/download" class="btn btn-primary btn-sm idb" aria-label="download #{datafile.bytestream_name}" )
                           %span.glyphicon.glyphicon-download
