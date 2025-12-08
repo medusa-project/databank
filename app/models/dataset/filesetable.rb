@@ -8,6 +8,13 @@ module Dataset::Filesetable
   extend ActiveSupport::Concern
 
   ##
+  # @return [Boolean] true if the dataset's datafiles preview should be hidden from view
+  def hide_datafile_preview?
+    # temporary debug condition
+    key == "IDB-6601387"
+  end
+
+  ##
   # @return [Boolean] true if all datafiles in the dataset are in Medusa
   def fileset_preserved?
     # assume all are preserved unless a file is found that is not preserved
