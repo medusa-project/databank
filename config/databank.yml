@@ -60,6 +60,8 @@ downloader:
 
 :key_prefix: <%= Rails.application.credentials[:key_prefix] %>
 
+:max_datafiles: 100
+
 medusa:
   outgoing_queue: <%= Rails.application.credentials[:medusa][:outgoing_queue] %>
   incoming_queue: <%= Rails.application.credentials[:medusa][:incoming_queue] %>
