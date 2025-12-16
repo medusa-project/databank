@@ -64,3 +64,11 @@ h3.metadata-label {
   padding: 0;
   font-size: 1em;
 }
+
+// hide skip-to-content element for screen sizes smaller than 1000px
+// because it does not work with the mobile menu
+@media (max-width: 1000px) {
+  skip-to-content {
+    display: none;
+  }
+}
