@@ -33,7 +33,8 @@
                                 =subitem.label
 
     .help-bottom-spacer
-  .col-xs-9.col-md-10(id="help-body")
+  .col-xs-9.col-md-10.help-body
+    %h1 Guides
     -@guide_sections.each do |section|
       =render partial: "guide/items/element", locals: {item: section}
       -if section.guide_items.count.positive? && (section.public || (can? :manage, section) || section.has_public_children?)

@@ -5,7 +5,7 @@ ruby '3.3.6'
 gem 'rails', '~> 7.2.2'
 
 # Use postgresql as the database for Active Record
-gem "pg"
+gem "pg", force_ruby_platform: true
 # Use SCSS for stylesheets
 gem "sass-rails"
 # Use terser as compressor for JavaScript assets
@@ -16,7 +16,7 @@ gem "terser"
 # gem 'therubyracer', platforms: :ruby
 
 # Use in-house storage gem to manage flexible storage on filesystems and s3 buckets
-gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "master"
+gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "main"
 
 # Use aws-sdk to manage signed urls for downloads
 gem "aws-sdk"
@@ -50,6 +50,9 @@ gem "rchardet"
 
 # User iconv to convert between encodings
 gem "iconv"
+
+# Use io-like for IO utilities
+gem "io-like"
 
 # Use roda for routing magic
 gem "roda"

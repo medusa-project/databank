@@ -15,6 +15,7 @@ module Guide
                         else
                           Guide::Section.where(public: true).order(:ordinal)
                         end
+      @title = "Guides"
     end
 
     # GET /guide/sections/1 or /guide/sections/1.json

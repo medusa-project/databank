@@ -19,9 +19,9 @@
   If approved, the Illinois Data Bank will create a draft of the new version using information from your existing published dataset. A curator will email you within 1-2 business days with instructions for editing the new draft version and submitting it for publication. If a new version isn’t the right solution for your dataset, a curator will work with you to find the best approach.
 %h3 Common Questions about Versioning
 -# files
-.panel-group(id="files" role="tablist" aria-multiselectable="true")
+.panel-group(id="files" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading(role="tab" id="filesHeading")
+    .panel-heading(id="filesHeading")
       %h4(class="panel-title")
         %a( role="button" data-toggle="collapse" data-parent="#files" href="#filesPanel" aria-expanded="false" aria-controls="filesPanel" class="accordion-toggle collapsed" )
           %span( class="metadata-label" ) What if I don’t need to change my files? (click to expand)
@@ -30,9 +30,9 @@
         %p
           You can update the descriptive information about your dataset that appears on the Illinois Data Bank website (e.g., Dataset Description, Keywords, etc.) without creating a new version. To get started, navigate back to your data publication and click the green ‘Edit’ button in the upper right.
 -# time
-.panel-group(id="time" role="tablist" aria-multiselectable="true")
+.panel-group(id="time" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading(role="tab" id="timeHeading")
+    .panel-heading(id="timeHeading")
       %h4(class="panel-title")
         %a( role="button" data-toggle="collapse" data-parent="#time" href="#timePanel" aria-expanded="false" aria-controls="timePanel" class="accordion-toggle collapsed" )
           %span( class="metadata-label" ) How long does it take to publish a new version? (click to expand)
@@ -45,9 +45,9 @@
             contact the Research Data Service team
           immediately, and we can suppress the current published version of your dataset from public view while the new version is being created.
 -# old
-.panel-group(id="old" role="tablist" aria-multiselectable="true")
+.panel-group(id="old" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading(role="tab" id="oldHeading")
+    .panel-heading(id="oldHeading")
       %h4(class="panel-title")
         %a( role="button" data-toggle="collapse" data-parent="#old" href="#oldPanel" aria-expanded="false" aria-controls="oldPanel" class="accordion-toggle collapsed" )
           %span( class="metadata-label" ) Will the old version of my data remain in the Illinois Data Bank? (click to expand)
@@ -56,9 +56,9 @@
         %p
           Yes, any old versions of your dataset will remain available in the Illinois Data Bank. While we retain these versions for sake of provenance, old versions can be suppressed from public view if necessary (see below). Either way, any links or citations to your existing publications will continue to work after you publish a new version.
 -# remove
-.panel-group(id="remove" role="tablist" aria-multiselectable="true")
+.panel-group(id="remove" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading(role="tab" id="removeHeading")
+    .panel-heading(id="removeHeading")
       %h4(class="panel-title")
         %a( role="button" data-toggle="collapse" data-parent="#remove" href="#removePanel" aria-expanded="false" aria-controls="removePanel" class="accordion-toggle collapsed" )
           %span( class="metadata-label" ) What if I need to remove an old version? (click to expand)
@@ -71,9 +71,9 @@
             contact the Research Data Service team
           immediately.
 -# doi
-.panel-group(id="doi" role="tablist" aria-multiselectable="true")
+.panel-group(id="doi" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading(role="tab" id="doiHeading")
+    .panel-heading(id="doiHeading")
       %h4(class="panel-title")
         %a( role="button" data-toggle="collapse" data-parent="#doi" href="#doiPanel" aria-expanded="false" aria-controls="doiPanel" class="accordion-toggle collapsed" )
           %span( class="metadata-label" ) Will the new version get a new Digital Object Identifier (DOI) (click to expand)
@@ -82,9 +82,9 @@
         %p
           Yes, your new version will receive a new DOI that is identical to your original DOI except for the version number. For example, if the DOI for version 1 of your dataset is10.13012/B2IDB-1234567_V1, the DOI for version 2 would be 10.13012/B2IDB-1234567_V2.
 -# identifier
-.panel-group(id="identifier" role="tablist" aria-multiselectable="true")
+.panel-group(id="identifier" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading(role="tab" id="identifierHeading")
+    .panel-heading(id="identifierHeading")
       %h4(class="panel-title")
         %a( role="button" data-toggle="collapse" data-parent="#identifier" href="#identifierPanel" aria-expanded="false" aria-controls="identifierPanel" class="accordion-toggle collapsed" )
           %span( class="metadata-label" ) Can I change my published data without getting a new DOI? (click to expand)
@@ -92,9 +92,9 @@
       .panel-body
         %p The version number must change in the DOI, although the rest remains the same. This is because people may have already downloaded and used your data, so using the exact same DOI would mean there's no way for them or others to know if the old or the new dataset was accessed or referenced.
 -# newest
-.panel-group(id="newest" role="tablist" aria-multiselectable="true")
+.panel-group(id="newest" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading(role="tab" id="newestHeading")
+    .panel-heading(id="newestHeading")
       %h4(class="panel-title")
         %a( role="button" data-toggle="collapse" data-parent="#newest" href="#newestPanel" aria-expanded="false" aria-controls="newestPanel" class="accordion-toggle collapsed" )
           %span( class="metadata-label" ) How will users know which version is the newest? (click to expand)

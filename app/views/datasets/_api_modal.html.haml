@@ -3,9 +3,7 @@
     .modal-header
       %a(href="#" class="close" data-dismiss="modal")
         &times;
-      %title
-        Illinois Data Bank - Command Line Tools
-      %h1 Command Line Tools
+      %h2 Command Line Tools
 
     .modal-body
 
@@ -16,10 +14,20 @@
         =@dataset.key
         (Unique and persistent identifier for this dataset within Illinois Data Bank)
         .instruction-box
-          Your token and dataset identifier are pre-populated into example commands in sections below.
-          %br
-          Expand Python or cURL section to see the example command for that option.
-          %br
+          %p
+            Your token and dataset identifier are pre-populated into example commands in sections below.
+          %p
+            Expand Python or cURL section to see the example command for that option.
+            %ul.list-unstyled
+              %li
+                For our pipeline, cURL method only works on files
+                %strong up to 4 GB.
+                %span(class="glyphicon glyphicon-warning-sign" aria-hidden="true")
+              %li
+                The API, as used in the included Python script, can be used for files
+                %strong up to 50 GB.
+
+
       %h3 NOTES:
       = render partial: 'zipping_panel'
       = render partial: 'grouping_panel'

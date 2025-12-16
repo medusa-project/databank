@@ -102,7 +102,7 @@
                       -msg = "Are you sure? This permanently removes this sharing link. Another can be generated after."
                       = link_to("/datasets/#{@dataset.key}/remove_sharing_link", method: :delete, data: {confirm: msg},
                       class: "btn idb btn-danger remove-share-btn") do
-                        %span(class="glyphicon glyphicon-trash")
+                        Delete
         .col-md-4
           - if @dataset.show_publish_only?
             %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")

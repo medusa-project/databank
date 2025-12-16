@@ -1,6 +1,16 @@
 -if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
   =render partial: 'read_only_alert'
 -else
+  - if @dataset.errors.any?
+    .error_explaination
+      = "#{pluralize(@dataset.errors.count, "error")} prohibited this dataset from being saved."
+      %ul
+        - @dataset.errors.full_messages.each do |msg|
+          %li
+            = msg
+  
+%span( id="doi-preview" )
+  = @dataset.identifier && @dataset.identifier != "" ? "#{@dataset.persistent_url}" : ""          
   %div(id="main-form-top")
     = form_for(@dataset, :html => {"data-toggle" => "validator", :multipart => true, :role => "form", :enctype => "multipart/form-data", :class => "input-append dataset-form" }) do |f|
       =f.hidden_field :have_permission
@@ -8,14 +18,12 @@
       =f.hidden_field :agree
       =f.hidden_field :org_creators
       =f.hidden_field :publication_state
-      .panel-group(id="description" role="tablist" aria-multiselectable="true")
+      .panel-group(id="description" aria-multiselectable="true")
         .panel.panel-default
-          .panel-heading(role="tab" id="descriptionHeading")
-            %h4(class="panel-title")
-              %a(class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#description" href="#descriptionPanel" aria-expanded="true" aria-controls="descriptionPanel")
-                %span( class="metadata-label" )
-                  Description
-            %br
+          .panel-heading(id="descriptionHeading")
+            %a(class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#description" href="#descriptionPanel" aria-expanded="true" aria-controls="descriptionPanel")
+              %h2.panel-title.metadata-label Description
+          .indent
             Citation Preview:
             %span( id="creator-preview" )
               = @dataset.creator_list && @dataset.creator_list != "" ? @dataset.creator_list : "[Creator List]"
@@ -24,17 +32,8 @@
             %span( id="title-preview" )
               = @dataset.title && @dataset.title != "" ? "#{@dataset.title}." : "[The Title]."
             University of Illinois Urbana-Champaign.
-            %span( id="doi-preview" )
-              = @dataset.identifier && @dataset.identifier != "" ? "#{@dataset.persistent_url}" : ""
           .panel-collapse.collapse.in(id="descriptionPanel" role="tabpanel" aria-labelledby="descriptionHeading" )
             .panel-body
-              - if @dataset.errors.any?
-                .error_explaination
-                  = "#{pluralize(@dataset.errors.count, "error")} prohibited this dataset from being saved."
-                  %ul
-                    - @dataset.errors.full_messages.each do |msg|
-                      %li
-                        = msg
               .row
                 .col-md-6
                   .form-group.required
@@ -44,7 +43,7 @@
                 .col-md-6
                   .form-group.required
                     = f.label :license, "License", :class => "control-label"
-                    %a(href="#" data-toggle="modal" data-target="#licenseModal" tabindex="-1" )
+                    %a(href="#" data-toggle="modal" data-target="#licenseModal" tabindex="0" )
                       %span(class="far fa-question-circle")
                       what's a license?
 
@@ -123,7 +122,7 @@
                   .col-md-4
                     .form-group
                       =f.label :embargo, "Publication Delay (embargo)", class: "control-label"
-                      %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="-1" )
+                      %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="0" )
                         %span(class="far fa-question-circle")
                         what's an embargo?
                       - if ((can? :manage, @dataset) || [Databank::PublicationState::DRAFT, Databank::PublicationState::Embargo::METADATA].include?(@dataset.publication_state))
@@ -147,7 +146,7 @@
                   .col-md-4
                     .form-group
                       =f.label :embargo, "Publication Delay (embargo)", class: "control-label"
-                      %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="-1" )
+                      %a(href="#" data-toggle="modal" data-target="#embargoModal" tabindex="0" )
                         %span(class="far fa-question-circle")
                         what's an embargo?
                       = f.select :embargo, options_for_select([["No Publication Delay", Databank::PublicationState::Embargo::NONE]], @dataset.embargo), {class: "form-control dataset"}
@@ -216,165 +215,82 @@
 
       - if can? :manage, @dataset
 
-        .panel-group(id="curatorHelp" role="tablist" aria-multiselectable="true" class="curator-only")
+        .panel-group(id="curatorHelp" aria-multiselectable="true" class="curator-only")
           .panel.panel-default
-            .panel-heading(role="tab" id="curatorHelpHeading")
-              %h4(class="panel-title")
-                %a( role="button" data-toggle="collapse" data-parent="#funder" href="#curatorHelpPanel" aria-expanded="false" aria-controls="curatorHelpPanel" class="accordion-toggle collapsed" )
-                  %span( class="metadata-label" ) Curator-only form elements help
+            .panel-heading(id="curatorHelpHeading")
+              %a( role="button" data-toggle="collapse" data-parent="#curatorHelp" href="#curatorHelpPanel" aria-expanded="false" aria-controls="curatorHelpPanel" class="accordion-toggle collapsed" )
+                %h2.panel-title.metadata-label Curator-only form elements help
             .panel-collapse.collapse(id="curatorHelpPanel" role="tabpanel" aria-labelledby="curatorHelpHeading" )
               .panel-body
                 = render partial: 'datasets/help/curator_doi_tasks'
 
-      .panel-group(id="funder" role="tablist" aria-multiselectable="true")
+      .panel-group(id="funder" aria-multiselectable="true")
         .panel.panel-default
-          .panel-heading(role="tab" id="funderHeading")
-            %h4(class="panel-title")
-              %a( role="button" data-toggle="collapse" data-parent="#funder" href="#funderPanel" aria-expanded="false" aria-controls="funderPanel" class="accordion-toggle collapsed" )
-                %span( class="metadata-label" ) Funder
+          .panel-heading(id="funderHeading")
+            %a( role="button" data-toggle="collapse" data-parent="#funder" href="#funderPanel" aria-expanded="false" aria-controls="funderPanel" class="accordion-toggle collapsed" )
+              %h2.panel-title.metadata-label Funder
           .panel-collapse.collapse(id="funderPanel" role="tabpanel" aria-labelledby="funderHeading" )
             .panel-body
               = render partial: 'funders_subform', locals: {f: f}
-      .panel-group(id="materials" role="tablist" aria-multiselectable="true")
+      .panel-group(id="materials" aria-multiselectable="true")
         .panel.panel-default
-          .panel-heading(role="tab" id="materialsHeading")
-            %h4(class="panel-title")
-              %a(role="button" data-toggle="collapse" data-parent="#materials" href="#materialsPanel" aria-expanded="false" aria-controls="materialsPanel" class="accordion-toggle collapsed" )
-                %span( class="metadata-label" ) Relationships with articles, code, other datasets, and other resources
+          .panel-heading(id="materialsHeading")
+            %a(role="button" data-toggle="collapse" data-parent="#materials" href="#materialsPanel" aria-expanded="false" aria-controls="materialsPanel" class="accordion-toggle collapsed" )
+              %h2.panel-title.metadata-label Relationships with articles, code, other datasets, and other resources
           .panel-collapse.collapse(id="materialsPanel" role="tabpanel" aria-labelledby="materialsHeading" )
             .panel-body
               = render partial: 'materials_subform', locals: {f: f}
-      = render partial: 'datafiles_subform', locals: {f: f}
+      - if (Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)) && ( (can? :update, @dataset ) ) ||  (can? :update, @dataset)
+        = render partial: 'datafiles_subform', locals: {f: f}
+        .panel-group(id="advancedUpload" aria-multiselectable="true")
+          .panel.panel-default
+            .panel-heading(id="advancedUploadHeading")
+              %a(role="button" data-toggle="collapse" data-parent="#advancedUpload" href="#advancedUploadPanel" aria-expanded="false" aria-controls="advancedUploadPanel" class="accordion-toggle collapsed")
+                %h2.panel-title.metadata-label Advanced Upload Options
+            %div(id="advancedUploadPanel" role="tabpanel" aria-labelledby="advancedUploadHeading" class="panel-collapse collapse")
+              .panel-body
+                .container-fluid.upload-options
+                  .row
+                    .col-md-5
+                      .btn.btn-success.fileinput-button(id="api-modal-btn" role="button" )
+                        %span(class="fileinput-button-content")
+                          %span(class="glyphicon glyphicon-open" )
+                          %span(id='token-button-text')
+                            - if @dataset.current_token.nil?
+                              Get token for command line tools
+                            - else
+                              View token for command line tools
+                    .col-md-7
+                      %p
+                        For Illinois Data Bank, cURL can be used only for files
+                        %strong up to 4 GB.
+                      %p
+                        The API, as used in the included Python script, can be used for files
+                        %strong up to 50 GB.
 
-  - if ([Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)) && ( (can? :manage, @dataset ) ||  (can? :update, @dataset) )
-
-    .container-fluid
-
-      %table(id="upload-table" )
-        %thead
-          %tr.row
-            %td.col-md-4
-              %strong File Upload Options
-            %td.col-md-1
-              < 4 GB
-            %td.col-md-1
-              < 15 GB
-            %td.col-md-1
-              < 50 GB
-            %td.col-md-1
-              < 2 TB
-
-        %tbody
-          %tr.row
-            %td
-              %div(id="file-drop-area")
-                %i(class="fa fa-cloud-upload-alt fa-2x" aria-hidden="true" )
-                Drop files in this area
-            %td
-              %span(class="fas upload-consistent fa-circle")
-            %td
-              %span(class="fas upload-inconsistent fa-adjust")
-            %td
-              %span(class="far upload-unavailable fa-circle")
-            %td
-              %span(class="far upload-unavailable fa-circle")
-
-          %tr.row
-            %td.fileselect(id="file-select-area")
-              %label(class="btn btn-success fileinput-button")
-                %span(class="fileinput-button-content" )
-                  %span(class="fa fa-laptop fa-lg" )
-                  Select files from your computer
-            %td
-              %span(class="fas upload-consistent fa-circle")
-            %td
-              %span(class="fas upload-inconsisent fa-adjust")
-            %td
-              %span(class="far upload-unavailable fa-circle")
-            %td
-              %span(class="far upload-unavailable fa-circle")
-
-          -# %tr.row
-          -#   %td
-          -#     %div(id="box-select" data-link-type="direct" data-multiselect="true" data-client-id="r5tgofc05460skm84yjepz1ck16ptotr" role="button" )
-          -#   %td
-          -#     %span(class="fas upload-consistent fa-circle")
-          -#   %td
-          -#     %span(class="fas upload-consistent fa-circle")
-          -#   %td
-          -#     %span(class="far upload-unavailable fa-circle")
-          -#   %td
-          -#     %span(class="far upload-unavailable fa-circle")
-
-          - if can? :manage, @dataset
-            %tr.row
-              %td.curator-only
-                %button(type="button" class="btn btn-success fileinput-button" onclick="openRemoteFileModal()" )
-                  %span(class="glyphicon glyphicon-link")
-                  Provide a URL
-              %td.curator-only
-                %span(class="fas upload-consistent fa-circle")
-              %td.curator-only
-                %span(class="fas upload-consistent fa-circle")
-              %td.curator-only
-                %span(class="fas upload-inconsistent fa-adjust")
-              %td.curator-only
-                %span(class="far upload-unavailable fa-circle")
-
-          %tr.row
-            %td
-              .btn.btn-success.fileinput-button(id="api-modal-btn" role="button" )
-                %span(class="fileinput-button-content")
-                  %span(class="glyphicon glyphicon-open" )
-                  %span(id='token-button-text')
-                    - if @dataset.current_token.nil?
-                      Get token for command line tools
-                    - else
-                      View token for command line tools
-
-            %td
-              %span(class="fas upload-consistent fa-circle")
-            %td
-              %span(class="fas upload-consistent fa-circle")
-            %td
-              %span(class="fas upload-inconsisent fa-adjust")
-            %td
-              %span(class="far upload-unavailable fa-circle")
-
-          %tr.row
-            %td
-              =link_to("https://forms.illinois.edu/sec/1813779862", class: "btn btn-success fileinput-button idb", target: "_blank") do
-                %span(class="large-text" )
-                  &#x1f45f;
-                Requst large file transfer
-            %td
-              %span(class="fas upload-consistent fa-circle")
-            %td
-              %span(class="fas upload-consistent fa-circle")
-            %td
-              %span(class="fas upload-consistent fa-circle")
-            %td
-              %span(class="fas upload-consistent fa-circle")
-
-          - if can? :manage, @dataset
-            %tr.row
-              %td.curator-only
-                %button(type="button" class="btn btn-success fileinput-button" onclick="importFromGlobus()" )
-                  %span(class="glyphicon glyphicon-link")
-                  Import from Globus
-              %td.curator-only
-                %span(class="fas upload-consistent fa-circle")
-              %td.curator-only
-                %span(class="fas upload-consistent fa-circle")
-              %td.curator-only
-                %span(class="fas upload-inconsistent fa-circle")
-              %td.curator-only
-                %span(class="fas upload-unavailable fa-circle")
-
-    %hr
-    %div(id="divFiles")
+                  .row
+                    .col-md-5
+                      =link_to("https://forms.illinois.edu/sec/1813779862", class: "btn btn-success fileinput-button idb", target: "_blank") do
+                        %span(class="large-text" aria-hidden="true")
+                          &#x1f45f;
+                        %span.sr-only Request large file transfer
+                        Request large file transfer
+                    .col-md-7
+                      %p Files larger than 50GB require special handling.
+                      %p See the large file transfer request form for details.
+                  - if can? :manage, @dataset
+                    .row.curator-only
+                      .col-md-5
+                        %button(type="button" class="btn btn-success fileinput-button" onclick="importFromGlobus()" )
+                          %span(class="glyphicon glyphicon-link")
+                          Import from Globus
+                      .col-md-7
+                        %p This is a curator tool. After a Globus transfer is complete, clicking this button will import the files into the dataset.
+                        %p This needs to be done after any Globus transfer. If additional files are added, this button can be clicked again to import the new files.
+                        %p This will not duplicate imports of files with the same name; this is checked during the process, so only new files will be imported.
+                        %p After clicking this button, the curator must refresh the page to see the imported files.
+        %div(id="divFiles")
   .review-deposit-agreement.container-fluid
-    %hr
     - if (params[:action] == 'new')
       %div(id="review_link")
         %a(href="/datasets/review_deposit_agreement" target="_blank" ) Review Deposit Agreement

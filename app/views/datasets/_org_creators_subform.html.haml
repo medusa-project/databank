@@ -2,7 +2,7 @@
 = render partial: 'datasets/help/primary_contact_help_modal'
 %label(class="control-label required")
   Organizational Author List (One primary long-term contact must be selected from this list.)
-  %a(href="#" data-toggle="modal" data-target="#offerIndAuthModal" tabindex="-1" )
+  %a(href="#" data-toggle="modal" data-target="#offerIndAuthModal" tabindex="0" )
     %span(class="far fa-question-circle")
     %span(class="idb-help-prompt" )
       citing individual(s) as author(s)?
@@ -21,7 +21,7 @@
           Email
       %th(class="col-md-2" )
         Primary Contact
-        %a(href="#" data-toggle="modal" data-target="#primaryContactModal" tabindex="-1" )
+        %a(href="#" data-toggle="modal" data-target="#primaryContactModal" tabindex="0" )
           %span(class="far fa-question-circle")
           %span(class="idb-help-prompt" )
             what's a primary contact?
@@ -30,7 +30,6 @@
   %tbody
 
   - @dataset.creators.each_with_index do |creator, i|
-
     = f.fields_for :creators, creator do |cf|
       %tr(class="item row" id="creator_index_#{i}" )
         %td
@@ -41,14 +40,10 @@
           = cf.hidden_field :type_of, value: Databank::CreatorType::INSTITUTION
           = cf.text_field :institution_name, class: "form-control dataset creator", placeholder: "[e.g.: Institution of Phenomenon Observation and Measurement]", onchange: "generate_creator_preview()"
         %td(class="col-md-3")
-          = cf.email_field :email, class: "form-control dataset creator-email", placeholder: "[e.g.: help@institute.org]", onchange: "handle_creator_email_change(this)"
+          = cf.email_field :email, class: "form-control dataset creator-email", placeholder: "[e.g.: creator@institute.org]", onchange: "handle_creator_email_change(this)"
         %td(class="col-md-1" align="center" )
           = cf.hidden_field :is_contact
-          -#%input(name="dataset[creators_attributes][#{i}][is_contact]" type="hidden" value="#{creator.is_contact?}")
-          - if creator.is_contact?
-            %input(type="radio" name="primary_contact" class="dataset contact_radio" value="#{i}" onchange="handle_contact_change()" checked="true" )
-          -else
-            %input(type="radio" name="primary_contact" class="dataset contact_radio" value="#{i}" onchange="handle_contact_change()" )
+          %input(type="radio" name="primary_contact" class="dataset contact_radio" value="#{i}" onchange="handle_contact_change()" aria-label="Primary Contact"#{' checked="true"' if creator.is_contact?})
         %td(class="col-md-1")
 -# Add/Remove Creator buttons inserted via ajax
 %table(id="deleted_creator_table")

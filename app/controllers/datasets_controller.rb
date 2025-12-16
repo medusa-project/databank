@@ -109,19 +109,33 @@ collaborators to access the data files while the dataset is not public.</li>
       user = nil
     end
     @datasets = Dataset.select(&:metadata_public?) # used for public json response
+    if params[:q].present?
+      @title = "Datasets: #{params[:q]}"
+    else
+      @title = "Datasets"
+    end
     @search = Dataset.filtered_list(user_role: user_role, user: user, params: params)
     @report = Dataset.citation_report(@search, request.original_url, current_user)
     send_data @report, filename: "report.txt" if params.has_key?("download") && params["download"] == "now"
   end
 
   def show
-    @shared_by_link = (params.has_key?("code") && (params["code"] == @dataset.current_share_code))
+    # authorize! :read, @dataset
+    has_share_code = params.has_key?("code")
+    # special case redirect for share code with dataset IDB-5266692
+    if has_share_code && @dataset.key == "IDB-5266692"
+      # redirect to dataset with key of "IDB-1985555" and add querey string of the code
+      redirect_to dataset_path("IDB-1985555", code: params["code"]) and return
+    end
+    @shared_by_link = has_share_code && (params["code"] == @dataset.current_share_code)
     @datacite_fabrica_url = if Rails.env.aws_production?
                               "https://doi.datacite.org/"
                             else
                               "https://doi.test.datacite.org/"
                             end
     @completion_check = Dataset.completion_check(@dataset)
+    @globus_downloadable = @dataset.globus_downloadable?
+    @dataset_preserved = @dataset.fileset_preserved?
     @dataset.ensure_embargo
     @dataset.ensure_version_group
     set_file_mode
@@ -145,7 +159,6 @@ collaborators to access the data files while the dataset is not public.</li>
     authorize! :manage, @dataset
     @previous = @dataset.previous_idb_dataset
   end
-
 
   def review_requests
     authorize! :manage, @dataset
@@ -183,6 +196,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.funders.build
     @dataset.related_materials.build
     set_file_mode
+    @title = "Deposit Agreement"
   end
 
   # GET /datasets/1/edit
@@ -209,7 +223,11 @@ collaborators to access the data files while the dataset is not public.</li>
     @license_info_arr = LICENSE_INFO_ARR
 
     @dataset.subject = Databank::Subject::NONE unless @dataset.subject
-    authorize! :update, @dataset
+    if @dataset.title
+      @title = "Edit #{@dataset.title}"
+    else
+      @title = "Edit Untitled Dataset"
+    end
   end
 
   def get_new_token
@@ -249,8 +267,6 @@ collaborators to access the data files while the dataset is not public.</li>
       end
     end
   end
-
-
 
   # PATCH/PUT /datasets/1
   # PATCH/PUT /datasets/1.json
@@ -362,6 +378,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def pre_deposit
     @dataset = Dataset.new
+    @title = "Pre-Deposit Considerations"
     set_file_mode
   end
 
@@ -369,8 +386,8 @@ collaborators to access the data files while the dataset is not public.</li>
     @previous = Dataset.find_by(key: params[:id])
     @previous ||= Dataset.find(params[:dataset_id])
     raise ActiveRecord::RecordNotFound unless @previous
-
     @dataset = Dataset.new
+    @title = "New Version"
     set_file_mode
   end
 
@@ -535,7 +552,6 @@ collaborators to access the data files while the dataset is not public.</li>
       end
     end
   end
-
 
   def permanently_suppress_metadata
     authorize! :manage, @dataset

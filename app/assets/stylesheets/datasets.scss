@@ -364,6 +364,15 @@ legend.metadata-border {
   margin: 5px;
 }
 
+#file-select-area{
+  margin: 0;
+  padding-top: 20px;
+  background-color: $color__lightest-grey;
+  border: 2px dashed $color__medium-grey;
+  min-height: 100px;
+  text-align: center;
+}
+
 .highlight-background{
   background-color: $color__yellow-background;
 }
@@ -377,11 +386,6 @@ legend.metadata-border {
 .search-count{
   background-color: $color__lightest-grey;
 }
-
-//.preview{
-//
-//
-//}
 
 .preview{
   padding-left: 15px;
@@ -404,13 +408,30 @@ legend.metadata-border {
   overflow-x: scroll;
 }
 
-//div#box-select{
-//  top: 15px !important;
-//}
+a {
+  &:focus {
+    outline-offset: 1px;
+  }
+}
+.dataset-link{
+  // add outline when focused for accessibility
+  &:focus {
+    outline: 2px solid $color__dark-moderate-blue;
+    outline-offset: 2px;
+  }
+}
+
+.more{
+  font-style: italic;
+}
 
 a.morelink {
   text-decoration:none;
-  outline: none;
+  // add outline when focused for accessibility
+  &:focus {
+    outline: 2px solid $color__dark-moderate-blue;
+    outline-offset: 2px;  
+  }
 }
 .morecontent span {
   display: none;
@@ -446,4 +467,44 @@ tr.different {
 }
 .facet_label{
     font-weight: normal;
+}
+
+#file-select-area {
+  text-align: center;
+}
+
+fieldset.search-facet {
+  //style like bootstrap panel
+  border: 1px solid $color__light-grey;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+legend.panel-title{
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 5px;
+  border-radius: 4px 4px 0 0;
+  border-bottom: 1px solid $color__light-grey;
+  background-color: $color__lightest-blue;
+}
+
+h3.filter-heading {
+  margin: 0;
+  padding: 10px;
+  border-bottom: 1px solid $color__light-grey;
+  background-color: $color__lightest-blue;
+  font-weight: bold;
+  &:hover,
+  &:focus {
+    font-weight: bold;
+    color: black;
+  }
+}
+
+// style like a row in a bootstrap table
+.filerow {
+  border-bottom: 1px solid $color__light-grey;
+  padding: 10px 0;
 }

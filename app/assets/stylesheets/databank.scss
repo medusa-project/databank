@@ -24,7 +24,7 @@ a.intense:visited {
 /* mouse over link */
 a.intense:hover {
   color: $color__orange-red;
-  text-weight: bold;
+  font-weight: bold;
   background-color: $color__lighter_blue;
 }
 
@@ -184,29 +184,6 @@ div {
     list-style: square;
   }
 }
-
-//a.btn {
-//  color: $color__text-light;
-//&:visited {
-//    color: $color__text-light;
-//  }
-//  &:hover {
-//    color: $color__text-light;
-//    background-color: $color__dark-navy;
-//  }
-//}
-
-//a.btn {
-//  color: red;
-//  &:visited {
-//    color: purple;
-//  }
-//  &:hover {
-//    color: orange;
-//    background-color: yellow;
-//  }
-//}
-
 
 .bs-callout-info {
   padding-bottom: 10px;
@@ -580,4 +557,53 @@ caption.policy-document-history, caption.info-table {
   font-weight: bold;
   color: white;
   background-color: $color__dark-navy;
+}
+
+.glyphicon-warning-sign{
+  color: $color__red;
+  margin-left: 5px;
+  vertical-align: text-top;
+  cursor: help;
+}
+.line-above {
+  border-top: 1px solid $color__light-grey;
+  padding-top: 5px;
+}
+h2.button-label, h3.button-label {
+  display: inline-block;
+  margin-left: 5px;
+  margin-bottom: 0;
+  margin-top: 0;
+  padding: 0;
+  font-size: 1em;
+  font-weight: normal;
+}
+
+.button-row {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+h1.naked, h2.naked, h3.naked {
+  font-size: 1em;
+  font-weight: normal;
+  display: inline;
+  &:hover,
+  &:focus {
+    padding: 2px;
+    background-color: $color__lightest-grey;
+    color: black;
+    font-weight: bold;
+    border: 1px dashed $color__dark-navy;
+    cursor: pointer;
+  }
+}
+
+h2.spotlight-name {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+li.navitem {
+  margin-bottom: .25em;
 }

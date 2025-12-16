@@ -3,13 +3,27 @@
 -if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
   .alert.alert-alert
     =SystemMessage.read_only_message.raw
-
-.panel-group(id="license" role="tablist" aria-multiselectable="true")
+.panel-group(id="large" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading(role="tab" id="licenseHeading")
-      %h4(class="panel-title")
-        %a( role="button" data-toggle="collapse" data-parent="#license" href="#licensePanel" aria-expanded="false" aria-controls="licensePanel" class="accordion-toggle collapsed" )
-          %span( class="metadata-label" ) You will need to select a license for your dataset. (click to expand)
+    .panel-heading(id="largeHeading")
+      %a( role="button" data-toggle="collapse" data-parent="#large" href="#largePanel" aria-expanded="false" aria-controls="largePanel" class="accordion-toggle collapsed" )
+        %h2.panel-title Large Files
+        %span( class="metadata-label" )Files larger than 50 GB require special handling. (click to expand)
+    .panel-collapse.collapse(id="largePanel" role="tabpanel" aria-labelledby="largeHeading" )
+      .panel-body
+        %p
+          For files larger than 50 GB, please fill out our
+          %a(href= "/datasets/file_transfer_request" class="underline" )
+            large file transfer request form
+          or
+          %a(href="mailto:databank@library.illinois.edu" class="underline") email us
+          to learn more about file transfer options. 
+.panel-group(id="license" aria-multiselectable="true")
+  .panel.panel-default
+    .panel-heading(id="licenseHeading")
+      %a( role="button" data-toggle="collapse" data-parent="#license" href="#licensePanel" aria-expanded="false" aria-controls="licensePanel" class="accordion-toggle collapsed" )
+        %h2.panel-title License Selection
+        %span( class="metadata-label" )You will need to select a license for your dataset. (click to expand)
     .panel-collapse.collapse(id="licensePanel" role="tabpanel" aria-labelledby="licenseHeading" )
       .panel-body
         %p
@@ -22,74 +36,75 @@
           Your dataset license options in Illinois Data Bank are:
         =render partial: '/datasets/help/license_infographic'
         %p
-          %a(href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" ) Find out more about CCO
+          %a(href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" class="underline" ) Find out more about CCO
           %br
-          %a(href="https://creativecommons.org/licenses/by/4.0/" target="_blank" ) Find out more about CC BY
+          %a(href="https://creativecommons.org/licenses/by/4.0/" target="_blank" class="underline" ) Find out more about CC BY
           %br
           %span(class="strong") If you choose to use a license.txt file, upload it with your other dataset files.
 
 = render partial: 'grouping_panel'
 = render partial: 'zipping_panel'
-.panel-group(id="contact" role="tablist" aria-multiselectable="true")
+.panel-group(id="contact" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading(role="tab" id="contactHeading")
-      %h4(class="panel-title")
-        %a( role="button" data-toggle="collapse" data-parent="#contact" href="#contactPanel" aria-expanded="false" aria-controls="contactPanel" class="accordion-toggle collapsed" )
-          %span( class="metadata-label" ) You will need to select a long-term primary contact for your dataset. (click to expand)
+    .panel-heading(id="contactHeading")
+      %a( role="button" data-toggle="collapse" data-parent="#contact" href="#contactPanel" aria-expanded="false" aria-controls="contactPanel" class="accordion-toggle collapsed" )
+        %h2.panel-title Select Primary Contact
+        %span( class="metadata-label" ) You will need to select a long-term primary contact for your dataset. (click to expand)
     .panel-collapse.collapse(id="contactPanel" role="tabpanel" aria-labelledby="contactHeading" )
       .panel-body
         =render partial: "select_contact_info"
 
-.panel-group(id="embargo" role="tablist" aria-multiselectable="true")
+.panel-group(id="embargo" aria-multiselectable="true")
   .panel.panel-default
-    .panel-heading(role="tab" id="embargoHeading")
-      %h4(class="panel-title")
-        %a( role="button" data-toggle="collapse" data-parent="#embargo" href="#embargoPanel" aria-expanded="false" aria-controls="embargoPanel" class="accordion-toggle collapsed" )
-          %span( class="metadata-label" ) You will be offered the option to delay publication of your dataset. (click to expand)
+    .panel-heading(id="embargoHeading")
+      %a( role="button" data-toggle="collapse" data-parent="#embargo" href="#embargoPanel" aria-expanded="false" aria-controls="embargoPanel" class="accordion-toggle collapsed" )
+        %h2.panel-title Delaying Publication
+        %span( class="metadata-label" ) You will be offered the option to delay publication of your dataset. (click to expand)
     .panel-collapse.collapse(id="embargoPanel" role="tabpanel" aria-labelledby="embargoHeading" )
       .panel-body
         %p
           Due to publisher or other requirements, researchers may need to deposit their dataset but make it temporarily unavailable for download.
           %br
           For more guidance, review our help section on the topic:
-          %a(href="#{IDB_CONFIG[:root_url_text]}/guides#embargo") Delaying Publication of/embargoing your dataset
+          %a(href="#{IDB_CONFIG[:root_url_text]}/guides#embargo" class="underline") Delaying Publication of/embargoing your dataset
         %p
           By default, there is no publication delay.  Your other options are:
           =render partial: '/datasets/help/embargo_infographic'
-%br
 .indent
-  %h4.metadata-label The Research Data Service has data publishing experts and we're here to help!
+  %h2 Help Options
+  %p.large-text The Research Data Service has data publishing experts and we're here to help!
+
+  %h3 Guides
   %p
-    %b
-      If you have files larger than 50GB to upload, please consider filling out
-      %a(href= "/datasets/file_transfer_request" ) this request form
-      or
-      %a(href="mailto:databank@library.illinois.edu") email us
-      to learn more about file transfer options.
-  %p
-    Guidance will continue to be available to you throughout this process.  To
-    =succeed "," do
-      %a(href="#{IDB_CONFIG[:root_url_text]}/contact") contact us
-    or to review any of this information, open the
-    %a(href="#{IDB_CONFIG[:root_url_text]}/guides" )
+    Guidance will continue to be available to you throughout this process.  To review any of this information, open the
+    %a(href="#{IDB_CONFIG[:root_url_text]}/guides" class="underline" )
       %span.glyphicon.glyphicon-question-sign
       Guides
     menu at the top of each page.
   %p
     For context-specific help, click the question icon
-    %a(href="#{IDB_CONFIG[:root_url_text]}/guides" )
+    %a(href="#{IDB_CONFIG[:root_url_text]}/guides")
       %span.far.fa-question-circle
     near form elements for additional details.
-
-%hr
-
+  %h3 Contact Us
+  %p
+    If you have questions or need assistance, please fill out our
+    %a(href="https://forms.illinois.edu/sec/1628290621" class="underline" )
+      consultation request form
+    or
+    = succeed "." do
+      %a(href="mailto: databank@library.illinois.edu" class="underline")
+        email us
 -if Databank::Application.file_mode != Databank::FileMode::READ_ONLY
-  .row
-    .col-md-3.col-md-offset-9
-      %button(type="button" class="btn btn-primary btn-block" onclick='window.location = "/datasets/new"' )
-        Continue
-        %span(class="glyphicon glyphicon-triangle-right" )
-      %button(type="button" class="btn btn-danger btn-block" name="cancel" onclick='window.location = "/"' )
-        %span(class="glyphicon glyphicon-remove" )
-        Cancel
-      %br
+  .row.line-above
+    .col-md-3.col-md-offset-9.progress-buttons
+      %nav(aria-label="Progress" data-skip-to-info="landmark navigation" data-skip-to-acc-name="Progress" data-skip-to-id="100")
+        %ul.list-unstyled
+          %li.navitem
+            = link_to "/datasets/new", class: "btn btn-primary btn-block idb", name: "continue" do
+              Continue
+              %span(class="glyphicon glyphicon-triangle-right")
+          %li.navitem
+            = link_to "/", class: "btn btn-danger btn-block idb", name: "cancel" do
+              %span(class="glyphicon glyphicon-remove")
+              Cancel

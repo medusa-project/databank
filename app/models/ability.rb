@@ -51,8 +51,7 @@ class Ability
       dataset.hold_state != Databank::PublicationState::TempSuppress::VERSION && (dataset.metadata_public? ||
         dataset.depositor_email == user.email ||
         UserAbility.user_can?("Dataset", dataset.id, :update, user) ||
-        UserAbility.user_can?("Dataset", dataset.id, :read, user) ||
-        dataset.data_curation_network && user.is?(Databank::UserRole::NETWORK_REVIEWER))
+        UserAbility.user_can?("Dataset", dataset.id, :read, user))
     end
 
     can :update, Dataset do |dataset|

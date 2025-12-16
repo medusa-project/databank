@@ -1,27 +1,9 @@
-%title
-  Illinois Data Bank
-%h1{"aria-label": "Illinois Data Bank"}
+=render partial: "shared/welcome_overlay"
 .container-fluid
   .welcome
     .row
       .col-md-8
-        %h2 You are ready to deposit data if:
-        %ul
-          %li your data is in a final state and not expected to undergo revisions.
-          %li you have removed any private, confidential, or other legally protected information from your data.
-          %li you are a faculty member, staff member, or graduate student at the University of Illinois Urbana-Champaign.
-          %li you have permission to publicly distribute data from all creator(s) and/or copyright owner(s).
-
-        %h2 Published data:
-        %ul
-          %li is open to anyone in the world.
-          %li
-            =surround('receives a stable identifier (',  ') for easy reference and citation.') do
-              %a{href: "/guides#doi", target: "_blank"} DOI
-          %li is readily available for anyone to access for a minimum of 5 years.
-          %li is located in a stable environment that complies with many funder and publisher requirements.
-        %button(type="button" class="btn btn-default" onclick="window.open('/guides#submission')" )
-          Learn how to publish your data
+        = render partial: "welcome/welcome_body"
       -if @featured_researcher
         .col-md-4.featured-researcher
           %h2 Researcher Spotlight
@@ -54,7 +36,7 @@
 
           %hr
           %p
-            %a(href="/researcher_spotlights") See all researcher spotlights
+            %a(href="/researcher_spotlights" class="btn btn-default") See all researcher spotlights
       -else
         .col-md-4.featured-researcher
           %h2 Researcher Spotlight
@@ -62,5 +44,4 @@
             The Illinois Data Bank features researchers who deposit data. Check back soon for our next spotlight.
           %hr
           %p
-            %a(href="/researcher_spotlights") See all researcher spotlights
-
+            %a(href="/researcher_spotlights" class="btn btn-default") See all researcher spotlights

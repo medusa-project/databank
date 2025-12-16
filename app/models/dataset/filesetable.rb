@@ -6,7 +6,6 @@
 
 module Dataset::Filesetable
   extend ActiveSupport::Concern
-
   ##
   # @return [Boolean] true if all datafiles in the dataset are in Medusa
   def fileset_preserved?

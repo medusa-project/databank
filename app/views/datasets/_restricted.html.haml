@@ -1,0 +1,26 @@
+- @title = "Restricted Access"
+
+%h1.naked
+  .text-center.large-text
+    %strong Restricted Dataset
+%p.text-center
+  %em Log in required to view restricted dataset
+%ul.list-unstyled
+  %li.row
+    .col-md-2.col-md-offset-5
+      %p
+        = link_to '/login', class: "btn btn-primary btn-block idb" do
+          %span.glyphicon.glyphicon-log-in
+          Log in
+  %li.row
+    .col-md-2.col-md-offset-5
+      %p
+        = link_to '/help', class: "btn btn-success btn-block idb", role: "button" do
+          %span.glyphicon.glyphicon-question-sign
+          Get Help
+  %li.row
+    .col-md-2.col-md-offset-5
+      %p
+        = link_to '/', class: "btn btn-danger idb btn-block", role: "button" do
+          %span.glyphicon.glyphicon-remove
+          Cancel

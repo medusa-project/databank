@@ -10,3 +10,65 @@ il-header *[slot=links] p.navitem {
     color: var(--il-blue);
     font: 700 1.25rem var(--il-font-sans);
 }
+h3.dataset-title {
+  margin-top: 0;
+  margin-bottom: 2px;
+  font-size: 1em;
+}
+h3.filter-heading {
+  margin: 0;
+  font-size: 1em;
+}
+h2.subhead {
+  margin: 0;
+  padding: 0;
+  font-size: 1.5em;
+}
+h2.panel-title, h2.metadata-label {
+  margin: 0;
+  padding: 0;
+  font-size: 1.25em;
+}
+
+h2.panel-title, h3.panel-title {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.panel-title {
+    &:visited {
+    color: $color__dark-link
+  }
+  &:hover {
+    color: $color__text-light;
+    background-color: $color__dark-navy;
+  }
+}
+
+a.underline {
+  text-decoration: underline !important;
+}
+
+.help-body a {
+  text-decoration: underline !important;
+}
+
+h2.section-title {
+  margin: 0;
+  padding: 0;
+  font-size: 1.2em;
+}
+
+h3.metadata-label {
+  margin: 0;
+  padding: 0;
+  font-size: 1em;
+}
+
+// hide skip-to-content element for screen sizes smaller than 1000px
+// because it does not work with the mobile menu
+@media (max-width: 1000px) {
+  skip-to-content {
+    display: none;
+  }
+}

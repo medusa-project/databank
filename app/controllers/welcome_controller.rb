@@ -18,6 +18,7 @@ class WelcomeController < ApplicationController
   # Responds to `GET /contact`
   def contact
     @dataset = Dataset.find_by(key: params["key"]) if params.has_key?("key")
+    @title = "Contact"
   end
 
   # Responds to `GET /check_token`

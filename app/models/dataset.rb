@@ -253,6 +253,10 @@ class Dataset < ApplicationRecord
     total_filesize.to_i > (IDB_CONFIG[:globus_only_gb].to_i * (2**30))
   end
 
+  def has_datafiles?
+    datafiles.count.positive?
+  end
+
   ##
   # @return [Integer] the year of the publication date, defaults to the current year if no date is set
   def publication_year

@@ -148,15 +148,15 @@ function handleCreatorTable(creator_type) {
             jQuery("#dataset_creators_attributes_" + creator_index + "_row_position").val(i);
             if ((i + 1) === (jQuery("#creator_table tr").length)) {
                 if (creator_type === org_creators_type){
-                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 1 )' type='button'><span class='glyphicon glyphicon-trash'></span></button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_institution_creator()' type='button'><span class='glyphicon glyphicon-plus'></span></button>");
+                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 1 )' type='button'>Remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_institution_creator()' type='button'>Add</button>");
                 } else {
-                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 0  )' type='button'><span class='glyphicon glyphicon-trash'></span></button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_person_creator()' type='button'><span class='glyphicon glyphicon-plus'></span></button>");
+                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 0  )' type='button'>Remove</button>&nbsp;&nbsp;<button class='btn btn-success btn-sm' onclick='add_person_creator()' type='button'>Add</button>");
                 }
             } else {
                 if (creator_type === org_creators_type) {
-                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 1  )' type='button'><span class='glyphicon glyphicon-trash'></span></button>");
+                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 1  )' type='button'>Remove</button>");
                 } else {
-                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 0  )' type='button'><span class='glyphicon glyphicon-trash'></span></button>");
+                    jQuery("td:last-child", this).html("<button class='btn btn-danger btn-sm' onclick='remove_creator_row(" + creator_index + ", 0  )' type='button'>Remove</button>");
                 }
             }
         }
@@ -344,17 +344,31 @@ function getOrcidAffiliation(orcid){
     return affiliation;
 }
 function enableOrcidImport() {
-    jQuery('#orcid-import-btn').prop('disabled', false);
+  jQuery('#orcid-import-btn').prop('disabled', false);
 }
+
+// Depends on a function trapFocus(e) defined in afirst.js
 function showCreatorOrcidSearchModal(creator_index) {
-    jQuery('#orcid-import-btn').prop('disabled', true);
-    jQuery("#creator-index").val(creator_index);
-    let creatorFamilyName = jQuery("#dataset_creators_attributes_" + creator_index + "_family_name").val();
-    let creatorGivenName = jQuery("#dataset_creators_attributes_" + creator_index + "_given_name").val();
-    jQuery("#creator-family").val(creatorFamilyName);
-    jQuery("#creator-given").val(creatorGivenName);
-    jQuery("#orcid-search-results").empty();
-    jQuery('#orcid_creator_search').modal('show');
+  jQuery('#orcid-import-btn').prop('disabled', true);
+  jQuery("#creator-index").val(creator_index);
+  let creatorFamilyName = jQuery("#dataset_creators_attributes_" + creator_index + "_family_name").val();
+  let creatorGivenName = jQuery("#dataset_creators_attributes_" + creator_index + "_given_name").val();
+  jQuery("#creator-family").val(creatorFamilyName);
+  jQuery("#creator-given").val(creatorGivenName);
+  jQuery("#orcid-search-results").empty();
+  jQuery('#orcid_creator_search').on('shown.bs.modal', function () {
+    jQuery('#creator-family').focus();
+
+    // Trap focus within modal
+    const modal = document.getElementById('orcid_creator_search');
+    modal.addEventListener('keydown', trapFocus);
+
+    // Remove event listener when modal is hidden
+    jQuery('#orcid_creator_search').on('hidden.bs.modal', function () {
+      modal.removeEventListener('keydown', trapFocus);
+    });
+  });
+  jQuery('#orcid_creator_search').modal('show');
 }
 
 jQuery(document).ready(creators_ready);

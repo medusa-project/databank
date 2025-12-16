@@ -94,7 +94,7 @@ class CreatorsController < ApplicationController
   # Responds to `GET /creators/orcid_person`
   def orcid_person
     authorize! :search_orcid, Creator
-    Rails.logger.warn "params: #{params.to_yaml}"
+    #Rails.logger.warn "params: #{params.to_yaml}"
     begin
       result = Creator.orcid_person(orcid: params["orcid"])
     rescue StandardError => e

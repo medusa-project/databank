@@ -1,158 +1,154 @@
-.panel.panel-default
-  .splash-metadata.panel-body
+.splash-metadata.panel-body
+  .citation-block
+    .citation
+      .metadata-label
+        Cite this dataset:
+        %span(class="citation-download")
+          %span(class="dropdown")
+            %button(type="button" id="downloadCitation" class="btn btn-default dropdown-toggle" data-toggle="dropdown")
+              %span(class="glyphicon glyphicon-list")
+              Export Citation
+              %span(class="caret")
+            %ul(class="dropdown-menu pull-right text-left")
+              %li
+                %a(id="datasetForm:endNoteLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_endNote_XML"')
+                  EndNote XML
+              %li
+                %a(id="datasetForm:risLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_RIS"')
+                  RIS Format
+              %li
+                %a(id="datasetForm:BibTeXLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_BibTeX"')
+                  BibTeX Format
+              %li
+                %a(id="datasetForm:plainTextCitationLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_plaintext_citation"')
+                  Plain Text
+      .citation-example
+        =dataset.plain_text_citation
+    - if dataset.identifier && dataset.identifier != ""
+      %label(for="persistent-url" )
+        Use this persistent URL to link to this dataset:
+      .row
+        .col-md-6
+          .input-group.clipboard-control.persistent-url
+            %input(type="text" id="persistent-url" class="form-control" name="persistent-url" value="#{dataset.persistent_url}" )
+            %span(class="input-group-btn" )
+              %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#persistent-url' aria-label="copy persistent url to clipboard")
+                %span(class="glyphicon glyphicon-copy")
+        .col-md-6
+          - if dataset.publication_state == Databank::PublicationState::DRAFT
+            %span(class="glyphicon glyphicon-exclamation-sign" )
+            This link will not resolve until the dataset is published.
 
-    %span(class="dataset-title")
-      = (!dataset.title || dataset.title.empty?) ? "[Title not provided]" : dataset.title
-    .citation-block
-      .citation
-        .metadata-label
-          Cite this dataset:
-          %span(class="citation-download")
-            %span(class="dropdown")
-              %button(type="button" id="downloadCitation" class="btn btn-default dropdown-toggle" data-toggle="dropdown")
-                %span(class="glyphicon glyphicon-list")
-                Export Citation
-                %span(class="caret")
-              %ul(class="dropdown-menu pull-right text-left")
-                %li
-                  %a(id="datasetForm:endNoteLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_endNote_XML"')
-                    EndNote XML
-                %li
-                  %a(id="datasetForm:risLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_RIS"')
-                    RIS Format
-                %li
-                  %a(id="datasetForm:BibTeXLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_BibTeX"')
-                    BibTeX Format
-                %li
-                  %a(id="datasetForm:plainTextCitationLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_plaintext_citation"')
-                    Plain Text
-        .citation-example
-          =dataset.plain_text_citation
-      - if dataset.identifier && dataset.identifier != ""
-        %label(for="persistent-url" )
-          Use this persistent URL to link to this dataset:
-        .row
-          .col-md-6
-            .input-group.clipboard-control.persistent-url
-              %input(type="text" id="persistent-url" class="form-control" name="persistent-url" value="#{dataset.persistent_url}" )
-              %span(class="input-group-btn" )
-                %button(class='clipboard-btn btn btn-default' data-clipboard-action="copy" data-clipboard-target='#persistent-url' aria-label="copy persistent url to clipboard")
-                  %span(class="glyphicon glyphicon-copy")
-          .col-md-6
-            - if dataset.publication_state == Databank::PublicationState::DRAFT
-              %span(class="glyphicon glyphicon-exclamation-sign" )
-              This link will not resolve until the dataset is published.
+.panel-group(id="metadata" aria-multiselectable="true")
+  .panel.panel-default
+    .panel-heading.subdued-heading(id="metadataHeading")
+      %a( role="button" data-toggle="collapse" data-parent="#metadata" href="#metadataPanel" aria-expanded="true" aria-controls="metadataPanel" class="accordion-toggle" )
+        %h2.panel-title.metadata-label Metadata
+    .panel-collapse(id="metadataPanel" role="tabpanel" aria-labelledby="metadataHeading" )
+      .panel-body
+        %table(class="table borderless" aria-label="dataset metadata" )
+          %thead
+            %tr
+              %th(aria-label="Metadata field" )
+              %th(aria-label="Metadata value" )
+          %tbody>
+            -if dataset.description && dataset.description != ''
+              %tr
+                %td.resource-label
+                  %h3.metadata-label
+                    Dataset Description
+                %td
+                  = simple_format(dataset.description)
+            -if dataset.subject && dataset.subject != ''
+              %tr
+                %td.resource-label
+                  %h3.metadata-label
+                    Subject
+                %td
+                  %a(href="#{IDB_CONFIG[:root_url_text]}/datasets?sort_by=sort_updated_desc&q=&subjects%5B%5D=#{CGI.escape(dataset.subject)}" )
+                    = dataset.subject
+            -if dataset.keywords && !dataset.keywords.empty?
+              %tr
+                %td.resource-label
+                  %h3.metadata-label Keywords
+                %td
+                  = dataset.keywords
+            %tr
+              %td.resource-label
+                %h3.metadata-label License
+              %td
+                = dataset.license_name
+            - if [Databank::PublicationState::Embargo::METADATA, Databank::PublicationState::Embargo::FILE].include?(dataset.publication_state) || (dataset.publication_state == Databank::PublicationState::DRAFT && dataset.release_date && dataset.release_date > Date.current())
+              %tr
+                %td.resource-label
+                  %h3.metadata-label Release Date
+                %td
+                  = dataset.release_date
+            - dataset.funders.each do |funder|
+              %tr
+                %td.resource-label
+                  %h3.metadata-label Funder
+                %td
+                  = funder.display_info
+            %tr
+              %td.resource-label
+                %h3.metadata-label Corresponding Creator
+              %td
+                -if (!dataset.corresponding_creator_name || dataset.corresponding_creator_name.empty?)
+                  ="[corresponding creator name not provided]"
+                -else
+                  = dataset.corresponding_creator_name
+            -if dataset.contributor_list && dataset.contributor_list != ''
+              %tr
+                %td.resource-label
+                  %h3.metadata-label Additional Contact(s)
+                %td
+                  =dataset.contributor_list
+            -if can? :manage, dataset
+              %tr.curator-only
+                %td.resource-label
+                  %h3.metadata-label Depositor:
+                %td
+                  = dataset.depositor_name
+              %tr.curator-only
+                %td.resource-label
+                  %h3.metadata-label Corresponding Creator Email
+                %td
+                  = (!dataset.corresponding_creator_email || dataset.corresponding_creator_email.empty?) ? "[corresponding creator email not provided]" : dataset.corresponding_creator_email
+              %tr.curator-only
+                %td.resource-label
+                  %h3.metadata-label Depositor Email:
+                %td
+                  = dataset.depositor_email
 
-    .metadata-block
-      %table(class="table borderless" aria-label="dataset metadata" )
-        %thead
-          %tr
-            %th(aria-label="Metadata field" )
-            %th(aria-label="Metadata value" )
-        %tbody>
-          -if dataset.description && dataset.description != ''
-            %tr
-              %td.resource-label
-                %span.metadata-label
-                  Dataset Description
-              %td
-                = simple_format(dataset.description)
-          -if dataset.subject && dataset.subject != ''
-            %tr
-              %td.resource-label
-                %span.metadata-label
-                  Subject
-              %td
-                %a(href="#{IDB_CONFIG[:root_url_text]}/datasets?sort_by=sort_updated_desc&q=&subjects%5B%5D=#{CGI.escape(dataset.subject)}" )
-                  = dataset.subject
-          -if dataset.keywords && !dataset.keywords.empty?
-            %tr
-              %td.resource-label
-                %span.metadata-label Keywords
-              %td
-                = dataset.keywords
-          %tr
-            %td.resource-label
-              %span.metadata-label License
-            %td
-              = dataset.license_name
-          - if [Databank::PublicationState::Embargo::METADATA, Databank::PublicationState::Embargo::FILE].include?(dataset.publication_state) || (dataset.publication_state == Databank::PublicationState::DRAFT && dataset.release_date && dataset.release_date > Date.current())
-            %tr
-              %td.resource-label
-                %span(class="metadata-label")
-                  Release Date
-              %td
-                = dataset.release_date
-          - dataset.funders.each do |funder|
-            %tr
-              %td.resource-label
-                %span.metadata-label
-                  Funder
-              %td
-                = funder.display_info
-          %tr
-            %td.resource-label
-              %span.metadata-label
-                Corresponding Creator
-            %td
-              -if (!dataset.corresponding_creator_name || dataset.corresponding_creator_name.empty?)
-                ="[corresponding creator name not provided]"
-              -else
-                = dataset.corresponding_creator_name
-          -if dataset.contributor_list && dataset.contributor_list != ''
-            %tr
-              %td.resource-label
-                %span.metadata-label
-                  Additional Contact(s)
-              %td
-                =dataset.contributor_list
-          -if can? :manage, dataset
-            %tr.curator-only
-              %td.resource-label
-                %span.metadata-label Depositor:
-              %td
-                = dataset.depositor_name
-            %tr.curator-only
-              %td.resource-label
-                %span.metadata-label Corresponding Creator Email
-              %td
-                = (!dataset.corresponding_creator_email || dataset.corresponding_creator_email.empty?) ? "[corresponding creator email not provided]" : dataset.corresponding_creator_email
-            %tr.curator-only
-              %td.resource-label
-                %span.metadata-label Depositor Email:
-              %td
-                = dataset.depositor_email
-
-          -if dataset.total_downloads > 0
-            %tr
-              %td.resource-label
-                %span.metadata-label Downloaded
-              %td
-                = pluralize(dataset.total_downloads, 'time')
-          %tr
-            %td(colspan="2" )
-              -if dataset.materials_related.length.positive?
-                .panel-group(id="related" role="tablist" aria-multiselectable="true")
-                  .panel.panel-default
-                    .panel-heading.subdued-heading(role="tab" id="relatedHeading")
-                      .panel-title
-                        %a( role="button" data-toggle="collapse" data-parent="#related" href="#relatedPanel" aria-expanded="false" aria-controls="relatedPanel" class="accordion-toggle collapsed" )
-                          %span( class="metadata-label" )
-                            = "Related Materials (#{dataset.materials_related.length})"
-                    .panel-collapse.collapse(id="relatedPanel" role="tabpanel" aria-labelledby="relatedHeading" )
-                      .panel-body
-                        = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_related}
+            -if dataset.total_downloads > 0
+              %tr
+                %td.resource-label
+                  %h3.metadata-label Downloaded
+                %td
+                  = pluralize(dataset.total_downloads, 'time')
             %tr
               %td(colspan="2" )
-                -if dataset.materials_cited_by.length.positive?
-                  .panel-group(id="cited" role="tablist" aria-multiselectable="true")
+                -if dataset.materials_related.length.positive?
+                  .panel-group(id="related" aria-multiselectable="true")
                     .panel.panel-default
-                      .panel-heading.subdued-heading(role="tab" id="citedHeading")
-                        .panel-title
-                          %a( role="button" data-toggle="collapse" data-parent="#cited" href="#citedPanel" aria-expanded="false" aria-controls="citedPanel" class="accordion-toggle collapsed" )
-                            %span( class="metadata-label" )
-                              = "Cited By (#{dataset.materials_cited_by.length})"
-                      .panel-collapse.collapse(id="citedPanel" role="tabpanel" aria-labelledby="citedHeading" )
+                      .panel-heading.subdued-heading(id="relatedHeading")
+                        %a( role="button" data-toggle="collapse" data-parent="#related" href="#relatedPanel" aria-expanded="false" aria-controls="relatedPanel" class="accordion-toggle collapsed" )
+                          %h3.panel-title.metadata-label
+                            = "Related Materials (#{dataset.materials_related.length})"
+                      .panel-collapse.collapse(id="relatedPanel" role="tabpanel" aria-labelledby="relatedHeading" )
                         .panel-body
-                          = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_cited_by}
+                          = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_related}
+              %tr
+                %td(colspan="2" )
+                  -if dataset.materials_cited_by.length.positive?
+                    .panel-group(id="cited" aria-multiselectable="true")
+                      .panel.panel-default
+                        .panel-heading.subdued-heading(id="citedHeading")
+                          %a( role="button" data-toggle="collapse" data-parent="#cited" href="#citedPanel" aria-expanded="false" aria-controls="citedPanel" class="accordion-toggle collapsed" )
+                            %h3.panel-title.metadata-label
+                              = "Cited By (#{dataset.materials_cited_by.length})"
+                        .panel-collapse.collapse(id="citedPanel" role="tabpanel" aria-labelledby="citedHeading" )
+                          .panel-body
+                            = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_cited_by}
 

@@ -89,6 +89,8 @@
 # Used as the base secret for all MessageVerifiers in Rails, including the one protecting cookies.
 secret_key_base: secret_key_base
 
+:max_datafiles: 100
+
 #Configuration for the medusa integration
 medusa:
   #AMQP queues to communicate with medusa server

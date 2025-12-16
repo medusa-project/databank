@@ -1,0 +1,25 @@
+.publish-action
+  %h2 Publish Action
+  %nav(aria-label="Publish" data-skip-to-info="landmark navigation" data-skip-to-acc-name="Publish" data-skip-to-id="4")
+    %ul.list-unstyled
+      - if dataset.can_publish_now?
+        %li.button
+          = link_to "Publish Now", publish_dataset_path(dataset), class: "btn btn-primary btn-lg", data: { confirm: "Are you sure you want to publish this dataset? This action cannot be undone." }
+      - if dataset.can_request_publication?
+        %li.button
+          = link_to "Request Publication", request_publication_dataset_path(dataset), class: "btn btn-primary btn-lg", data: { confirm: "Are you sure you want to request publication of this dataset?" }
+      - if dataset.can_save_draft?
+        %li.button
+          = link_to "Save Draft", save_draft_dataset_path(dataset), class: "btn btn-secondary btn-lg"
+      - if dataset.can_submit_for_review?
+        %li.button
+          = link_to "Submit for Review", submit_for_review_dataset_path(dataset), class: "btn btn-primary btn-lg", data: { confirm: "Are you sure you want to submit this dataset for review?" }
+      - if dataset.can_withdraw_submission?
+        %li.button
+          = link_to "Withdraw Submission", withdraw_submission_dataset_path(dataset), class: "btn btn-secondary btn-lg", data: { confirm: "Are you sure you want to withdraw this submission?" }
+      - if dataset.can_unpublish?
+        %li.button
+          = link_to "Unpublish", unpublish_dataset_path(dataset), class: "btn btn-danger btn-lg", data: { confirm: "Are you sure you want to unpublish this dataset? This action cannot be undone." }
+      - if dataset.can_delete_draft?
+        %li.button
+          = link_to "Delete Draft", dataset_path(dataset), method: :delete, class: "btn btn-danger btn-lg", data: { confirm: "Are you sure you want to delete this draft? This action cannot be undone." }
