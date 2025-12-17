@@ -499,13 +499,14 @@ collaborators to access the data files while the dataset is not public.</li>
     authorize! :manage, @dataset
     @dataset.publication_state = Databank::PublicationState::PermSuppress::FILE
     @dataset.hold_state = Databank::PublicationState::PermSuppress::FILE
+    @dataset.embargo = Databank::PublicationState::Embargo::NONE
     @dataset.tombstone_date = Date.current
     begin
       @dataset.remove_from_globus_download
       respond_to do |format|
         if @dataset.save
           format.html {
-            redirect_to dataset_path(@dataset.key), notice: %(Dataset files have been permanently supressed.)
+            redirect_to dataset_path(@dataset.key), notice: %(Dataset files have been permanently suppressed.)
           }
           format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
         else

@@ -36,7 +36,6 @@
                   - dataset.complete_datafiles.each do |datafile|
                     .row.checkbox.filerow
                       %span.col-md-6(aria-label="Download")
-                        -# check globus_only
                         -if @dataset_preserved
                           %label(for="#{datafile.web_id}_file_name")
                             %input(type="checkbox" class="checkFile checkFileGroup" id="#{datafile.web_id}_file_name" name="selected_files[]" value="#{datafile.web_id}" onchange="handleCheckFileGroupChange()")

@@ -1,4 +1,4 @@
--if dataset.publication_state == Databank::PublicationState::PermSuppress::FILE
+-if dataset.publication_state == Databank::PublicationState::PermSuppress::FILE || dataset.hold_state == Databank::PublicationState::PermSuppress::FILE
   .embargo-placeholder
     Files associated with this dataset are not available.
     %a(href="/help?context=embargo&key=#{dataset.key}")
