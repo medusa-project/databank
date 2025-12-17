@@ -34,6 +34,14 @@
         Contact person:
         = @dataset.corresponding_creator_name
       %p
+        Funder(s):
+        -if @dataset.funder.count > 0
+          -@dataset.funder.each do |funder|
+            = funder.display_info
+            %br/
+        -else
+          No funder information provided.
+      %p
         Deposit agreement link:
         %a{:href => "#{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key}/review_deposit_agreement"}
           ="#{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key}/review_deposit_agreement"
