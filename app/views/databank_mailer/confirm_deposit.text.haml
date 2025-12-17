@@ -16,8 +16,8 @@ Here is some information about the deposited dataset:
 = "Depositor: #{@dataset.depositor_name}"
 = "Contact person: #{@dataset.corresponding_creator_name}"
 = "Funder(s):"
--if @dataset.funder.count > 0
-  -@dataset.funder.each do |funder|
+-if @dataset.funders.count > 0
+  -@dataset.funders.each do |funder|
     = funder.display_info
     %br/
 -else

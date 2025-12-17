@@ -35,8 +35,8 @@
         = @dataset.corresponding_creator_name
       %p
         Funder(s):
-        -if @dataset.funder.count > 0
-          -@dataset.funder.each do |funder|
+        -if @dataset.funders.count > 0
+          -@dataset.funders.each do |funder|
             = funder.display_info
             %br/
         -else
