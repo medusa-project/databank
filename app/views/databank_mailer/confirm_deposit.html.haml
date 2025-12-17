@@ -35,10 +35,12 @@
         = @dataset.corresponding_creator_name
       %p
         Funder(s):
+        %br/
         -if @dataset.funders.count > 0
           -@dataset.funders.each do |funder|
             = funder.display_info
             %br/
+            %br
         -else
           No funder information provided.
       %p
