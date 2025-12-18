@@ -15,6 +15,13 @@ Here is some information about the deposited dataset:
       =request.requested_at.strftime("%Y-%m-%d")
 = "Depositor: #{@dataset.depositor_name}"
 = "Contact person: #{@dataset.corresponding_creator_name}"
+= "Funder(s):"
+-if @dataset.funders.count > 0
+  -@dataset.funders.each do |funder|
+    = funder.display_info
+    %br/
+-else
+  No funder information provided.
 = "Deposit agreement link: #{IDB_CONFIG[:root_url_text]}/datasets/#{@dataset.key}/review_deposit_agreement"
 
 Suggested data availability statement (please check your journal for a specific guidance):
