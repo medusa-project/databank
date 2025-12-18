@@ -42,6 +42,7 @@ class DatasetsController < ApplicationController
                                      :share,
                                      :remove_sharing_link,
                                      :suppression_controls,
+                                     :tracking,
                                      :review_requests,
                                      :permissions,
                                      :medusa_details,
@@ -389,6 +390,11 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset = Dataset.new
     @title = "New Version"
     set_file_mode
+  end
+
+  def tracking
+    authorize! :update, @dataset
+    @title = "Publication Process Tracking"
   end
 
   def remove_sharing_link
