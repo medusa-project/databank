@@ -41,7 +41,6 @@ resources :datasets do
     get 'temporarily_suppress_files'
     get 'temporarily_suppress_metadata'
     get 'tombstone'
-    get 'tracking'
     post 'update_permissions'
     get 'unsuppress_changelog'
     get 'unsuppress_review'

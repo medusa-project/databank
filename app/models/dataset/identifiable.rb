@@ -52,8 +52,6 @@ module Dataset::Identifiable
     "#{shoulder}#{key}_V1"
   end
 
-  def 
-
   def create_draft_doi
     return {status: "ok"} if Rails.env.development? || Rails.env.test?
 

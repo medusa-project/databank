@@ -392,11 +392,6 @@ collaborators to access the data files while the dataset is not public.</li>
     set_file_mode
   end
 
-  def tracking
-    authorize! :update, @dataset
-    @title = "Publication Process Tracking"
-  end
-
   def remove_sharing_link
     respond_to do |format|
       if @dataset.share_code&.destroy!
