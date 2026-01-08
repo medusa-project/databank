@@ -13,7 +13,7 @@ module Dataset::Filesetable
 
     fileset_preserved = true
 
-    datafiles.each do |df|
+    datafiles.find_each do |df|
       fileset_preserved = false if df.storage_root != StorageManager.instance.medusa_root.name
     end
 

@@ -7,12 +7,12 @@
       %div(class="panel-collapse.collapse.in" id="collapseOne" role="tabpanel" aria-labelledby="headingOne")
         .panel-body
           =render partial: 'file_restriction_alert', locals: {dataset: dataset}
-          - if dataset.publication_state == Databank::PublicationState::RELEASED && globus_only && !dataset.globus_downloadable?
+          - if dataset.publication_state == Databank::PublicationState::RELEASED && globus_only && !@globus_downloadable
             =render partial: 'globus_delay_alert' , locals: {dataset: dataset}
           -if((can? :view_files, dataset) || shared_by_link)
             %form(role="form")
               .form-group(id="select-files-form-group")
-                -if dataset.aggregate_downloadable?
+                -if @dataset_aggregate_downloadable
                   .row.filerow
                     .col-md-4
                       -if @dataset_preserved

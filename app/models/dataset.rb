@@ -229,9 +229,10 @@ class Dataset < ApplicationRecord
   # The criteria for this is at least one of the following is true:
   # - the dataset files are all in Medusa Collection Registry (fileset_preserved?)
   # - the dataset files are all in Globus (globus_downloadable?)
-  # - the dataset has a Granite link (!external_files_link.nil?)
+  # and
+  # - the dataset does not have external files (has_external_files?)
   def aggregate_downloadable?
-    fileset_preserved? || globus_downloadable? || !external_files_link.nil?
+   (fileset_preserved? || globus_downloadable?) && !has_external_files?
   end
 
   ##

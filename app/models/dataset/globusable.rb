@@ -31,7 +31,7 @@ module Dataset::Globusable
     return false unless publication_state == Databank::PublicationState::RELEASED
 
     begin
-      datafiles.each do |datafile|
+      datafiles.find_each do |datafile|
         return false unless StorageManager.instance.globus_download_root.exist?("#{key}/#{datafile.binary_name}")
       end
     rescue StandardError => e

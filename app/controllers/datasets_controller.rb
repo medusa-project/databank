@@ -137,6 +137,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @completion_check = Dataset.completion_check(@dataset)
     @globus_downloadable = @dataset.globus_downloadable?
     @dataset_preserved = @dataset.fileset_preserved?
+    @dataset_aggregate_downloadable = (@dataset_preserved || @globus_downloadable) && !@dataset.has_external_files?
     @dataset.ensure_embargo
     @dataset.ensure_version_group
     set_file_mode
