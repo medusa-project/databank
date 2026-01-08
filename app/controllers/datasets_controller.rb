@@ -42,6 +42,7 @@ class DatasetsController < ApplicationController
                                      :share,
                                      :remove_sharing_link,
                                      :suppression_controls,
+                                     :tracking,
                                      :review_requests,
                                      :permissions,
                                      :medusa_details,

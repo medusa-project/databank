@@ -14,6 +14,10 @@
         Manage Curators
         %span( class="glyphicon glyphicon-user" )
         %span( class="glyphicon glyphicon-certificate" )
+    .col-md-3
+      =link_to "/clear_cache", method: :post, class:"btn btn-primary btn-block idb", id: "clear-cache-btn", data: { confirm: "Are you sure you want to clear the Rails cache?" } do
+        Clear Rails Cache
+        %span( class="glyphicon glyphicon-refresh" )   
   .panel-group(id="service-msg" aria-multiselectable="true")
     .panel.panel-default
       .panel-heading(id="serviceMsgHeading")

@@ -44,7 +44,12 @@ module Dataset::Identifiable
   end
 
   def default_identifier
-    "#{IDB_CONFIG[:datacite][:shoulder]}#{key}_V1"
+    shoulder = if is_test?
+              IDB_CONFIG[:datacite_test][:shoulder]
+            else
+              IDB_CONFIG[:datacite][:shoulder]
+            end
+    "#{shoulder}#{key}_V1"
   end
 
   def create_draft_doi

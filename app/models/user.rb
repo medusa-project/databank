@@ -16,7 +16,12 @@ class User < ApplicationRecord
   def system_admin?
     admin_netids = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
     admin_uids = admin_netids.map {|x| x + "@illinois.edu" }
-    admin_uids.include?(uid)
+    return true if admin_uids.include?(uid)
+
+    # Optional, non-production-only shortcut: allow users with the admin role
+    # to be treated as system admins.
+    allow_role_based_admin = (Rails.env.development? || Rails.env.test?)
+    admin? && allow_role_based_admin
   end
 
   # @return [Boolean] true if the user is an admin
@@ -220,7 +225,7 @@ class User < ApplicationRecord
 
     return Databank::UserRole::ADMIN if User.admin_uids.include?(auth["uid"])
 
-    # if the user is already in the database with explicit permissio to create datasets, return depositor role
+    # if the user is already in the database with explicit permission to create datasets, return depositor role
     user = User.find_by(provider: auth["provider"], uid: auth["uid"])
     return Databank::UserRole::DEPOSITOR if user && UserAbility.user_can?("Dataset", nil, "create", user)
 

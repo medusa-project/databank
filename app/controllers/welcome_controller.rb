@@ -39,11 +39,26 @@ class WelcomeController < ApplicationController
     end
   end
 
+  # Responds to 'POST /clear_cache'
+  def clear_cache
+    authorize! :clear_cache, :welcome
+    require 'rake'
+    Rails.application.load_tasks
+    Rake::Task["databank:rails_cache:clear"].reenable
+    Rake::Task["databank:rails_cache:clear"].invoke
+    # redirect to admin page with notice
+    respond_to do |format|
+      format.html {redirect_to "/admin", notice: "Rails cache cleared successfully."}
+      format.json {render json: {}, status: :ok}
+    end
+  end
+
   # Responds to `GET /on_failed_registration`
   def on_failed_registration; end
 
   # Responds to `POST /update_read_only_message`
   def update_read_only_message
+    authorize! :update_read_only_message, :welcome
     respond_to do |format|
       if params.has_key?("msg_middle") &&
           SystemMessage.update_read_only_message(params["msg_middle"])
