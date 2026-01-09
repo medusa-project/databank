@@ -11,6 +11,8 @@ module Dataset::Filesetable
   def fileset_preserved?
     # assume all are preserved unless a file is found that is not preserved
 
+    return false unless publication_state == Databank::PublicationState::RELEASED
+
     fileset_preserved = true
 
     datafiles.find_each do |df|
