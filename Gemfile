@@ -68,6 +68,9 @@ gem "sdoc", group: :doc
 # Use figaro to set environment variables
 gem "figaro"
 
+# Use csv
+gem "csv"
+
 # Use bootstrap for layout framework
 gem "autoprefixer-rails"
 gem "bootstrap-sass"

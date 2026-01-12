@@ -526,6 +526,17 @@ li.row.listing {
   padding: 2px;
 }
 
+.announcement-box {
+  padding: 15px;
+  background-color: $color__light-blue;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  margin-top: 5px;
+  font-weight: bold;
+  font-size: large;
+
+}
+
 #g-recaptcha-response {
   display: block !important;
   position: absolute;

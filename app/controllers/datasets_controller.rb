@@ -39,6 +39,7 @@ class DatasetsController < ApplicationController
                                      :open_in_globus,
                                      :open_in_granite,
                                      :import_from_globus,
+                                     :incomplete_uploads,
                                      :share,
                                      :remove_sharing_link,
                                      :suppression_controls,
@@ -346,6 +347,15 @@ collaborators to access the data files while the dataset is not public.</li>
         format.html { render :edit }
         format.json { render json: @dataset.errors, status: :unprocessable_entity }
       end
+    end
+  end
+
+  def incomplete_uploads
+    @title = "Incomplete Uploads"
+    @incomplete_datafiles = @dataset.incomplete_datafiles
+    respond_to do |format|
+      format.html { render :incomplete_uploads }
+      format.json { render json: {status: :ok}, content_type: request.format, layout: false } 
     end
   end
 

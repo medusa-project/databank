@@ -16,6 +16,7 @@ resources :datasets do
     get 'get_current_token', defaults: {format: 'json'}
     get 'get_new_token', defaults: {format: 'json'}
     get 'import_from_globus', defaults: {format: 'json'}
+    get 'incomplete_uploads'
     get 'medusa_details'
     get 'nuke'
     get 'open_in_globus'

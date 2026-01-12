@@ -54,9 +54,7 @@ module Dataset::Publishable
     # other draft datasets are ok to publish
     return true if publication_state == Databank::PublicationState::DRAFT
 
-    # if the dataset is not in a state that is ok to publish, return false
-    #Rails.logger.warn( "Dataset is not ok to publish. Dataset: #{key} publication_state: #{publication_state} hold_state: #{hold_state}" )
-    #Rails.logger.warn( self.to_yaml )
+    # otherwise, not ok to publish
     false
   end
 
@@ -67,6 +65,10 @@ module Dataset::Publishable
   # @param user [User] the user who is publishing the dataset
   # @return [Hash] the status of the publication process
   def publish(user)
+
+    # check for incomplete datafile uploads
+    incomplete_datafiles = self.incomplete_datafiles
+    return {status: "error", error_text: "Incomplete datafile upload(s) found. See #{Rails.application.routes.url_helpers.incomplete_uploads_dataset_path(self)}"} if incomplete_datafiles.any?
 
     # check if the dataset is ok to publish
     return {status: "error", error_text: "Dataset is not ok to publish"} unless ok_to_publish?
