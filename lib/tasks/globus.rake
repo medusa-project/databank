@@ -17,6 +17,12 @@ namespace :globus do
                                                                      datafile.storage_key)
         # update in_globus field of datafile record to true if copy successful
         datafile.update(in_globus: true) if StorageManager.instance.globus_download_root.exist?(globus_storage_key)
+      rescue ArgumentError => e
+        puts "ArgumentError copying datafile #{datafile.key}: #{e.message}"
+        puts globus_storage_key
+        puts datafile.current_root
+        puts datafile.storage_key
+        next
       rescue Aws::S3::Errors::NotFound
         # puts "datafile not found: #{datafile.storage_key} in #{datafile.current_root.root_type}"
         next
