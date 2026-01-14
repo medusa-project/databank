@@ -21,9 +21,9 @@ namespace :globus do
         # puts "datafile not found: #{datafile.storage_key} in #{datafile.current_root.root_type}"
         next
       end
-      # if all datafiles copied successfully, update dataset's in_globus field to true
+      # if all datafiles copied successfully, update dataset's all_globus field to true
       if dataset.datafiles.all? { |df| df.in_globus }
-        dataset.update(in_globus: true) if !dataset.in_globus
+        dataset.update(all_globus: true) if !dataset.all_globus
       end
     end
   end
