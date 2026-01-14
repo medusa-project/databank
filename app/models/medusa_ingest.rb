@@ -320,7 +320,7 @@ class MedusaIngest < ApplicationRecord
       datafile.dataset.save
       if datafile.dataset.datafiles.all? { |df| df.current_root.root_type == 'medusa' }
         datafile.dataset.update(all_medusa: true) if !datafile.dataset.all_medusa
-      else
+      end
 
     else
       dataset = Dataset.find_by(key: response_hash["pass_through"]["identifier"])
