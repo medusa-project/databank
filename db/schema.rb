@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_04_25_203706) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_14_192818) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -97,6 +97,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_25_203706) do
     t.string "storage_key"
     t.string "mime_type"
     t.bigint "task_id"
+    t.boolean "in_globus"
   end
 
   create_table "dataset_download_tallies", id: :serial, force: :cascade do |t|
@@ -146,6 +147,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_25_203706) do
     t.datetime "nested_updated_at"
     t.string "external_files_link"
     t.text "external_files_note"
+    t.boolean "all_medusa"
+    t.boolean "all_globus"
     t.index ["key"], name: "index_datasets_on_key", unique: true
   end
 

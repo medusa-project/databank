@@ -301,7 +301,7 @@ class MedusaIngest < ApplicationRecord
       # datafile found - do things with datafile and ingest response
       # this method returns a boolean and also updates the datafile and removed draft binary, if it exists
 
-      puts "datafile.in_medusa: #{datafile.in_medusa}"
+      # puts "datafile.in_medusa: #{datafile.in_medusa}"
       unless datafile.in_medusa
         exception_string = "Datafile ingest failure. #{response_hash.to_yaml}"
         notify_or_report(exception_string: exception_string)
@@ -318,6 +318,9 @@ class MedusaIngest < ApplicationRecord
 
       datafile.dataset.medusa_dataset_dir = response_hash["parent_dir"]["url_path"]
       datafile.dataset.save
+      if datafile.dataset.datafiles.all? { |df| df.current_root.root_type == 'medusa' }
+        datafile.dataset.update(all_medusa: true) if !datafile.dataset.all_medusa
+      else
 
     else
       dataset = Dataset.find_by(key: response_hash["pass_through"]["identifier"])

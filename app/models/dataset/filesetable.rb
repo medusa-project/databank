@@ -9,17 +9,12 @@ module Dataset::Filesetable
   ##
   # @return [Boolean] true if all datafiles in the dataset are in Medusa
   def fileset_preserved?
-    # assume all are preserved unless a file is found that is not preserved
 
     return false unless publication_state == Databank::PublicationState::RELEASED
 
-    fileset_preserved = true
+    return true if all_medusa == true
 
-    datafiles.find_each do |df|
-      fileset_preserved = false if df.storage_root != StorageManager.instance.medusa_root.name
-    end
-
-    fileset_preserved
+    false
   end
 
   ##
