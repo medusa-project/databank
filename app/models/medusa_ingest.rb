@@ -318,7 +318,7 @@ class MedusaIngest < ApplicationRecord
 
       datafile.dataset.medusa_dataset_dir = response_hash["parent_dir"]["url_path"]
       datafile.dataset.save
-      if datafile.dataset.datafiles.all? { |df| df.current_root.root_type == 'medusa' }
+      if datafile.dataset.datafiles.all? { |df| df.storage_root== 'medusa' }
         datafile.dataset.update(all_medusa: true) if !datafile.dataset.all_medusa
       end
 
