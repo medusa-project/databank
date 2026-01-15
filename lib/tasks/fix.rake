@@ -8,9 +8,9 @@ namespace :fix do
     datasets.each do |dataset|
       # if all datafiles in dataset have a root value of 'medusa', set dataset's all_medusa field to true
       if dataset.datafiles.all? { |df| df.current_root.root_type == 'medusa' }
-        dataset.update(all_medusa: true) if dataset.all_medusa
+        dataset.update(all_medusa: true) if !dataset.all_medusa
       else
-        dataset.update(all_medusa: false)
+        dataset.update(all_medusa: false) if dataset.all_medusa
       end
     end
   end
