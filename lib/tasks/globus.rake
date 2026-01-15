@@ -5,13 +5,14 @@ namespace :globus do
   task copy_datasets: :environment do 
     datasets = Dataset.select(&:files_public?)
     datasets.each do |dataset|
-      # puts "copying dataset: #{dataset.title}, key: #{dataset.key}"
+      puts "copying dataset: #{dataset.title}, key: #{dataset.key}"
       dataset.datafiles.each do |datafile|
         globus_storage_key = "#{dataset.key}/#{datafile.binary_name}"
         if StorageManager.instance.globus_download_root.exist?(globus_storage_key)
           datafile.update(in_globus: true) if !datafile.in_globus
           next
         end
+        puts datafile.current_root.name
         StorageManager.instance.globus_download_root.copy_content_to(globus_storage_key,
                                                                      datafile.current_root,
                                                                      datafile.storage_key)
@@ -19,9 +20,8 @@ namespace :globus do
         datafile.update(in_globus: true) if StorageManager.instance.globus_download_root.exist?(globus_storage_key)
       rescue ArgumentError => e
         puts "ArgumentError copying datafile #{datafile.web_id}: #{e.message}"
-        puts globus_storage_key
-        puts datafile.current_root
-        puts datafile.storage_key
+        # stack trace can be added to logs if needed
+        puts e.backtrace
         next
       rescue Aws::S3::Errors::NotFound
         # puts "datafile not found: #{datafile.storage_key} in #{datafile.current_root.root_type}"
