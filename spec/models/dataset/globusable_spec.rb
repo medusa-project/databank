@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'rake'
 
 RSpec.describe Dataset::Globusable, type: :model do
   let(:dataset) { create(:dataset) }
@@ -28,6 +29,17 @@ RSpec.describe Dataset::Globusable, type: :model do
   end
 
   describe '#globus_downloadable?' do
+    before(:all) do
+      # Load and run the rake task before the tests
+      Rails.application.load_tasks if Rake::Task.tasks.empty?
+      Rake::Task['globus:copy_datasets'].invoke
+    end
+
+    after(:all) do
+      # Clear the rake task so it can be invoked again in other tests if needed
+      Rake::Task['globus:copy_datasets'].reenable
+    end
+
     it 'returns false if the dataset is not released' do
       allow(dataset).to receive(:publication_state).and_return(Databank::PublicationState::DRAFT)
       expect(dataset.globus_downloadable?).to be_falsey
@@ -37,6 +49,7 @@ RSpec.describe Dataset::Globusable, type: :model do
       allow(dataset).to receive(:publication_state).and_return(Databank::PublicationState::RELEASED)
       allow(dataset).to receive(:datafiles).and_return([datafile])
       allow(globus_download_root).to receive(:exist?).and_return(true)
+      allow(dataset).to receive(:all_globus).and_return(true)
 
       expect(dataset.globus_downloadable?).to be_truthy
     end
@@ -50,7 +63,6 @@ RSpec.describe Dataset::Globusable, type: :model do
         dataset.import_from_globus
       }.to raise_error('files not found on Globus endpoint')
     end
-
 
     context 'when a file exists in the Globus ingest directory' do
       before do

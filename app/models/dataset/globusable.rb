@@ -30,16 +30,9 @@ module Dataset::Globusable
   def globus_downloadable?
     return false unless publication_state == Databank::PublicationState::RELEASED
 
-    begin
-      datafiles.each do |datafile|
-        return false unless StorageManager.instance.globus_download_root.exist?("#{key}/#{datafile.binary_name}")
-      end
-    rescue StandardError => e
-      Rails.logger.warn("Error #{e.message} attempting to check if dataset available in Globus: #{key}")
-      return false
-    end
+    return true if all_globus == true
 
-    true
+    false
   end
 
   def globus_download_dir
@@ -99,7 +92,12 @@ module Dataset::Globusable
     storage_keys.each do |storage_key|
       StorageManager.instance.globus_download_root.delete_content(storage_key)
     end
+    # set in_globus to false for all datafiles in dataset
+    Datafile.where(dataset_id: id).update_all(in_globus: false)
+    # set all_globus to false for dataset
+    update(all_globus: false)
     StorageManager.instance.globus_download_root.delete_content("#{key}/")
+
   end
 
   def delete_from_globus_ingest_dir(storage_key:)
