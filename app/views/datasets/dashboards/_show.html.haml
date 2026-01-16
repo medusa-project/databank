@@ -104,16 +104,16 @@
                       class: "btn idb btn-danger remove-share-btn") do
                         Delete
         .col-md-4
-          - if @dataset.show_publish_only?
+          - if (can? :manage, @dataset) && @completion_check == 'ok'
             %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
-              Continue
+              Curator Publish
               %span(class="glyphicon glyphicon-triangle-right" )
           - elsif @completion_check == 'ok'
             -if (can? :edit, @dataset) && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
               =render partial: 'datasets/offer_review_btn'
           -else
             %button(type="button" id="show-confirm-modal-link" class="btn btn-default btn-block" data-toggle="modal" data-target="#incomplete")
-              Confirm
+              Show Completion Info
               %span(class="glyphicon glyphicon-triangle-right" )
           = link_to(edit_dataset_path(@dataset), :class => "btn idb btn-success btn-block") do
             %span(class="glyphicon glyphicon-edit")
