@@ -110,7 +110,9 @@
               %span(class="glyphicon glyphicon-triangle-right" )
           - elsif @completion_check == 'ok'
             -if (can? :edit, @dataset) && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
-              =render partial: 'datasets/offer_review_btn'
+              %button(type="button" id="review-btn" class="btn btn-primary btn-block")
+                Submit for Pre-Publication Review
+                %span(class="glyphicon glyphicon-triangle-right" )
           -else
             %button(type="button" id="show-confirm-modal-link" class="btn btn-default btn-block" data-toggle="modal" data-target="#incomplete")
               Show Completion Info
