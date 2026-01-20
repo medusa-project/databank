@@ -16,7 +16,7 @@
                     -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
                       .label.label-danger
                         version candidate under review
-                    -elsif @dataset.in_pre_publication_review?
+                    -elsif @under_review
                       .label.label-danger
                         pre-publication review
                     - elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
@@ -73,7 +73,7 @@
           .row
             .col-md-6
               = @dataset.visibility
-              -if @dataset.in_pre_publication_review?
+              -if @under_review
                 &nbsp;
                 .label.label-danger
                   pre-publication review
@@ -108,8 +108,12 @@
             %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
               Curator Publish
               %span(class="glyphicon glyphicon-triangle-right" )
+          - elsif @has_unmodified_review
+            = link_to("/guides#review", class: "btn btn-default btn-block") do
+              Find out more about Pre-Publication review
+              %span(class="glyphicon glyphicon-info-sign" )
           - elsif @completion_check == 'ok'
-            -if (can? :edit, @dataset) && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
+            -if (can? :edit, @dataset) && !@has_unmodified_review && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
               %button(type="button" id="review-btn" class="btn btn-primary btn-block")
                 Submit for Pre-Publication Review
                 %span(class="glyphicon glyphicon-triangle-right" )

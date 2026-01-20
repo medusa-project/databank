@@ -101,6 +101,6 @@ class ReviewRequestsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def review_request_params
-    params.require(:review_request).permit(:dataset_key, :requested_at)
+    params.require(:review_request).permit(:dataset_key, :requested_at, :modified)
   end
 end

@@ -188,11 +188,6 @@ module Dataset::Publishable
     self.datafiles.where(web_id: invalid_web_ids).destroy_all
   end
 
-  # @return [Boolean] true if the dataset is in pre-publication review, false otherwise
-  def in_pre_publication_review?
-    Databank::PublicationState::DRAFT_ARRAY.include?(publication_state) && has_review_request?
-  end
-
   # @return [Boolean] true if the dataset is in pre-publication review and has no review requests, false otherwise
   def show_publish_only?
     return false unless in_pre_publication_review?
