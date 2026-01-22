@@ -66,6 +66,8 @@ module Dataset::Publishable
   # @return [Hash] the status of the publication process
   def publish(user)
 
+    raise "Cannot publish permanently suppressed dataset #{key}" if publication_state == Databank::PublicationState::PermSuppress::METADATA
+
     # check for incomplete datafile uploads
     incomplete_datafiles = self.incomplete_datafiles
     return {status: "error", error_text: "Incomplete datafile upload(s) found. See #{Rails.application.routes.url_helpers.incomplete_uploads_dataset_path(self)}"} if incomplete_datafiles.any?

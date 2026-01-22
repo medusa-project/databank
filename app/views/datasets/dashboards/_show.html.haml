@@ -51,7 +51,7 @@
                     {id: 'publicationNoticeButton', class: 'btn btn-primary'})
                 %br
 
-          - if @completion_check == 'ok'
+          - if ['ok', 'na'].include?(@completion_check)
             - if ((can? :manage, @dataset) && (@dataset.publication_state != Databank::PublicationState::DRAFT) && (@dataset.publication_state != Databank::PublicationState::Embargo::METADATA) && (@dataset.embargo == Databank::PublicationState::Embargo::METADATA))
               %span(class="glyphicon glyphicon-alert" )
               Embargo placeholders have not yet replaced DataCite metadata. Confirm to complete changes.
@@ -104,7 +104,7 @@
                       class: "btn idb btn-danger remove-share-btn") do
                         Delete
         .col-md-4
-          - if (can? :manage, @dataset) && @completion_check == 'ok'
+          - if (can? :manage, @dataset) && ['ok', 'na'].include?(@completion_check)
             %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
               Curator Publish
               %span(class="glyphicon glyphicon-triangle-right" )
@@ -112,7 +112,7 @@
             = link_to("/guides#review", class: "btn btn-default btn-block") do
               Find out more about Pre-Publication review
               %span(class="glyphicon glyphicon-info-sign" )
-          - elsif @completion_check == 'ok'
+          - elsif ['ok', 'na'].include?(@completion_check)
             -if (can? :edit, @dataset) && !@has_unmodified_review && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
               %button(type="button" id="review-btn" class="btn btn-primary btn-block")
                 Submit for Pre-Publication Review
