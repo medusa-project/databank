@@ -52,7 +52,7 @@ module Dataset::Complete
   class_methods do
     # making completion_check a class method with passed-in dataset, so it can be used by controller before save
     def completion_check(dataset)
-      return "na" if dataset.PublicationState == Databank::PublicationState::PermSuppress::METADATA
+      return "na" if dataset.publication_state == Databank::PublicationState::PermSuppress::METADATA
       e_arr = []
       e_arr << "title" if dataset.title.blank?
       e_arr << "at least one creator" if dataset.creators.count < 1
