@@ -4,7 +4,7 @@
 # ENV=test
 # curl "http://localhost:8984/solr/admin/cores?action=CREATE&name=$ENV&instanceDir=$ENV"
 
-FROM solr:6
+FROM solr:9
 
 USER root
 
