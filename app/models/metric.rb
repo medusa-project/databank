@@ -303,7 +303,7 @@ class Metric
               dataset.funders.any? ? dataset.funders.map { |f| "#{f.name} (#{f.grant})" }.join("; ") : nil,
               dataset.title,
               dataset.keywords,
-              "dataset.corresponding_creator_name | dataset.corresponding_creator_email",
+              "#{dataset.corresponding_creator_name} | #{dataset.corresponding_creator_email}",
               dataset.subject
             ]
             text_file.puts "Key: #{dataset.key}\n"
