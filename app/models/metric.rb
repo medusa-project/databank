@@ -266,5 +266,56 @@ class Metric
         end
       end
     end
+
+    ##
+    # generate_datasets_reports
+    # This method writes a dataset report for the most recent version of each dataset with public metadata
+    # There are two reports written: a csv and plain text report
+    # the csv has everything except the description
+    # the plain text report has the description and metadata to connect it to the csv
+    # request detail: a report for the Data Bank from beginning to now that includes: DOI, Pub Date, Funder, Title, Keywords, Descriptions, Corresponding Creator, Subject
+    # @return [void]
+    def generate_datasets_reports
+      csv_target_path = METRICS_CONFIG[:dataset_report_csv][:relative_path]
+      text_target_path = METRICS_CONFIG[:dataset_report_text][:relative_path]
+      csv_file = File.open(csv_target_path, "w")
+      text_file = File.open(text_target_path, "w")
+      begin
+        CSV.open(csv_file, "w", force_quotes: false) do |report|
+          report << [
+            "key",
+            "doi",
+            "release_date",
+            "funders",
+            "title",
+            "keywords",
+            "corresponding_creator",
+            "subject"
+          ]
+          Dataset.find_each do |dataset|
+            next unless dataset.metadata_public?
+            next unless dataset.is_most_recent_version
+
+            report << [
+              dataset.key,
+              dataset.identifier,
+              dataset.release_date.iso8601.to_s,
+              dataset.funders.any? ? dataset.funders.map { |f| "#{f.name} (#{f.grant})" }.join("; ") : nil,
+              dataset.title,
+              dataset.keywords,
+              "#{dataset.corresponding_creator_name} | #{dataset.corresponding_creator_email}",
+              dataset.subject
+            ]
+            text_file.puts "Key: #{dataset.key}\n"
+            text_file.puts "Citation: #{dataset.plain_text_citation}\n"
+            text_file.puts "Description: #{dataset.description}\n"
+            text_file.puts "----------------------------------------\n\n"
+          end
+        end
+      ensure
+        csv_file.close
+        text_file.close
+      end
+    end
   end
 end
