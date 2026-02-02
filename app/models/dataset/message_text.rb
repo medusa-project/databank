@@ -144,33 +144,34 @@ module Dataset::MessageText
       case effective_embargo
 
       when Databank::PublicationState::Embargo::FILE
+
         msg += if dataset.publication_state == Databank::PublicationState::DRAFT
-                 "<h4>This action will make your dataset record <strong>public</strong>"
+                 "<h4>This action will make the dataset record <strong>public</strong>"
                else
                  "<h4>This action will make your updates to your dataset record <strong>public</strong>"
                end
         msg += ", but your files will remain unavailable.</h4><hr/>"
         msg += "<ul>"
-        msg += "<li>Your Illinois Data Bank dataset record will be <strong>publicly</strong> visible through search engines.</li>"
-        msg += "<li>Although the record for your dataset will be <strong>publicly</strong> visible, your data files will not be made available until #{effective_release_date}.</li>"
+        msg += "<li>The Illinois Data Bank dataset record will be <strong>publicly</strong> visible through search engines.</li>"
+        msg += "<li>Although the record for the dataset will be <strong>publicly</strong> visible, the data files will not be made available until #{effective_release_date}.</li>"
 
       when Databank::PublicationState::Embargo::METADATA
         if dataset.publication_state == Databank::PublicationState::DRAFT
           msg += "<h4>This action will reserve a DOI</h4><hr/>"
           msg += "<ul>"
           msg += "<li>The DOI link will fail until #{effective_release_date}.</li>"
-          msg += "<li>As of #{effective_release_date}, the record and files for your dataset will be publicly visible.</li>"
+          msg += "<li>As of #{effective_release_date}, the record and files for the dataset will be publicly visible.</li>"
         elsif dataset.publication_state == Databank::PublicationState::Embargo::METADATA
-          msg += "<h4>This action will save your metadata changes.</h4><hr/>"
+          msg += "<h4>This action will save the metadata changes.</h4><hr/>"
           msg += "<ul>"
-          msg += "<li>The DOI originally reserved for your dataset remains the same (#{dataset.identifier}), and the link will continue to fail until #{effective_release_date}.</li>"
-          msg += "<li>As of #{effective_release_date}, the record and files for your dataset will be publicly visible.</li>"
+          msg += "<li>The DOI originally reserved for the dataset remains the same (#{dataset.identifier}), and the link will continue to fail until #{effective_release_date}.</li>"
+          msg += "<li>As of #{effective_release_date}, the record and files for the dataset will be publicly visible.</li>"
 
         elsif [Databank::PublicationState::Embargo::FILE, Databank::PublicationState::RELEASED].include?(dataset.publication_state)
-          msg += "<h3>This action will remove your dataset from <strong>public</strong> availability.</h3>"
+          msg += "<h3>This action will remove the dataset from <strong>public</strong> availability.</h3>"
           msg += "<ul>"
           msg += "<li>The DOI link will resolve to an DataCite generic invalid tombstone page until #{effective_release_date}.</li>"
-          msg += "<li>The record for your dataset is not visible, nor are your data files available until #{effective_release_date}.</li>"
+          msg += "<li>The record for the dataset is not visible, nor are the data files available until #{effective_release_date}.</li>"
         else
           msg += "<h4>Unexpected Error: Please contact the <a href='/help'>Research Data Service Team</a>.</h4><hr/>"
           msg += "<ul>"
@@ -178,20 +179,20 @@ module Dataset::MessageText
 
       else
         msg += if dataset.publication_state == Databank::PublicationState::DRAFT
-                 "<h4>This action will make your dataset <strong>public</strong>.</h4><hr/>"
+                 "<h4>This action will make the dataset <strong>public</strong>.</h4><hr/>"
                else
-                 "<h4>This action will make your updates to your dataset record <strong>public</strong>.</h4><hr/>"
+                 "<h4>This action will make your updates to the dataset record <strong>public</strong>.</h4><hr/>"
                end
         msg += "<ul>"
-        msg += "<li>Your Illinois Data Bank dataset record will be <strong>publicly</strong> visible through search engines.</li>"
-        msg += "<li>Your data files will be <strong>publicly</strong> available.</li>"
+        msg += "<li>The Illinois Data Bank dataset record will be <strong>publicly</strong> visible through search engines.</li>"
+        msg += "<li>The data files will be <strong>publicly</strong> available.</li>"
       end
 
       if dataset.publication_state == Databank::PublicationState::DRAFT
-        msg += "<li>You and all authors will receive a confirmation email with your DOI and other information about your dataset.</li>"
+        msg += "<li>All authors will receive a confirmation email with the DOI and other information about the dataset.</li>"
       end
 
-      msg += "<li>You will be able to edit the description for the dataset, but would need to contact the <a href='/help'>Research Data Service</a> if you need to change, update, or add files for any reason.</li> "
+      msg += "<li>The depositor will be able to edit the description for the dataset, but would need to contact the <a href='/help'>Research Data Service</a> to change, update, or add files for any reason.</li> "
 
       msg + "</ul></div>"
     end

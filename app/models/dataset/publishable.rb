@@ -31,11 +31,10 @@ module Dataset::Publishable
   # "ok to publish" means that the dataset is in a state where it can be published
   # @return [Boolean] true if the dataset is ok to publish, false otherwise
   def ok_to_publish?
-
     # non-draft datasets are not ok to publish if they are missing an identifier
     missing_identifier_for_non_draft = (publication_state != Databank::PublicationState::DRAFT) && (!identifier || identifier == "")
     if missing_identifier_for_non_draft
-      Rails.logger.warn( "Missing identifier for dataset that is not a draft. Dataset: #{key}" )
+      Rails.logger.warn("Missing identifier for dataset that is not a draft. Dataset: #{key}")
       return false
     end
 
@@ -49,7 +48,9 @@ module Dataset::Publishable
     return true if publication_state == Databank::PublicationState::Embargo::FILE
 
     # approved version candidates are ok to publish\
-    return true if hold_state == Databank::PublicationState::TempSuppress::NONE && publication_state == Databank::PublicationState::TempSuppress::VERSION
+    if hold_state == Databank::PublicationState::TempSuppress::NONE && publication_state == Databank::PublicationState::TempSuppress::VERSION
+      return true
+    end
 
     # other draft datasets are ok to publish
     return true if publication_state == Databank::PublicationState::DRAFT
@@ -65,18 +66,22 @@ module Dataset::Publishable
   # @param user [User] the user who is publishing the dataset
   # @return [Hash] the status of the publication process
   def publish(user)
-
-    raise "Cannot publish permanently suppressed dataset #{key}" if publication_state == Databank::PublicationState::PermSuppress::METADATA
+    if publication_state == Databank::PublicationState::PermSuppress::METADATA
+      raise "Cannot publish permanently suppressed dataset #{key}"
+    end
 
     # check for incomplete datafile uploads
     incomplete_datafiles = self.incomplete_datafiles
-    return {status: "error", error_text: "Incomplete datafile upload(s) found. See #{Rails.application.routes.url_helpers.incomplete_uploads_dataset_path(self)}"} if incomplete_datafiles.any?
+    if incomplete_datafiles.any?
+      return {status:     "error",
+              error_text: "Incomplete datafile upload(s) found. See #{Rails.application.routes.url_helpers.incomplete_uploads_dataset_path(self)}"}
+    end
 
     # check if the dataset is ok to publish
     return {status: "error", error_text: "Dataset is not ok to publish"} unless ok_to_publish?
 
     # destroy any incomplete uploads
-    self.destroy_incomplete_uploads if datafiles&.where(web_id: nil)&.exists?
+    destroy_incomplete_uploads if datafiles&.where(web_id: nil)&.exists?
 
     # check if the dataset is complete
     completion_check_result = Dataset.completion_check(self)
@@ -94,8 +99,8 @@ module Dataset::Publishable
     # set the publication state
     # set the publication state to the embargo state if embargo is set and valid
     # otherwise set the publication state to released
-    if self.embargo && Databank::PublicationState::EMBARGO_ARRAY.include?(self.embargo)
-      self.publication_state = self.embargo
+    if embargo && Databank::PublicationState::EMBARGO_ARRAY.include?(embargo)
+      self.publication_state = embargo
     else
       self.publication_state = Databank::PublicationState::RELEASED
       self.hold_state = Databank::PublicationState::TempSuppress::NONE
@@ -103,7 +108,7 @@ module Dataset::Publishable
 
     # set the release date if the publication state was draft(y) and this publication action is making it released
     if Databank::PublicationState::DRAFT_ARRAY.include?(old_publication_state) &&
-      self.publication_state == Databank::PublicationState::RELEASED && !is_import
+      publication_state == Databank::PublicationState::RELEASED && !is_import
       self.release_date = Date.current
     end
 
@@ -114,12 +119,12 @@ module Dataset::Publishable
 
     # save the dataset with the new publication state because the DOI methods need the new publication state
     begin
-     save!
+      save!
     rescue StandardError => e
       Rails.logger.error("Error attepmting to save dataset during publication #{key}: #{e.message}")
       return {status: "error", error_text: "Failed to publish dataset"}
     end
-    
+
     # try to publish the DOI
     datacite_attempt = if metadata_public?
                          publish_doi
@@ -127,23 +132,22 @@ module Dataset::Publishable
                          register_doi
                        end
 
-    
     # if the DOI was published successfully, do some cleanup and send the dataset to Medusa
     if datacite_attempt[:status] == "ok"
 
       # destroy the share code if the dataset is released
-      self.share_code.destroy if ( self.share_code && (self.publication_state == Databank::PublicationState::RELEASED) )
+      share_code.destroy if share_code && (publication_state == Databank::PublicationState::RELEASED)
 
       # send the dataset to Medusa
       MedusaIngest.send_dataset_to_medusa(self)
 
       # index the previous dataset version in Solr if this dataset is part of a version set
-      Sunspot.index! [self.previous_idb_dataset] if self.previous_idb_dataset
+      Sunspot.index! [previous_idb_dataset] if previous_idb_dataset
 
       if local_mode?
         Rails.logger.warn "Dataset #{key} succesfully deposited."
         return {status: :ok, old_publication_state: old_publication_state}
-      end  
+      end
       return {status: :error, message: "publication notice not sent"} unless send_publication_notice
 
       {status: "ok", old_publication_state: old_publication_state}
@@ -154,12 +158,13 @@ module Dataset::Publishable
         save!
       rescue StandardError => e
         Rails.logger.error("Failed to save dataset after failed publication attempt. Dataset: #{key} may be in invalid state.")
-        return {status: "error", error_text: "Failed to save dataset after failed publication attempt. Dataset: #{key} in invalid state."}
+        return {status:     "error",
+                error_text: "Failed to save dataset after failed publication attempt. Dataset: #{key} in invalid state."}
       end
       Rails.logger.warn(datacite_attempt.to_yaml)
       notification = DatabankMailer.error("Error in publishing dataset #{key}: #{datacite_attempt.to_yaml}")
       notification.deliver_now
-      return {status: "error", error_text: "Failed to publish dataset #{key}: see logs for details"}
+      {status: "error", error_text: "Failed to publish dataset #{key}: see logs for details"}
     end
   end
 
@@ -182,12 +187,12 @@ module Dataset::Publishable
   # destroy all incomplete uploads for the dataset
   # @return [Boolean] true if any incomplete uploads were destroyed, false otherwise
   def destroy_incomplete_uploads
-    datafile_web_ids = self.datafiles.pluck(:web_id)
-    valid_web_ids = self.datafiles.pluck(:web_id)
+    datafile_web_ids = datafiles.pluck(:web_id)
+    valid_web_ids = datafiles.pluck(:web_id)
     invalid_web_ids = datafile_web_ids - valid_web_ids
     return true if invalid_web_ids.empty?
 
-    self.datafiles.where(web_id: invalid_web_ids).destroy_all
+    datafiles.where(web_id: invalid_web_ids).destroy_all
   end
 
   # @return [Boolean] true if the dataset is in pre-publication review and has no review requests, false otherwise
@@ -200,5 +205,4 @@ module Dataset::Publishable
 
     true
   end
-
 end
