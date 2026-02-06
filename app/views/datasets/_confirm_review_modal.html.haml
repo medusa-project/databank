@@ -1,0 +1,29 @@
+.modal.fade(id= "review" tabindex="0" role="dialog" aria-labelledby="agreement-label" aria-hidden="true")
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-body
+        %button(type="button" class="close pull-right" data-dismiss="modal" )
+          &times;
+
+        %h3 Let our curators review your dataset!
+        %ul
+          %li
+            %p(class="ds-paragraph") Your DOI is now reserved and will become active once the dataset is published
+          %li
+            %p(class="ds-paragraph") Find and correct errors before publication
+          %li
+            %p(class="ds-paragraph") Publish high-quality data
+
+      .modal-footer.container-fluid
+
+        %button.btn.btn-primary.idb(type="button" id="review-btn")
+          Submit for Review
+          %span(class="glyphicon glyphicon-triangle-right" )
+
+        %button.btn.btn-success.idb{"onclick"=>'window.open("/help")', 'type'=>"button", 'data-dismiss'=>"modal", 'id'=>"help-button"}
+          %span(class="glyphicon glyphicon-question-sign")
+          Get Help
+
+        %button.btn.btn-danger.idb{"onclick"=>%Q(window.location="/datasets/#{@dataset.key}"), 'type'=>'button', 'data-dismiss'=>"modal", 'id'=>"help-button"}
+          %span(class="glyphicon glyphicon-remove")
+          Cancel

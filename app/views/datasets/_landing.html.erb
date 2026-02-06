@@ -9,6 +9,7 @@
 <% if (can? :update, @dataset) %>
   <%= render partial: 'datasets/dashboards/show' %>
   <%= render partial: 'incomplete_deposit_modal' %>
+  <%= render partial: 'confirm_review_modal' %>
 <% end %>
 <% if (can? :manage, @dataset) %>
   <%= render partial: 'confirm_deposit_modal' %>

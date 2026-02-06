@@ -12,30 +12,17 @@
           %h3
             Pre-publication review requested for this dataset at:
           .indent
-
             -@dataset.review_requests.each do |review|
               =review.requested_at.strftime("%Y-%m-%d")
               =" | "
-              =link_to 'Edit', edit_review_request_path(review), class: "btn btn-primary idb"
+              -# display an indication if the dataset has been modified since the review was requested
+              -if review.modified
+                %span(class="label label-warning") Dataset modified since review requested
+              - else
+                %span(class="label label-success") Dataset not modified since review requested
               %br
         -else
           %br
           No pre-publication review request records found for this dataset.
-        %hr
-        %h3
-          Add new pre-publication review request record for this dataset:
-        %em
-          (For requests made before such requests were recorded.)
-        .indent
-          = form_for @review_request do |f|
-            .field
-              = f.hidden_field :dataset_key, value: @dataset.key
-            .field
-              = f.label :requested_at, "Dataset pre-publication review requested at:"
-              = f.datetime_select :requested_at
-            .field
-              = f.label :modified, "Dataset modified since review requested?"
-              = f.check_box :modified  
-            .actions
-              = f.submit 'Save', class: "btn btn-primary"
+
 
