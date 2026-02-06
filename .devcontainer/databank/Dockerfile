@@ -1,16 +1,30 @@
-FROM ubuntu:22.04
 FROM ruby:3.3.6
 
 ARG rails_env=test
-ENV RAILS_ENV=test
+ENV RAILS_ENV=${rails_env}
 ENV RAILS_LOG_TO_STDOUT=true
 
-RUN apt-get update && apt-get install -y \
-    systemd \
-    nodejs \
-    libmemcached-dev \
-    libmagic-dev \
-    yarn \
-    postgresql-client \
-    memcached \
-    emacs-nox
+RUN apt-get update --allow-releaseinfo-change \
+	&& apt-get install -y --no-install-recommends \
+		build-essential \
+		autoconf \
+		automake \
+		libtool \
+		pkg-config \
+		systemd \
+		nodejs \
+		libmemcached-dev \
+		libmagic-dev \
+		yarn \
+		postgresql-client \
+		libpq-dev \
+		memcached \
+		emacs-nox \
+		libxml2-dev \
+		libxslt1-dev \
+		zlib1g-dev \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Ensure nokogiri uses system libraries to avoid Ruby 3.3.x build issues
+ENV NOKOGIRI_USE_SYSTEM_LIBRARIES=true

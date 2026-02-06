@@ -28,6 +28,9 @@ pickle-email-*.html
 !/tmp/.keep
 *.log
 
+# Ignore deprecated files
+*_deprecated.*
+
 # Only include if you have production secrets in this file, which is no longer a Rails default
 # config/secrets.yml
 
