@@ -13,14 +13,29 @@
             Pre-publication review requested for this dataset at:
           .indent
             -@dataset.review_requests.each do |review|
-              =review.requested_at.strftime("%Y-%m-%d")
-              =" | "
-              -# display an indication if the dataset has been modified since the review was requested
-              -if review.modified
-                %span(class="label label-warning") Dataset modified since review requested
-              - else
-                %span(class="label label-success") Dataset not modified since review requested
-              %br
+              %h4
+                =review.requested_at.strftime("%Y-%m-%d")
+                =" | "
+                -# display an indication if the dataset has been modified since the review was requested
+                -if review.modified
+                  %span(class="label label-warning") Dataset modified since review requested
+                - else
+                  %span(class="label label-success") Dataset not modified since review requested
+              %p
+                -# display the change log for the review request
+                -if review.change_log.present?
+                  %table.table.table-striped
+                    %caption
+                      %strong
+                        Metadata Change log
+                    -review.change_log.each do |change|
+                      %tr.row
+                        %td
+                          ="#{change[:action]}: #{change[:audited_changes]}"
+                        %td
+                          ="#{change[:created_at].iso8601.to_s}"
+                - else
+                  %em No change log provided for this review request.
         -else
           %br
           No pre-publication review request records found for this dataset.

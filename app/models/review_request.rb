@@ -19,4 +19,25 @@ class ReviewRequest < ApplicationRecord
     Dataset.find_by(key: dataset_key)
   end
 
+  # get the review request for this dataset requested after this review request, if any
+  def next_review_request
+    ReviewRequest.where('dataset_key = ? AND requested_at > ?', dataset_key, requested_at).order(:requested_at).first
+  end
+
+  def audits_since(time)
+    dataset.audits.where('created_at >= ?', time)
+  end
+
+  def change_log
+    # if there is a next review request, we want to get the audits between the current review request and the next one
+    if next_review_request
+      audits_since(requested_at).where('created_at < ?', next_review_request.requested_at)
+    else
+      audits_since(requested_at)
+    end.map do |audit|
+      {action: audit.action,
+        audited_changes: audit.audited_changes,
+        created_at: audit.created_at}
+    end
+  end
 end
