@@ -15,6 +15,13 @@ class DatafilesController < ApplicationController
 
   before_action :set_dataset, only: [:index, :show, :edit, :new, :add, :create, :destroy, :upload, :do_upload]
 
+  # before destroy, send an email to curators if the dataset is under pre-publication review
+  before_action -> { send_prepub_filechange_email(Databank::FileChangeType::DELETED) }, only: [:destroy], if: -> { @dataset.in_pre_publication_review? }
+
+  def send_prepub_filechange_email(change_type)
+    DatabankMailer.prepub_filechange(@datafile.web_id, change_type).deliver_now
+  end
+
   # Responds to `GET /datafiles`
   # Responds to `GET /datafiles.json`
   def index

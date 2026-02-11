@@ -137,6 +137,11 @@ module Databank
     COLLECTION = %w[help guide both]
   end
 
+  class FileChangeType
+    ADDED = 'added'
+    DELETED = 'deleted'
+  end
+
   class Application < Rails::Application
 
     attr_accessor :shibboleth_host
