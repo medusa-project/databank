@@ -13,12 +13,9 @@
     %br/
     - if @change_type == Databank::FileChangeType::ADDED
       %strong url: 
-      ="/datafiles#{@datefile.web_id}"
+      ="/datafiles#{@datafile.web_id}"
       %br/
     %strong File name:
-    =" #{@datefile.binary_name}"
-    %br/
-    %strong File size:
-    =" #{@datefile.binary_size} bytes"
+    =" #{@datafile.binary_name}"
     %br/
     %hr/
