@@ -1,12 +1,12 @@
 Topic: File change in dataset under pre-publication review
-Dataset: "#{@dataset.databank_url}"
+Dataset: #{@dataset.databank_url}
 
-The following file has been "#{@change_type} in the dataset currently under pre-publication review:
+The following file has been #{@change_type} in the dataset currently under pre-publication review:
 ---------------
 = @change_type
 ---------------
 
 - if @change_type == Databank::FileChangeType::ADDED
-  URL: "/datafiles#{@datafile.web_id}"
+  URL: /datafiles/#{@datafile.web_id}
 
-File name: "#{@datafile.binary_name}"
+File name: #{@datafile.binary_name}

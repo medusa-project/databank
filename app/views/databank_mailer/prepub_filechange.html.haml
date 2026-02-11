@@ -6,14 +6,14 @@
     Topic: File change in dataset under pre-publication review
     %br/
     Dataset:
-    %a{:href => "#{@dataset.databank_url}"}
+    %a{:href => @dataset.databank_url}
       = @dataset.databank_url
     %hr/
     ="The following file has been #{@change_type} in the dataset titled '#{@dataset.title}':"
     %br/
     - if @change_type == Databank::FileChangeType::ADDED
       %strong url: 
-      ="/datafiles#{@datafile.web_id}"
+      ="/datafiles/#{@datafile.web_id}"
       %br/
     %strong File name:
     =" #{@datafile.binary_name}"
