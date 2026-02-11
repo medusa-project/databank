@@ -13,7 +13,7 @@
     %br/
     - if @change_type == Databank::FileChangeType::ADDED
       %strong url: 
-      ="/datafiles/#{@datafile.web_id}"
+      ="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@datafile.web_id}"
       %br/
     %strong File name:
     =" #{@datafile.binary_name}"
