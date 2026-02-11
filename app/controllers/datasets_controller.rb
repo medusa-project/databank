@@ -315,7 +315,7 @@ collaborators to access the data files while the dataset is not public.</li>
           params["context"] = "continue_edit"
         end
         if params.has_key?("context") && params["context"] == "exit"
-          if Dataset::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
+          if Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
             
             format.html {
               redirect_to "/datasets?q=&#{CGI.escape('editor')}=#{current_user.username}&context=exit_draft"
@@ -326,7 +326,7 @@ collaborators to access the data files while the dataset is not public.</li>
             }
           end
         elsif params.has_key?("context") && params["context"] == "publish"
-          if Dataset::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
+          if Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
             raise "invalid publication state for update-and-publish"
             # only update complete datasets
           elsif Dataset.completion_check(@dataset) == "ok"
