@@ -12,7 +12,7 @@ module Dataset::Complete
   # returns "ok" if dataset is complete
   def valid_change2published(new_params:)
     dataset = self
-    return "Permanently suppressed dataset cannot be published." if dataset.PublicationState == Databank::PublicationState::PermSuppress::METADATA
+    return "Permanently suppressed dataset cannot be published." if dataset.publication_state == Databank::PublicationState::PermSuppress::METADATA
  
     params = new_params
     unless params.has_key?(:dataset) && (params[:dataset]).has_key?(:identifier) && params[:dataset][:identifer] != ""

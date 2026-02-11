@@ -30,14 +30,16 @@ class ReviewRequest < ApplicationRecord
 
   def change_log
     # if there is a next review request, we want to get the audits between the current review request and the next one
-    if next_review_request
+    # sorted by created_at most recent first
+    audits = if next_review_request
       audits_since(requested_at).where('created_at < ?', next_review_request.requested_at)
     else
       audits_since(requested_at)
-    end.map do |audit|
+    end
+    audits.order(created_at: :desc).map do |audit|
       {action: audit.action,
-        audited_changes: audit.audited_changes,
-        created_at: audit.created_at}
+      audited_changes: audit.audited_changes,
+      created_at: audit.created_at}
     end
   end
 end
