@@ -22,7 +22,10 @@ class CuratorReportJob
     # Hooks for delayed_job lifecycle
     def success(job)
         # Email the user when the report is ready
-        DatabankMailer.curation_report(report.report_type, report.requestor_email).deliver_now
+        DatabankMailer.curation_report(report.report_type, report.requestor_email).deliver_now unless Rails.env.test? || Rails.env.development?
+
+        Rails.logger.info("CuratorReportJob completed successfully for report ID: #{report.id}") if Rails.env.test? || Rails.env.development?
+
     end
 
     def error(job, exception)
