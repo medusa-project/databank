@@ -16,3 +16,5 @@
   :relative_path: <%= Rails.root.join("public/dataset_report.csv") %>
 :dataset_report_text:
   :relative_path: <%= Rails.root.join("public/dataset_report.txt") %>
+file_audit_report_csv:
+  :relative_path: <%= Rails.root.join("tmp/file_audit_report.csv") %>

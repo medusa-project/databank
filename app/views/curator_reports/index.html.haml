@@ -1,0 +1,13 @@
+%p{style: "color: green"}= notice
+
+- content_for :title, "Curator reports"
+
+%h1 Curator reports
+
+%div{id: "curator_reports"}
+  - @curator_reports.each do |curator_report|
+    = render curator_report
+    %p
+      = link_to "Show this curator report", curator_report
+
+= link_to "New curator report", new_curator_report_path

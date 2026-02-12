@@ -267,6 +267,47 @@ class Metric
       end
     end
 
+    ## generate file_audit_report
+    # Only for curators and admins of Illinois Data Bank, includes non-public datasets
+    # This method writes a file audit report for all datafiles with confirmation of whether or not they are in storage
+    # The report is written as a csv, then email link to the requestor
+    # request detail: a report for all datafiles that includes:
+    # Field list: Dataset_URL (databank_url of dataset), Datafile_URL, Filename, In Storage (true/false)
+    # @return [void]
+    def generate_file_audit_report(requestor)
+      csv_target_path = METRICS_CONFIG[:file_audit_report_csv][:relative_path]
+      csv_file = File.open(csv_target_path, "w")
+      # ensure directory exists
+      FileUtils.mkdir_p(File.dirname(csv_target_path))
+      begin
+        CSV.open(csv_file, "w", force_quotes: false) do |report|
+          report << [
+            "dataset_url",
+            "datafile_url",
+            "filename",
+            "in_storage"
+          ]
+          Dataset.find_each do |dataset|
+            dataset.datafiles.each do |datafile|
+              datafile_url = "#{Rails.application.routes.url_helpers.dataset_url(dataset, host: Rails.application.config.x.application_host)}/datafiles/#{datafile.id}"
+              in_storage = datafile.in_storage? ? "true" : "false"
+              report << [
+                Rails.application.routes.url_helpers.dataset_url(dataset, host: Rails.application.config.x.application_host),
+                datafile_url,
+                datafile.bytestream_name,
+                in_storage
+              ]
+            end
+          end
+        end
+      ensure
+        csv_file.close
+      end
+      # email the report to curators and admins
+      recipients = [requestor.email]
+      FileAuditReportMailer.with(recipients: recipients, file_path: csv_target_path).file_audit_report_email.deliver_now
+    end
+
     ##
     # generate_datasets_reports
     # This method writes a dataset report for the most recent version of each dataset with public metadata

@@ -64,6 +64,14 @@ class Datafile < ApplicationRecord
   end
 
   ##
+  # Returns the URL for the datafile in the Illinois Data Bank
+  #
+  # @return [String] the URL for the datafile in the Illinois Data Bank
+  def databank_url
+    "#{IDB_CONFIG[:root_url_text]}/datafiles/#{self.to_param}"
+  end
+
+  ##
   # Returns a JSON representation of the datafile
   # @param [Hash] _options the options to pass to the JSON generator
   # @return [Hash] the JSON representation of the datafile

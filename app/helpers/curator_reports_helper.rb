@@ -1,0 +1,2 @@
+module CuratorReportsHelper
+end

@@ -1,0 +1,12 @@
+-# form to request a file audit report.
+-# The user has the option of entering a lines of text, sent in a way that can be accessed in controller with params[:notes]
+-# The form posts to the file_audit_request action in the welcome controller, which creates a FileAuditRequest record and sends an email to the system admins.
+= form_with url: request_file_audit_curator_reports_path, method: :post, local: true, class: 'form-horizontal' do |form|
+    .form-group
+        = form.label :notes, "Notes (optional)", class: 'col-sm-2 control-label'
+        .col-sm-10
+            = form.text_area :notes, rows: 5, class: 'form-control'
+
+    .form-group
+        .col-sm-offset-2.col-sm-10
+            = form.submit "Request File Audit Report", class: 'btn btn-primary'

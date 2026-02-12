@@ -1,0 +1,12 @@
+- content_for :title, "Editing curator report"
+
+%h1 Editing curator report
+
+= render "form", curator_report: @curator_report
+
+%br
+
+%div
+  = link_to "Show this curator report", @curator_report
+  |
+  = link_to "Back to curator reports", curator_reports_path

@@ -73,6 +73,7 @@ class StorageManager
     storage_config = STORAGE_CONFIG[:storage].map(&:to_h)
     self.root_set = MedusaStorage::RootSet.new(storage_config)
     self.draft_root = root_set.at("draft")
+    self.report_root = root_set.at("reports")
     self.medusa_root = root_set.at("medusa")
     self.message_root = root_set.at("message")
     self.tmpfs_root = root_set.at("tmpfs")

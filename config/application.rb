@@ -142,6 +142,10 @@ module Databank
     DELETED = 'deleted'
   end
 
+  class ReportType
+    FILE_AUDIT = 'File Audit'
+  end
+
   class Application < Rails::Application
 
     attr_accessor :shibboleth_host

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_20_174126) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_12_170358) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -65,6 +65,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_20_174126) do
     t.boolean "is_contact", default: false, null: false
     t.integer "row_position"
     t.string "identifier_scheme"
+  end
+
+  create_table "curator_reports", force: :cascade do |t|
+    t.string "requestor_name"
+    t.string "requestor_email"
+    t.string "report_type"
+    t.string "storage_root"
+    t.string "storage_key"
+    t.string "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "databank_tasks", id: :serial, force: :cascade do |t|

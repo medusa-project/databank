@@ -1,0 +1,35 @@
+= form_with(model: curator_report) do |form|
+  - if curator_report.errors.any?
+    %div{style: "color: red"}
+      %h2= "#{pluralize(curator_report.errors.count, "error")} prohibited this curator_report from being saved:"
+
+      %ul
+        - curator_report.errors.each do |error|
+          %li= error.full_message
+
+  %div
+    = form.label :requestor_name, style: "display: block"
+    = form.text_field :requestor_name
+
+  %div
+    = form.label :requestor_email, style: "display: block"
+    = form.text_field :requestor_email
+
+  %div
+    = form.label :report_type, style: "display: block"
+    = form.text_field :report_type
+
+  %div
+    = form.label :storage_root, style: "display: block"
+    = form.text_field :storage_root
+
+  %div
+    = form.label :storage_key, style: "display: block"
+    = form.text_field :storage_key
+
+  %div
+    = form.label :notes, style: "display: block"
+    = form.text_field :notes
+
+  %div
+    = form.submit
