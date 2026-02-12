@@ -4,7 +4,7 @@ class CuratorReport < ApplicationRecord
     def self.initiate_report_generation(report_type, requesting_user, storage_root = default_storage_root)
         # This method is used to initiate the report generation process. It is called by the controller when a user requests a report.
         # It enqueues a background job to generate the report asynchronously.
-        CuratorReportJob.perform_later(report_type, requesting_user, storage_root)
+        Delayed::Job.enqueue CuratorReportJob.new(report_type, requesting_user, storage_root)
     end
 
     def self.generate_report(report)
