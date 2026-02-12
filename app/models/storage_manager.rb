@@ -12,7 +12,7 @@
 # storage, but only in certain server environments.
 #
 # The StorageManager is initialized with the root directories for draft, Medusa,
-# and message storage, as well as the temporary directory used for temporary
+# message, and report storage, as well as the temporary directory used for temporary
 # file storage. It also initializes an S3 resource object for use in interacting
 # with S3 storage.
 #
@@ -57,6 +57,7 @@ require "singleton"
 class StorageManager
   include Singleton
   attr_accessor :draft_root,
+                :report_root,
                 :medusa_root,
                 :message_root,
                 :tmpfs_root,
