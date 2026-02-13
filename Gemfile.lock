@@ -1944,7 +1944,6 @@ GEM
       mutex_m
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
-    iconv (1.1.1)
     io-console (0.8.2)
     io-like (0.4.0)
     irb (1.16.0)
@@ -2366,7 +2365,6 @@ DEPENDENCIES
   font-awesome-sass
   haml
   haml-rails
-  iconv
   io-like
   jbuilder
   jquery-datatables-rails

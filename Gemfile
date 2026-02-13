@@ -48,9 +48,6 @@ gem "minitar"
 # Use rchardet to attempt to detect character encoding
 gem "rchardet"
 
-# User iconv to convert between encodings
-gem "iconv"
-
 # Use io-like for IO utilities
 gem "io-like"
 
