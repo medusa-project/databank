@@ -143,7 +143,13 @@ module Databank
   end
 
   class ReportType
-    FILE_AUDIT = 'File Audit'
+    FILE_AUDIT = 'file_audit'
+  end
+
+  class ReportStatus
+    PENDING = 'pending'
+    GENERATING = 'generating'
+    AVAILABLE = 'available'
   end
 
   class Application < Rails::Application

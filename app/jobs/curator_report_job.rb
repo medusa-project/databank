@@ -1,31 +1,27 @@
 # frozen_string_literal: true
 
 class CuratorReportJob
-    def initialize(report_type, requesting_user, storage_root)
-        @report_type = report_type
-        @requesting_user = requesting_user
-        @storage_root = storage_root
+    def initialize(report)
+        # temporary debug logging
+        Rails.logger.debug "Initializing CuratorReportJob for report ID #{report.id}, type #{report.report_type}, requested by #{report.requestor_name}"
+        @report = report
     end
 
     def perform
-        # Generate the report and store it in S3, then email the user when it's ready.
-        requesting_user = @requesting_user.is_a?(User) ? @requesting_user : User.find(@requesting_user)
-        report = CuratorReport.create!(report_type: @report_type, requestor_name: requesting_user.name, requestor_email: requesting_user.email)
-        report.storage_root = @storage_root
-        report.storage_key = report.default_storage_key
-        report.save!
-
         # Generate the report file and store it in S3
-        CuratorReport.generate_report(report)
+        # temporary debug logging
+        Rails.logger.debug "Performing CuratorReportJob for report ID #{@report.id}, type #{@report.report_type}"
+        CuratorReport.generate_report(@report)
     end
 
     # Hooks for delayed_job lifecycle
     def success(job)
         # Email the user when the report is ready
-        DatabankMailer.curation_report(report.report_type, report.requestor_email).deliver_now unless Rails.env.test? || Rails.env.development?
-
-        Rails.logger.info("CuratorReportJob completed successfully for report ID: #{report.id}") if Rails.env.test? || Rails.env.development?
-
+        if Rails.env.test? || Rails.env.development?
+            Rails.logger.info("CuratorReportJob succeeded for report ID: #{@report.id}, sending email to user #{@report.requestor_email}")
+        else
+            DatabankMailer.curation_report(@report).deliver_now
+        end
     end
 
     def error(job, exception)

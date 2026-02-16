@@ -1,0 +1,29 @@
+Topic: Curation Report Ready
+
+Requestor name:
+= "#{ curator_report.requestor_name }"
+
+Requestor email:
+= "#{ curator_report.requestor_email }"
+
+Report type:
+= "#{ curator_report.report_type }"
+
+Storage root:
+= "#{ curator_report.storage_root }"
+
+Storage key:
+= "#{ curator_report.storage_key }"
+
+Notes:
+= "#{ curator_report.notes }"
+
+Status:
+= "#{ curator_report.status }"
+
+- if curator_report.status == Databank::ReportStatus::AVAILABLE
+  Log in:
+  = "#{ IDB_CONFIG[:root_url_text] }"
+
+  Then Download Report
+  = "#{curator_report.download_link}"

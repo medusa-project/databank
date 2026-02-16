@@ -223,11 +223,11 @@ because dataset not found for key: #{dataset_key}."
     mail(to: IDB_CONFIG[:admin][:materials_report_list].to_s, subject: subject)
   end
 
-  def curation_report(report_type, requesting_user)
-    subject_base = "Illinois Data Bank] #{report_type} Report"
+  def curator_report(report)
+    subject_base = "Illinois Data Bank] #{report.report_type} Report"
     subject = prepend_system_code(subject_base)
-    @report = CuratorReport.generate_file_audit_report(requesting_user)
-    mail(to: requesting_user.email, subject: subject)
+    @curator_report = report
+    mail(to: report.requestor_email, subject: subject)
   end
 
   ##

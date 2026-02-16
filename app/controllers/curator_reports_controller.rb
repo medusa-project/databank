@@ -1,11 +1,35 @@
 class CuratorReportsController < ApplicationController
 
   load_and_authorize_resource
-  before_action :set_curator_report, only: %i[ show edit update destroy ]
-  
+  before_action :set_curator_report, only: %i[ show edit update destroy download ]
+
+  # GET /curator_reports/1/download
+  def download
+    if Rails.env == "development" || Rails.env == "test"
+      send_data @curator_report.download_object.body.read, filename: @curator_report.storage_key, type: "text/plain", disposition: "attachment"
+      return
+    elsif @curator_report.current_root.root_type == :filesystem
+      @curator_report.with_input_file do |input_file|
+        path = @curator_report.current_root.path_to(@curator_report.storage_key, check_path: true)
+        send_file path, filename: @curator_report.storage_key, type: "text/plain", disposition: "attachment"
+      end
+    else
+      redirect_to(
+        @curator_report.current_root.presigned_get_url(
+          @curator_report.storage_key,
+          response_content_disposition: "attachment",
+          response_content_type: "text/plain"
+        ),
+        allow_other_host: true
+      )
+    end
+  end
+
   # POST /curator_reports/file_audit_request
   def request_file_audit
-    CuratorReport.initiate_report_generation(Databank::ReportType::FILE_AUDIT, current_user, notes: params[:notes]) 
+    # temporary debug logging
+    Rails.logger.debug "Requesting file audit report with notes: #{params[:notes]}"
+    CuratorReport.initiate_report_generation(report_type: Databank::ReportType::FILE_AUDIT, requesting_user: current_user, notes: params[:notes]) 
     respond_to do |format|
       format.html { redirect_to curator_reports_path, notice: "File audit report was successfully requested." }
       format.json { head :no_content }

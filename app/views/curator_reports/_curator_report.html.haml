@@ -1,25 +1,39 @@
-%div{id: dom_id(curator_report)}
-  %p
-    %strong Requestor name:
-    = curator_report.requestor_name
+-# frozen_string_literal: true
+.curator-report{id: "report_#{curator_report.id}"}
+  %br
+  %hr
+  .label{class: curator_report.status_label_class}
+    = curator_report.status
+  .row
+    .col-md-2
+      %strong Requestor name:
+      = curator_report.requestor_name
 
-  %p
-    %strong Requestor email:
-    = curator_report.requestor_email
+    .col-md-2
+      %strong Requestor email:
+      = curator_report.requestor_email
 
-  %p
-    %strong Report type:
-    = curator_report.report_type
+    .col-md-2
+      %strong Report type:
+      = curator_report.report_type
 
-  %p
-    %strong Storage root:
-    = curator_report.storage_root
+    .col-md-2
+      %strong Storage root:
+      = curator_report.storage_root
 
-  %p
-    %strong Storage key:
-    = curator_report.storage_key
+    .col-md-4
+      %strong Storage key:
+      = curator_report.storage_key
+  .row
+    .col-md-12
+      %strong Notes:
+      %br
+      = curator_report.notes
+  %p.pull-right
+    - if curator_report.status == Databank::ReportStatus::AVAILABLE
+      = link_to "Download", curator_report.download_link, class: "btn btn-primary idb", target: "_blank"
+    = link_to "Edit", edit_curator_report_path(curator_report), class: "btn btn-success idb"
+    = link_to "Delete", curator_report_path(curator_report), method: :delete, data: { confirm: "Are you sure you want to delete this report?" }, class: "btn btn-danger idb"
+    %br
 
-  %p
-    %strong Notes:
-    = curator_report.notes
 

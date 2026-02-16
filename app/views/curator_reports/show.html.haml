@@ -3,8 +3,4 @@
 = render @curator_report
 
 %div
-  = link_to "Edit this curator report", edit_curator_report_path(@curator_report)
-  |
-  = link_to "Back to curator reports", curator_reports_path
-
-  = button_to "Destroy this curator report", @curator_report, method: :delete
+  = link_to "Back to curator reports", curator_reports_path, class: "btn btn-info idb"

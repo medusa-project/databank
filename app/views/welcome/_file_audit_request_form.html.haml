@@ -1,12 +1,16 @@
 -# form to request a file audit report.
 -# The user has the option of entering a lines of text, sent in a way that can be accessed in controller with params[:notes]
--# The form posts to the file_audit_request action in the welcome controller, which creates a FileAuditRequest record and sends an email to the system admins.
-= form_with url: request_file_audit_curator_reports_path, method: :post, local: true, class: 'form-horizontal' do |form|
-    .form-group
-        = form.label :notes, "Notes (optional)", class: 'col-sm-2 control-label'
-        .col-sm-10
-            = form.text_area :notes, rows: 5, class: 'form-control'
+-# The form posts to the request_file_audit action in the curator_reports controller,
+-# which initiates a background job to generate the report and then redirects back to the curator reports index page.
 
-    .form-group
-        .col-sm-offset-2.col-sm-10
-            = form.submit "Request File Audit Report", class: 'btn btn-primary'
+-# button link to the see all curator reports index page, which will show the status of the report request after submission
+= link_to "See All Curator Reports", curator_reports_path, class: 'btn btn-info idb'
+= form_with url: { controller: 'curator_reports', action: 'request_file_audit' }, method: :post, local: true, class: 'form-horizontal' do |form|
+  .form-group
+    = form.label :notes, "Notes (optional)", class: 'col-sm-2 control-label'
+    .col-sm-10
+      = form.text_area :notes, rows: 5, class: 'form-control'
+
+  .form-group
+    .col-md-offset-2.col-md-10
+      = form.submit "Request File Audit Report", class: 'btn btn-primary idb'
