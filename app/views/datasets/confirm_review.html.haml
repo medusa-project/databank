@@ -4,10 +4,10 @@
     Thank You! Your Review Request Has Been Received. 
   %p.idb-large
     Your dataset is now in draft stage. A curator will contact you with suggestions and/or concerns regarding your dataset within 1–2 days.
-    Here is the reserved DOI and full citation for your dataset. Include this DOI in your associated paper. It will remain the same and will work once the dataset is published:
   %p.idb-large
     %strong
-      DOI:
+      = link_to "Reserved DOI", "/guides#doi", target: "_blank"
+    to include this DOI in your associated paper(s):
     = link_to @dataset.persistent_url
     \.
   %p.idb-large
