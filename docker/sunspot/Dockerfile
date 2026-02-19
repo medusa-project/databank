@@ -9,7 +9,7 @@ ENV VERBOSE=yes
 RUN mkdir -p /var/solr/data/configsets/testset/conf
 
 # Copy conf directory to Solr configsets directory where core API expects it
-COPY .devcontainer/sunspot/conf /var/solr/data/configsets/testset/conf
+COPY conf /var/solr/data/configsets/testset/conf
 
 # Change ownership of the copied files to the solr user
 RUN chown -R solr /var/solr/data/configsets/testset/conf
