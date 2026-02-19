@@ -86,10 +86,20 @@ class CuratorReport < ApplicationRecord
   def current_root
     # This method is used to determine the current storage root for the report file. It is
     # used to determine where the report file is stored in S3.
-    StorageManager.instance.root_set.at(self.storage_root)
+    proposed_root = StorageManager.instance.root_set.at(self.storage_root)
+    if proposed_root.nil?
+      Rails.logger.warn "Unable to find storage root #{self.storage_root} for CuratorReport #{self.id}. Storage root may have been deleted or become unavailable."
+    end
+    proposed_root
   end
 
   def status
+
+    if current_root.nil? || self.storage_key.nil? || self.storage_root.nil?
+      Rails.logger.warn "Unable to determine status for CuratorReport #{self.id}: current_root=#{current_root.nil?}, storage_key=#{self.storage_key.nil?}, storage_root=#{self.storage_root.nil?}"
+      return Databank::ReportStatus::PENDING
+    end
+
     # This method is used to determine the status of the report. It is used to display the status of the report in the UI.
     if current_root.exist?(self.storage_key)
       Databank::ReportStatus::AVAILABLE

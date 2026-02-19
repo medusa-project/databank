@@ -27,8 +27,8 @@ class CuratorReportsController < ApplicationController
 
   # POST /curator_reports/file_audit_request
   def request_file_audit
-    # temporary debug logging
-    Rails.logger.debug "Requesting file audit report with notes: #{params[:notes]}"
+    # temporary debug logging to help understand usage of this feature and inform future improvements. This log message will be removed in the future.
+    Rails.logger.warn "File audit report requested by user #{current_user.id} (#{current_user.email}). Notes: #{params[:notes]}"
     CuratorReport.initiate_report_generation(report_type: Databank::ReportType::FILE_AUDIT, requesting_user: current_user, notes: params[:notes]) 
     respond_to do |format|
       format.html { redirect_to curator_reports_path, notice: "File audit report was successfully requested." }
