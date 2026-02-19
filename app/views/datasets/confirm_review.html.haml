@@ -1,22 +1,22 @@
 %h1 Review Request Submitted
-.indent
-  .idb-callout-lg
+.indent.line-above
+  %h2
     Thank You! Your Review Request Has Been Received. 
-  %p.idb-large
+  %p.idb-larger
     Your dataset is now in draft stage. A curator will contact you with suggestions and/or concerns regarding your dataset within 1–2 days.
-    Here is the reserved DOI and full citation for your dataset. Include this DOI in your associated paper. It will remain the same and will work once the dataset is published:
-  %p.idb-large
+  %p.idb-larger
     %strong
-      DOI:
+      = link_to "Reserved DOI", "/guides#doi", target: "_blank"
+    to include this DOI in your associated paper(s):
     = link_to @dataset.persistent_url
     \.
-  %p.idb-large
+  %p.idb-larger
     %strong
       Citation:
     = @dataset.plain_text_citation
-  %p.idb-large
-    Generate a private sharing link allows you to share the draft dataset with journal reviewers and/or co-authors while the dataset is under review.
-    You can obtain this link by go back to your dataset and click on “Generate private sharing link” button.
+  %p.idb-larger
+    A private sharing link allows you to share the draft dataset with journal reviewers and/or co-authors while the dataset is under review.
+    You can obtain this link by going back to your dataset and clicking on the “Generate private sharing link” button.
   .row.button-row
     .col-md-3.col-md-offset-8
       = link_to 'Go back to Dataset', @dataset.databank_url, class: "btn btn-primary btn-block idb"

@@ -110,7 +110,7 @@
                 Curator Publish
                 %span(class="glyphicon glyphicon-triangle-right" )
             - elsif @has_unmodified_review
-              = link_to("/guides#prepub", class: "btn btn-default btn-block", target: "_blank") do
+              = link_to("/guides#publish", class: "btn btn-default btn-block", target: "_blank") do
                 Find out more about Pre-Publication review
                 %span(class="glyphicon glyphicon-info-sign" )
             - elsif ['ok', 'na'].include?(@completion_check)
