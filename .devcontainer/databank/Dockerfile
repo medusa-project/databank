@@ -5,6 +5,10 @@ ENV RAILS_ENV=${rails_env}
 ENV RAILS_LOG_TO_STDOUT=true
 
 RUN apt-get update --allow-releaseinfo-change \
+	&& apt-get install -y --no-install-recommends curl gnupg \
+	&& curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/yarn.gpg \
+	&& echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+	&& apt-get update --allow-releaseinfo-change \
 	&& apt-get install -y --no-install-recommends \
 		build-essential \
 		autoconf \
