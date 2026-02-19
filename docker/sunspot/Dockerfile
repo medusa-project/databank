@@ -12,7 +12,8 @@ RUN mkdir -p /var/solr/data/configsets/testset/conf
 # Copy conf directory to Solr core directory where Solr expects it
 COPY conf /var/solr/data/test/conf
 
-# Change ownership of the copied files to the solr user
-RUN chown -R solr /var/solr/data/test/conf
+
+# Ensure /var/solr/data is owned by solr user for core creation
+RUN mkdir -p /var/solr/data/test && chown -R solr:solr /var/solr/data
 USER solr
 
