@@ -116,13 +116,10 @@ class CuratorReport < ApplicationRecord
 
   def destroy_report_file
     # This method is used to delete the report file from S3 when the report is deleted. It is called by the before_destroy callback.
-    return nil unless self.storage_key && self.storage_root && current_root.exist?(self.storage_key)
-
-    current_root.delete_content(self.storage_key)
-
-    return nil unless current_root.exist?("#{self.storage_key}.info")
+    return nil if current_root.nil? || !self.storage_key || !self.storage_root
     
-    current_root.delete_content("#{self.storage_key}.info")
+    current_root.delete_content(self.storage_key) if current_root.exist?(self.storage_key)
+    current_root.delete_content("#{self.storage_key}.info") if current_root.exist?("#{self.storage_key}.info")
   end
 
 end
