@@ -80,6 +80,11 @@ production:
       :region: us-east-2
       :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
       :prefix: "messages/"
+    - :name: reports
+      :type: s3
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: "reports/"
     - :name: tmpfs
       :type: filesystem
       :path: /home/databank/mnt/databank-demo-main-rw
@@ -122,6 +127,11 @@ prod-rocky:
       :region: us-east-2
       :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
       :prefix: "messages/"
+    - :name: reports
+      :type: s3
+      :region: us-east-2
+      :bucket: <%= Rails.application.credentials[:storage][:draft_bucket] %>
+      :prefix: "reports/"
     - :name: tmpfs
       :type: filesystem
       :path: /home/databank/mnt/databank-demo-main-rw
