@@ -4,30 +4,29 @@
   %hr
   .label{class: curator_report.status_label_class}
     = curator_report.status
+
   .row
-    .col-md-2
-      %strong Requestor name:
-      = curator_report.requestor_name
-
-    .col-md-2
-      %strong Requestor email:
-      = curator_report.requestor_email
-
-    .col-md-2
+    .col-md-3
       %strong Report type:
       = curator_report.report_type
 
-    .col-md-2
-      %strong Storage root:
-      = curator_report.storage_root
+    .col-md-3
+      %strong Requestor name:
+      = curator_report.requestor_name
 
-    .col-md-4
-      %strong Storage key:
-      = curator_report.storage_key
+    .col-md-3
+      %strong Requestor email:
+      = curator_report.requestor_email
+
+    .col-md-3
+      %strong Storage root/key:
+      = "#{curator_report.storage_root}/#{curator_report.storage_key}"
+
   .row
     .col-md-12
       %strong Notes:
       = curator_report.notes
+
   %p.pull-right
     - if curator_report.status == Databank::ReportStatus::AVAILABLE
       = link_to "Download", curator_report.download_link, class: "btn btn-primary idb", target: "_blank"
