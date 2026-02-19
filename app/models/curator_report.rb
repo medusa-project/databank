@@ -116,7 +116,10 @@ class CuratorReport < ApplicationRecord
 
   def destroy_report_file
     # This method is used to delete the report file from S3 when the report is deleted. It is called by the before_destroy callback.
-    return nil if current_root.nil? || !self.storage_key || !self.storage_root
+    if current_root.nil? || !self.storage_key || !self.storage_root
+      Rails.logger.warn "Unable to destroy report file for CuratorReport #{self.id}: current_root=#{current_root.nil?}, storage_key=#{self.storage_key.nil?}, storage_root=#{self.storage_root.nil?}"
+      return nil
+    end
     
     current_root.delete_content(self.storage_key) if current_root.exist?(self.storage_key)
     current_root.delete_content("#{self.storage_key}.info") if current_root.exist?("#{self.storage_key}.info")
