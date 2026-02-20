@@ -1,4 +1,6 @@
 class CuratorReport < ApplicationRecord
+    validates :requestor_name, :requestor_email, :report_type, :storage_root, :storage_key, presence: true
+    validates :requestor_email, format: { with: URI::MailTo::EMAIL_REGEXP }
   # This model is used to generate and store pointers to of curator reports
 
   before_destroy :destroy_report_file

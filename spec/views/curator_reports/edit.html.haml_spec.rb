@@ -4,7 +4,7 @@ RSpec.describe "curator_reports/edit", type: :view do
   let(:curator_report) {
     CuratorReport.create!(
       requestor_name: "MyString",
-      requestor_email: "MyString",
+      requestor_email: "test@example.com",
       report_type: "MyString",
       storage_root: "MyString",
       storage_key: "MyString",

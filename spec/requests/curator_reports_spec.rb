@@ -13,17 +13,36 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/curator_reports", type: :request do
+  let(:admin_user) { FactoryBot.create(:user, :admin) }
   
+  before(:each) do
+    log_in admin_user
+  end
+
   # This should return the minimal set of attributes required to create a valid
   # CuratorReport. As you add validations to CuratorReport, be sure to
   # adjust the attributes here as well.
-  let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
-  }
+  let(:valid_attributes) do
+    {
+      requestor_name: "Test Name",
+      requestor_email: "test@example.com",
+      report_type: "Sample Type",
+      storage_root: "reports",
+      storage_key: "key123",
+      notes: "Some notes"
+    }
+  end
 
-  let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
-  }
+  let(:invalid_attributes) do
+    {
+      requestor_name: nil,
+      requestor_email: "not-an-email",
+      report_type: nil,
+      storage_root: nil,
+      storage_key: nil,
+      notes: nil
+    }
+  end
 
   describe "GET /index" do
     it "renders a successful response" do
@@ -86,15 +105,27 @@ RSpec.describe "/curator_reports", type: :request do
 
   describe "PATCH /update" do
     context "with valid parameters" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
-
+      let(:new_attributes) do
+        {
+          requestor_name: "Updated Name",
+          requestor_email: "updated@example.com",
+          report_type: "Updated Type",
+          storage_root: "updated_root",
+          storage_key: "updated_key123",
+          notes: "Updated notes"
+        }
+      end
       it "updates the requested curator_report" do
         curator_report = CuratorReport.create! valid_attributes
         patch curator_report_url(curator_report), params: { curator_report: new_attributes }
         curator_report.reload
-        skip("Add assertions for updated state")
+
+        expect(curator_report.requestor_name).to eq(new_attributes[:requestor_name])
+        expect(curator_report.requestor_email).to eq(new_attributes[:requestor_email])
+        expect(curator_report.report_type).to eq(new_attributes[:report_type])
+        expect(curator_report.storage_root).to eq(new_attributes[:storage_root])
+        expect(curator_report.storage_key).to eq(new_attributes[:storage_key])
+        expect(curator_report.notes).to eq(new_attributes[:notes])
       end
 
       it "redirects to the curator_report" do

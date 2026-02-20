@@ -5,7 +5,7 @@ RSpec.describe "curator_reports/index", type: :view do
     assign(:curator_reports, [
       CuratorReport.create!(
         requestor_name: "Requestor Name",
-        requestor_email: "Requestor Email",
+        requestor_email: "test@example.com",
         report_type: "Report Type",
         storage_root: "Storage Root",
         storage_key: "Storage Key",
@@ -13,7 +13,7 @@ RSpec.describe "curator_reports/index", type: :view do
       ),
       CuratorReport.create!(
         requestor_name: "Requestor Name",
-        requestor_email: "Requestor Email",
+        requestor_email: "test@example.com",
         report_type: "Report Type",
         storage_root: "Storage Root",
         storage_key: "Storage Key",
@@ -24,12 +24,11 @@ RSpec.describe "curator_reports/index", type: :view do
 
   it "renders a list of curator_reports" do
     render
-    cell_selector = 'div>p'
-    assert_select cell_selector, text: Regexp.new("Requestor Name".to_s), count: 2
-    assert_select cell_selector, text: Regexp.new("Requestor Email".to_s), count: 2
-    assert_select cell_selector, text: Regexp.new("Report Type".to_s), count: 2
-    assert_select cell_selector, text: Regexp.new("Storage Root".to_s), count: 2
-    assert_select cell_selector, text: Regexp.new("Storage Key".to_s), count: 2
-    assert_select cell_selector, text: Regexp.new("Notes".to_s), count: 2
+    # The partial uses .col-md-3 and .col-md-12 for fields, so match those
+    assert_select ".col-md-3", text: /Requestor name:/, count: 2
+    assert_select ".col-md-3", text: /Requestor email:/, count: 2
+    assert_select ".col-md-3", text: /Report type:/, count: 2
+    assert_select ".col-md-3", text: /Storage root\/key:/, count: 2
+    assert_select ".col-md-12", text: /Notes:/, count: 2
   end
 end
