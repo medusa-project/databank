@@ -6,6 +6,9 @@
 %p
   %b Requested at:
   = @review_request.requested_at
+%p
+  %b Modified since review requested:
+  = @review_request.modified ? 'Yes' : 'No'
 
 = link_to 'Edit', edit_review_request_path(@review_request)
 \|

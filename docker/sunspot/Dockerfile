@@ -1,71 +1,19 @@
-# invocation
-# docker build -t sunspot .
-# docker run --name sunspot -p 8984:8983 -d sunspot
-# ENV=test
-# curl "http://localhost:8984/solr/admin/cores?action=CREATE&name=$ENV&instanceDir=$ENV"
 
-FROM solr:6
+FROM solr:8.11.1@sha256:9da258c26ec3cd05bdfd790ee6567bd5db2a161a8a7fdf1694a6a3dce97cdd4e
 
 USER root
 
-COPY *.* ./
+# Set environment variable
+ENV VERBOSE=yes
 
-# test env
-RUN mkdir -p server/solr/test/conf
-RUN cp _rest_managed.json server/solr/test/conf/
-RUN cp admin-extra.html server/solr/test/conf/
-RUN cp currency.xml server/solr/test/conf/
-RUN cp elevate.xml server/solr/test/conf/
-RUN cp mapping-ISOLatin1Accent.txt server/solr/test/conf/
-RUN cp protwords.txt server/solr/test/conf/
-RUN cp schema.xml server/solr/test/conf/
-RUN cp scripts.conf server/solr/test/conf/
-RUN cp solrconfig.xml server/solr/test/conf/
-RUN cp spellings.txt server/solr/test/conf/
-RUN cp synonyms.txt server/solr/test/conf/
+RUN mkdir -p /var/solr/data/configsets/testset/conf
 
-# development env
-RUN mkdir -p server/solr/development/conf
-RUN cp _rest_managed.json server/solr/development/conf/
-RUN cp admin-extra.html server/solr/development/conf/
-RUN cp currency.xml server/solr/development/conf/
-RUN cp elevate.xml server/solr/development/conf/
-RUN cp mapping-ISOLatin1Accent.txt server/solr/development/conf/
-RUN cp protwords.txt server/solr/development/conf/
-RUN cp schema.xml server/solr/development/conf/
-RUN cp scripts.conf server/solr/development/conf/
-RUN cp solrconfig.xml server/solr/development/conf/
-RUN cp spellings.txt server/solr/development/conf/
-RUN cp synonyms.txt server/solr/development/conf/
 
-# demo env
-RUN mkdir -p server/solr/demo/conf
-RUN cp _rest_managed.json server/solr/demo/conf/
-RUN cp admin-extra.html server/solr/demo/conf/
-RUN cp currency.xml server/solr/demo/conf/
-RUN cp elevate.xml server/solr/demo/conf/
-RUN cp mapping-ISOLatin1Accent.txt server/solr/demo/conf/
-RUN cp protwords.txt server/solr/demo/conf/
-RUN cp schema.xml server/solr/demo/conf/
-RUN cp scripts.conf server/solr/demo/conf/
-RUN cp solrconfig.xml server/solr/demo/conf/
-RUN cp spellings.txt server/solr/demo/conf/
-RUN cp synonyms.txt server/solr/demo/conf/
+# Copy conf directory to Solr core directory where Solr expects it
+COPY conf /var/solr/data/test/conf
 
-# production env
-RUN mkdir -p server/solr/production/conf
-RUN cp _rest_managed.json server/solr/production/conf/
-RUN cp admin-extra.html server/solr/production/conf/
-RUN cp currency.xml server/solr/production/conf/
-RUN cp elevate.xml server/solr/production/conf/
-RUN cp mapping-ISOLatin1Accent.txt server/solr/production/conf/
-RUN cp protwords.txt server/solr/production/conf/
-RUN cp schema.xml server/solr/production/conf/
-RUN cp scripts.conf server/solr/production/conf/
-RUN cp solrconfig.xml server/solr/production/conf/
-RUN cp spellings.txt server/solr/production/conf/
-RUN cp synonyms.txt server/solr/production/conf/
 
-RUN chown -R solr server/solr
-
+# Ensure /var/solr/data is owned by solr user for core creation
+RUN mkdir -p /var/solr/data/test && chown -R solr:solr /var/solr/data
 USER solr
+

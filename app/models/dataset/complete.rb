@@ -12,12 +12,15 @@ module Dataset::Complete
   # returns "ok" if dataset is complete
   def valid_change2published(new_params:)
     dataset = self
+    return "Permanently suppressed dataset cannot be published." if dataset.publication_state == Databank::PublicationState::PermSuppress::METADATA
+ 
     params = new_params
     unless params.has_key?(:dataset) && (params[:dataset]).has_key?(:identifier) && params[:dataset][:identifer] != ""
       return "invalid params: #{params}"
     end
 
     e_arr = []
+ 
     unless params[:dataset].has_key?(:embargo) && params[:dataset][:embargo] ==  Databank::PublicationState::Embargo::NONE
       e_arr << "release date" unless Dataset.key_not_empty?(params: params, key: :release_date)
     end
@@ -49,6 +52,7 @@ module Dataset::Complete
   class_methods do
     # making completion_check a class method with passed-in dataset, so it can be used by controller before save
     def completion_check(dataset)
+      return "na" if dataset.publication_state == Databank::PublicationState::PermSuppress::METADATA
       e_arr = []
       e_arr << "title" if dataset.title.blank?
       e_arr << "at least one creator" if dataset.creators.count < 1

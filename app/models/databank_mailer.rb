@@ -223,6 +223,26 @@ because dataset not found for key: #{dataset_key}."
     mail(to: IDB_CONFIG[:admin][:materials_report_list].to_s, subject: subject)
   end
 
+  def curator_report(report)
+    subject_base = "Illinois Data Bank] #{report.report_type} Report"
+    subject = prepend_system_code(subject_base)
+    @curator_report = report
+    mail(to: report.requestor_email, subject: subject)
+  end
+
+  ##
+  # Sends an email to the admin when a file change is made in a dataset under pre
+  # publication review.
+  # @param datafile_web_id [String] the web ID of the datafile that was changed
+  def prepub_filechange(datafile_web_id, change_type)
+    @datafile = Datafile.find_by(web_id: datafile_web_id)
+    @change_type = change_type
+    @dataset = @datafile.dataset
+    subject_base = "Illinois Data Bank] File change in dataset under pre-publication review"
+    subject = prepend_system_code(subject_base)
+    mail(to: IDB_CONFIG[:admin][:contact_email], subject: subject)
+  end
+
   ##
   # Prepends a system code to the subject of an email.
   # @param subject [String] the subject of the email

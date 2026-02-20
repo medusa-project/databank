@@ -16,7 +16,7 @@
                     -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
                       .label.label-danger
                         version candidate under review
-                    -elsif @dataset.in_pre_publication_review?
+                    -elsif @under_review
                       .label.label-danger
                         pre-publication review
                     - elsif @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
@@ -51,7 +51,7 @@
                     {id: 'publicationNoticeButton', class: 'btn btn-primary'})
                 %br
 
-          - if @completion_check == 'ok'
+          - if ['ok', 'na'].include?(@completion_check)
             - if ((can? :manage, @dataset) && (@dataset.publication_state != Databank::PublicationState::DRAFT) && (@dataset.publication_state != Databank::PublicationState::Embargo::METADATA) && (@dataset.embargo == Databank::PublicationState::Embargo::METADATA))
               %span(class="glyphicon glyphicon-alert" )
               Embargo placeholders have not yet replaced DataCite metadata. Confirm to complete changes.
@@ -73,7 +73,7 @@
           .row
             .col-md-6
               = @dataset.visibility
-              -if @dataset.in_pre_publication_review?
+              -if @under_review
                 &nbsp;
                 .label.label-danger
                   pre-publication review
@@ -104,17 +104,24 @@
                       class: "btn idb btn-danger remove-share-btn") do
                         Delete
         .col-md-4
-          - if @dataset.show_publish_only?
-            %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
-              Continue
-              %span(class="glyphicon glyphicon-triangle-right" )
-          - elsif @completion_check == 'ok'
-            -if (can? :edit, @dataset) && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
-              =render partial: 'datasets/offer_review_btn'
-          -else
-            %button(type="button" id="show-confirm-modal-link" class="btn btn-default btn-block" data-toggle="modal" data-target="#incomplete")
-              Confirm
-              %span(class="glyphicon glyphicon-triangle-right" )
+          - if Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
+            - if (can? :manage, @dataset) && ['ok', 'na'].include?(@completion_check)
+              %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
+                Curator Publish
+                %span(class="glyphicon glyphicon-triangle-right" )
+            - elsif @has_unmodified_review
+              = link_to("/guides#publish", class: "btn btn-default btn-block", target: "_blank") do
+                Find out more about Pre-Publication review
+                %span(class="glyphicon glyphicon-info-sign" )
+            - elsif ['ok', 'na'].include?(@completion_check)
+              -if (can? :edit, @dataset) && !@has_unmodified_review && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
+                %button(type="button" class="btn btn-primary btn-block" onclick="showReviewModal()" aria-haspopup="dialog")
+                  Pre-Publication Review
+                  %span(class="glyphicon glyphicon-triangle-right" )
+            -else
+              %button(type="button" class="btn btn-default btn-block" data-toggle="modal" data-target="#incomplete")
+                Show Completion Info
+                %span(class="glyphicon glyphicon-triangle-right" )
           = link_to(edit_dataset_path(@dataset), :class => "btn idb btn-success btn-block") do
             %span(class="glyphicon glyphicon-edit")
             Edit

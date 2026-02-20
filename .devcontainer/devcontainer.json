@@ -14,6 +14,9 @@
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [3000],
 
+    // Force linux/amd64 platform for compatibility
+    // "runArgs" is not supported in devcontainer.json. Remove this line if present.
+
   // Configure tool-specific properties.
   // "customizations": {},
 

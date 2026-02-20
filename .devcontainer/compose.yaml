@@ -1,8 +1,8 @@
-version: "3.7"
 name: "databank"
 
 services:
   sunspot:
+    platform: linux/amd64
     hostname: sunspot
     build:
       context: ..
@@ -10,6 +10,7 @@ services:
     ports:
       - "8983:8983"
   minio:
+    platform: linux/amd64
     image: minio/minio
     environment:
       MINIO_ROOT_USER: minioadmin
@@ -20,6 +21,7 @@ services:
       - "9000:9000"
       - "9001:9001"
   sqs-mock:
+    platform: linux/amd64
     build:
       context: ..
       dockerfile: .devcontainer/sqs-mock/Dockerfile
@@ -27,6 +29,7 @@ services:
     ports:
       - "9324:9324"
   postgres:
+    platform: linux/amd64
     image: postgres:12-alpine
     environment:
       POSTGRES_DB: databank
@@ -36,6 +39,7 @@ services:
     ports:
       - "5432:5432"
   rabbitmq:
+    platform: linux/amd64
     build:
       context: ..
       dockerfile: .devcontainer/rabbitmq/Dockerfile
@@ -43,15 +47,17 @@ services:
     ports:
       - "5672:5672"
   memcached:
+    platform: linux/amd64
     image: memcached
     hostname: memcached
     ports:
       - '11211:11211'
   databank:
+    platform: linux/amd64
     build:
       context: ..
       dockerfile: .devcontainer/databank/Dockerfile
-    depends_on: # docker-compose will NOT actually wait for these to start, hence the `sleep` in the command or setup file
+    depends_on:
       - sunspot
       - postgres
       - rabbitmq
@@ -62,6 +68,4 @@ services:
       - "3000:3000"
     volumes:
     - ../..:/workspaces:cached
-
-    # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity

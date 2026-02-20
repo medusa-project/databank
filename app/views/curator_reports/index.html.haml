@@ -1,0 +1,11 @@
+%p{style: "color: green"}= notice
+
+- content_for :title, "Curator reports"
+
+%h1 Curator reports
+-# link to go back to the curator dashboard
+= link_to "Back to Curator Dashboard", "#{IDB_CONFIG[:root_url_text]}/admin", class: "btn btn-info idb"
+
+%div{id: "curator_reports"}
+  - @curator_reports.each do |curator_report|
+    = render curator_report

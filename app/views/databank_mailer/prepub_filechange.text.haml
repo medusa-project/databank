@@ -1,0 +1,9 @@
+Topic: File change in dataset under pre-publication review
+= "Dataset: #{@dataset.databank_url}"
+
+= "The following file has been #{@change_type} in the dataset currently under pre-publication review:"
+
+- if @change_type == Databank::FileChangeType::ADDED
+  = "URL: #{IDB_CONFIG[:root_url_text]}/datafiles/#{@datafile.web_id}"
+
+= "File name: #{@datafile.binary_name}"

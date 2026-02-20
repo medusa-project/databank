@@ -110,7 +110,11 @@ collaborators to access the data files while the dataset is not public.</li>
       user_role = Databank::UserRole::GUEST
       user = nil
     end
-    @datasets = Dataset.select(&:metadata_public?) # used for public json response
+    if user_role == Databank::UserRole::DEPOSITOR && user
+      @datasets = user.datasets_user_can_view(user: user)
+    else
+      @datasets = Dataset.select(&:metadata_public?)
+    end
     if params[:q].present?
       @title = "Datasets: #{params[:q]}"
     else
@@ -137,6 +141,14 @@ collaborators to access the data files while the dataset is not public.</li>
                             end
     @completion_check = Dataset.completion_check(@dataset)
     
+    @under_review = @dataset.in_pre_publication_review?
+    if @under_review == false
+      @has_unmodified_review = false
+      @review_request = nil
+    else
+      @has_unmodified_review = @dataset.has_unmodified_review?
+      @review_request = @dataset.latest_review_request
+    end
     @globus_downloadable = @dataset.globus_downloadable?
     @dataset_preserved = @dataset.fileset_preserved?
     @dataset_aggregate_downloadable = (@dataset_preserved || @globus_downloadable) && !@dataset.has_external_files?
@@ -281,9 +293,20 @@ collaborators to access the data files while the dataset is not public.</li>
     old_publication_state = @dataset.publication_state
     old_creator_state = @dataset.org_creators || false
     @dataset.release_date ||= Date.current
-
+    
     respond_to do |format|
       if @dataset.update(dataset_params)
+        if Databank::PublicationState::DRAFT_ARRAY.include?(old_publication_state)
+          @under_review = @dataset.in_pre_publication_review?
+          if @under_review == true
+            @has_unmodified_review = @dataset.has_unmodified_review?
+            if @has_unmodified_review == true
+              @review_request = @dataset.latest_review_request
+              # update @review_request to modified = true if there is any change to a dataset with an unmodified review
+              @review_request.update(modified: true)
+            end
+          end
+        end
         if dataset_params[:org_creators] == "true" && old_creator_state == false
           # convert individual creators to additional contacts (contributors)
           @dataset.ind_creators_to_contributors
@@ -296,7 +319,8 @@ collaborators to access the data files while the dataset is not public.</li>
           params["context"] = "continue_edit"
         end
         if params.has_key?("context") && params["context"] == "exit"
-          if @dataset.publication_state == Databank::PublicationState::DRAFT
+          if Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
+            
             format.html {
               redirect_to "/datasets?q=&#{CGI.escape('editor')}=#{current_user.username}&context=exit_draft"
             }
@@ -306,7 +330,7 @@ collaborators to access the data files while the dataset is not public.</li>
             }
           end
         elsif params.has_key?("context") && params["context"] == "publish"
-          if Databank::PublicationState::DRAFT == @dataset.publication_state
+          if Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
             raise "invalid publication state for update-and-publish"
             # only update complete datasets
           elsif Dataset.completion_check(@dataset) == "ok"

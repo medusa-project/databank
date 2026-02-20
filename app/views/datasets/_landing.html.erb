@@ -7,14 +7,14 @@
 
 <%= render partial: 'download_link_modal' %>
 <% if (can? :update, @dataset) %>
-  <%= render partial: 'offer_review_h_modal' %>
-  <%= render partial: 'confirm_deposit_modal' %>
   <%= render partial: 'datasets/dashboards/show' %>
   <%= render partial: 'incomplete_deposit_modal' %>
+  <%= render partial: 'confirm_review_modal' %>
 <% end %>
 <% if (can? :manage, @dataset) %>
+  <%= render partial: 'confirm_deposit_modal' %>
   <div class="curator-only">
-    <h2>Curator Control Links</h3>
+    <h2>Curator Control Links</h2>
     <%= link_to("Permissions", "/datasets/#{@dataset.key}/permissions") %>
     &nbsp;|&nbsp;
     <%= link_to("Review Requests", "/datasets/#{@dataset.key}/review_requests") %>

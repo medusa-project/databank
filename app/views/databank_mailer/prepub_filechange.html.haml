@@ -1,0 +1,21 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body
+    Topic: File change in dataset under pre-publication review
+    %br/
+    Dataset:
+    %a{:href => @dataset.databank_url}
+      = @dataset.databank_url
+    %hr/
+    ="The following file has been #{@change_type} in the dataset titled '#{@dataset.title}':"
+    %br/
+    - if @change_type == Databank::FileChangeType::ADDED
+      %strong url: 
+      ="#{IDB_CONFIG[:root_url_text]}/datafiles/#{@datafile.web_id}"
+      %br/
+    %strong File name:
+    =" #{@datafile.binary_name}"
+    %br/
+    %hr/

@@ -304,10 +304,24 @@ div.row.checkbox {
   width: 60%;
 }
 
+p.idb-large {
+  font-size: large;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+p.idb-larger {
+  font-size: larger;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 .idb-callout-lg{
   width: 100%;
   padding: 20px;
   text-align: center;
+  font-size: large;
+  font-weight: bold;
 }
 
 .fileinput-button{

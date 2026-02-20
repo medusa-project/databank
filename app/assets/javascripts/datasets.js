@@ -40,7 +40,7 @@ ready = function () {
         window.location.href = "/datasets/" + dataset_key + "/request_review"
 
     });
-    jQuery("#review-version-btn").click(function () {
+    jQuery("#review-btn").click(function () {
         window.location.href = "/datasets/" + dataset_key + "/request_review"
     });
 
@@ -919,6 +919,42 @@ function importFromGlobus(){
         console.log(xhr.responseText);
     });
 }
+
+// Ensure afirst.js is loaded before this script
+function showReviewModal() {
+  var modal = document.getElementById('review');
+  if (!modal) return;
+
+  // Show the modal (Bootstrap 3 style)
+  jQuery(modal).modal('show');
+
+  // Trap focus within the modal
+  modal.addEventListener('keydown', trapFocus);
+
+  // Remove event listener when modal is closed
+  jQuery(modal).on('hidden.bs.modal', function () {
+    modal.removeEventListener('keydown', trapFocus);
+  });
+
+  // Focus the first focusable element in the modal
+  setTimeout(function() {
+    const focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
+    const focusableElements = modal.querySelectorAll(focusableSelectors);
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus();
+    }
+  }, 200);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var reviewBtn = document.getElementById('review-btn');
+  if (reviewBtn) {
+    reviewBtn.addEventListener('click', function(event) {
+      event.preventDefault();
+      showReviewModal();
+    });
+  }
+});
 
 jQuery(document).ready(ready);
 jQuery(document).on('page:load', ready);

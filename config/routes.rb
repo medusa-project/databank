@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   get '/contact', to: 'welcome#contact'
   resources :contributors
   draw :creator
+  draw :curator_report
   draw :datafile
   draw :dataset
   post '/ensure_local_buckets', to: 'welcome#ensure_local_buckets'

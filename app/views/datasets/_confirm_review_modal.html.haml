@@ -1,0 +1,29 @@
+.modal.fade(id= "review" tabindex="0" role="dialog" aria-labelledby="agreement-label" aria-hidden="true")
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-body
+        %button(type="button" class="close pull-right" data-dismiss="modal" )
+          &times;
+
+        %h2 Are you ready for us to review your dataset?
+        %ul
+          %li
+            %p.idb-larger We will check for errors and inconsistencies before the dataset is released.
+          %li
+            %p.idb-larger You can expect to hear from us within 1-2 business days.
+          %li
+            %p.idb-larger Your DOI will appear on the next page once you submit your dataset review.
+
+      .modal-footer.container-fluid
+
+        %button.btn.btn-primary.idb(type="button" id="review-btn")
+          Submit for Review
+          %span(class="glyphicon glyphicon-triangle-right" )
+
+        %button.btn.btn-success.idb{"onclick"=>'window.open("/help")', 'type'=>"button", 'data-dismiss'=>"modal", 'id'=>"help-button"}
+          %span(class="glyphicon glyphicon-question-sign")
+          Get Help
+
+        %button.btn.btn-danger.idb{"onclick"=>%Q(window.location="/datasets/#{@dataset.key}"), 'type'=>'button', 'data-dismiss'=>"modal", 'id'=>"help-button"}
+          %span(class="glyphicon glyphicon-remove")
+          Cancel

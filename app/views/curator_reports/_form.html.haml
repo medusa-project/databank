@@ -1,0 +1,36 @@
+= form_with(model: curator_report, local: true) do |form|
+  - if curator_report.errors.any?
+    .alert.alert-danger
+      %h2= "#{pluralize(curator_report.errors.count, "error")} prohibited this curator_report from being saved:"
+      %ul
+        - curator_report.errors.each do |error|
+          %li= error.full_message
+
+  .form-group
+    = form.label :requestor_name
+    = form.text_field :requestor_name, class: "form-control"
+
+  .form-group
+    = form.label :requestor_email
+    = form.text_field :requestor_email, class: "form-control"
+
+  .form-group
+    = form.label :report_type
+    = form.text_field :report_type, class: "form-control", disabled: true
+
+  .form-group
+    = form.label :storage_root
+    = form.text_field :storage_root, class: "form-control", disabled: true
+
+  .form-group
+    = form.label :storage_key
+    = form.text_field :storage_key, class: "form-control", disabled: true
+
+  .form-group
+    = form.label :notes
+    = form.text_field :notes, class: "form-control"
+
+  .form-group
+    = form.submit class: "btn btn-primary"
+    = link_to "Cancel", curator_reports_path, class: "btn btn-warning idb"
+    = link_to "Show this curator report", @curator_report, class: "btn btn-success idb"

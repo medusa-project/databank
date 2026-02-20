@@ -1,0 +1,10 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body
+    Topic: Curation Report Ready
+    Log in before downloading the report:
+    = "#{ IDB_CONFIG[:root_url_text] }"
+    -# render partial named _curation_report.html.haml, passing in the report object as a local variable named report
+    = render partial: 'curation_report', locals: { report: @report }

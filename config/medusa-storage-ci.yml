@@ -48,6 +48,15 @@
     :region: us-east-2
     :bucket: databank-local-main
     :prefix: "messages/"
+  - :name: reports
+    :type: s3
+    :endpoint: "http://minio:9000"
+    :aws_access_key_id: "minioadmin"
+    :aws_secret_access_key: "minioadmin"
+    :force_path_style: true
+    :region: us-east-2
+    :bucket: databank-local-main
+    :prefix: "reports/"
   - :name: tmpfs
     :type: filesystem
     :path: /tmp

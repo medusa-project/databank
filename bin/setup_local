@@ -23,7 +23,7 @@ FileUtils.chdir APP_ROOT do
   system! 'bin/rails db:prepare'
 
   puts "\n== Preparing solr cores =="
-  system! 'curl "http://sunspot:8983/solr/admin/cores?action=CREATE&name=test&instanceDir=test"'
+  system! 'curl "http://sunspot:8983/solr/admin/cores?action=CREATE&name=test&instanceDir=test&configSet=testset"'
 
   puts "\n== Ensure local buckets =="
   system! 'bin/rails minio:ensure_local_buckets'

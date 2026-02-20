@@ -137,6 +137,21 @@ module Databank
     COLLECTION = %w[help guide both]
   end
 
+  class FileChangeType
+    ADDED = 'added'
+    DELETED = 'deleted'
+  end
+
+  class ReportType
+    FILE_AUDIT = 'file_audit'
+  end
+
+  class ReportStatus
+    PENDING = 'pending'
+    GENERATING = 'generating'
+    AVAILABLE = 'available'
+  end
+
   class Application < Rails::Application
 
     attr_accessor :shibboleth_host

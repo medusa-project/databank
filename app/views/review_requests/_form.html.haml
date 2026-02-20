@@ -10,7 +10,10 @@
     = f.label :dataset_key
     = f.text_field :dataset_key
   .field
-    = f.label :requested_at
+    = f.label :requested_at, "Dataset pre-publication review requested at:"
     = f.datetime_select :requested_at
+  .field
+    = f.label :modified, "Dataset modified since review requested?"
+    = f.check_box :modified  
   .actions
     = f.submit 'Save', class: "btn btn-primary"

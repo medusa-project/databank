@@ -67,6 +67,7 @@ class Dataset < ApplicationRecord
   include Dataset::Publishable
   include Dataset::Recoverable
   include Dataset::Relatable
+  include Dataset::Reviewable
   include Dataset::Sharable
   include Dataset::Stringable
   include Dataset::Storable
