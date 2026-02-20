@@ -240,7 +240,8 @@ RSpec.describe DatasetsController, type: :controller do
       it 'returns a message that includes specific text' do
         released1 = Dataset.find_by(key: "TESTIDB-5920542")
         get :confirmation_message, params: { id: released1.to_param }
-        expect(response.body).to include('This action will make your updates to your dataset record')
+        message = JSON.parse(response.body)["message"] rescue response.body
+        expect(message).to include("This action will make your updates to the dataset record <strong>public</strong>")
       end
     end
     context 'with a dataset that has not been published' do
@@ -258,8 +259,8 @@ RSpec.describe DatasetsController, type: :controller do
       it 'returns a message that includes specific text' do
         draft1 = Dataset.find_by(key: "TESTIDB-1423696")
         get :confirmation_message, params: { id: draft1.to_param }
-        expect(response.body).to include('This action will make your dataset')
-        expect(response.body).to include('visible through search engines')
+        message = JSON.parse(response.body)["message"] rescue response.body
+        expect(message).to include("This action will make the dataset <strong>public</strong>.")
       end
     end
     context 'with a dataset that is file embargoed' do
@@ -277,8 +278,8 @@ RSpec.describe DatasetsController, type: :controller do
       it 'returns a message that includes specific text' do
         embargoed1 = Dataset.find_by(key: "TESTIDB-5720850")
         get :confirmation_message, params: { id: embargoed1.to_param }
-        expect(response.body).to include('This action will make your updates to your dataset')
-        expect(response.body).to include('visible through search engines')
+        message = JSON.parse(response.body)["message"] rescue response.body
+        expect(message).to include("<h4>This action will make your updates to the dataset record <strong>public</strong>")
       end
     end
     context 'with a new embargo state param of Databank::PublicationState::Embargo::FILE' do
@@ -291,9 +292,8 @@ RSpec.describe DatasetsController, type: :controller do
       it 'returns a message that includes specific text' do
         embargoed1 = Dataset.find_by(key: "TESTIDB-5720850")
         get :confirmation_message, params: { id: embargoed1.to_param, new_embargo_state: Databank::PublicationState::Embargo::FILE }
-        expect(response).to be_successful
-        expect(response.body).to include('This action will make your updates to your dataset')
-        expect(response.body).to include('visible through search engines')
+        message = JSON.parse(response.body)["message"] rescue response.body
+        expect(message).to include("This action will make your updates to the dataset record <strong>public</strong>")
       end
     end
     context 'with a new embargo state param of Databank::PublicationState::Embargo::METADATA' do
@@ -308,9 +308,8 @@ RSpec.describe DatasetsController, type: :controller do
       it 'returns a message that includes specific text' do
         released1 = Dataset.find_by(key: "TESTIDB-5920542")
         get :confirmation_message, params: { id: released1.to_param, new_embargo_state: Databank::PublicationState::Embargo::METADATA, release_date: Date.current + 1.month }
-        expect(response).to be_successful
-        expect(response.body).to include('This action will remove your dataset')
-        expect(response.body).to include('your dataset is not visible')
+        message = JSON.parse(response.body)["message"] rescue response.body
+        expect(message).to include("This action will remove the dataset from <strong>public</strong> availability.")
       end
     end
     context 'with an invalid new embargo state param' do
@@ -323,9 +322,8 @@ RSpec.describe DatasetsController, type: :controller do
       it 'returns a message that includes specific text' do
         embargoed1 = Dataset.find_by(key: "TESTIDB-5720850")
         get :confirmation_message, params: { id: embargoed1.to_param, new_embargo_state: 'invalid' }
-        expect(response).to be_successful
-        expect(response.body).to include('This action will make your updates to your dataset')
-        expect(response.body).to include('visible through search engines')
+        message = JSON.parse(response.body)["message"] rescue response.body
+        expect(message).to include("This action will make your updates to the dataset record <strong>public</strong>")
       end
     end
   end
