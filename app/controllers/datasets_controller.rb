@@ -110,7 +110,11 @@ collaborators to access the data files while the dataset is not public.</li>
       user_role = Databank::UserRole::GUEST
       user = nil
     end
-    @datasets = Dataset.select(&:metadata_public?) # used for public json response
+    if user_role == Databank::UserRole::DEPOSITOR && user
+      @datasets = user.datasets_user_can_view(user: user)
+    else
+      @datasets = Dataset.select(&:metadata_public?)
+    end
     if params[:q].present?
       @title = "Datasets: #{params[:q]}"
     else

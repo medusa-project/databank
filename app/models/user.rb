@@ -63,12 +63,6 @@ class User < ApplicationRecord
       datasets -= Dataset.where(hold_state: forbidden_hold_states)
       datasets -= Dataset.where(publication_state: Databank::PublicationState::PermSuppress::METADATA)
       datasets.uniq
-    when Databank::UserRole::NETWORK_REVIEWER
-      datasets = Dataset.select(&:metadata_public?)
-      datasets += Dataset.where(data_curation_network: true)
-      datasets -= Dataset.where(hold_state: forbidden_hold_states)
-      datasets -= Dataset.where(publication_state: Databank::PublicationState::PermSuppress::METADATA)
-      datasets.uniq
     else
       Dataset.select(&:metadata_public?)
     end
