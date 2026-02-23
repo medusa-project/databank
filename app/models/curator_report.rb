@@ -1,5 +1,5 @@
 class CuratorReport < ApplicationRecord
-    validates :requestor_name, :requestor_email, :report_type, :storage_root, :storage_key, presence: true
+    validates :requestor_name, :requestor_email, :report_type, presence: true
     validates :requestor_email, format: { with: URI::MailTo::EMAIL_REGEXP }
   # This model is used to generate and store pointers to of curator reports
 
@@ -12,17 +12,12 @@ class CuratorReport < ApplicationRecord
   end
 
   def self.initiate_report_generation(report_type:, requesting_user:, notes: nil, storage_root: CuratorReport.default_storage_root)
-    # temporary debug logging
-    Rails.logger.warn "Initiating report generation for report type #{report_type} requested by user #{requesting_user.name} with notes: #{notes}"
     # This method is used to initiate the report generation process. It is called by the controller when a user requests a report.
     # It enqueues a background job to generate the report asynchronously.
     report = CuratorReport.create!(report_type: report_type, requestor_name: requesting_user.name, requestor_email: requesting_user.email)
-    report.storage_root = storage_root
     report.storage_key = report.default_storage_key
     report.notes = notes if notes.present?
     report.save!
-    # temporary debug logging
-    Rails.logger.debug "Created CuratorReport with ID #{report.id}, storage root #{report.storage_root}, and storage key #{report.storage_key}"
     # create a report based on the parameters, and then enqueue a job to generate the report file and store it in S3. The report object is passed to the job so that it can update the report status and storage information when the report is generated.
     Delayed::Job.enqueue CuratorReportJob.new(report)
   end

@@ -26,10 +26,7 @@ RSpec.describe "/curator_reports", type: :request do
     {
       requestor_name: "Test Name",
       requestor_email: "test@example.com",
-      report_type: "Sample Type",
-      storage_root: "reports",
-      storage_key: "key123",
-      notes: "Some notes"
+      report_type: "Sample Type"
     }
   end
 
@@ -37,10 +34,7 @@ RSpec.describe "/curator_reports", type: :request do
     {
       requestor_name: nil,
       requestor_email: "not-an-email",
-      report_type: nil,
-      storage_root: nil,
-      storage_key: nil,
-      notes: nil
+      report_type: nil
     }
   end
 
