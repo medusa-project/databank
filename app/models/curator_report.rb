@@ -15,6 +15,7 @@ class CuratorReport < ApplicationRecord
     # This method is used to initiate the report generation process. It is called by the controller when a user requests a report.
     # It enqueues a background job to generate the report asynchronously.
     report = CuratorReport.create!(report_type: report_type, requestor_name: requesting_user.name, requestor_email: requesting_user.email)
+    report.storage_root = storage_root
     report.storage_key = report.default_storage_key
     report.notes = notes if notes.present?
     report.save!
