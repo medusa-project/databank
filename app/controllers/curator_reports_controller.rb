@@ -6,19 +6,19 @@ class CuratorReportsController < ApplicationController
   # GET /curator_reports/1/download
   def download
     if Rails.env == "development" || Rails.env == "test"
-      send_data @curator_report.download_object.body.read, filename: @curator_report.storage_key, type: "text/plain", disposition: "attachment"
+      send_data @curator_report.download_object.body.read, filename: @curator_report.storage_key, type: "text/csv", disposition: "attachment"
       return
     elsif @curator_report.current_root.root_type == :filesystem
       @curator_report.with_input_file do |input_file|
         path = @curator_report.current_root.path_to(@curator_report.storage_key, check_path: true)
-        send_file path, filename: @curator_report.storage_key, type: "text/plain", disposition: "attachment"
+        send_file path, filename: @curator_report.storage_key, type: "text/csv", disposition: "attachment"
       end
     else
       redirect_to(
         @curator_report.current_root.presigned_get_url(
           @curator_report.storage_key,
           response_content_disposition: "attachment",
-          response_content_type: "text/plain"
+          response_content_type: "text/csv"
         ),
         allow_other_host: true
       )
