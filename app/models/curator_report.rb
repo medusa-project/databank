@@ -42,11 +42,11 @@ class CuratorReport < ApplicationRecord
     # The CSV file is stored in S3 using the storage root and key specified in the report object.
     require 'csv'
     csv_string = CSV.generate do |csv|
-      csv << ["File Name", "Storage Root", "File Size (bytes)", "File Status", "File URL", "Dataset Title", "Dataset URL"]
+      csv << ["File Name", "Storage Root", "File Size (bytes)", "File Status", "File URL", "Dataset Title", "Dataset URL", "Publication State"]
       Dataset.find_each do |dataset|
         dataset.datafiles.each do |file|
           file_status = file.exists_on_storage? ? "exists" : "missing"
-          csv << [file.binary_name, file.storage_root, file.binary_size, file_status, file.databank_url, dataset.title, dataset.databank_url]
+          csv << [file.binary_name, file.storage_root, file.binary_size, file_status, file.databank_url, dataset.title, dataset.databank_url, dataset.publication_state]
         end
       end
     end
