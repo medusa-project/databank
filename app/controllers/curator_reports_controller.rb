@@ -6,19 +6,19 @@ class CuratorReportsController < ApplicationController
   # GET /curator_reports/1/download
   def download
     if Rails.env == "development" || Rails.env == "test"
-      send_data @curator_report.download_object.body.read, filename: @curator_report.storage_key, type: "text/plain", disposition: "attachment"
+      send_data @curator_report.download_object.body.read, filename: @curator_report.storage_key, type: "text/csv", disposition: "attachment"
       return
     elsif @curator_report.current_root.root_type == :filesystem
       @curator_report.with_input_file do |input_file|
         path = @curator_report.current_root.path_to(@curator_report.storage_key, check_path: true)
-        send_file path, filename: @curator_report.storage_key, type: "text/plain", disposition: "attachment"
+        send_file path, filename: @curator_report.storage_key, type: "text/csv", disposition: "attachment"
       end
     else
       redirect_to(
         @curator_report.current_root.presigned_get_url(
           @curator_report.storage_key,
           response_content_disposition: "attachment",
-          response_content_type: "text/plain"
+          response_content_type: "text/csv"
         ),
         allow_other_host: true
       )
@@ -27,8 +27,6 @@ class CuratorReportsController < ApplicationController
 
   # POST /curator_reports/file_audit_request
   def request_file_audit
-    # temporary debug logging to help understand usage of this feature and inform future improvements. This log message will be removed in the future.
-    Rails.logger.warn "File audit report requested by user #{current_user.id} (#{current_user.email}). Notes: #{params[:notes]}"
     CuratorReport.initiate_report_generation(report_type: Databank::ReportType::FILE_AUDIT, requesting_user: current_user, notes: params[:notes]) 
     respond_to do |format|
       format.html { redirect_to curator_reports_path, notice: "File audit report was successfully requested." }
