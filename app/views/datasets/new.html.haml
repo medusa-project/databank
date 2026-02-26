@@ -1,10 +1,15 @@
--if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
-  .alert.alert-alert
-    =SystemMessage.read_only_message
--else
-  = render partial: 'datasets/dashboards/new_top'
-  = render partial: 'deposit_agreement'
-  = render partial: 'new_form'
+- if can? :create, Dataset
+  - @title = "New Dataset"
 
+  - if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
+    .alert.alert-alert
+      =SystemMessage.read_only_message
+  - else
+    = render partial: 'datasets/dashboards/new_top'
+    = render partial: 'deposit_agreement'
+    = render partial: 'new_form'
+- else
+  - @title = "Restricted Access"
+  = render partial: 'restricted'
 
 

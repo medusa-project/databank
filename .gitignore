@@ -78,6 +78,7 @@ yarn-debug.log*
 /public/uploads
 
 # Ignore local files.
+core
 public/read_only_msg_plus.txt
 config/master.key
 public/uploads

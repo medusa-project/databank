@@ -204,7 +204,12 @@ collaborators to access the data files while the dataset is not public.</li>
 
   # GET /datasets/new
   def new
-    authorize! :create, Dataset
+    if current_user && current_user.role == "no_deposit"
+      redirect_to redirect_path,
+        alert: "ACCOUNT NOT ELIGIBLE TO DEPOSIT DATA.<br/>Faculty, staff, and graduate students are eligible to deposit data in Illinois Data Bank.<br/>Please <a href='/help'>contact the Research Data Service</a> if this determination is in error, or if you have any questions."
+      return
+    end
+      
     @dataset = Dataset.new
     @dataset.publication_state = Databank::PublicationState::DRAFT
     @previous_key = params["previous"] if params.has_key?("context") && params["context"] == "version"
@@ -217,7 +222,6 @@ collaborators to access the data files while the dataset is not public.</li>
 
   # GET /datasets/1/edit
   def edit
-    authorize! :update, @dataset
     set_file_mode
     if @dataset.org_creators && @dataset.org_creators == true && !@dataset.contributors.count.positive?
       @dataset.contributors.build

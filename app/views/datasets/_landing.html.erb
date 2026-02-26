@@ -92,9 +92,7 @@
                       </tr>
                     <% end %>
                   <% else %>
-                    <tr
-                      <% if entry[:selected] %> class="selected-version"
-                      <% end %> >
+                    <tr class="<%= 'selected-version' if entry[:selected] %>">
                       <td class="text-center"><%= entry[:version] %></td>
                       <td><a href="<%= @dataset.persistent_url_base %>/<%= entry[:doi] %>"><%= entry[:doi] %></a></td>
                       <td><%= entry[:version_comment] %></td>
