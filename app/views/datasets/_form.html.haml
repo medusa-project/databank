@@ -43,17 +43,12 @@
                 .col-md-6
                   .form-group.required
                     = f.label :license, "License", :class => "control-label"
-                    %a(href="#" data-toggle="modal" data-target="#licenseModal" tabindex="0" )
-                      %span(class="far fa-question-circle")
-                      what's a license?
-
-                    -if @dataset.publication_state == Databank::PublicationState::DRAFT
-                      = f.collection_select :license, LICENSE_INFO_ARR, :code, :name, {:prompt => true}, {:class => "form-control dataset"}
-
-                    -else
-                      = f.collection_select :license, LICENSE_INFO_ARR, :code, :name, {:prompt => true}, {:class => "form-control dataset", onchange: "license_change_warning()"}
-
-
+                    %a(href="#" data-toggle="modal" data-target="#licenseModal" tabindex="0" aria-label="What's a license? Opens a modal dialog explaining license options.")
+                      %span(class="far fa-question-circle" aria-hidden="true")
+                      What's a license?
+                    - license_html_options = { :class => "form-control dataset" }
+                    - license_html_options[:disabled] = true unless Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
+                    = f.collection_select :license, LICENSE_INFO_ARR, :code, :name, { :prompt => true }, license_html_options
               -if @dataset.org_creators && @dataset.org_creators == true
                 =render partial: 'org_creators_subform', locals: {f: f}
                 =render partial: 'contributors_subform', locals: {f: f}
@@ -252,10 +247,10 @@
                 .container-fluid.upload-options
                   .row
                     .col-md-5
-                      .btn.btn-success.fileinput-button(id="api-modal-btn" role="button" )
-                        %span(class="fileinput-button-content")
-                          %span(class="glyphicon glyphicon-open" )
-                          %span(id='token-button-text')
+                      %button.btn.btn-success.fileinput-button#api-modal-btn(type="button" aria-controls="token-modal" aria-haspopup="dialog")
+                        %span.fileinput-button-content
+                          %span.glyphicon.glyphicon-open
+                          %span#token-button-text
                             - if @dataset.current_token.nil?
                               Get token for command line tools
                             - else
@@ -270,9 +265,8 @@
 
                   .row
                     .col-md-5
-                      =link_to("https://forms.illinois.edu/sec/1813779862", class: "btn btn-success fileinput-button idb", target: "_blank") do
-                        %span(class="large-text" aria-hidden="true")
-                          &#x1f45f;
+                      %a.btn.btn-success.fileinput-button.idb(href="https://forms.illinois.edu/sec/1813779862" target="_blank" role="button")
+                        %span.large-text{ aria: { hidden: true } } &#x1f45f;
                         %span.sr-only Request large file transfer
                         Request large file transfer
                     .col-md-7
@@ -281,8 +275,8 @@
                   - if can? :manage, @dataset
                     .row.curator-only
                       .col-md-5
-                        %button(type="button" class="btn btn-success fileinput-button" onclick="importFromGlobus()" )
-                          %span(class="glyphicon glyphicon-link")
+                        %button.btn.btn-success.fileinput-button(type="button" onclick="importFromGlobus()")
+                          %span.glyphicon.glyphicon-link
                           Import from Globus
                       .col-md-7
                         %p This is a curator tool. After a Globus transfer is complete, clicking this button will import the files into the dataset.
