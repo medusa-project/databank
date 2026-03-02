@@ -1,19 +1,3 @@
-var confirmOnPageExit
-confirmOnPageExit = function (e) {
-    // If we haven't been passed the event get the window.event
-    e = e || window.event;
-
-    var message = 'If you navigate away from this page, unsaved changes may be lost.';
-
-    // For IE6-8 and Firefox prior to version 4
-    if (e) {
-        e.returnValue = message;
-    }
-
-    // For Chrome, Safari, IE8+ and Opera 12+
-    return message;
-};
-
 // work-around turbo links to trigger ready function stuff on every page.
 
 var ready;
@@ -25,14 +9,6 @@ ready = function () {
 
     jQuery('.deposit-agreement-selection-warning').hide();
     jQuery('#agree-button').prop("disabled", true);
-
-
-    jQuery("#publish-then-review-btn").click(function () {
-
-        jQuery('#offer_review_h').modal('hide');
-        jQuery('#deposit').modal('show');
-
-    });
 
     jQuery("#review-then-publish-btn").click(function () {
 
@@ -78,47 +54,49 @@ ready = function () {
             minDate: 0,
             maxDate: "+1Y",
             dateFormat: "yy-mm-dd",
-            defaultDate: (Date.now())
+            defaultDate: new Date()
         });
     }
 
     // dynamically hide/show long description text
     var showChar = 140;
-    var ellipsestext = "...";
-    var moretext = "more description";
-    var lesstext = "less description";
+    var ellipsesText = "...";
+    var moreText = "more description";
+    var lessText = "less description";
     jQuery('.more').each(function () {
       var content = jQuery(this).html();
 
       if (content.length > showChar) {
 
-        var c = content.substr(0, showChar);
-        var h = content.substr(showChar, content.length - showChar);
+        var visibleContent = content.slice(0, showChar);
+        var hiddenContent = content.slice(showChar);
 
-        var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+         var html = `${visibleContent}<span class="moreellipses">${ellipsesText}&nbsp;</span>` +
+             `<span class="morecontent"><span>${hiddenContent}</span>&nbsp;&nbsp;` +
+             `<button type="button" class="moreButton">${moreText}</button></span>`;
 
         jQuery(this).html(html);
       }
 
     });
 
-    jQuery(".morelink").click(function () {
+        jQuery(".moreButton").click(function () {
       if (jQuery(this).hasClass("less")) {
-        jQuery(this).removeClass("less");
-        jQuery(this).html(moretext);
+                jQuery(this).removeClass("less");
+                jQuery(this).html(moreText);
       } else {
-        jQuery(this).addClass("less");
-        jQuery(this).html(lesstext);
+                jQuery(this).addClass("less");
+                jQuery(this).html(lessText);
 
         // move focus to the anchor with the dataset-link class that comes before this element
-        var $moreclasses = jQuery(this).parent().parent().attr('class');
-        var morekey = $moreclasses.replace('more', '').trim();
-        var $focusElement = jQuery('#link' + morekey);
+        var $moreClasses = jQuery(this).parent().parent().attr('class');
+        var moreKey = $moreClasses.replace('more', '').trim();
+        var $focusElement = jQuery('#link' + moreKey);
         if ($focusElement.length) {
             $focusElement.focus();
         } else {
           console.log("Focus element not found.");
-          console.log("Focus element with id link" + morekey + " not found.");
+          console.log("Focus element with id link" + moreKey + " not found.");
         }
       }
       jQuery(this).parent().prev().toggle();
@@ -278,19 +256,6 @@ ready = function () {
         window.location.assign('/datasets');
     });
 
-    jQuery('#show-my-button').click(function () {
-        var current_user_email = jQuery('input#current_user_email').val();
-        window.location.assign('/datasets?depositor_email=' + current_user_email);
-    });
-
-    jQuery("#chunked-upload-btn").click(function () {
-        window.location.assign('/datasets/' + dataset_key + '/datafiles/add');
-    });
-
-    jQuery("#portable-upload").click(function () {
-        window.location.assign('/help?context=pickup&key=' + dataset_key);
-    });
-
     if (!jQuery('#dataset_embargo').val()) {
 
         jQuery('#release-date-picker').hide();
@@ -312,8 +277,6 @@ ready = function () {
     });
 
     jQuery('[data-toggle="tooltip"]').tooltip();
-
-    var clip = new Clipboard('.clipboard-btn');
 
     jQuery("#login-prompt").modal('show');
     //alert("pre-validity check");
@@ -350,44 +313,6 @@ ready = function () {
         });
 
     });
-
-
-    // var boxSelect = new BoxSelect();
-    // Register a success callback handler
-    // boxSelect.success(function (response) {
-    //     jQuery('#files').css("display", "block");
-    //     jQuery('#collapseFiles').collapse('show');
-    //
-    //     jQuery.each(response, function (i, boxItem) {
-    //
-    //         if (filename_isdup(boxItem.name)) {
-    //             alert("Duplicate file error: A file named " + boxItem.name + " is already in this dataset.  For help, please contact the Research Data Service.");
-    //         } else {
-    //             boxItem.dataset_key = dataset_key;
-    //             window.onbeforeunload = confirmOnPageExit;
-    //             jQuery.ajax({
-    //                 type: "POST",
-    //                 url: "/datafiles/create_from_url",
-    //                 data: boxItem,
-    //                 success: function (data) {
-    //                     eval(jQuery(data).text());
-    //                 },
-    //                 dataType: 'script'
-    //             });
-    //         }
-    //
-    //     });
-    //
-    // });
-    //
-    // // Register a cancel callback handler
-    // boxSelect.cancel(function () {
-    //     console.log("The user clicked cancel or closed the popup");
-    // });
-    //
-    // jQuery('#box-upload-in-progress').hide();
-
-
 }
 
 
@@ -573,12 +498,12 @@ function validateReleaseDate() {
 function filename_isdup(proposed_name) {
     var returnVal = false;
 
-    jQuery.each(jQuery('.bytestream_name'), function (index, value) {
+    jQuery.each(jQuery('.bytestream_name'), function (_index, value) {
 
-        if (proposed_name == jQuery(value).val()) {
+        if (proposed_name === jQuery(value).val()) {
             returnVal = true;
         }
-        if (jQuery(value).text() == proposed_name) {
+        if (jQuery(value).text() === proposed_name) {
             returnVal = true;
         }
     });
@@ -591,7 +516,7 @@ function offerDownloadLink() {
     var web_id_string = "";
     var zip64_threshold = 4000000000;
 
-    jQuery.each(selected_files, function (index, value) {
+    jQuery.each(selected_files, function (_index, value) {
         if (web_id_string !== "") {
             web_id_string = web_id_string + "~";
         }
@@ -628,7 +553,7 @@ function offerDownloadLink() {
                     jQuery('#downloadLinkModal').modal('show');
                 }
             },
-            error: function (xhr, ajaxOptions, thrownError) {
+            error: function (xhr, _ajaxOptions, thrownError) {
                 console.log("error in offering download link");
                 console.log(xhr.status);
                 console.log(thrownError);
@@ -790,7 +715,7 @@ function reset_confirm_msg() {
         jQuery.getJSON("/datasets/" + dataset_key + "/confirmation_message?new_embargo_state=" + new_embargo + "&release_date=" + release_date, function (data) {
             jQuery('.publish-msg').html(data.message);
         })
-            .fail(function (xhr, textStatus, errorThrown) {
+            .fail(function (xhr, textStatus, _errorThrown) {
                 console.log("error" + textStatus);
                 console.log(xhr.responseText);
             });
@@ -870,7 +795,7 @@ function handleKeywordKeyup() {
     keywordArr = keywordString.split(";");
     var keyword_count = keywordArr.length;
 
-    jQuery.each(keywordArr, function (index, keyword) {
+    jQuery.each(keywordArr, function (_index, keyword) {
         if ((keyword.trim()).length < 1) {
             keyword_count = keyword_count - 1;
         }
@@ -911,9 +836,9 @@ function importFromGlobus(){
     jQuery.ajax({
         dataType: "json",
         url: "/datasets/" + dataset_key + "/import_from_globus"
-    }).done(function(data, textStatus, jqXHR) {
+    }).done(function(_data, _textStatus, _jqXHR) {
         jQuery('#message').html("<div class='alert alert-alert'><p>Refresh page to see datafiles</p></div>");
-    }).fail(function (xhr, textStatus, errorThrown) {
+    }).fail(function (xhr, textStatus, _errorThrown) {
         jQuery('#message').html("<div class='alert alert-alert'><p>Problem ingesting datafiles. " +  xhr.responseText + "</p></div>");
         console.log("error" + textStatus);
         console.log(xhr.responseText);
