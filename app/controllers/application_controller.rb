@@ -29,8 +29,9 @@ class ApplicationController < ActionController::Base
       request.path != "/logout" &&
       !request.xhr? # don't store ajax calls
       session[:previous_url] = request.fullpath
+    else
+      session[:previous_url] = IDB_CONFIG[:root_url_text]
     end
-    session[:previous_url] = "/datasets/new" if request.path == "/welcome/deposit_login_modal"
   end
 
   def redirect_path

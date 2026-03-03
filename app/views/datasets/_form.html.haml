@@ -43,12 +43,15 @@
                 .col-md-6
                   .form-group.required
                     = f.label :license, "License", :class => "control-label"
-                    %a(href="#" data-toggle="modal" data-target="#licenseModal" tabindex="0" aria-label="What's a license? Opens a modal dialog explaining license options.")
+                    %button(type="button" class="btn btn-link" data-toggle="modal" data-target="#licenseModal" aria-label="What's a license? Opens a modal dialog explaining license options.")
                       %span(class="far fa-question-circle" aria-hidden="true")
                       What's a license?
-                    - license_html_options = { :class => "form-control dataset" }
-                    - license_html_options[:disabled] = true unless Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
-                    = f.collection_select :license, LICENSE_INFO_ARR, :code, :name, { :prompt => true }, license_html_options
+                    - license_disabled = !Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state) && !can?(:manage, @dataset)
+                    - license_html_options = { class: "form-control dataset" }
+                    - license_html_options[:disabled] = true if license_disabled
+                    = f.collection_select :license, LICENSE_INFO_ARR, :code, :name, { prompt: true }, license_html_options
+                    - if license_disabled
+                      = f.hidden_field :license, value: @dataset.license
               -if @dataset.org_creators && @dataset.org_creators == true
                 =render partial: 'org_creators_subform', locals: {f: f}
                 =render partial: 'contributors_subform', locals: {f: f}
