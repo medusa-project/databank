@@ -249,16 +249,62 @@ ready = function () {
 
     jQuery('[data-toggle="tooltip"]').tooltip();
 
+    jQuery("#api_modal").on('shown.bs.modal', function () {
+        const apiModal = document.getElementById('api_modal');
+        if (!apiModal) {
+            return;
+        }
+
+        const focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
+        const focusableElements = apiModal.querySelectorAll(focusableSelectors);
+
+        if (focusableElements.length > 0) {
+            focusableElements[0].focus();
+        } else {
+            // Keep keyboard focus in the modal even if there are no interactive elements.
+            apiModal.setAttribute('tabindex', '-1');
+            apiModal.focus();
+        }
+
+        // If another handler steals focus after show, force focus back inside the modal.
+        setTimeout(function () {
+            if (!apiModal.contains(document.activeElement)) {
+                if (focusableElements.length > 0) {
+                    focusableElements[0].focus();
+                } else {
+                    apiModal.focus();
+                }
+            }
+        }, 50);
+
+        apiModal.removeEventListener('keydown', trapFocus);
+        apiModal.addEventListener('keydown', trapFocus);
+    });
+
+    jQuery("#api_modal").on('hidden.bs.modal', function () {
+        const apiModal = document.getElementById('api_modal');
+        if (apiModal) {
+            apiModal.removeEventListener('keydown', trapFocus);
+        }
+    });
+
     jQuery("#api-modal-btn").click(function () {
 
-        jQuery.getJSON("/datasets/" + dataset_key + "/get_current_token", function (data) {
-            if (data.token && data.token != "none") {
-                jQuery('#token-header').text('Here is your token:');
-                setTokenExamples(data.token);
-            } else {
-                getNewToken();
+        jQuery.ajax({
+            url: "/datasets/" + dataset_key + "/get_current_token",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                if (data.token && data.token !== "none") {
+                    jQuery('#token-header').text('Here is your token:');
+                    setTokenExamples(data.token);
+                } else {
+                    getNewToken();
+                }
+            },
+            error: function () {
+                alert("We're sorry, something went wrong when retrieving your token. Please try again or contact support.");
             }
-
         });
 
         jQuery("#api_modal").modal('show');
