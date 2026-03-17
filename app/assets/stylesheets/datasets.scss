@@ -263,7 +263,7 @@ legend.metadata-border {
   font-family: Helvetica, Arial, sans-serif;
   content: "[-]";
   float: left;
-  color: black;
+  color: inherit;
   margin-right: 10px;
   /* don't rotate icon - override framework defaults  */
   -webkit-transform: rotate(0);
@@ -277,7 +277,7 @@ legend.metadata-border {
   font-family: Helvetica, Arial, sans-serif;
   content: "[+]";
   float: left;
-  color: black;
+  color: inherit;
   margin-right: 10px;
   /* don't rotate icon - override framework defaults  */
   -webkit-transform: rotate(0);
