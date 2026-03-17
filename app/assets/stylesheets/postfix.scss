@@ -48,14 +48,6 @@ h2.panel-title, h3.panel-title {
   }
 }
 
-a.underline {
-  text-decoration: underline !important;
-}
-
-.help-body a {
-  text-decoration: underline !important;
-}
-
 h2.section-title {
   margin: 0;
   padding: 0;
@@ -74,4 +66,9 @@ h3.metadata-label {
   skip-to-content {
     display: none;
   }
+}
+
+// add underline to links in #main-content except those styled as bootstrap buttons
+#main-content a:not(.btn) {
+  text-decoration: underline !important;
 }
