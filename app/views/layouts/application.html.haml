@@ -46,7 +46,7 @@
       %meta{:content => "en", :name => "citation_language"}/
   %body(style="margin: 0; padding: 0;")
     %ilw-page
-      -if Rails.env.production? || Rails.env.prod_rocky?
+      -if Rails.env.prod_rocky?
         %noscript
           %iframe{src: "https://www.googletagmanager.com/ns.html?id=GTM-P5CT7JQ",
           height: "0",

@@ -8,6 +8,7 @@ class MetricsController < ApplicationController
   # Responds to `GET /metrics`
   def index
     @modified_times = Metric.modified_times
+    @title = "Metrics"
   end
 
   # Responds to `GET /metrics/downloads`

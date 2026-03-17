@@ -19,15 +19,20 @@ module Guide
     end
 
     # GET /guide/sections/1 or /guide/sections/1.json
-    def show; end
+    def show
+      @title = @guide_section.label.present? ? @guide_section.label : "Guide Section #{@guide_section.id}"
+    end
 
     # GET /guide/sections/new
     def new
       @guide_section = Guide::Section.new
+      @title = "New Guide Section"
     end
 
     # GET /guide/sections/1/edit
-    def edit; end
+    def edit
+      @title = @guide_section.label.present? ? "Edit #{@guide_section.label}" : "Edit Guide Section #{@guide_section.id}"
+    end
 
     # POST /guide/sections or /guide/sections.json
     def create

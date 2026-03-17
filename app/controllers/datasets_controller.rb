@@ -140,7 +140,7 @@ collaborators to access the data files while the dataset is not public.</li>
                               "https://doi.test.datacite.org/"
                             end
     @completion_check = Dataset.completion_check(@dataset)
-    
+
     @under_review = @dataset.in_pre_publication_review?
     if @under_review == false
       @has_unmodified_review = false
@@ -156,6 +156,11 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.ensure_version_group
     set_file_mode
     @dataset.handle_related_materials
+    if @dataset.title.present?
+      @title = @dataset.title
+    else
+      @title = "Dataset #{@dataset.key}"
+    end
   end
 
   def suppression_action
@@ -243,10 +248,10 @@ collaborators to access the data files while the dataset is not public.</li>
     @license_info_arr = LICENSE_INFO_ARR
 
     @dataset.subject = Databank::Subject::NONE unless @dataset.subject
-    if @dataset.title
+    if @dataset.title.present?
       @title = "Edit #{@dataset.title}"
     else
-      @title = "Edit Untitled Dataset"
+      @title = "Edit Dataset #{@dataset.key}"
     end
   end
 
@@ -723,6 +728,7 @@ collaborators to access the data files while the dataset is not public.</li>
     else
       @agreement_text = File.read(Rails.root.join("public", "deposit_agreement.txt"))
     end
+    @title = "Deposit Agreement"
   end
 
   # Responds to `Get /datasets/:id/open_in_globus'
