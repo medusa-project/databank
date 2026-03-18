@@ -6,7 +6,7 @@
 # server 'example.com', user: 'deploy', roles: %w{app db web}, my_property: :my_value
 # server 'example.com', user: 'deploy', roles: %w{app web}, other_property: :other_value
 # server 'db.example.com', user: 'deploy', roles: %w{db}
-server 'databank-demo.library.illinois.edu', user: 'databank', roles: %w{app db web}
+server 'databank-demo-rocky.library.illinois.edu', user: 'databank', roles: %w{app db web}
 
 set :rails_env, 'demo'
 
@@ -14,9 +14,9 @@ set :rails_env, 'demo'
 set :rails_assets_groups, :assets
 
 set :ssh_options, {
-    forward_agent: true,
-    auth_methods: ["publickey"],
-    keys: ["#{Dir.home}/.ssh/medusa_prod.pem"]
+  forward_agent: true,
+  auth_methods: ["publickey"],
+  keys: ["#{Dir.home}/.ssh/medusa-2023.pem"]
 }
 
 # Ask which branch to deploy
