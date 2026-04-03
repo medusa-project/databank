@@ -3,7 +3,7 @@
 -if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
   .alert.alert-alert
     =SystemMessage.read_only_message.raw
-.panel-group(id="large" aria-multiselectable="true")
+.panel-group(id="large")
   .panel.panel-default
     .panel-heading(id="largeHeading")
       %h2.panel-title
@@ -18,7 +18,7 @@
           or
           %a(href="mailto:databank@library.illinois.edu" class="underline") email us
           to learn more about file transfer options. 
-.panel-group(id="license" aria-multiselectable="true")
+.panel-group(id="license")
   .panel.panel-default
     .panel-heading(id="licenseHeading")
       %h2.panel-title
@@ -44,7 +44,7 @@
 
 = render partial: 'grouping_panel'
 = render partial: 'zipping_panel'
-.panel-group(id="contact" aria-multiselectable="true")
+.panel-group(id="contact")
   .panel.panel-default
     .panel-heading(id="contactHeading")
       %h2.panel-title
@@ -54,7 +54,7 @@
       .panel-body
         =render partial: "select_contact_info"
 
-.panel-group(id="embargo" aria-multiselectable="true")
+.panel-group(id="embargo")
   .panel.panel-default
     .panel-heading(id="embargoHeading")
       %h2.panel-title

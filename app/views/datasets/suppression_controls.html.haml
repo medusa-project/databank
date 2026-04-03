@@ -1,7 +1,7 @@
 = render 'brief_record', dataset:@dataset
 =form_tag("/datasets/#{@dataset.key}/suppression_action", id: "suppression_form") do
   %input(id="suppression_action" type="hidden" name="suppression_action" )
-.panel-group(id="access" aria-multiselectable="true")
+.panel-group(id="access")
   .panel.panel-default
     .panel-heading(id="accessHeading")
       %h4(class="panel-title")

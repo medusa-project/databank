@@ -2,7 +2,7 @@
 = render partial: 'datasets/help/primary_contact_help_modal'
 %label(class="control-label required")
   Author List (One primary long-term contact must be selected from this list.)
-  %a(href="#" data-toggle="modal" data-target="#offerOrgAuthModal" tabindex="0" )
+  %a(href="#" data-toggle="modal" data-target="#offer-org-auth-modal" tabindex="0" )
     %span(class="far fa-question-circle")
     %span(class="idb-help-prompt" )
       citing organization as author?
@@ -21,7 +21,7 @@
           Given Name(s)
       %th(class="col-md-2")
         ORCiD®
-        %a(href="#" data-toggle="modal" data-target="#orcidHelpModal" tabindex="0" )
+        %a(href="#" data-toggle="modal" data-target="#orcid-help-modal" tabindex="0" )
           =image_tag 'iD_icon_16x16.png', alt: "ORCiD icon"
           %span.idb-help-prompt
             what's an ORCiD?
@@ -31,7 +31,7 @@
           Email
       %th(class="col-md-2" )
         Primary Contact
-        %a(href="#" data-toggle="modal" data-target="#primaryContactModal" tabindex="0" )
+        %a(href="#" data-toggle="modal" data-target="#primary-contact-modal" tabindex="0" )
           %span(class="far fa-question-circle")
           %span(class="idb-help-prompt" )
             what's a primary contact?

@@ -249,45 +249,6 @@ ready = function () {
 
     jQuery('[data-toggle="tooltip"]').tooltip();
 
-    jQuery("#api_modal").on('shown.bs.modal', function () {
-        const apiModal = document.getElementById('api_modal');
-        if (!apiModal) {
-            return;
-        }
-
-        const focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
-        const focusableElements = apiModal.querySelectorAll(focusableSelectors);
-
-        if (focusableElements.length > 0) {
-            focusableElements[0].focus();
-        } else {
-            // Keep keyboard focus in the modal even if there are no interactive elements.
-            apiModal.setAttribute('tabindex', '-1');
-            apiModal.focus();
-        }
-
-        // If another handler steals focus after show, force focus back inside the modal.
-        setTimeout(function () {
-            if (!apiModal.contains(document.activeElement)) {
-                if (focusableElements.length > 0) {
-                    focusableElements[0].focus();
-                } else {
-                    apiModal.focus();
-                }
-            }
-        }, 50);
-
-        apiModal.removeEventListener('keydown', trapFocus);
-        apiModal.addEventListener('keydown', trapFocus);
-    });
-
-    jQuery("#api_modal").on('hidden.bs.modal', function () {
-        const apiModal = document.getElementById('api_modal');
-        if (apiModal) {
-            apiModal.removeEventListener('keydown', trapFocus);
-        }
-    });
-
     jQuery("#api-modal-btn").click(function () {
 
         jQuery.ajax({
@@ -307,7 +268,7 @@ ready = function () {
             }
         });
 
-        jQuery("#api_modal").modal('show');
+        jQuery("#api-modal").modal('show');
     });
 
     jQuery("#reserve-doi-btn").click(function () {
@@ -858,30 +819,8 @@ function importFromGlobus(){
     });
 }
 
-// Ensure afirst.js is loaded before this script
 function showReviewModal() {
-  var modal = document.getElementById('review');
-  if (!modal) return;
-
-  // Show the modal (Bootstrap 3 style)
-  jQuery(modal).modal('show');
-
-  // Trap focus within the modal
-  modal.addEventListener('keydown', trapFocus);
-
-  // Remove event listener when modal is closed
-  jQuery(modal).on('hidden.bs.modal', function () {
-    modal.removeEventListener('keydown', trapFocus);
-  });
-
-  // Focus the first focusable element in the modal
-  setTimeout(function() {
-    const focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
-    const focusableElements = modal.querySelectorAll(focusableSelectors);
-    if (focusableElements.length > 0) {
-      focusableElements[0].focus();
-    }
-  }, 200);
+  jQuery('#review').modal('show');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -893,6 +832,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// Bind focus-trap behaviour for Bootstrap modals (helper defined in afirst.js).
+bindModalFocusTrap('#api-modal',             'apiModal');
+bindModalFocusTrap('#review',                'reviewModal');
+bindModalFocusTrap('#primary-contact-modal', 'primaryContactModal');
+bindModalFocusTrap('#license-modal',         'licenseModal');
+bindModalFocusTrap('#offer-org-auth-modal',  'offerOrgAuthModal');
+bindModalFocusTrap('#embargo-modal',        'embargoModal');
+bindModalFocusTrap('#orcid-help-modal',       'orcidHelpModal');
+
 
 jQuery(document).ready(ready);
 jQuery(document).on('page:load', ready);

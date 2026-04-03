@@ -1,8 +1,9 @@
-.modal.fade(id="orcidHelpModal")
+.modal.fade(id="orcid-help-modal" role="dialog" aria-labelledby="orcid-help-title")
   .modal-dialog.modal-lg
     .modal-content
       .modal-header
-        =image_tag 'orcid_32x32.png'
+        =image_tag 'orcid_32x32.png', alt: 'orcid logo'
+        %h2#orcid-help-title ORCiD iD Help
         %button(class="close" data-dismiss="modal")
           &times;
       .modal-body

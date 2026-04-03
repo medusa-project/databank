@@ -5,7 +5,7 @@
   %hr/
   %h3 List of files as selected by user. Curator makes adjustment as needed.
   =form_for(@dataset, :url => {action: 'copy_version_files'}, html: {role: "form", method: :post, class: "input-append dataset-form" }) do |f|
-    .panel-group(id="vFiles" aria-multiselectable="true")
+    .panel-group(id="vFiles")
       .panel.panel-default
         .panel-heading(id="vFilesHeading")
           %h4(class="panel-title")
@@ -62,7 +62,7 @@
                         %span.glyphicon.glyphicon-duplicate
                         Copy Selected Files to Version
 
-  .panel-group(id="report" aria-multiselectable="true")
+  .panel-group(id="report")
     .panel.panel-default
       .panel-heading(id="reportHeading")
         %h4(class="panel-title")
@@ -270,7 +270,7 @@
                       New file in current version
     =form_tag("/datasets/#{@dataset.key}/suppression_action", id: "suppression_form") do |f|
       %input(id="suppression_action" type="hidden" name="suppression_action" )
-      .panel-group(id="access" aria-multiselectable="true")
+      .panel-group(id="access")
         .panel.panel-default
           .panel-heading(id="accessHeading")
             %h4(class="panel-title")

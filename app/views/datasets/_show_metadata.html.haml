@@ -39,7 +39,7 @@
             %span(class="glyphicon glyphicon-exclamation-sign" )
             This link will not resolve until the dataset is published.
 
-.panel-group(id="metadata" aria-multiselectable="true")
+.panel-group(id="metadata")
   .panel.panel-default
     .panel-heading.subdued-heading(id="metadataHeading")
       %a( role="button" data-toggle="collapse" data-parent="#metadata" href="#metadataPanel" aria-expanded="true" aria-controls="metadataPanel" class="accordion-toggle" )
@@ -130,7 +130,7 @@
             %tr
               %td(colspan="2" )
                 -if dataset.materials_related.length.positive?
-                  .panel-group(id="related" aria-multiselectable="true")
+                  .panel-group(id="related")
                     .panel.panel-default
                       .panel-heading.subdued-heading(id="relatedHeading")
                         %a( role="button" data-toggle="collapse" data-parent="#related" href="#relatedPanel" aria-expanded="false" aria-controls="relatedPanel" class="accordion-toggle collapsed" )
@@ -142,7 +142,7 @@
               %tr
                 %td(colspan="2" )
                   -if dataset.materials_cited_by.length.positive?
-                    .panel-group(id="cited" aria-multiselectable="true")
+                    .panel-group(id="cited")
                       .panel.panel-default
                         .panel-heading.subdued-heading(id="citedHeading")
                           %a( role="button" data-toggle="collapse" data-parent="#cited" href="#citedPanel" aria-expanded="false" aria-controls="citedPanel" class="accordion-toggle collapsed" )
