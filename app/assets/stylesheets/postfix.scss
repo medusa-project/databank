@@ -26,23 +26,22 @@ h2.subhead {
 }
 
 h2.panel-title, h2.metadata-label {
-  margin: 0;
-  padding: 0;
   font-size: 1.25em;
 }
 
 h2.panel-title, h3.panel-title {
   display: inline-block;
-  margin-right: 10px;
-  color: black;
+  padding-left: 5px;
+  color: inherit;
   font-weight: bold;
 }
 
 .panel-title {
-    &:visited {
-    color: $color__dark-link
+  &:visited {
+    color: $color__dark-link;
   }
-  &:hover {
+  &:hover,
+  &:focus {
     color: $color__text-light;
     background-color: $color__dark-navy;
   }

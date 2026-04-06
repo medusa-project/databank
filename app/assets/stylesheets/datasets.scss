@@ -257,14 +257,12 @@ legend.metadata-border {
 }
 
 .panel-heading .accordion-toggle:after {
-  /* symbol for "opening" panels */
-  //font-family: 'FontAwesome';
-  //content: "[\f068]";
+  /* symbol for open panels (click to close) */
   font-family: Helvetica, Arial, sans-serif;
   content: "[-]";
   float: left;
   color: inherit;
-  margin-right: 10px;
+  background-color: inherit;
   /* don't rotate icon - override framework defaults  */
   -webkit-transform: rotate(0);
   -moz-transform: rotate(0);
@@ -274,12 +272,12 @@ legend.metadata-border {
 }
 
 .panel-heading .accordion-toggle.collapsed:after {
+  /* symbol for closed panels (click to open) */
   font-family: Helvetica, Arial, sans-serif;
   content: "[+]";
   float: left;
   color: inherit;
   background-color: inherit;
-  margin-right: 10px;
   /* don't rotate icon - override framework defaults  */
   -webkit-transform: rotate(0);
   -moz-transform: rotate(0);
