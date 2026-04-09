@@ -38,6 +38,15 @@ ul.dashed > li:before {
   font-style: italic;
 }
 
+// styled to match the required field styling in the form, but can be used for other purposes as well
+.required-field-group {
+  font-weight: bold;
+  &:after {
+    content: "*";
+    color: $color__red;
+  }
+}
+
 div.citation-block {
   background-color: $color__lightest-grey;
   border: 1px solid $color__light-grey;

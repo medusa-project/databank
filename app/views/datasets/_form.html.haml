@@ -216,8 +216,9 @@
         .panel-group(id="curatorHelp" class="curator-only")
           .panel.panel-default
             .panel-heading(id="curatorHelpHeading")
-              %a( role="button" data-toggle="collapse" data-parent="#curatorHelp" href="#curatorHelpPanel" aria-expanded="false" aria-controls="curatorHelpPanel" class="accordion-toggle collapsed" )
-                %h2.panel-title.metadata-label Curator-only form elements help
+              %h2.panel-title
+                %a( role="button" data-toggle="collapse" data-parent="#curatorHelp" href="#curatorHelpPanel" aria-expanded="false" aria-controls="curatorHelpPanel" class="accordion-toggle collapsed" )
+                  Curator-only form elements help
             .panel-collapse.collapse(id="curatorHelpPanel" role="tabpanel" aria-labelledby="curatorHelpHeading" )
               .panel-body
                 = render partial: 'datasets/help/curator_doi_tasks'

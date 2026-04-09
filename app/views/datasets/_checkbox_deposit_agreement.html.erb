@@ -2,12 +2,11 @@
 <em>To start your <%= params.has_key?('context') && params['context']=='version' ? 'new version' : 'data deposit' %> please review the deposit agreement and answer the following questions:</em>
 <div class="panel panel-default">
   <div class="panel-heading">
-    <a class="accordion-toggle collapsed" data-toggle="collapse" href="#collapseOne ">
-      <h2 class="panel-title">
-      Full Text
-      </h2>
-      (click to expand)
-    </a>
+    <h2 class="panel-title">
+      <a class="accordion-toggle collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne" class="accordion-toggle">
+        Full Text (click to expand)
+      </a>
+    </h2>
   </div>
   <div id="collapseOne" class="panel-collapse collapse
         <% if @dataset && @dataset.depositor_email %>in

@@ -41,7 +41,8 @@ h2.panel-title, h3.panel-title {
     color: $color__dark-link;
   }
   &:hover,
-  &:focus {
+  &:focus,
+  &:active {
     color: $color__text-light;
     background-color: $color__dark-navy;
   }
