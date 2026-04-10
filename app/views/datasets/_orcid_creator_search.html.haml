@@ -6,7 +6,6 @@
           &times;
         %h2 ORCID&reg; iD Search
       .modal-body
-
         .form
           %input(type="hidden" id="creator-index" name="creator-index" value="unset" )
           %input(type="hidden" id="selected-id" name="selected-id" value = "")
@@ -31,9 +30,8 @@
           .loading.text-center
             %i(class="far fa-spinner fa-spin fa-4x orcid-search-spinner" )
           .container-fluid
-            .results(id="orcid-search-results")
-
-
+            #orcid-search-summary(aria-live="polite")
+            #orcid-search-results
       .modal-footer
         .control-group
           .controls
