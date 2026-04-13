@@ -17,8 +17,8 @@
       .col-md-2.search-count(aria-live="polite")
         = "Displaying #{sr.offset + 1} - #{sr.offset + sr.length} of #{sr.total_entries} in total"
       %nav.col-md-4{ aria: { label: "Pagination" } }
-        = will_paginate @search.results, previous_label: '&lt;', next_label: '&gt;', renderer: BootstrapPagination::Rails
-
+        = will_paginate @search.results, previous_label: '&lt;', next_label: '&gt;', renderer: WillPaginate::ActionView::BootstrapLinkRenderer
+        
       .col-md-2
         .input-group.search-control
           = select_tag :per_page, options_for_select([['25 per page', '25'], ['50 per page', '50'], ['Show All', '500']], params[:per_page]), class: "form-control", "aria-label": "results per page"
