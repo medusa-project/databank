@@ -17,7 +17,7 @@
       .col-md-2.search-count(aria-live="polite")
         = "Displaying #{sr.offset + 1} - #{sr.offset + sr.length} of #{sr.total_entries} in total"
       %nav.col-md-4{ aria: { label: "Pagination" } }
-        = will_paginate @search.results, previous_label: '<span aria-label="Previous page">&lt;</span>', next_label: '<span aria-label="Next page">&gt;</span>', renderer: BootstrapPagination::Rails
+        = will_paginate @search.results, previous_label: '&lt;', next_label: '&gt;', renderer: BootstrapPagination::Rails
 
       .col-md-2
         .input-group.search-control
