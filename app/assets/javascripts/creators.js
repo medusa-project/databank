@@ -362,7 +362,6 @@ function enableOrcidImport() {
   jQuery('#orcid-import-btn').prop('disabled', false);
 }
 
-// Depends on a function trapFocus(e) defined in afirst.js
 function showCreatorOrcidSearchModal(creator_index) {
   jQuery('#orcid-import-btn').prop('disabled', true);
   jQuery("#creator-index").val(creator_index);
@@ -372,18 +371,11 @@ function showCreatorOrcidSearchModal(creator_index) {
   jQuery("#creator-given").val(creatorGivenName);
   jQuery("#orcid-search-results").empty();
   jQuery("#orcid-search-summary").empty();
-  jQuery('#orcid_creator_search').on('shown.bs.modal', function () {
-    jQuery('#creator-family').focus();
-
-    // Trap focus within modal
-    const modal = document.getElementById('orcid_creator_search');
-    modal.addEventListener('keydown', trapFocus);
-
-    // Remove event listener when modal is hidden
-    jQuery('#orcid_creator_search').on('hidden.bs.modal', function () {
-      modal.removeEventListener('keydown', trapFocus);
-    });
-  });
+    jQuery('#orcid_creator_search')
+        .off('shown.bs.modal.creatorOrcidFocus')
+        .on('shown.bs.modal.creatorOrcidFocus', function () {
+            jQuery('#creator-family').focus();
+        });
   jQuery('#orcid_creator_search').modal('show');
 }
 

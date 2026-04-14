@@ -364,6 +364,11 @@ function showContributorOrcidSearchModal(contributor_index) {
     jQuery("#contributor-family").val(contributorFamilyName);
     jQuery("#contributor-given").val(contributorGivenName);
     jQuery("#orcid-search-results").empty();
+        jQuery('#orcid_contributor_search')
+            .off('shown.bs.modal.contributorOrcidFocus')
+            .on('shown.bs.modal.contributorOrcidFocus', function () {
+                jQuery('#contributor-family').focus();
+            });
     jQuery('#orcid_contributor_search').modal('show');
 }
 

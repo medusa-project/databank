@@ -1,4 +1,34 @@
 jQuery.noConflict();
+
+function canReceiveFocus(element) {
+  if (!element || typeof element.focus !== 'function' || !document.contains(element)) {
+    return false;
+  }
+
+  if (element.disabled) {
+    return false;
+  }
+
+  return element.getClientRects().length > 0;
+}
+
+function findModalTrigger(modal) {
+  if (!modal || !modal.id) {
+    return null;
+  }
+
+  var selector = '[data-target="#' + modal.id + '"], [href="#' + modal.id + '"]';
+  var candidates = document.querySelectorAll(selector);
+
+  for (var i = 0; i < candidates.length; i += 1) {
+    if (canReceiveFocus(candidates[i])) {
+      return candidates[i];
+    }
+  }
+
+  return null;
+}
+
 function trapFocus(e) {
   const focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
   const modal = e.currentTarget || e.target;
@@ -36,12 +66,23 @@ function trapFocus(e) {
 // selector  - CSS selector for the modal element (e.g. '#my-modal')
 // namespace - unique event namespace string (e.g. 'myModal')
 function bindModalFocusTrap(selector, namespace) {
+  var showEvent = 'show.bs.modal.' + namespace;
   var shownEvent  = 'shown.bs.modal.'  + namespace;
   var hiddenEvent = 'hidden.bs.modal.' + namespace;
   var focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
 
   jQuery(document)
-    .off(shownEvent + ' ' + hiddenEvent, selector)
+    .off(showEvent + ' ' + shownEvent + ' ' + hiddenEvent, selector)
+    .on(showEvent, selector, function () {
+      var modal = this;
+      var activeElement = document.activeElement;
+
+      if (canReceiveFocus(activeElement) && activeElement !== modal && !modal.contains(activeElement)) {
+        modal.__openerElement = activeElement;
+      } else {
+        modal.__openerElement = null;
+      }
+    })
     .on(shownEvent, selector, function () {
       var modal = this;
       var focusableElements = modal.querySelectorAll(focusableSelectors);
@@ -57,6 +98,23 @@ function bindModalFocusTrap(selector, namespace) {
       }
     })
     .on(hiddenEvent, selector, function () {
+      var modal = this;
+      var opener = modal.__openerElement;
+      var fallback;
+
       this.removeEventListener('keydown', trapFocus);
+
+      if (canReceiveFocus(opener)) {
+        opener.focus();
+      } else {
+        fallback = findModalTrigger(modal);
+        if (canReceiveFocus(fallback)) {
+          fallback.focus();
+        }
+      }
+
+      modal.__openerElement = null;
     });
 }
+
+bindModalFocusTrap('.modal', 'globalModalFocus');
