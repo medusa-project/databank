@@ -10,6 +10,11 @@ ready = function () {
     jQuery('.deposit-agreement-selection-warning').hide();
     jQuery('#agree-button').prop("disabled", true);
 
+    // add aria-label "previous page" to the previous page link and "next page" to the next page link for accessibility
+    // previous link is within ul.pagination li.prev and next link is within ul.pagination li.next
+    jQuery('ul.pagination li.prev').attr('aria-label', 'Previous page');
+    jQuery('ul.pagination li.next').attr('aria-label', 'Next page');
+
     jQuery("#review-then-publish-btn").click(function () {
 
         jQuery('#offer_review_h').modal('hide');
