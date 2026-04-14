@@ -12,8 +12,8 @@ ready = function () {
 
     // add aria-label "previous page" to the previous page link and "next page" to the next page link for accessibility
     // previous link is within ul.pagination li.prev and next link is within ul.pagination li.next
-    jQuery('ul.pagination li.prev').attr('aria-label', 'Previous page');
-    jQuery('ul.pagination li.next').attr('aria-label', 'Next page');
+    jQuery('ul.pagination li.prev a').attr('aria-label', 'Previous page');
+    jQuery('ul.pagination li.next a').attr('aria-label', 'Next page');
 
     jQuery("#review-then-publish-btn").click(function () {
 
