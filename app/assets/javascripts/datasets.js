@@ -322,9 +322,6 @@ function setDepositor(email, name) {
 
 function handleAgreeModal(email, name) {
 
-    // temp debug
-    console.log("handling agree modal");
-
     if (jQuery('#owner-yes').is(":checked") && jQuery('#agree-yes').is(":checked") && (jQuery('#private-yes').is(":checked") || jQuery('#private-na').is(":checked"))) {
         setDepositor(email, name);
         jQuery('#new_dataset').submit();

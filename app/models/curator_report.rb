@@ -30,8 +30,6 @@ class CuratorReport < ApplicationRecord
     when Databank::ReportType::FILE_AUDIT
       CuratorReport.generate_file_audit_report(report)
     else
-      # temporary debug logging for unrecognized report type
-      Rails.logger.warn "report type: #{report.report_type} is not recognized. Unable to generate report."
       raise "Unknown report type: #{report.report_type}"
     end
   end
