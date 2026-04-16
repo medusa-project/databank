@@ -5,9 +5,6 @@ ready = function () {
 
     jQuery('.bytestream_name').css("visibility", "hidden");
 
-    jQuery('.deposit-agreement-warning').hide();
-
-    jQuery('.deposit-agreement-selection-warning').hide();
     jQuery('#agree-button').prop("disabled", true);
 
     // add aria-label "previous page" to the previous page link and "next page" to the next page link for accessibility
@@ -320,12 +317,13 @@ function setDepositor(email, name) {
     jQuery('.dataset').removeAttr("disabled");
     jQuery('.file-field').removeAttr("disabled");
     jQuery('.add-attachment-subform-button').show();
-    jQuery('.deposit-agreement-warning').hide();
-
-    //jQuery('#show-agreement-modal-link').hide();
+    clearDepositAgreementSelectionWarning();
 }
 
 function handleAgreeModal(email, name) {
+
+    // temp debug
+    console.log("handling agree modal");
 
     if (jQuery('#owner-yes').is(":checked") && jQuery('#agree-yes').is(":checked") && (jQuery('#private-yes').is(":checked") || jQuery('#private-na').is(":checked"))) {
         setDepositor(email, name);
@@ -347,7 +345,7 @@ function handlePrivateYes() {
             allow_agree_submit();
         }
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
     } else {
         jQuery('#agree-button').prop("disabled", true);
@@ -366,8 +364,9 @@ function handlePrivateNA() {
             allow_agree_submit();
         }
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
+
     } else {
         jQuery('#agree-button').prop("disabled", true);
         jQuery('#dataset_removed_private').val('no');
@@ -380,12 +379,20 @@ function handlePrivateNo() {
         jQuery('#private-na').attr('checked', false);
         jQuery('#private-yes').attr('checked', false);
         jQuery('#agree-button').prop("disabled", true);
-        jQuery('.deposit-agreement-selection-warning').show();
+        showDepositAgreementSelectionWarning();
     } else {
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
     }
+}
+
+function showDepositAgreementSelectionWarning() {
+   selection_warning_html = "<h2>Selection Alert</h2><p><span class='glyphicon glyphicon-alert'></span> The selections you have made indicate that you are not ready to deposit your dataset.</p><p>Illinois Data bank curators are available to discuss your dataset with you. Please <a href='http://localhost:3000/contact'>contact us</a>!</p>";
+   jQuery('.deposit-agreement-selection-warning').html(selection_warning_html);
+}
+function clearDepositAgreementSelectionWarning() {
+    jQuery('.deposit-agreement-selection-warning').html("");
 }
 
 function handleOwnerYes() {
@@ -396,7 +403,7 @@ function handleOwnerYes() {
             allow_agree_submit();
         }
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
     } else {
         jQuery('#agree-button').prop("disabled", true);
@@ -409,10 +416,10 @@ function handleOwnerNo() {
         jQuery('#dataset_have_permission').val('no');
         jQuery('#owner-yes').attr('checked', false);
         jQuery('#agree-button').prop("disabled", true);
-        jQuery('.deposit-agreement-selection-warning').show();
+        showDepositAgreementSelectionWarning();
     } else {
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
     }
 }
@@ -425,7 +432,7 @@ function handleAgreeYes() {
             allow_agree_submit();
         }
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
 
     } else {
@@ -439,10 +446,10 @@ function handleAgreeNo() {
         jQuery('#dataset_agree').val('no');
         jQuery('#agree-yes').attr('checked', false);
         jQuery('#agree-button').prop("disabled", true);
-        jQuery('.deposit-agreement-selection-warning').show();
+        showDepositAgreementSelectionWarning();
     } else {
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
     }
 }
@@ -457,7 +464,7 @@ function agree_answers_none_no() {
 
 function allow_agree_submit() {
     jQuery('#agree-button').prop("disabled", false);
-    jQuery('.deposit-agreement-selection-warning').hide();
+    clearDepositAgreementSelectionWarning();
 }
 
 function clear_help_form() {
