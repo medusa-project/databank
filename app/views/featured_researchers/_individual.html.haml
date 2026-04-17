@@ -24,13 +24,11 @@
   .col-md-2
     -if featured_researcher.dataset_url && featured_researcher.dataset_url != ''
       %button(type="button" class="btn btn-primary btn-block" onclick="window.open('#{featured_researcher.dataset_url}')" aria-label="dataset provided by #{featured_researcher.name}" )
-        %span(class="glyphicon glyphicon-tasks" )
-        &nbsp;
+        %span(class="glyphicon glyphicon-tasks px-2" )
         dataset
     -if featured_researcher.article_url && featured_researcher.article_url != ''
       %button(type="button" class="btn btn-primary btn-block" onclick="window.open('#{featured_researcher.article_url}')" aria-label="article provided by #{featured_researcher.name}" )
-        %span(class="glyphicon glyphicon-file" )
-        &nbsp;
+        %span(class="glyphicon glyphicon-file px-2" )
         article
   .col-md-2
     -if(can? :manage, featured_researcher)
