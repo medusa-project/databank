@@ -44,7 +44,7 @@
     .panel-heading.subdued-heading(id="metadataHeading")
       %a( role="button" data-toggle="collapse" data-parent="#metadata" href="#metadataPanel" aria-expanded="true" aria-controls="metadataPanel" class="accordion-toggle" )
         %h2.panel-title.metadata-label Metadata
-    .panel-collapse(id="metadataPanel" role="tabpanel" aria-labelledby="metadataHeading" )
+    .panel-collapse(id="metadataPanel" aria-labelledby="metadataHeading" )
       .panel-body
         %table(class="table borderless" aria-label="dataset metadata" )
           %thead
@@ -136,7 +136,7 @@
                         %a( role="button" data-toggle="collapse" data-parent="#related" href="#relatedPanel" aria-expanded="false" aria-controls="relatedPanel" class="accordion-toggle collapsed" )
                           %h3.panel-title.metadata-label
                             = "Related Materials (#{dataset.materials_related.length})"
-                      .panel-collapse.collapse(id="relatedPanel" role="tabpanel" aria-labelledby="relatedHeading" )
+                      .panel-collapse.collapse(id="relatedPanel" aria-labelledby="relatedHeading" )
                         .panel-body
                           = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_related}
               %tr
@@ -148,7 +148,7 @@
                           %a( role="button" data-toggle="collapse" data-parent="#cited" href="#citedPanel" aria-expanded="false" aria-controls="citedPanel" class="accordion-toggle collapsed" )
                             %h3.panel-title.metadata-label
                               = "Cited By (#{dataset.materials_cited_by.length})"
-                        .panel-collapse.collapse(id="citedPanel" role="tabpanel" aria-labelledby="citedHeading" )
+                        .panel-collapse.collapse(id="citedPanel" aria-labelledby="citedHeading" )
                           .panel-body
                             = render partial: 'show_related_subset', locals: {related_materials_subset: dataset.materials_cited_by}
 

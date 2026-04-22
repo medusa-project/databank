@@ -9,7 +9,7 @@
       %h2.panel-title
         %a( role="button" data-toggle="collapse" data-parent="#large" href="#largePanel" aria-expanded="false" aria-controls="largePanel" class="accordion-toggle collapsed" )
           Files larger than 50 GB require special handling. (click to expand)
-    .panel-collapse.collapse(id="largePanel" role="tabpanel" aria-labelledby="largeHeading" )
+    .panel-collapse.collapse(id="largePanel" aria-labelledby="largeHeading" )
       .panel-body
         %p
           For files larger than 50 GB, please fill out our
@@ -24,7 +24,7 @@
       %h2.panel-title
         %a( role="button" data-toggle="collapse" data-parent="#license" href="#licensePanel" aria-expanded="false" aria-controls="licensePanel" class="accordion-toggle collapsed" ) 
           Select a license for your dataset. (click to expand)
-    .panel-collapse.collapse(id="licensePanel" role="tabpanel" aria-labelledby="licenseHeading" )
+    .panel-collapse.collapse(id="licensePanel" aria-labelledby="licenseHeading" )
       .panel-body
         %p
           Datasets are complex objects, and understanding how copyright law applies to datasets is similarly complex.
@@ -50,7 +50,7 @@
       %h2.panel-title
         %a( role="button" data-toggle="collapse" data-parent="#contact" href="#contactPanel" aria-expanded="false" aria-controls="contactPanel" class="accordion-toggle collapsed" )
           Select a long-term primary contact for your dataset. (click to expand)
-    .panel-collapse.collapse(id="contactPanel" role="tabpanel" aria-labelledby="contactHeading" )
+    .panel-collapse.collapse(id="contactPanel" aria-labelledby="contactHeading" )
       .panel-body
         =render partial: "select_contact_info"
 
@@ -60,7 +60,7 @@
       %h2.panel-title
         %a( role="button" data-toggle="collapse" data-parent="#embargo" href="#embargoPanel" aria-expanded="false" aria-controls="embargoPanel" class="accordion-toggle collapsed" )
           You may delay publication of your dataset. (click to expand)
-    .panel-collapse.collapse(id="embargoPanel" role="tabpanel" aria-labelledby="embargoHeading" )
+    .panel-collapse.collapse(id="embargoPanel" aria-labelledby="embargoHeading" )
       .panel-body
         %p
           Due to publisher or other requirements, researchers may need to deposit their dataset but make it temporarily unavailable for download.

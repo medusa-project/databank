@@ -25,7 +25,7 @@
           %a( role="button" data-toggle="collapse" data-parent="#file-audit-request" href="#fileAuditRequestPanel" aria-expanded="false" aria-controls="fileAuditRequestPanel" class="accordion-toggle collapsed" )
             %span.metadata-label File Audit Report
             %span( class="glyphicon glyphicon-file" )
-      .panel-collapse.collapse(id="fileAuditRequestPanel" role="tabpanel" aria-labelledby="fileAuditRequestHeading" )
+      .panel-collapse.collapse(id="fileAuditRequestPanel" aria-labelledby="fileAuditRequestHeading" )
         .panel-body
           = render partial: 'file_audit_request_form'
   .panel-group(id="service-msg")
@@ -35,7 +35,7 @@
           %a( role="button" data-toggle="collapse" data-parent="#service-msg" href="#serviceMsgPanel" aria-expanded="false" aria-controls="serviceMsgPanel" class="accordion-toggle collapsed" )
             %span.metadata-label Manage Service Message
             %span( class="glyphicon glyphicon-bullhorn" )
-      .panel-collapse.collapse(id="serviceMsgPanel" role="tabpanel" aria-labelledby="serviceMsgHeading" )
+      .panel-collapse.collapse(id="serviceMsgPanel" aria-labelledby="serviceMsgHeading" )
         .panel-body
           = render partial: 'service_message_form'
 - if current_user && current_user.role == 'admin'

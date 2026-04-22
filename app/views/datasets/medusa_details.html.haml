@@ -15,6 +15,6 @@
       %h4.panel-title
         %a(role="button" data-toggle="collapse" data-parent="#medusa" href="#medusaPanel" aria-expanded="false" aria-controls="medusaPanel" class="accordion-toggle collapsed")
           %span.metadata-label Medusa Ingest Details
-    .panel-collapse.collapse.in(id="medusaPanel" role="tabpanel" aria-labelledby="medusaHeading")
+    .panel-collapse.collapse.in(id="medusaPanel" aria-labelledby="medusaHeading")
       .panel-body
         =render partial: "show_medusa"

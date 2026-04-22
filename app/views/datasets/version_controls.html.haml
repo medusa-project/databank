@@ -11,7 +11,7 @@
           %h4(class="panel-title")
             %a(role="button" data-toggle="collapse" data-parent="#access" href="#vFilesPanel" aria-expanded="false" aria-controls="vFilesPanel" class="accordion-toggle" )
               %span( class="metadata-label" ) File Copy Selection
-        .panel-collapse.collapse.in(id="vFilesPanel" role="tabpanel" aria-labelledby="vFilesHeading" )
+        .panel-collapse.collapse.in(id="vFilesPanel" aria-labelledby="vFilesHeading" )
           .panel-body
             %table.table#versionfiles
               %tbody
@@ -68,7 +68,7 @@
         %h4(class="panel-title")
           %a(role="button" data-toggle="collapse" data-parent="#report" href="#reportPanel" aria-expanded="false" aria-controls="reportPanel" class="accordion-toggle" )
             %span( class="metadata-label" ) Difference Report (fields with differences are highlighted)
-      .panel-collapse.collapse.in(id="reportPanel" role="tabpanel" aria-labelledby="reportHeading" )
+      .panel-collapse.collapse.in(id="reportPanel" aria-labelledby="reportHeading" )
         .panel-body
           %table.table#differnce_report
             %thead
@@ -276,7 +276,7 @@
             %h4(class="panel-title")
               %a(role="button" data-toggle="collapse" data-parent="#access" href="#accessPanel" aria-expanded="false" aria-controls="accessPanel" class="accordion-toggle" )
                 %span( class="metadata-label" ) Version Control Buttons
-          .panel-collapse.collapse.in(id="accessPanel" role="tabpanel" aria-labelledby="accessHeading" )
+          .panel-collapse.collapse.in(id="accessPanel" aria-labelledby="accessHeading" )
             .panel-body
               %hr/
               .row

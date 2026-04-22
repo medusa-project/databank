@@ -32,7 +32,7 @@
             %span( id="title-preview" )
               = @dataset.title && @dataset.title != "" ? "#{@dataset.title}." : "[The Title]."
             University of Illinois Urbana-Champaign.
-          .panel-collapse.collapse.in(id="descriptionPanel" role="tabpanel" aria-labelledby="descriptionHeading" )
+          .panel-collapse.collapse.in(id="descriptionPanel" aria-labelledby="descriptionHeading" )
             .panel-body
               .row
                 .col-md-6
@@ -219,7 +219,7 @@
               %h2.panel-title
                 %a( role="button" data-toggle="collapse" data-parent="#curatorHelp" href="#curatorHelpPanel" aria-expanded="false" aria-controls="curatorHelpPanel" class="accordion-toggle collapsed" )
                   Curator-only form elements help
-            .panel-collapse.collapse(id="curatorHelpPanel" role="tabpanel" aria-labelledby="curatorHelpHeading" )
+            .panel-collapse.collapse(id="curatorHelpPanel" aria-labelledby="curatorHelpHeading" )
               .panel-body
                 = render partial: 'datasets/help/curator_doi_tasks'
 
@@ -228,7 +228,7 @@
           .panel-heading(id="funderHeading")
             %a( role="button" data-toggle="collapse" data-parent="#funder" href="#funderPanel" aria-expanded="false" aria-controls="funderPanel" class="accordion-toggle collapsed" )
               %h2.panel-title.metadata-label Funder
-          .panel-collapse.collapse(id="funderPanel" role="tabpanel" aria-labelledby="funderHeading" )
+          .panel-collapse.collapse(id="funderPanel" aria-labelledby="funderHeading" )
             .panel-body
               = render partial: 'funders_subform', locals: {f: f}
       .panel-group(id="materials")
@@ -236,7 +236,7 @@
           .panel-heading(id="materialsHeading")
             %a(role="button" data-toggle="collapse" data-parent="#materials" href="#materialsPanel" aria-expanded="false" aria-controls="materialsPanel" class="accordion-toggle collapsed" )
               %h2.panel-title.metadata-label Relationships with articles, code, other datasets, and other resources
-          .panel-collapse.collapse(id="materialsPanel" role="tabpanel" aria-labelledby="materialsHeading" )
+          .panel-collapse.collapse(id="materialsPanel" aria-labelledby="materialsHeading" )
             .panel-body
               = render partial: 'materials_subform', locals: {f: f}
       - if (Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)) && ( (can? :update, @dataset ) ) ||  (can? :update, @dataset)
@@ -246,7 +246,7 @@
             .panel-heading(id="advancedUploadHeading")
               %a(role="button" data-toggle="collapse" data-parent="#advancedUpload" href="#advancedUploadPanel" aria-expanded="false" aria-controls="advancedUploadPanel" class="accordion-toggle collapsed")
                 %h2.panel-title.metadata-label Advanced Upload Options
-            %div(id="advancedUploadPanel" role="tabpanel" aria-labelledby="advancedUploadHeading" class="panel-collapse collapse")
+            %div(id="advancedUploadPanel" aria-labelledby="advancedUploadHeading" class="panel-collapse collapse")
               .panel-body
                 .container-fluid.upload-options
                   .row
