@@ -630,3 +630,16 @@ h2.spotlight-name {
 li.navitem {
   margin-bottom: .25em;
 }
+
+table#desirable_char_repo {
+  td {
+    padding: 10px;
+    height: 5em;
+  }
+  li {
+    list-style-type: none;
+    &:before {
+      content: "- ";
+    }
+  }
+}
