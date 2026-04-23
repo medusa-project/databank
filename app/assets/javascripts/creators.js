@@ -256,23 +256,30 @@ function set_creator_orcid_from_search_modal() {
     jQuery("#dataset_creators_attributes_" + creator_index + "_identifier").val(selected_id);
     jQuery("#dataset_creators_attributes_" + creator_index + "_family_name").val(selected_family);
     jQuery("#dataset_creators_attributes_" + creator_index + "_given_name").val(selected_given);
+    jQuery("#orcid-search-summary").empty();
 }
 
 function search_creator_orcid() {
 
     jQuery("#orcid-search-results").empty();
     jQuery('.orcid-search-spinner').show();
+    jQuery("#orcid-search-summary").empty();
+    // for accessibility, announce that search is in progress
+    jQuery("#orcid-search-summary").text("Searching");
 
     let family_name = jQuery("#creator-family").val();
     let given_names = jQuery("#creator-given").val();
     let host = window.location.protocol + "//" + window.location.host;
     let search_url = host + "/creators/orcid_search?family_name=" + family_name + "&given_names=" + given_names;
+    let max_orcid_results = 25;
 
     jQuery.ajax({
         url: search_url,
         dataType: 'json',
         success: function (data) {
             jQuery('.orcid-search-spinner').hide();
+            jQuery("#orcid-search-summary").empty();
+            jQuery("#orcid-search-summary").text("Search complete");
               try {
                   const responseJson = data;
                   let total_found = responseJson["num-found"];
@@ -285,12 +292,18 @@ function search_creator_orcid() {
                   }
                   let choices = [];
                   let max_records = total_found;
-                  if (total_found > 50) {
-                      jQuery("#orcid-search-results").append("<div class='row'>Showing first 50 results of " + total_found + ". For more results, search <a href='https://orcid.org/' target='_blank'>The ORCiD site</a>.</div><hr/>");
-                      max_records = 50;
+                  if (total_found > max_orcid_results) {
+                      jQuery("#orcid-search-summary").html("<p>Showing first " + max_orcid_results + " results of " + total_found + ". For more results, search <a href='https://orcid.org/' target='_blank'>The ORCiD site</a>.</p>");
+                      max_records = max_orcid_results;
+                  }
+                  else if (total_found === 1) {
+                      jQuery("#orcid-search-summary").html("<p>1 result found</p>");
+                  }
+                  else if (total_found > 1) {
+                        jQuery("#orcid-search-summary").html("<p>" + total_found + " results found. Showing first " + max_records + ". For more results, search <a href='https://orcid.org/' target='_blank'>The ORCiD site</a>.</p>");
                   }
                   if (total_found > 0) {
-
+                      jQuery("#orcid-search-summary").append("<p>Select creator then click 'Import Selected ORCID' button.</p>");
                       jQuery("#orcid-search-results").append("<table class='table table-striped' id='orcid-search-results-table'><thead><tr class='row'><th class='col-md-5'>Identifier (click link for details)</th><th class='col-md-5'>Affiliation</span></th><th class='col-md-1'>Select</th></tr></thead><tbody></tbody></table>")
 
                       for (let i = 0; i < max_records; i++) {
@@ -304,16 +317,18 @@ function search_creator_orcid() {
 
                       }
                   } else {
-                      jQuery("#orcid-search-results").append("<p>No results found.  Try fewer letters or <a href='http://orcid.org' target='_blank'>The ORCID site</a></p>")
+                      jQuery("#orcid-search-summary").text("No results found. Try fewer letters or <a href='http://orcid.org' target='_blank'>The ORCID site</a>")
                   }
               } catch(err){
                   console.trace();
-                  alert("Error searching: " + err.message);
+                  jQuery("#orcid-search-summary").text("Error searching");
+                  console.error("Error in search: " + err.message);
+
               }
         },
         error: function (xhr) {
-            alert("Error in search.");
-            console.error(xhr.statusText);
+            jQuery("#orcid-search-summary").text("Error searching.");
+            console.error("Error in search: " + xhr.statusText);
         }
     });
 }
@@ -347,7 +362,6 @@ function enableOrcidImport() {
   jQuery('#orcid-import-btn').prop('disabled', false);
 }
 
-// Depends on a function trapFocus(e) defined in afirst.js
 function showCreatorOrcidSearchModal(creator_index) {
   jQuery('#orcid-import-btn').prop('disabled', true);
   jQuery("#creator-index").val(creator_index);
@@ -356,18 +370,12 @@ function showCreatorOrcidSearchModal(creator_index) {
   jQuery("#creator-family").val(creatorFamilyName);
   jQuery("#creator-given").val(creatorGivenName);
   jQuery("#orcid-search-results").empty();
-  jQuery('#orcid_creator_search').on('shown.bs.modal', function () {
-    jQuery('#creator-family').focus();
-
-    // Trap focus within modal
-    const modal = document.getElementById('orcid_creator_search');
-    modal.addEventListener('keydown', trapFocus);
-
-    // Remove event listener when modal is hidden
-    jQuery('#orcid_creator_search').on('hidden.bs.modal', function () {
-      modal.removeEventListener('keydown', trapFocus);
-    });
-  });
+  jQuery("#orcid-search-summary").empty();
+    jQuery('#orcid_creator_search')
+        .off('shown.bs.modal.creatorOrcidFocus')
+        .on('shown.bs.modal.creatorOrcidFocus', function () {
+            jQuery('#creator-family').focus();
+        });
   jQuery('#orcid_creator_search').modal('show');
 }
 

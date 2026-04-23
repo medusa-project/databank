@@ -78,6 +78,7 @@ yarn-debug.log*
 /public/uploads
 
 # Ignore local files.
+core
 public/read_only_msg_plus.txt
 config/master.key
 public/uploads
@@ -113,7 +114,6 @@ stop.sh
 config/initializers/secret_token.rb
 /config/credentials/demo.key
 /config/credentials/production.key
-/config/credentials/demo-rocky.key
 /config/credentials/prod-rocky.key
 /config/databank-development.yml
 /config/databank-local.yml

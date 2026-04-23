@@ -1,10 +1,10 @@
-.panel-group(id="cURL" aria-multiselectable="true")
+.panel-group(id="cURL")
   .panel.panel-default
     .panel-heading(id="cURLHeading")
-      %h4(class="panel-title")
+      %h2.panel-title
         %a( role="button" data-toggle="collapse" data-parent="#cURL" href="#cURLPanel" aria-expanded="false" aria-controls="cURLPanel" class="accordion-toggle collapsed" )
-          %span( class="metadata-label" ) Execute a cURL command. (click to expand)
-    .panel-collapse.collapse(id="cURLPanel" role="tabpanel" aria-labelledby="cURLHeading" )
+          Execute a cURL command. (click to expand)
+    .panel-collapse.collapse(id="cURLPanel" aria-labelledby="cURLHeading" )
       .panel-body
         %p
           Requires

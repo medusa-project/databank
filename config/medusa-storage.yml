@@ -1,4 +1,4 @@
-demo-rocky:
+demo:
   :storage:
     - :name: draft
       :type: s3

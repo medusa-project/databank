@@ -135,7 +135,7 @@ docker exec -it abc123 sh
 ```
 Then, from the interactive shell prompt, specify emacs as the editor (which is installed as part of the docker script) and launch the editor for the credentials file:
 ```
-EDITOR=emacs bundle exec rails credentials:edit --environment demo-rocky
+EDITOR=emacs bundle exec rails credentials:edit --environment demo
 ```
 ##### Test identities and seed data
 In the demo and production instances, identities from the UIUC community (using the Shibboleth strategy omniauth-shibboleth). Development and Test instances use the OmniAuth developer strategy in a way that is not used in demo or production.

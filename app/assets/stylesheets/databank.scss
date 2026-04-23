@@ -372,9 +372,7 @@ p.idb-larger {
 div.panel-heading{
   background-color: $color__light-blue-background !important;
 }
-table.deposit-agreement-selection-warning > tbody > tr > td {
-  padding-left: 5px;
-}
+
 .error-message{
   padding: 5px;
   border: solid 2px $color__red
@@ -631,4 +629,22 @@ h2.spotlight-name {
 
 li.navitem {
   margin-bottom: .25em;
+}
+
+table#desirable_char_repo {
+  td {
+    padding: 10px;
+    height: 5em;
+  }
+  li {
+    list-style-type: none;
+    &:before {
+      content: "- ";
+    }
+  }
+}
+
+.category-label {
+  font-weight: bold;
+  font-size: 1.5em;
 }

@@ -1,8 +1,9 @@
-.modal.fade(id="offerOrgAuthModal")
+.modal.fade(id="offer-org-auth-modal" role="dialog" aria-labelledby="offer-org-auth-title")
   .modal-dialog
     .modal-content
       .modal-header
-        %button(class="close" data-dismiss="modal")
+        %h2#offer-org-auth-title Offer Organization Authorship
+        %button(type="button" class="close" data-dismiss="modal" aria-label="Close")
           &times;
         %br
       .modal-body

@@ -17,7 +17,7 @@
   %h2 Required Responses
   %form{role: "form", id: "agree-form"}
     %fieldset
-      %p Are you a creator of this dataset or have you been granted permission by the creator to deposit this dataset?
+      %legend Are you a creator of this dataset or have you been granted permission by the creator to deposit this dataset?
       .indent
         %label.visible-xs-block.visible-sm-block.visible-md-block.visible-lg-block
           %input{type: "radio", class: "agree", id: "owner-yes", name: "owner-permission", onclick: "handleOwnerYes()"}
@@ -26,7 +26,7 @@
           %input{type: "radio", class: "agree", id: "owner-no", name: "owner-permission", onclick: "handleOwnerNo()"}
           No
     %fieldset
-      %p Have you removed any private, confidential, or other legally protected information from the dataset?
+      %legend Have you removed any private, confidential, or other legally protected information from the dataset?
       .indent
         %label.visible-xs-block.visible-sm-block.visible-md-block.visible-lg-block
           %input{type: "radio", class: "private-checkbox agree", id: "private-yes", name: "private-info", onclick: "handlePrivateYes()"}
@@ -38,7 +38,7 @@
           %input{type: "radio", class: "private-checkbox agree", id: "private-na", name: "private-info", onclick: "handlePrivateNA()"}
           Not applicable
     %fieldset
-      %p Do you agree to the Illinois Data Bank Deposit Agreement in its entirety?
+      %legend Do you agree to the Illinois Data Bank Deposit Agreement in its entirety?
       .indent
         %label.visible-xs-block.visible-sm-block.visible-md-block.visible-lg-block
           %input{type: "radio", class: "agree", id: "agree-yes", name: "deposit-agreement", onclick: "handleAgreeYes()"}
@@ -48,27 +48,14 @@
           No
   .row
     .col-md-10
-      %table.deposit-agreement-selection-warning
-        %caption
-          %h2 Selection Alert
-        %tbody
-          %tr
-            %td
-              %span.glyphicon.glyphicon-alert
-            %td
-              The selections you have made indicate that you are not ready to deposit your dataset.
-          %tr
-            %td
-            %td
-              Illinois Data bank curators are available to discuss your dataset with you. Please
-              %a{href: "#{IDB_CONFIG[:root_url_text]}/contact"} contact us
-              !
+      .deposit-agreement-selection-warning(aria-live="assertive")
+
     .col-md-2.progress-buttons
       %nav{"aria-label" => "Progress", "data-skip-to-info" => "landmark navigation", "data-skip-to-acc-name" => "Progress", "data-skip-to-id" => "100"}
         %ul.list-unstyled
           %li.navitem
             - current_user_name = j(current_user.name)
-            = link_to "#", class: "btn btn-block btn-primary", id: "agree-button", onclick: "handleAgreeModal('#{current_user.email}', '#{current_user_name}'); return false;", type: "button" do
+            %button.btn.btn-block.btn-primary{id: "agree-button", onclick: "handleAgreeModal('#{current_user.email}', '#{current_user_name}'); return false;", type: "button"}
               %span.glyphicon.glyphicon-check
               Submit
           %li.navitem

@@ -24,33 +24,28 @@ h2.subhead {
   padding: 0;
   font-size: 1.5em;
 }
+
 h2.panel-title, h2.metadata-label {
-  margin: 0;
-  padding: 0;
   font-size: 1.25em;
 }
 
 h2.panel-title, h3.panel-title {
   display: inline-block;
-  margin-right: 10px;
+  padding-left: 5px;
+  color: inherit;
+  font-weight: bold;
 }
 
 .panel-title {
-    &:visited {
-    color: $color__dark-link
+  &:visited {
+    color: $color__dark-link;
   }
-  &:hover {
+  &:hover,
+  &:focus,
+  &:active {
     color: $color__text-light;
     background-color: $color__dark-navy;
   }
-}
-
-a.underline {
-  text-decoration: underline !important;
-}
-
-.help-body a {
-  text-decoration: underline !important;
 }
 
 h2.section-title {
@@ -71,4 +66,9 @@ h3.metadata-label {
   skip-to-content {
     display: none;
   }
+}
+
+// add underline to links in #main-content except those styled as bootstrap buttons
+#main-content a:not(.btn) {
+  text-decoration: underline !important;
 }

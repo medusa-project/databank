@@ -14,21 +14,41 @@ class FeaturedResearchersController < ApplicationController
       active_featured_researchers = FeaturedResearcher.where(is_active: true)
       @featured_researchers = active_featured_researchers.order("RANDOM()")
     end
+    @title = "Featured Researchers"
   end
 
   # Responds to `GET /featured_researchers/1`
   # Responds to `GET /featured_researchers/1.json`
-  def show; end
+  def show
+     if @featured_researcher.name.present?
+      @title = @featured_researcher.name
+    else
+      @title = "Featured Researcher"
+    end
+  end
 
-  def preview; end
+  def preview
+     if @featured_researcher.name.present?
+      @title = @featured_researcher.name
+    else
+      @title = "Featured Researcher"
+    end
+  end
 
   # Responds to `GET /featured_researchers/new`
   def new
     @featured_researcher = FeaturedResearcher.new
+    @title = "New Featured Researcher"
   end
 
   # Responds to `GET /featured_researchers/1/edit`
-  def edit; end
+  def edit
+    if @featured_researcher.name.present?
+      @title = "Edit #{@featured_researcher.name}"
+    else
+      @title = "Edit Featured Researcher #{@featured_researcher.id}"
+    end
+  end
 
   # Responds to `POST /featured_researchers`
   # Responds to `POST /featured_researchers.json`

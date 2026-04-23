@@ -3,9 +3,9 @@
   %head
     -if @title
       %title
-        = "#{@title} | Illinois Data Bank"
+        = "#{@title} | Illinois Data Bank | Illinois"
     -else
-      %title Illinois Data Bank
+      %title Illinois Data Bank | Illinois
     -# Google Tag Manager
     - if Rails.env.production? || Rails.env.prod_rocky?
       :javascript
@@ -26,6 +26,7 @@
     %link(rel="apple-touch-icon" sizes="180x180" href="https://cdn.brand.illinois.edu/touch-icon-180x180.png")
     %link(rel="dns-prefetch" href="//cdn.disability.illinois.edu")
     %link(rel="stylesheet" href="https://cdn.toolkit.illinois.edu/3/toolkit.css")
+    %script{src: "https://cdnjs.cloudflare.com", type: "text/javascript"}
     %script(type="module" src="//cdn.toolkit.illinois.edu/3/toolkit.js")
     %script{type: "module", async: true, src: "/idb-header.js"}
     %script{type: "module", async: true, src: "https://cdn.brand.illinois.edu/components/il-footer.mjs"}
@@ -45,7 +46,7 @@
       %meta{:content => "en", :name => "citation_language"}/
   %body(style="margin: 0; padding: 0;")
     %ilw-page
-      -if Rails.env.production? || Rails.env.prod_rocky?
+      -if Rails.env.prod_rocky?
         %noscript
           %iframe{src: "https://www.googletagmanager.com/ns.html?id=GTM-P5CT7JQ",
           height: "0",

@@ -31,3 +31,5 @@
 
 en:
   hello: "Hello world"
+  will_paginate:
+    page_aria_label: "Go to page %{page}"

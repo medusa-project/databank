@@ -48,9 +48,9 @@
 
   <% if @dataset.metadata_public? || (can? :read, @dataset) || @shared_by_link %>
     <%= render partial: 'show_metadata', locals: {dataset: @dataset} %>
-    <div class="panel-group" id="versionGroup" aria-multiselectable="true">
+    <div class="panel-group" id="versionGroup">
       <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="versionGroupHeading">
+        <div class="panel-heading" id="versionGroupHeading">
           <% if @dataset.version_group.group_hash[:entries].length > 1 %>
             <a role="button" data-toggle="collapse" data-parent="#versionGroup" href="#versionGroupPanel" aria-expanded="true" aria-controls="versionGroupPanel" class="accordion-toggle">
               <h2 class="panel-title metadata-label">Versions in Illinois Data Bank</h2>
@@ -63,7 +63,7 @@
         </div>
         <div class="panel-collapse collapse
         <% if @dataset.version_group.group_hash[:entries].length > 1 %> in
-        <% end %>" id="versionGroupPanel" role="tabpanel" aria-labelledby="versionGroupHeading">
+        <% end %>" id="versionGroupPanel" aria-labelledby="versionGroupHeading">
           <div class="panel-body">
 
             <% if @dataset.version_group.group_hash[:status] == 'error' %>
@@ -92,9 +92,7 @@
                       </tr>
                     <% end %>
                   <% else %>
-                    <tr
-                      <% if entry[:selected] %> class="selected-version"
-                      <% end %> >
+                    <tr class="<%= 'selected-version' if entry[:selected] %>">
                       <td class="text-center"><%= entry[:version] %></td>
                       <td><a href="<%= @dataset.persistent_url_base %>/<%= entry[:doi] %>"><%= entry[:doi] %></a></td>
                       <td><%= entry[:version_comment] %></td>
@@ -121,15 +119,15 @@
 
   <% if @dataset.publication_state != Databank::PublicationState::DRAFT %>
     <% if (can? :manage, @dataset) || ([Databank::PublicationState::RELEASED, Databank::PublicationState::PermSuppress::FILE, Databank::PublicationState::Embargo::FILE].include?(@dataset.publication_state) && @dataset.hold_state != Databank::PublicationState::TempSuppress::METADATA && !@dataset.suppress_changelog) %>
-      <div class="panel-group" id="changelog" aria-multiselectable="true">
+      <div class="panel-group" id="changelog">
         <div class="panel panel-default">
-          <div class="panel-heading" role="tab" id="changelogHeading">
+          <div class="panel-heading" id="changelogHeading">
             <a role="button" data-toggle="collapse" data-parent="#changelog" href="#changelogPanel" aria-expanded="false" aria-controls="changelogPanel" class="accordion-toggle collapsed">
               <h2 class="panel-title metadata-label">Change Log</h2>
             </a>
           </div>
 
-          <div class="panel-collapse collapse" id="changelogPanel" role="tabpanel" aria-labelledby="changelogHeading">
+          <div class="panel-collapse collapse" id="changelogPanel" aria-labelledby="changelogHeading">
             <div class="panel-body">
               <p><a href="/help?context=changelog&key=<%= @dataset.key %>">Contact the Research Data Service</a> for
                 help interpreting this log.</p>

@@ -1,19 +1,3 @@
-var confirmOnPageExit
-confirmOnPageExit = function (e) {
-    // If we haven't been passed the event get the window.event
-    e = e || window.event;
-
-    var message = 'If you navigate away from this page, unsaved changes may be lost.';
-
-    // For IE6-8 and Firefox prior to version 4
-    if (e) {
-        e.returnValue = message;
-    }
-
-    // For Chrome, Safari, IE8+ and Opera 12+
-    return message;
-};
-
 // work-around turbo links to trigger ready function stuff on every page.
 
 var ready;
@@ -21,18 +5,12 @@ ready = function () {
 
     jQuery('.bytestream_name').css("visibility", "hidden");
 
-    jQuery('.deposit-agreement-warning').hide();
-
-    jQuery('.deposit-agreement-selection-warning').hide();
     jQuery('#agree-button').prop("disabled", true);
 
-
-    jQuery("#publish-then-review-btn").click(function () {
-
-        jQuery('#offer_review_h').modal('hide');
-        jQuery('#deposit').modal('show');
-
-    });
+    // add aria-label "previous page" to the previous page link and "next page" to the next page link for accessibility
+    // previous link is within ul.pagination li.prev and next link is within ul.pagination li.next
+    jQuery('ul.pagination li.prev a').attr('aria-label', 'Previous page');
+    jQuery('ul.pagination li.next a').attr('aria-label', 'Next page');
 
     jQuery("#review-then-publish-btn").click(function () {
 
@@ -78,77 +56,53 @@ ready = function () {
             minDate: 0,
             maxDate: "+1Y",
             dateFormat: "yy-mm-dd",
-            defaultDate: (Date.now())
+            defaultDate: new Date()
         });
     }
 
     // dynamically hide/show long description text
     var showChar = 140;
-    var ellipsestext = "...";
-    var moretext = "more description";
-    var lesstext = "less description";
+    var ellipsesText = "...";
+    var moreText = "more description";
+    var lessText = "less description";
     jQuery('.more').each(function () {
       var content = jQuery(this).html();
 
       if (content.length > showChar) {
 
-        var c = content.substr(0, showChar);
-        var h = content.substr(showChar, content.length - showChar);
+        var visibleContent = content.slice(0, showChar);
+        var hiddenContent = content.slice(showChar);
 
-        var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+         var html = `${visibleContent}<span class="moreellipses">${ellipsesText}&nbsp;</span>` +
+             `<span class="morecontent"><span>${hiddenContent}</span>&nbsp;&nbsp;` +
+             `<button type="button" class="moreButton">${moreText}</button></span>`;
 
         jQuery(this).html(html);
       }
 
     });
 
-    jQuery(".morelink").click(function () {
+    jQuery(".moreButton").click(function () {
       if (jQuery(this).hasClass("less")) {
-        jQuery(this).removeClass("less");
-        jQuery(this).html(moretext);
+                jQuery(this).removeClass("less");
+                jQuery(this).html(moreText);
       } else {
-        jQuery(this).addClass("less");
-        jQuery(this).html(lesstext);
+                jQuery(this).addClass("less");
+                jQuery(this).html(lessText);
 
         // move focus to the anchor with the dataset-link class that comes before this element
-        var $moreclasses = jQuery(this).parent().parent().attr('class');
-        var morekey = $moreclasses.replace('more', '').trim();
-        var $focusElement = jQuery('#link' + morekey);
+        var $moreClasses = jQuery(this).parent().parent().attr('class');
+        var moreKey = $moreClasses.replace('more', '').trim();
+        var $focusElement = jQuery('#link' + moreKey);
         if ($focusElement.length) {
             $focusElement.focus();
         } else {
-          console.log("Focus element not found.");
-          console.log("Focus element with id link" + morekey + " not found.");
+        // Element not found, fail silently
         }
       }
       jQuery(this).parent().prev().toggle();
       jQuery(this).prev().toggle();
       return false;
-    });
-
-    jQuery(".upload-consistent").tooltip({
-        html: "true",
-        title: "<em>consistent</em>--Reliable performance for a variety of connection speeds and configurations."
-    });
-
-    jQuery(".upload-inconsistent").tooltip({
-        html: "true",
-        title: "<em>inconsistent</em>--Depends for reliability on connection strength and speed. Works well on campus, but home and coffee-shop environments vary."
-    });
-
-    jQuery(".upload-unavailable").tooltip({
-        html: "true",
-        title: "<em>unavailable</em>--Either does not work at all, or is so unreliable as to be inadvisable. </td> </tr> </table> </table>"
-    });
-
-    jQuery(".clipboard-btn").tooltip({
-        html: "false",
-        title: "copy to clipboard"
-    });
-
-    jQuery(".remove-share-btn").tooltip({
-        html: "false",
-        title: "remove sharing link"
     });
 
     var numChecked = jQuery('input.checkFile:checked').length;
@@ -167,27 +121,23 @@ ready = function () {
         jQuery(".checkVFileGroup").prop('checked', jQuery(this).prop('checked'));
     });
 
-    jQuery('#term-supports').tooltip();
-
     jQuery('#cancel-button').click(function () {
-        // alert("You must agree to the Deposit Agreement before depositing data into Illinois Data Bank.");
         handleNotAgreed();
     });
 
-    jQuery('#dropdown-login').click(function (event) {
-        if (event.stopPropagation) {
-            event.stopPropagation();
-        } else if (window.event) {
-            window.event.cancelBubble = true;
-        }
-    });
-
     jQuery('#new-exit-button').click(function () {
-        jQuery('#new_dataset').append("<input type='hidden' name='context' value='exit' />");
+        var $form = jQuery('#new_dataset');
+        if ($form.find("input[type='hidden'][name='context'][value='exit']").length === 0) {
+            $form.append("<input type='hidden' name='context' value='exit' />");
+        }
         window.onbeforeunload = null;
-        jQuery('#new_dataset').submit();
+        jQuery(this).prop('disabled', true);
+        $form.submit();
     });
 
+    // the edit_datafile class is automatically generated by the form builder for each datafile edit form.
+    // In this application, there is only one editable datafile on the page at a time,
+    // so this is not a problem, but if that ever changes, this code will need to be updated.
     jQuery('#update_datafile').click(function () {
         window.onbeforeunload = null;
         jQuery('.edit_datafile').submit();
@@ -198,9 +148,9 @@ ready = function () {
     jQuery('.preview').hide();
     jQuery('.markdown_preview').hide();
 
-    jQuery('.nav-item').click(function () {
-
-        jQuery('.nav-item').removeClass('current');
+    var $navItems = jQuery('.nav-item');
+    $navItems.click(function () {
+        $navItems.removeClass('current');
         jQuery(this).addClass('current');
     });
 
@@ -210,7 +160,7 @@ ready = function () {
             jQuery(".invalid-name > input").first().focus();
             return
         }
-        if (jQuery(".progress-bar").length == 0) {
+        if (jQuery(".progress-bar").length === 0) {
             window.onbeforeunload = null;
             jQuery("[id^=edit_dataset]").submit();
         } else {
@@ -220,23 +170,22 @@ ready = function () {
 
     jQuery('#update-confirm').prop('disabled', true);
 
-    jQuery("[id^=edit_dataset] :input").keyup(function () {
-        jQuery('#update-confirm').prop('disabled', false);
-    });
-
-    jQuery("[id^=edit_dataset] :input").change(function () {
+    jQuery("[id^=edit_dataset] :input").on("keyup change", function () {
         jQuery('#update-confirm').prop('disabled', false);
     });
 
     jQuery('#save-exit-button').click(function () {
 
-        if (jQuery(".invalid-email").length == 0) {
+        if (jQuery(".invalid-email").length === 0) {
 
-            if (jQuery(".progress-bar").length == 0) {
+            if (jQuery(".progress-bar").length === 0) {
 
-                jQuery("[id^=edit_dataset]").append("<input type='hidden' name='context' value='exit' />");
+                var $form = jQuery("[id^=edit_dataset]");
+                if ($form.find("input[name='context']").length === 0) {
+                    $form.append("<input type='hidden' name='context' value='exit' />");
+                }
                 window.onbeforeunload = null;
-                jQuery("[id^=edit_dataset]").submit();
+                $form.submit();
 
             } else {
                 alert("UPLOADS IN PROGRESS. Try again once uploads are complete.")
@@ -249,16 +198,16 @@ ready = function () {
     });
 
     jQuery('input.dataset').change(function () {
-        if (jQuery(this).val() != "") {
+        if (jQuery(this).val() !== "") {
             window.onbeforeunload = confirmOnPageExit;
         }
     });
 
-    //jQuery('.preview').css("visibility", "hidden");
-
     jQuery('#dataset_title').change(function () {
-        if (jQuery("input[name='dataset[publication_state]']").val() == 'draft' || jQuery(this).val() != "") {
-            jQuery('#title-preview').html(jQuery(this).val() + '.');
+        if (jQuery("input[name='dataset[publication_state]']").val() === 'draft' || jQuery(this).val() !== "") {
+            var titleValue = jQuery(this).val();
+            var cleanTitle = DOMPurify.sanitize(titleValue);
+            jQuery('#title-preview').html(cleanTitle + '.');
             jQuery('#update-save-button').prop('disabled', false);
         } else {
             alert("Published Dataset must have a title.");
@@ -267,32 +216,22 @@ ready = function () {
     });
 
     jQuery('#dataset_publication_year').change(function () {
-        jQuery('#year-preview').html('(' + jQuery(this).val() + '):');
+        var yearValue = jQuery(this).val();
+        var cleanYear = DOMPurify.sanitize(yearValue);
+        jQuery('#year-preview').html('(' + cleanYear + '):');
     });
 
     jQuery('#dataset_identifier').change(function () {
-        jQuery('#doi-preview').html("https://doi.org/" + jQuery(this).val());
+        var identifierValue = jQuery(this).val();
+        var cleanIdentifier = DOMPurify.sanitize(identifierValue);
+        jQuery('#doi-preview').html("https://doi.org/" + cleanIdentifier);
     });
 
     jQuery('#show-all-button').click(function () {
         window.location.assign('/datasets');
     });
 
-    jQuery('#show-my-button').click(function () {
-        var current_user_email = jQuery('input#current_user_email').val();
-        window.location.assign('/datasets?depositor_email=' + current_user_email);
-    });
-
-    jQuery("#chunked-upload-btn").click(function () {
-        window.location.assign('/datasets/' + dataset_key + '/datafiles/add');
-    });
-
-    jQuery("#portable-upload").click(function () {
-        window.location.assign('/help?context=pickup&key=' + dataset_key);
-    });
-
     if (!jQuery('#dataset_embargo').val()) {
-
         jQuery('#release-date-picker').hide();
     }
 
@@ -300,8 +239,7 @@ ready = function () {
         jQuery('#update-confirm').prop('disabled', false);
         switch (jQuery(this).val()) {
             case 'file embargo':
-                jQuery('#release-date-picker').show();
-                break;
+
             case 'metadata embargo':
                 jQuery('#release-date-picker').show();
                 break;
@@ -313,25 +251,26 @@ ready = function () {
 
     jQuery('[data-toggle="tooltip"]').tooltip();
 
-    var clip = new Clipboard('.clipboard-btn');
-
-    jQuery("#login-prompt").modal('show');
-    //alert("pre-validity check");
-    //alert("dataset key: "+ dataset_key)
-
     jQuery("#api-modal-btn").click(function () {
 
-        jQuery.getJSON("/datasets/" + dataset_key + "/get_current_token", function (data) {
-            if (data.token && data.token != "none") {
-                jQuery('#token-header').text('Here is your token:');
-                setTokenExamples(data.token);
-            } else {
-                getNewToken();
+        jQuery.ajax({
+            url: "/datasets/" + dataset_key + "/get_current_token",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                if (data.token && data.token !== "none") {
+                    jQuery('#token-header').text('Here is your token:');
+                    setTokenExamples(data.token);
+                } else {
+                    getNewToken();
+                }
+            },
+            error: function () {
+                alert("We're sorry, something went wrong when retrieving your token. Please try again or contact support.");
             }
-
         });
 
-        jQuery("#api_modal").modal('show');
+        jQuery("#api-modal").modal('show');
     });
 
     jQuery("#reserve-doi-btn").click(function () {
@@ -350,44 +289,6 @@ ready = function () {
         });
 
     });
-
-
-    // var boxSelect = new BoxSelect();
-    // Register a success callback handler
-    // boxSelect.success(function (response) {
-    //     jQuery('#files').css("display", "block");
-    //     jQuery('#collapseFiles').collapse('show');
-    //
-    //     jQuery.each(response, function (i, boxItem) {
-    //
-    //         if (filename_isdup(boxItem.name)) {
-    //             alert("Duplicate file error: A file named " + boxItem.name + " is already in this dataset.  For help, please contact the Research Data Service.");
-    //         } else {
-    //             boxItem.dataset_key = dataset_key;
-    //             window.onbeforeunload = confirmOnPageExit;
-    //             jQuery.ajax({
-    //                 type: "POST",
-    //                 url: "/datafiles/create_from_url",
-    //                 data: boxItem,
-    //                 success: function (data) {
-    //                     eval(jQuery(data).text());
-    //                 },
-    //                 dataType: 'script'
-    //             });
-    //         }
-    //
-    //     });
-    //
-    // });
-    //
-    // // Register a cancel callback handler
-    // boxSelect.cancel(function () {
-    //     console.log("The user clicked cancel or closed the popup");
-    // });
-    //
-    // jQuery('#box-upload-in-progress').hide();
-
-
 }
 
 
@@ -416,9 +317,7 @@ function setDepositor(email, name) {
     jQuery('.dataset').removeAttr("disabled");
     jQuery('.file-field').removeAttr("disabled");
     jQuery('.add-attachment-subform-button').show();
-    jQuery('.deposit-agreement-warning').hide();
-
-    //jQuery('#show-agreement-modal-link').hide();
+    clearDepositAgreementSelectionWarning();
 }
 
 function handleAgreeModal(email, name) {
@@ -443,7 +342,7 @@ function handlePrivateYes() {
             allow_agree_submit();
         }
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
     } else {
         jQuery('#agree-button').prop("disabled", true);
@@ -462,8 +361,9 @@ function handlePrivateNA() {
             allow_agree_submit();
         }
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
+
     } else {
         jQuery('#agree-button').prop("disabled", true);
         jQuery('#dataset_removed_private').val('no');
@@ -476,12 +376,20 @@ function handlePrivateNo() {
         jQuery('#private-na').attr('checked', false);
         jQuery('#private-yes').attr('checked', false);
         jQuery('#agree-button').prop("disabled", true);
-        jQuery('.deposit-agreement-selection-warning').show();
+        showDepositAgreementSelectionWarning();
     } else {
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
     }
+}
+
+function showDepositAgreementSelectionWarning() {
+   selection_warning_html = "<h2>Selection Alert</h2><p><span class='glyphicon glyphicon-alert'></span> The selections you have made indicate that you are not ready to deposit your dataset.</p><p>Illinois Data bank curators are available to discuss your dataset with you. Please <a href='http://localhost:3000/contact'>contact us</a>!</p>";
+   jQuery('.deposit-agreement-selection-warning').html(selection_warning_html);
+}
+function clearDepositAgreementSelectionWarning() {
+    jQuery('.deposit-agreement-selection-warning').html("");
 }
 
 function handleOwnerYes() {
@@ -492,7 +400,7 @@ function handleOwnerYes() {
             allow_agree_submit();
         }
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
     } else {
         jQuery('#agree-button').prop("disabled", true);
@@ -505,10 +413,10 @@ function handleOwnerNo() {
         jQuery('#dataset_have_permission').val('no');
         jQuery('#owner-yes').attr('checked', false);
         jQuery('#agree-button').prop("disabled", true);
-        jQuery('.deposit-agreement-selection-warning').show();
+        showDepositAgreementSelectionWarning();
     } else {
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
     }
 }
@@ -521,7 +429,7 @@ function handleAgreeYes() {
             allow_agree_submit();
         }
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
 
     } else {
@@ -535,10 +443,10 @@ function handleAgreeNo() {
         jQuery('#dataset_agree').val('no');
         jQuery('#agree-yes').attr('checked', false);
         jQuery('#agree-button').prop("disabled", true);
-        jQuery('.deposit-agreement-selection-warning').show();
+        showDepositAgreementSelectionWarning();
     } else {
         if (agree_answers_none_no()) {
-            jQuery('.deposit-agreement-selection-warning').hide();
+            clearDepositAgreementSelectionWarning();
         }
     }
 }
@@ -553,7 +461,7 @@ function agree_answers_none_no() {
 
 function allow_agree_submit() {
     jQuery('#agree-button').prop("disabled", false);
-    jQuery('.deposit-agreement-selection-warning').hide();
+    clearDepositAgreementSelectionWarning();
 }
 
 function clear_help_form() {
@@ -573,12 +481,12 @@ function validateReleaseDate() {
 function filename_isdup(proposed_name) {
     var returnVal = false;
 
-    jQuery.each(jQuery('.bytestream_name'), function (index, value) {
+    jQuery.each(jQuery('.bytestream_name'), function (_index, value) {
 
-        if (proposed_name == jQuery(value).val()) {
+        if (proposed_name === jQuery(value).val()) {
             returnVal = true;
         }
-        if (jQuery(value).text() == proposed_name) {
+        if (jQuery(value).text() === proposed_name) {
             returnVal = true;
         }
     });
@@ -591,7 +499,7 @@ function offerDownloadLink() {
     var web_id_string = "";
     var zip64_threshold = 4000000000;
 
-    jQuery.each(selected_files, function (index, value) {
+    jQuery.each(selected_files, function (_index, value) {
         if (web_id_string !== "") {
             web_id_string = web_id_string + "~";
         }
@@ -608,19 +516,14 @@ function offerDownloadLink() {
                     if (Number(result.total_size) > zip64_threshold) {
                         jQuery('.download-help').html("<p>For selections of files larger than 4GB, the zip file will be in zip64 format. To open a zip64 formatted file on OS X (Mac) requires additional software not built into the operating system since version 10.11. Options include 7zX and The Unarchiver. If a Windows system has trouble opening the zip file, 7-Zip can be used.</p>")
                     }
-                    jQuery('#downloadLinkModal').on('shown.bs.modal', function () {
-                      var $anchor = jQuery('.download-link a');
-                      if ($anchor.length) {
-                        $anchor[0].focus();
-                      }
-                      // Trap focus inside the modal using the shared trapFocus function
-                      var modalElement = document.getElementById('downloadLinkModal');
-                      if (modalElement) {
-                        modalElement.addEventListener('keydown', trapFocus);
-                      }
-                      // Remove the event handler after first use
-                      jQuery(this).off('shown.bs.modal');
-                    });
+                                        jQuery('#downloadLinkModal')
+                                            .off('shown.bs.modal.downloadLinkFocus')
+                                            .on('shown.bs.modal.downloadLinkFocus', function () {
+                                                var anchor = jQuery(this).find('.download-link a').get(0);
+                                                if (anchor) {
+                                                    anchor.focus();
+                                                }
+                                            });
                     jQuery('#downloadLinkModal').modal('show');
                 } else {
                     console.log(result);
@@ -628,7 +531,7 @@ function offerDownloadLink() {
                     jQuery('#downloadLinkModal').modal('show');
                 }
             },
-            error: function (xhr, ajaxOptions, thrownError) {
+            error: function (xhr, _ajaxOptions, thrownError) {
                 console.log("error in offering download link");
                 console.log(xhr.status);
                 console.log(thrownError);
@@ -790,7 +693,7 @@ function reset_confirm_msg() {
         jQuery.getJSON("/datasets/" + dataset_key + "/confirmation_message?new_embargo_state=" + new_embargo + "&release_date=" + release_date, function (data) {
             jQuery('.publish-msg').html(data.message);
         })
-            .fail(function (xhr, textStatus, errorThrown) {
+            .fail(function (xhr, textStatus, _errorThrown) {
                 console.log("error" + textStatus);
                 console.log(xhr.responseText);
             });
@@ -870,7 +773,7 @@ function handleKeywordKeyup() {
     keywordArr = keywordString.split(";");
     var keyword_count = keywordArr.length;
 
-    jQuery.each(keywordArr, function (index, keyword) {
+    jQuery.each(keywordArr, function (_index, keyword) {
         if ((keyword.trim()).length < 1) {
             keyword_count = keyword_count - 1;
         }
@@ -911,39 +814,17 @@ function importFromGlobus(){
     jQuery.ajax({
         dataType: "json",
         url: "/datasets/" + dataset_key + "/import_from_globus"
-    }).done(function(data, textStatus, jqXHR) {
+    }).done(function(_data, _textStatus, _jqXHR) {
         jQuery('#message').html("<div class='alert alert-alert'><p>Refresh page to see datafiles</p></div>");
-    }).fail(function (xhr, textStatus, errorThrown) {
+    }).fail(function (xhr, textStatus, _errorThrown) {
         jQuery('#message').html("<div class='alert alert-alert'><p>Problem ingesting datafiles. " +  xhr.responseText + "</p></div>");
         console.log("error" + textStatus);
         console.log(xhr.responseText);
     });
 }
 
-// Ensure afirst.js is loaded before this script
 function showReviewModal() {
-  var modal = document.getElementById('review');
-  if (!modal) return;
-
-  // Show the modal (Bootstrap 3 style)
-  jQuery(modal).modal('show');
-
-  // Trap focus within the modal
-  modal.addEventListener('keydown', trapFocus);
-
-  // Remove event listener when modal is closed
-  jQuery(modal).on('hidden.bs.modal', function () {
-    modal.removeEventListener('keydown', trapFocus);
-  });
-
-  // Focus the first focusable element in the modal
-  setTimeout(function() {
-    const focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
-    const focusableElements = modal.querySelectorAll(focusableSelectors);
-    if (focusableElements.length > 0) {
-      focusableElements[0].focus();
-    }
-  }, 200);
+  jQuery('#review').modal('show');
 }
 
 document.addEventListener('DOMContentLoaded', function() {

@@ -2,15 +2,11 @@
 
 class CuratorReportJob
     def initialize(report)
-        # temporary debug logging
-        Rails.logger.debug "Initializing CuratorReportJob for report ID #{report.id}, type #{report.report_type}, requested by #{report.requestor_name}"
         @report = report
     end
 
     def perform
         # Generate the report file and store it in S3
-        # temporary debug logging
-        Rails.logger.debug "Performing CuratorReportJob for report ID #{@report.id}, type #{@report.report_type}"
         CuratorReport.generate_report(@report)
     end
 

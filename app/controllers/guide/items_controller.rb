@@ -7,19 +7,25 @@ module Guide
     # GET /guide/items or /guide/items.json
     def index
       @guide_items = Guide::Item.order(:ordinal)
+      @title = "Guides"
     end
 
     # GET /guide/items/1 or /guide/items/1.json
-    def show; end
+    def show
+      @title = @guide_item.label.present? ? @guide_item.label : "Guide Item #{@guide_item.id}"
+    end
 
     # GET /guide/items/new
     def new
       @guide_item = Guide::Item.new
       @guide_item.section_id = params["guide_item_section_id"].to_i if params.has_key?("guide_subitem_section_id")
+      @title = "New Guide Item"
     end
 
     # GET /guide/items/1/edit
-    def edit; end
+    def edit
+      @title = @guide_item.label.present? ? "Edit #{@guide_item.label}" : "Edit Guide Item #{@guide_item.id}"
+    end
 
     # POST /guide/items or /guide/items.json
     def create

@@ -9,7 +9,7 @@
         .featured-bio
           -if @featured_researcher.photo_url && @featured_researcher.photo_url != ""
             .photo-preview
-              %img(src="#{@featured_researcher.photo_url}" class="img-responsive" alt="featured researcher photo" )
+              %img(src="#{@featured_researcher.photo_url}" class="img-responsive" alt="Headshot of #{@featured_researcher.name}" )
 
           %h4
             %strong

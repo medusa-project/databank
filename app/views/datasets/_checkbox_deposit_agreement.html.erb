@@ -2,12 +2,11 @@
 <em>To start your <%= params.has_key?('context') && params['context']=='version' ? 'new version' : 'data deposit' %> please review the deposit agreement and answer the following questions:</em>
 <div class="panel panel-default">
   <div class="panel-heading">
-    <a class="accordion-toggle collapsed" data-toggle="collapse" href="#collapseOne ">
-      <h2 class="panel-title">
-      Full Text
-      </h2>
-      (click to expand)
-    </a>
+    <h2 class="panel-title">
+      <a class="accordion-toggle collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne" class="accordion-toggle">
+        Full Text (click to expand)
+      </a>
+    </h2>
   </div>
   <div id="collapseOne" class="panel-collapse collapse
         <% if @dataset && @dataset.depositor_email %>in
@@ -59,24 +58,9 @@
   </form>
   <div class="row">
     <div class="col-md-10">
-      <table class="deposit-agreement-selection-warning">
-        <caption>
-          <h2>Selection Alert</h2>
-        </caption>
-        <tbody>
-        <tr>
-          <td><span class="glyphicon glyphicon-alert"></span></td>
-          <td>The selections you have made indicate that you are not ready to deposit your dataset.</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>Illinois Data bank curators are available to discuss your dataset with you. Please
-            <a href="#{IDB_CONFIG[:root_url_text]}/contact">contact us</a>!</td>
-        </tr>
-        </tbody>
-      </table>
+      Inside checkbox_deposit_agreement.html.erb
+      <div class="deposit-agreement-selection-warning" aria-live="assertive"></div>
     </div>
-
     <div class="col-md-2 progress-buttons">
       <nav aria-label="Progress" data-skip-to-info="landmark navigation" data-skip-to-acc-name="Progress" data-skip-to-id="100">
         <ul class="list-unstyled">
