@@ -61,6 +61,12 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  # Clear Solr index after each test to prevent test isolation issues
+  # The database is rolled back by transactional fixtures, but Solr is not
+  config.after(:each) do
+    Sunspot.remove_all!
+  end
+
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 
