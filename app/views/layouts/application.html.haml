@@ -7,7 +7,7 @@
     -else
       %title Illinois Data Bank | Illinois
     -# Google Tag Manager
-    - if Rails.env.production? || Rails.env.prod_rocky?
+    - if Rails.env.production?
       :javascript
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
         var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
@@ -46,7 +46,7 @@
       %meta{:content => "en", :name => "citation_language"}/
   %body(style="margin: 0; padding: 0;")
     %ilw-page
-      -if Rails.env.prod_rocky?
+      -if Rails.env.production?
         %noscript
           %iframe{src: "https://www.googletagmanager.com/ns.html?id=GTM-P5CT7JQ",
           height: "0",
