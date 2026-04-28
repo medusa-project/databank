@@ -6,6 +6,8 @@
 
 config/databank-local.yml
 config/medusa_storage-local.yml
+config/credentials/demo.key
+config/credentials/production.key
 
 *.rbc
 capybara-*.html
