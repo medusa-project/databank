@@ -23,6 +23,7 @@
 //= require idb_utils
 //= require legacy_shims
 //= require afirst
+//= require dataset_agreement
 //= require contributors
 //= require creators
 //= require data_curation_network
