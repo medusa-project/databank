@@ -810,6 +810,10 @@ function addInternalEditorRow(){
     jQuery("#newInternalEditor").val("");
 }
 
+function addEditorRow(){
+    return addInternalEditorRow();
+}
+
 function importFromGlobus(){
     jQuery.ajax({
         dataType: "json",

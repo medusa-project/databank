@@ -44,7 +44,7 @@
       %meta{:content => "#{@dataset.publication_year}", :name => "citation_publication_date"}/
       %meta{:content => "#{@dataset.identifier}", :name => "citation_doi"}/
       %meta{:content => "en", :name => "citation_language"}/
-  %body(style="margin: 0; padding: 0;")
+  %body{style: "margin: 0; padding: 0;", data: { controller: controller_path, action: action_name, page: "#{controller_path}##{action_name}" }}
     %ilw-page
       -if Rails.env.production?
         %noscript
