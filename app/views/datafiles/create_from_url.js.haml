@@ -3,7 +3,7 @@
 
   var progressDiv = "<td><div class='row'><div class='col-md-10'><div id='" + "progress#{@job.id}" + "'><div class='export'><div class='well' style='display:none'><div class='row'><div class='col-xs-12'><div class='progress-status text-primary bytestream_name'></div></div></div><div class='row'><div class='col-xs-12'><div class='progress progress-striped active'><div class='progress-bar'><div class='text-primary'> 0% </div></div></div></div></div> </div></div></div></div></div></td>";
 
-  window["row#{@job.id}"] = '<td><div class = "row"><span class="col-md-8">' + "#{@filename}" + '</span><span class="col-md-2">' + "#{@filesize_display}" + '<input class="bytestream_name" value="' + "#{@filename}" + '" style="visibility: hidden;"></input></span><span class="col-md-2"><button type="button" class="btn btn-danger btn-sm" onclick='+ "remove_filejob_row(#{@job.id},#{@datafile.id})" + '"><span class="glyphicon glyphicon-trash"></span></a></span></span></div></td>';
+  window["row#{@job.id}"] = '<td><div class = "row"><span class="col-md-8">' + "#{@filename}" + '</span><span class="col-md-2">' + "#{@filesize_display}" + '<input class="bytestream_name" value="' + "#{@filename}" + '" style="visibility: hidden;"></input></span><span class="col-md-2"><button type="button" class="btn btn-danger btn-sm" data-file-action="remove-filejob" data-job-id="#{@job.id}" data-datafile-id="#{@datafile.id}"><span class="glyphicon glyphicon-trash"></span></button></span></span></div></td>';
 
   $('#collapseFiles').collapse('show');
 

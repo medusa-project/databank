@@ -29,10 +29,14 @@
 //= require data_curation_network
 //= require databank
 //= require datasets
+//= require tus
+//= require files_row_mutations
+//= require files_remote_ingest
+//= require files_preview_ui
+//= require files_upload_lifecycle
 //= require files
 //= require funders
 //= require help
 //= require jasny-bootstrap
 //= require related_materials
 //= require search
-//= require tus
