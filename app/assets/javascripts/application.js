@@ -20,6 +20,7 @@
 //= require clipboard
 //= require bootstrap-sprockets
 //= require idb_namespace
+//= require idb_utils
 //= require legacy_shims
 //= require afirst
 //= require contributors

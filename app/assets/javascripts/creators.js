@@ -25,23 +25,10 @@ const creators_ready = function () {
 
         jQuery('#creator_table td').css('width', desired_width);
 
-        return creator_table.sortable({
-
-            axis: 'y',
-            items: '.item',
-            cursor: 'move',
-            sort: function (e, ui) {
-                return ui.item.addClass('active-item-shadow');
-            },
-            stop: function (e, ui) {
-                ui.item.removeClass('active-item-shadow');
-                return ui.item.children('td').effect('highlight', {}, 1000);
-            },
-            update: function () {
-                handleCreatorTable(dataset_creator_type);
-                generate_creator_preview();
-            }
-        });
+        return creator_table.sortable(Databank.utils.sortableTableOptions(function () {
+            handleCreatorTable(dataset_creator_type);
+            generate_creator_preview();
+        }));
     }
 }
 
@@ -163,17 +150,10 @@ function handleCreatorTable(creator_type) {
     });
 }
 
+// Delegates to Databank.utils.validateEmailField (idb_utils.js).
+// Global name kept for existing onchange="handle_creator_email_change(this)" handlers.
 function handle_creator_email_change(input) {
-    if (isEmail(jQuery(input).val())) {
-        jQuery(input).closest('td').removeClass('input-field-required');
-        jQuery(input).removeClass("invalid-email");
-    } else if (jQuery(input).val() !== "") {
-        jQuery(input).addClass("invalid-email");
-        alert("email address must be in valid format");
-        jQuery(input).focus();
-    } else {
-        jQuery(input).removeClass("invalid-email");
-    }
+    Databank.utils.validateEmailField(input);
 }
 
 function generate_creator_preview() {
@@ -358,8 +338,9 @@ function getOrcidAffiliation(orcid){
     }
     return affiliation;
 }
+// Delegates to Databank.utils.enableOrcidImport (idb_utils.js).
 function enableOrcidImport() {
-  jQuery('#orcid-import-btn').prop('disabled', false);
+    Databank.utils.enableOrcidImport();
 }
 
 function showCreatorOrcidSearchModal(creator_index) {

@@ -12,26 +12,10 @@ contributors_ready = function () {
 
         jQuery('#contributor_table td').css('width', desired_width);
 
-        return jQuery('#contributor_table').sortable({
-
-            axis: 'y',
-            items: '.item',
-            cursor: 'move',
-            sort: function (e, ui) {
-                return ui.item.addClass('active-item-shadow');
-            },
-            stop: function (e, ui) {
-                ui.item.removeClass('active-item-shadow');
-                return ui.item.children('td').effect('highlight', {}, 1000);
-            },
-            update: function (e, ui) {
-                var item_id, position;
-                item_id = ui.item.data('item-id');
-                position = ui.item.index();
-                handlecontributorTable();
-                generate_contributor_preview();
-            }
-        });
+        return jQuery('#contributor_table').sortable(Databank.utils.sortableTableOptions(function () {
+            handlecontributorTable();
+            generate_contributor_preview();
+        }));
 
     }
 
@@ -130,22 +114,10 @@ function handlecontributorTable() {
     });
 }
 
+// Delegates to Databank.utils.validateEmailField (idb_utils.js).
+// Global name kept for existing onchange="handle_contributor_email_change(this)" handlers.
 function handle_contributor_email_change(input) {
-
-    console.log("contributor");
-    console.log(jQuery(input).val());
-    console.log(isEmail(jQuery(input).val()));
-
-    if (isEmail(jQuery(input).val())) {
-        jQuery(input).closest('td').removeClass('input-field-required');
-        jQuery(input).removeClass("invalid-email");
-    } else if (jQuery(input).val() != "") {
-        jQuery(input).addClass("invalid-email");
-        alert("email address must be in valid format");
-        jQuery(input).focus();
-    } else {
-        jQuery(input).removeClass("invalid-email");
-    }
+    Databank.utils.validateEmailField(input);
 }
 
 function generate_contributor_preview() {
@@ -349,9 +321,9 @@ function getOrcidAffiliation(orcid){
 }
 
 
+// Delegates to Databank.utils.enableOrcidImport (idb_utils.js).
 function enableOrcidImport() {
-
-    jQuery('#orcid-import-btn').prop('disabled', false);
+    Databank.utils.enableOrcidImport();
 }
 
 function showContributorOrcidSearchModal(contributor_index) {
