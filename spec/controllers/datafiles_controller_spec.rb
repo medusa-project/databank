@@ -52,6 +52,49 @@ RSpec.describe DatafilesController, type: :controller do
       # expect DayFileDownload total to increase by 1
       expect(DayFileDownload.count).to eq(1)
     end
+
+    it "returns internal_server_error when storage object is missing" do
+      missing_file_dataset = create(:dataset)
+      missing_file = create(
+        :datafile,
+        dataset: missing_file_dataset,
+        storage_root: "draft",
+        storage_key: "missing/object/key",
+        binary_name: "missing.txt"
+      )
+
+      allow_any_instance_of(Datafile).to receive(:record_download).and_return(true)
+      allow(Application.aws_client).to receive(:get_object).and_raise(StandardError.new("NoSuchKey"))
+      notification = instance_double(ActionMailer::MessageDelivery, deliver_now: true)
+      allow(DatabankMailer).to receive(:error).and_return(notification)
+
+      get :download, params: { id: missing_file.web_id }
+
+      expect(response).to have_http_status(:internal_server_error)
+      expect(DatabankMailer).to have_received(:error).with(include("NoSuchKey"))
+      expect(notification).to have_received(:deliver_now)
+    end
+  end
+
+  describe "POST #create_from_url" do
+    it "enqueues CreateDatafileFromRemoteJob for remote file ingestion" do
+      job = instance_double(Delayed::Job, id: 4321)
+      allow(Delayed::Job).to receive(:enqueue).and_return(job)
+      notification = instance_double(ActionMailer::MessageDelivery, deliver_now: true)
+      allow(DatabankMailer).to receive(:error).and_return(notification)
+
+      post :create_from_url, params: {
+        dataset_key: dataset.key,
+        url: "https://example.org/data.csv",
+        name: "data.csv",
+        size: "1024"
+      }
+
+      expect(Delayed::Job).to have_received(:enqueue).with(instance_of(CreateDatafileFromRemoteJob))
+      expect(response).to have_http_status(:internal_server_error)
+      expect(DatabankMailer).to have_received(:error)
+      expect(notification).to have_received(:deliver_now)
+    end
   end
 
   describe "POST #create" do
@@ -71,7 +114,7 @@ RSpec.describe DatafilesController, type: :controller do
     context "with invalid params" do
       it "renders a JSON response with errors for the new datafile" do
         post :create, params: { dataset_id: dataset.key, datafile: invalid_attributes }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.content_type).to eq("application/json; charset=utf-8")
       end
     end
