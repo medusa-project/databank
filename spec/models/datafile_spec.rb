@@ -232,4 +232,102 @@ RSpec.describe Datafile, type: :model do
       end
     end
   end
+
+  describe '#mime_type_from_name' do
+    it 'returns nil when binary_name is missing' do
+      datafile.binary_name = nil
+
+      expect(datafile.mime_type_from_name).to be_nil
+    end
+
+    it 'returns application/octet-stream when MIME lookup raises' do
+      datafile.binary_name = 'example.txt'
+      allow(MIME::Types).to receive(:type_for).and_raise(StandardError.new('lookup failed'))
+
+      expect(Rails.logger).to receive(:warn).with(/unexpected problem deriving mime type/)
+      expect(Rails.logger).to receive(:warn).with(StandardError)
+      expect(Rails.logger).to receive(:warn).with('lookup failed')
+
+      expect(datafile.mime_type_from_name).to eq('application/octet-stream')
+    end
+  end
+
+  describe '#iiif_bytestream_path' do
+    it 'returns draft iiif path when storage_root is draft' do
+      datafile.storage_root = 'draft'
+      datafile.storage_key = 'alpha/beta.txt'
+
+      expect(datafile.iiif_bytestream_path).to eq(File.join(IDB_CONFIG[:iiif][:draft_base], 'alpha/beta.txt'))
+    end
+
+    it 'returns medusa iiif path when storage_root is medusa' do
+      datafile.storage_root = 'medusa'
+      datafile.storage_key = 'gamma/delta.txt'
+
+      expect(datafile.iiif_bytestream_path).to eq(File.join(IDB_CONFIG[:iiif][:medusa_base], 'gamma/delta.txt'))
+    end
+
+    it 'raises when storage_root is invalid' do
+      datafile.storage_root = 'unknown'
+
+      expect { datafile.iiif_bytestream_path }.to raise_error(StandardError, /invalid storage_root/)
+    end
+  end
+
+  describe '#viewable helper predicates' do
+    it 'returns file extension when present' do
+      datafile.binary_name = 'archive.tar.gz'
+
+      expect(datafile.file_extension).to eq('gz')
+    end
+
+    it 'returns empty extension when filename has no dot' do
+      datafile.binary_name = 'README'
+
+      expect(datafile.file_extension).to eq('')
+    end
+
+    it 'identifies image preview only for supported image extensions' do
+      datafile.peek_type = Databank::PeekType::IMAGE
+      datafile.binary_name = 'photo.jpg'
+      expect(datafile.image?).to be true
+
+      datafile.binary_name = 'photo.gif'
+      expect(datafile.image?).to be false
+    end
+  end
+
+  describe '#microsoft_preview_url' do
+    it 'returns Office preview URL for microsoft peek type' do
+      datafile.peek_type = Databank::PeekType::MICROSOFT
+      datafile.web_id = 'abc12'
+
+      expect(datafile.microsoft_preview_url).to include('view.officeapps.live.com/op/view.aspx?src=')
+      expect(datafile.microsoft_preview_url).to include('datafiles%2Fabc12%2Fview')
+    end
+
+    it 'returns nil when datafile is not microsoft preview type' do
+      datafile.peek_type = Databank::PeekType::PDF
+
+      expect(datafile.microsoft_preview_url).to be_nil
+    end
+  end
+
+  describe '#handle_peek error fallback' do
+    it 'sets none/blank preview and returns false when an unexpected error occurs' do
+      persisted_datafile = create(
+        :datafile,
+        dataset: dataset,
+        binary_name: 'notes.txt',
+        mime_type: 'text/plain',
+        binary_size: 100
+      )
+      allow(persisted_datafile).to receive(:all_text_peek).and_raise(StandardError.new('peek explosion'))
+
+      expect(persisted_datafile.handle_peek).to be false
+      persisted_datafile.reload
+      expect(persisted_datafile.peek_type).to eq(Databank::PeekType::NONE)
+      expect(persisted_datafile.peek_text).to eq('')
+    end
+  end
 end
