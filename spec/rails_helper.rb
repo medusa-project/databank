@@ -14,6 +14,7 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -48,9 +49,6 @@ RSpec.configure do |config|
   config.include OmniauthMacros, type: :controller
   config.include OmniauthMacros, type: :request
   
-  config.include Capybara::DSL, type: :feature
-  config.include Capybara::DSL, type: :request
-
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
     Rails.root.join('test/fixtures')

@@ -81,6 +81,8 @@ yarn-debug.log*
 
 # Ignore local files.
 core
+*.core
+qemu_chrome_*.core
 public/read_only_msg_plus.txt
 config/master.key
 public/uploads

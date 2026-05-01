@@ -55,7 +55,7 @@
         %ul.list-unstyled
           %li.navitem
             - current_user_name = j(current_user.name)
-            %button.btn.btn-block.btn-primary{id: "agree-button", onclick: "handleAgreeModal('#{current_user.email}', '#{current_user_name}'); return false;", type: "button"}
+            %button.btn.btn-block.btn-primary{id: "agree-button", onclick: "handleAgreeModal('#{current_user.email}', '#{current_user_name}'); return false;", type: "button", disabled: true}
               %span.glyphicon.glyphicon-check
               Submit
           %li.navitem
