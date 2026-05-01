@@ -142,4 +142,94 @@ RSpec.describe Datafile, type: :model do
       expect(Datafile.find_by(web_id: web_id)).to be_nil
     end
   end
+
+  describe '.peek_type_from_mime' do
+    it 'returns none when mime type is missing or malformed' do
+      expect(Datafile.peek_type_from_mime(nil, 100)).to eq(Databank::PeekType::NONE)
+      expect(Datafile.peek_type_from_mime('text', 100)).to eq(Databank::PeekType::NONE)
+    end
+
+    it 'returns markdown for markdown mime top-level type' do
+      expect(Datafile.peek_type_from_mime('markdown/plain', 100)).to eq(Databank::PeekType::MARKDOWN)
+    end
+
+    it 'returns all_text for small text and part_text for large text' do
+      small = Datafile::Viewable::ALLOWED_DISPLAY_BYTES - 1
+      large = Datafile::Viewable::ALLOWED_DISPLAY_BYTES + 1
+
+      expect(Datafile.peek_type_from_mime('text/plain', small)).to eq(Databank::PeekType::ALL_TEXT)
+      expect(Datafile.peek_type_from_mime('text/plain', large)).to eq(Databank::PeekType::PART_TEXT)
+    end
+
+    it 'maps supported media/document mime types' do
+      expect(Datafile.peek_type_from_mime('image/png', 100)).to eq(Databank::PeekType::IMAGE)
+      expect(Datafile.peek_type_from_mime('application/pdf', 100)).to eq(Databank::PeekType::PDF)
+      expect(Datafile.peek_type_from_mime('application/zip', 100)).to eq(Databank::PeekType::LISTING)
+      expect(Datafile.peek_type_from_mime('application/msword', 100)).to eq(Databank::PeekType::MICROSOFT)
+      expect(Datafile.peek_type_from_mime('image/webp', 100)).to eq(Databank::PeekType::NONE)
+    end
+  end
+
+  describe '#handle_peek' do
+    it 'renders markdown preview and saves markdown peek type' do
+      datafile.binary_name = 'notes.md'
+      allow(datafile).to receive(:all_text_peek).and_return('# Header')
+      renderer = double('markdown_renderer', render: '<h1>Header</h1>')
+      allow(Application).to receive(:markdown).and_return(renderer)
+
+      expect(datafile.handle_peek).to be true
+      expect(datafile.peek_type).to eq(Databank::PeekType::MARKDOWN)
+      expect(datafile.peek_text).to eq('<h1>Header</h1>')
+    end
+
+    it 'handles listing peek type by starting processing task' do
+      datafile.binary_name = 'archive.zip'
+      datafile.mime_type = 'application/zip'
+      datafile.binary_size = 500
+      allow(datafile).to receive(:initiate_processing_task).and_return(true)
+
+      expect(datafile.handle_peek).to be true
+      expect(datafile).to have_received(:initiate_processing_task)
+    end
+  end
+
+  describe '#part_text_peek' do
+    it 'returns file not found when storage object is missing' do
+      root = double('storage_root', exist?: false)
+      allow(datafile).to receive(:current_root).and_return(root)
+
+      expect(datafile.part_text_peek).to eq('file not found')
+    end
+
+    it 'returns decoded bytes in s3 mode' do
+      config_copy = IDB_CONFIG.deep_dup
+      config_copy[:aws][:s3_mode] = true
+      stub_const('IDB_CONFIG', config_copy)
+
+      raw = StringIO.new("abc\u0000def")
+      root = double('storage_root', exist?: true, get_bytes: raw)
+      allow(datafile).to receive(:current_root).and_return(root)
+
+      expect(datafile.part_text_peek).to eq('abcdef')
+    end
+  end
+
+  describe '#all_text_peek' do
+    it 'returns full file contents in local filesystem mode' do
+      config_copy = IDB_CONFIG.deep_dup
+      config_copy[:aws][:s3_mode] = false
+      stub_const('IDB_CONFIG', config_copy)
+
+      root = double('storage_root', exist?: true)
+      allow(datafile).to receive(:current_root).and_return(root)
+
+      Dir.mktmpdir('viewable-local-peek') do |dir|
+        path = File.join(dir, 'peek.txt')
+        File.write(path, 'full file preview')
+        allow(datafile).to receive(:filepath).and_return(path)
+
+        expect(datafile.all_text_peek).to eq('full file preview')
+      end
+    end
+  end
 end
