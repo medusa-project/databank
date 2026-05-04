@@ -16,12 +16,53 @@ RSpec.describe DatasetsController, type: :controller do
       get :index
       expect(response).to be_successful
     end
+
+    it 'assigns depositor-visible datasets for logged in depositors' do
+      visible_dataset = [dataset]
+      allow(User).to receive(:find_by).with(email: user.email).and_return(user)
+      allow(user).to receive(:datasets_user_can_view).with(user: user).and_return(visible_dataset)
+      allow(Dataset).to receive(:filtered_list).and_return([])
+      allow(Dataset).to receive(:citation_report).and_return('report body')
+
+      get :index
+
+      expect(assigns(:datasets)).to eq(visible_dataset)
+    end
+
+    it 'downloads the citation report when requested' do
+      allow(User).to receive(:find_by).with(email: user.email).and_return(user)
+      allow(user).to receive(:datasets_user_can_view).with(user: user).and_return([dataset])
+      allow(Dataset).to receive(:filtered_list).and_return([])
+      allow(Dataset).to receive(:citation_report).and_return('report body')
+
+      get :index, params: { download: 'now' }
+
+      expect(response).to be_successful
+      expect(response.body).to eq('report body')
+      expect(response.headers['Content-Disposition']).to include('report.txt')
+    end
   end
 
   describe 'GET #show' do
     it 'returns a success response' do
       get :show, params: { id: dataset.to_param }
       expect(response).to be_successful
+    end
+
+    it 'redirects the special share-code dataset to the replacement dataset' do
+      special = create(:dataset, key: 'IDB-5266692')
+
+      get :show, params: { id: special.to_param, code: 'secret-code' }
+
+      expect(response).to redirect_to(dataset_path('IDB-1985555', code: 'secret-code'))
+    end
+
+    it 'marks the dataset as shared by link when the provided code matches' do
+      dataset.create_share_code(id: dataset.id)
+
+      get :show, params: { id: dataset.to_param, code: dataset.current_share_code }
+
+      expect(assigns(:shared_by_link)).to eq(true)
     end
   end
 
@@ -108,6 +149,15 @@ RSpec.describe DatasetsController, type: :controller do
         expect(response).to be_successful
       end
     end
+
+    it 'returns unprocessable content when import raises an error' do
+      allow_any_instance_of(Dataset).to receive(:import_from_globus).and_raise(StandardError, 'globus failure')
+
+      post :import_from_globus, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(JSON.parse(response.body)).to eq('error' => 'globus failure')
+    end
   end
 
   describe 'POST #publish' do
@@ -145,6 +195,26 @@ RSpec.describe DatasetsController, type: :controller do
       draft1 = Dataset.find_by(key: "TESTIDB-1423696")
       post :share, params: { id: draft1.to_param }
       expect(response.status).to eq(302)
+    end
+
+    it 'returns the share link for json requests when a code exists' do
+      allow_any_instance_of(Dataset).to receive(:current_share_code).and_return('share-code')
+      allow_any_instance_of(Dataset).to receive(:sharing_link).and_return('https://example.test/share')
+
+      post :share, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)).to eq('private_share_link' => 'https://example.test/share')
+    end
+
+    it 'returns unprocessable content for json requests when no share code can be generated' do
+      allow_any_instance_of(Dataset).to receive(:current_share_code).and_return(nil)
+      allow_any_instance_of(Dataset).to receive(:create_share_code)
+
+      post :share, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(JSON.parse(response.body)).to eq('private_share_link' => nil)
     end
   end
 
@@ -213,6 +283,42 @@ RSpec.describe DatasetsController, type: :controller do
     it 'gets the current token' do
       get :get_current_token, params: { id: dataset.to_param }
       expect(response).to be_successful
+    end
+
+    it 'returns none when the dataset has no current token' do
+      allow_any_instance_of(Dataset).to receive(:current_token).and_return(nil)
+
+      get :get_current_token, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to be_successful
+      expect(JSON.parse(response.body)).to eq('token' => 'none')
+    end
+  end
+
+  describe 'PATCH #update_permissions' do
+    before do
+      allow(controller).to receive(:authorize!).with(:manage, dataset)
+    end
+
+    it 'updates permissions and redirects when the dataset saves' do
+      expect(UserAbility).to receive(:update_permissions).with(dataset.key, ['reviewer@example.org'], ['editor@example.org'])
+      allow_any_instance_of(Dataset).to receive(:save).and_return(true)
+
+      patch :update_permissions, params: { id: dataset.to_param, reviewer_emails: ['reviewer@example.org'], editor_emails: ['editor@example.org'] }
+
+      expect(response).to redirect_to(dataset_path(dataset.key))
+      expect(flash[:notice]).to eq('Permissions updated.')
+    end
+
+    it 'returns unprocessable content in json when the dataset save fails' do
+      errors = double(as_json: { key: ['invalid'] })
+      allow_any_instance_of(Dataset).to receive(:save).and_return(false)
+      allow_any_instance_of(Dataset).to receive(:errors).and_return(errors)
+      allow(UserAbility).to receive(:update_permissions)
+
+      patch :update_permissions, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
     end
   end
 
