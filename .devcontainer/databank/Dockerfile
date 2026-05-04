@@ -17,6 +17,7 @@ RUN apt-get update --allow-releaseinfo-change \
 		pkg-config \
 		systemd \
 		nodejs \
+		npm \
 		libmemcached-dev \
 		libmagic-dev \
 		yarn \

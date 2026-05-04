@@ -12,7 +12,7 @@
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [3000],
+  "forwardPorts": [3000, 9323],
 
     // Force linux/amd64 platform for compatibility
     // "runArgs" is not supported in devcontainer.json. Remove this line if present.
@@ -40,5 +40,5 @@
 
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "bin/setup_local"
+  "postCreateCommand": "bin/setup_local && npm ci && npx playwright install-deps && npx playwright install chromium firefox webkit"
 }

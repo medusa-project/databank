@@ -135,3 +135,10 @@ node_modules
 .idea
 
 /app/views/guide/scratch.html
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

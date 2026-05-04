@@ -8,6 +8,7 @@ ENV RAILS_LOG_TO_STDOUT=true
 RUN apt-get update && apt-get install -y \
     systemd \
     nodejs \
+    npm \
     libmemcached-dev \
     libmagic-dev \
     yarn \
@@ -32,3 +33,6 @@ RUN cd /tmp \
     && gem install bundler \
     && bundle install \
     && cd /app
+
+RUN npm ci \
+    && npx playwright install --with-deps chromium

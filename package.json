@@ -1,0 +1,30 @@
+{
+  "name": "databank",
+  "version": "1.0.0",
+  "description": "[![DOI](https://zenodo.org/badge/12882/medusa-project/databank.svg)](https://zenodo.org/badge/latestdoi/12882/medusa-project/databank) # Databank",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "playwright:test": "playwright test",
+    "playwright:report": "playwright show-report --host 0.0.0.0 --port 9323",
+    "playwright:test-and-report": "playwright test && playwright show-report --host 0.0.0.0 --port 9323"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medusa-project/databank.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/medusa-project/databank/issues"
+  },
+  "homepage": "https://github.com/medusa-project/databank#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.0"
+  }
+}

@@ -44,5 +44,7 @@
   "testing.automaticallyOpenPeekView": "failureInVisibleDocument",
   "testing.openTesting": "neverOpen",
   "testing.countBadge": "failed",
-  "testing.followRunningTest": true
+  "testing.followRunningTest": true,
+  "npm.packageManager": "npm",
+  "testing.automaticallyOpenTestResults": "neverOpen"
 }
