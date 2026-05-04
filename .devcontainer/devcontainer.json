@@ -40,5 +40,5 @@
 
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "bin/setup_local && npm ci && npx playwright install-deps && npx playwright install chromium firefox webkit"
+  "postCreateCommand": "npm ci && npx playwright install-deps && npx playwright install chromium firefox webkit && bin/setup_local"
 }

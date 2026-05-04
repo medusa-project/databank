@@ -36,7 +36,7 @@ class CuratorsController < ApplicationController
         format.json { render :show, status: :created, location: @user_ability }
       else
         format.html { render :new }
-        format.json { render json: @user_ability.errors, status: :unprocessable_entity }
+        format.json { render json: @user_ability.errors, status: :unprocessable_content }
       end
     end
   end
@@ -50,7 +50,7 @@ class CuratorsController < ApplicationController
         format.json { render :show, status: :ok, location: @user_ability }
       else
         format.html { render :edit }
-        format.json { render json: @user_ability.errors, status: :unprocessable_entity }
+        format.json { render json: @user_ability.errors, status: :unprocessable_content }
       end
     end
   end

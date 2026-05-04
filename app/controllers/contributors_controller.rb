@@ -35,7 +35,7 @@ class ContributorsController < ApplicationController
         format.json { render :show, status: :created, location: @contributor }
       else
         format.html { render :new }
-        format.json { render json: @contributor.errors, status: :unprocessable_entity }
+        format.json { render json: @contributor.errors, status: :unprocessable_content }
       end
     end
   end
@@ -49,7 +49,7 @@ class ContributorsController < ApplicationController
         format.json { render :show, status: :ok, location: @contributor }
       else
         format.html { render :edit }
-        format.json { render json: @contributor.errors, status: :unprocessable_entity }
+        format.json { render json: @contributor.errors, status: :unprocessable_content }
       end
     end
   end

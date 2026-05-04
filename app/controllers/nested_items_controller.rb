@@ -33,7 +33,7 @@ class NestedItemsController < ApplicationController
         format.json { render :show, status: :created, location: @nested_item }
       else
         format.html { render :new }
-        format.json { render json: @nested_item.errors, status: :unprocessable_entity }
+        format.json { render json: @nested_item.errors, status: :unprocessable_content }
       end
     end
   end
@@ -46,7 +46,7 @@ class NestedItemsController < ApplicationController
         format.json { render :show, status: :ok, location: @nested_item }
       else
         format.html { render :edit }
-        format.json { render json: @nested_item.errors, status: :unprocessable_entity }
+        format.json { render json: @nested_item.errors, status: :unprocessable_content }
       end
     end
   end

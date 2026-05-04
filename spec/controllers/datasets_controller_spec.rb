@@ -376,7 +376,7 @@ RSpec.describe DatasetsController, type: :controller do
 
       it 'returns an unprocessable entity response with JSON format' do
         post :update_permissions, params: { id: dataset.to_param, reviewer_emails: reviewer_emails, editor_emails: editor_emails }, format: :json
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.content_type).to eq('application/json; charset=utf-8')
       end
     end

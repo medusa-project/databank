@@ -60,7 +60,7 @@ class FeaturedResearchersController < ApplicationController
         format.json { render json: to_fileupload, content_type: request.format, :layout => false }
       else
         format.html { render :new }
-        format.json { render json: @featured_researcher.errors, status: :unprocessable_entity }
+        format.json { render json: @featured_researcher.errors, status: :unprocessable_content }
       end
     end
   end
@@ -74,7 +74,7 @@ class FeaturedResearchersController < ApplicationController
         format.json { render json: to_fileupload, content_type: request.format, :layout => false }
       else
         format.html { render :edit }
-        format.json { render json: @featured_researcher.errors, status: :unprocessable_entity }
+        format.json { render json: @featured_researcher.errors, status: :unprocessable_content }
       end
     end
   end

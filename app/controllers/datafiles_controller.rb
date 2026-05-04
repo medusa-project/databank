@@ -88,7 +88,7 @@ class DatafilesController < ApplicationController
     else
       Rails.logger.warn "error in datafile create"
       Rails.logger.warn @datafile.errors.to_yaml
-      render json: @datafile.errors, status: :unprocessable_entity
+      render json: @datafile.errors, status: :unprocessable_content
     end
   end
 
@@ -113,7 +113,7 @@ class DatafilesController < ApplicationController
         format.json { render :show, status: :ok, location: @datafile }
       else
         format.html { render :edit }
-        format.json { render json: @datafile.errors, status: :unprocessable_entity }
+        format.json { render json: @datafile.errors, status: :unprocessable_content }
       end
     end
   end
@@ -128,7 +128,7 @@ class DatafilesController < ApplicationController
         format.json { render json: {"confirmation" => "deleted"}, status: :ok }
       else
         format.html { redirect_to edit_dataset_path(@dataset.key) }
-        format.json { render json: @datafile.errors, status: :unprocessable_entity }
+        format.json { render json: @datafile.errors, status: :unprocessable_content }
       end
     end
   end
@@ -279,7 +279,7 @@ class DatafilesController < ApplicationController
         format.json { render :show, status: :ok, location: @datafile }
       else
         format.html { redirect_to @datafile }
-        format.json { render json: {error: "unexpected error "}, status: :unprocessable_entity }
+        format.json { render json: {error: "unexpected error "}, status: :unprocessable_content }
       end
     end
   end

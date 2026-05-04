@@ -34,7 +34,7 @@ class MedusaIngestsController < ApplicationController
         format.json { render :show, status: :created, location: @medusa_ingest }
       else
         format.html { render :new }
-        format.json { render json: @medusa_ingest.errors, status: :unprocessable_entity }
+        format.json { render json: @medusa_ingest.errors, status: :unprocessable_content }
       end
     end
   end
@@ -48,7 +48,7 @@ class MedusaIngestsController < ApplicationController
         format.json { render :show, status: :ok, location: @medusa_ingest }
       else
         format.html { render :edit }
-        format.json { render json: @medusa_ingest.errors, status: :unprocessable_entity }
+        format.json { render json: @medusa_ingest.errors, status: :unprocessable_content }
       end
     end
   end
