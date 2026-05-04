@@ -169,6 +169,103 @@ RSpec.describe MedusaIngest, type: :model do
       allow(StorageManager.instance.draft_root).to receive(:exist?).and_return(true)
       expect { MedusaIngest.send_datafile_to_medusa(datafile.web_id) }.to change { MedusaIngest.count }.by(1)
     end
+
+    it 'returns nil when datafile is missing' do
+      expect(MedusaIngest.send_datafile_to_medusa('missing')).to be_nil
+    end
+
+    it 'returns nil when datafile is already in medusa' do
+      df = instance_double(Datafile, in_medusa: true)
+      allow(Datafile).to receive(:find_by).with(web_id: 'known').and_return(df)
+
+      expect(MedusaIngest.send_datafile_to_medusa('known')).to be_nil
+    end
+
+    it 'returns nil when datafile storage details are missing' do
+      df = instance_double(Datafile, in_medusa: false, storage_root: nil)
+      allow(Datafile).to receive(:find_by).with(web_id: 'known').and_return(df)
+
+      expect(MedusaIngest.send_datafile_to_medusa('known')).to be_nil
+    end
+
+    it 'returns nil when draft root does not contain datafile storage key' do
+      dataset = instance_double(Dataset, dirname: 'DOI-10.13012-example')
+      df = instance_double(Datafile,
+                           in_medusa: false,
+                           storage_root: 'draft',
+                           storage_key: 'draft/key',
+                           dataset: dataset,
+                           binary_name: 'file.txt',
+                           web_id: 'known')
+      allow(Datafile).to receive(:find_by).with(web_id: 'known').and_return(df)
+      allow(StorageManager.instance.draft_root).to receive(:exist?).with('draft/key').and_return(false)
+
+      expect(MedusaIngest.send_datafile_to_medusa('known')).to be_nil
+    end
+  end
+
+  describe '#medusa_ingest_message' do
+    it 'returns expected medusa ingest payload structure' do
+      ingest = MedusaIngest.new(idb_class: 'datafile', idb_identifier: 'abc12', staging_key: 'draft/key', target_key: 'medusa/key')
+
+      expect(ingest.medusa_ingest_message).to eq(
+        operation: 'ingest',
+        staging_key: 'draft/key',
+        target_key: 'medusa/key',
+        pass_through: { class: 'datafile', identifier: 'abc12' }
+      )
+    end
+  end
+
+  describe '#send_medusa_ingest_message' do
+    it 'sends through rabbit connector when configured for rabbit' do
+      ingest = MedusaIngest.new(idb_class: 'datafile', idb_identifier: 'abc12', staging_key: 'draft/key', target_key: 'medusa/key')
+      allow(Application).to receive(:server_envs).and_return([Rails.env])
+      allow(IDB_CONFIG).to receive(:[]).with(:rabbit_or_sqs).and_return('rabbit')
+      connector = double
+      allow(connector).to receive(:send_message)
+      allow(AmqpHelper::Connector).to receive(:[]).with(:databank).and_return(connector)
+      allow(MedusaIngest).to receive(:outgoing_queue).and_return('idb.to.medusa')
+
+      ingest.send_medusa_ingest_message
+
+      expect(connector).to have_received(:send_message).with('idb.to.medusa', ingest.medusa_ingest_message)
+    end
+
+    it 'sends through sqs when configured for non-rabbit transport' do
+      ingest = MedusaIngest.new(idb_class: 'datafile', idb_identifier: 'abc12', staging_key: 'draft/key', target_key: 'medusa/key')
+      allow(Application).to receive(:server_envs).and_return([Rails.env])
+      allow(IDB_CONFIG).to receive(:[]).and_call_original
+      allow(IDB_CONFIG).to receive(:[]).with(:rabbit_or_sqs).and_return('sqs')
+      sqs_client = double
+      allow(sqs_client).to receive(:send_message)
+      allow(QueueManager.instance).to receive(:sqs_client).and_return(sqs_client)
+
+      ingest.send_medusa_ingest_message
+
+      expect(sqs_client).to have_received(:send_message).with(
+        queue_url: IDB_CONFIG[:queues][:databank_to_medusa_url],
+        message_body: ingest.medusa_ingest_message.to_json
+      )
+    end
+  end
+
+  describe '.notify_or_report' do
+    it 'sends error notification mail in server environments' do
+      allow(Application).to receive(:server_envs).and_return([Rails.env])
+      mail = double
+      allow(mail).to receive(:deliver_now)
+      expect(DatabankMailer).to receive(:error).with('problem string').and_return(mail)
+
+      MedusaIngest.notify_or_report(exception_string: 'problem string')
+    end
+
+    it 'prints to stdout outside server environments' do
+      allow(Application).to receive(:server_envs).and_return([])
+      expect(MedusaIngest).to receive(:puts).with('problem string')
+
+      MedusaIngest.notify_or_report(exception_string: 'problem string')
+    end
   end
 
   # describe '.on_medusa_succeeded_message' do
@@ -200,6 +297,18 @@ RSpec.describe MedusaIngest, type: :model do
 
     it 'handles a failed message from Medusa' do
       expect { MedusaIngest.on_medusa_failed_message(response_hash) }.to change { MedusaIngest.count }.by(0)
+    end
+
+    it 'updates matching ingest record status and error fields when found by staging_path' do
+      ingest = create(:medusa_ingest, staging_path: 'failure/key', request_status: 'pending', error_text: nil)
+      response = { 'staging_path' => 'failure/key', 'status' => 'error', 'error' => 'failure detail' }
+
+      MedusaIngest.on_medusa_failed_message(response)
+      ingest.reload
+
+      expect(ingest.request_status).to eq('error')
+      expect(ingest.error_text).to eq('failure detail')
+      expect(ingest.response_time).to be_present
     end
   end
 

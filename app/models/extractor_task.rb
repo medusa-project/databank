@@ -157,7 +157,7 @@ class ExtractorTask < ApplicationRecord
   # @param [String] message_text the raw response from the extractor
   def self.handle_incoming_message(message_web_id:, message_text:)
     datafile = Datafile.find_by(web_id: message_web_id)
-    raise StandardError.new("no Datafile found for archive extractor response message: #{message}") unless datafile
+    raise StandardError.new("no Datafile found for archive extractor response message: #{message_web_id}") unless datafile
 
     ExtractorTask.record_response(datafile: datafile, message_text: message_text)
   end
