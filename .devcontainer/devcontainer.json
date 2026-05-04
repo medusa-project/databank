@@ -18,7 +18,22 @@
     // "runArgs" is not supported in devcontainer.json. Remove this line if present.
 
   // Configure tool-specific properties.
-  // "customizations": {},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-playwright.playwright",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "Shopify.ruby-lsp",
+        "misogi.ruby-rubocop",
+        "aki77.rails-routes",
+        "redhat.vscode-yaml",
+        "eamodio.gitlens",
+        "karunamurti.haml",
+        "craigmaslowski.erb"
+      ]
+    }
+  },
 
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   // "remoteUser": "root",
