@@ -2,6 +2,17 @@ require 'rails_helper'
 require 'ostruct'
 
 RSpec.describe Dataset::Stringable, type: :model do
+  describe '#plain_text_citation' do
+    it 'uses placeholders when creator list and title are blank' do
+      dataset = build(:dataset, title: '', publisher: 'Publisher Name')
+      allow(dataset).to receive(:creator_list).and_return('')
+      allow(dataset).to receive(:publication_year).and_return('2026')
+      allow(dataset).to receive(:persistent_url).and_return('https://doi.org/10.1000/placeholder')
+
+      expect(dataset.plain_text_citation).to eq('[Creator List] (2026): [Title]. Publisher Name. https://doi.org/10.1000/placeholder')
+    end
+  end
+
   describe '#structured_data' do
     it 'returns an empty string when dataset is not released' do
       dataset = build(:dataset, publication_state: Databank::PublicationState::DRAFT)
@@ -73,6 +84,14 @@ RSpec.describe Dataset::Stringable, type: :model do
       expect(dataset.creator_list).to eq('Doe, Jane')
     end
 
+    it 'returns institution list name for one institutional creator' do
+      dataset = create(:dataset)
+      creator = create(:creator, :institution, dataset: dataset)
+      allow(Creator).to receive(:where).with(dataset_id: dataset.id).and_return([creator])
+
+      expect(dataset.creator_list).to eq('University Library')
+    end
+
     it 'joins multiple creators using semicolon separators' do
       dataset = build(:dataset)
       creator1 = double(list_name: 'Doe, Jane')
@@ -100,6 +119,14 @@ RSpec.describe Dataset::Stringable, type: :model do
 
       expect(dataset.bibtex_creator_list).to eq('Doe, Jane and Smith, Alex')
     end
+
+    it 'returns single creator list name when exactly one creator exists' do
+      dataset = create(:dataset)
+      creator = create(:creator, dataset: dataset, family_name: 'Doe', given_name: 'Jane')
+      allow(dataset).to receive(:creators).and_return([creator])
+
+      expect(dataset.bibtex_creator_list).to eq('Doe, Jane')
+    end
   end
 
   describe '#contributor_list' do
@@ -117,6 +144,14 @@ RSpec.describe Dataset::Stringable, type: :model do
       allow(dataset).to receive(:contributors).and_return([contributor1, contributor2])
 
       expect(dataset.contributor_list).to eq('Jane Doe; Alex Smith')
+    end
+
+    it 'returns single contributor display name when exactly one contributor exists' do
+      dataset = create(:dataset)
+      contributor = create(:contributor, dataset: dataset, given_name: 'Alex', family_name: 'Smith')
+      allow(dataset).to receive(:contributors).and_return([contributor])
+
+      expect(dataset.contributor_list).to eq('Alex Smith')
     end
   end
 
@@ -166,6 +201,38 @@ RSpec.describe Dataset::Stringable, type: :model do
       expect(result).to include('[ Funder: ] NSF- [ Grant: ] ABC-123')
       expect(result).to include('[ Related Article: ] Companion article, https://example.org/article')
       expect(result).to include('. data.csv, 1 KB')
+    end
+
+    it 'uses not found license text when license code is unknown' do
+      dataset = build(:dataset, identifier: '10.13012/B2IDB-XYZ_V1', license: 'mystery-license')
+      allow(dataset).to receive(:creator_list).and_return('Doe, Jane')
+      allow(dataset).to receive(:creators).and_return([double])
+      allow(dataset).to receive(:publication_year).and_return('2026')
+      allow(dataset).to receive(:plain_text_citation).and_return('citation')
+      allow(dataset).to receive(:funders).and_return([])
+      allow(dataset).to receive(:related_materials).and_return([])
+      allow(dataset).to receive(:datafiles).and_return([])
+      allow(dataset).to receive(:complete_datafiles).and_return([])
+
+      expect(dataset.record_text).to include('[ License: ] Not found.')
+    end
+  end
+
+  describe '#recovery_serialization' do
+    it 'includes creators, funders, materials, and datafiles in the serialized hash' do
+      dataset = create(:dataset)
+      creator = create(:creator, :contact, dataset: dataset)
+      funder = create(:funder, dataset: dataset)
+      material = create(:related_material, dataset: dataset, citation: 'Article citation')
+      datafile = create(:datafile, dataset: dataset)
+
+      serialization = dataset.reload.recovery_serialization
+
+      expect(serialization['idb_dataset']['dataset']['id']).to eq(dataset.id)
+      expect(serialization['idb_dataset']['creators'].map { |row| row['id'] }).to include(creator.id)
+      expect(serialization['idb_dataset']['funders'].map { |row| row['id'] }).to include(funder.id)
+      expect(serialization['idb_dataset']['materials'].map { |row| row['id'] }).to include(material.id)
+      expect(serialization['idb_dataset']['datafiles'].map { |row| row['id'] }).to include(datafile.id)
     end
   end
 end

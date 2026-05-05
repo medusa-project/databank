@@ -62,6 +62,13 @@ RSpec.describe Dataset::MessageText, type: :model do
 
       expect(Dataset.embargoed_with_valid_date(dataset: dataset)).to be false
     end
+
+    it 'returns false when release date is in the past' do
+      dataset.release_date = Date.current - 1
+      dataset.embargo = Databank::PublicationState::Embargo::METADATA
+
+      expect(Dataset.embargoed_with_valid_date(dataset: dataset)).to be false
+    end
   end
 
   describe '.deposit_confirmation_notice' do
@@ -89,6 +96,61 @@ RSpec.describe Dataset::MessageText, type: :model do
       message = Dataset.deposit_confirmation_notice('unexpected-old-state', dataset)
 
       expect(message).to include("Changes to this dataset's <strong>public</strong> record have been made effective.")
+    end
+
+    it 'returns placeholder message for released to metadata embargo transition' do
+      dataset.publication_state = Databank::PublicationState::Embargo::METADATA
+
+      message = Dataset.deposit_confirmation_notice(Databank::PublicationState::RELEASED, dataset)
+
+      expect(message).to include('Placeholder metadata has replaced previously published metadata')
+      expect(message).to include(dataset.identifier)
+      expect(message).to include(dataset.persistent_url)
+    end
+
+    it 'returns embargo file publication message for draft to file embargo transition' do
+      dataset.publication_state = Databank::PublicationState::Embargo::FILE
+
+      message = Dataset.deposit_confirmation_notice(Databank::PublicationState::DRAFT, dataset)
+
+      expect(message).to include('Dataset record was successfully published')
+      expect(message).to include(dataset.release_date.iso8601)
+    end
+
+    it 'warns and returns unexpected error for unknown new state from released' do
+      dataset.publication_state = 'weird-new-state'
+      allow(Rails.logger).to receive(:warn)
+
+      message = Dataset.deposit_confirmation_notice(Databank::PublicationState::RELEASED, dataset)
+
+      expect(message).to include('Unexpected error')
+      expect(Rails.logger).to have_received(:warn).with(/UE2 - key:/)
+    end
+
+    it 'returns no changes message for metadata embargo staying metadata embargo' do
+      dataset.publication_state = Databank::PublicationState::Embargo::METADATA
+
+      message = Dataset.deposit_confirmation_notice(Databank::PublicationState::Embargo::METADATA, dataset)
+
+      expect(message).to include('No changes have been published')
+      expect(message).to include(dataset.persistent_url)
+    end
+
+    it 'returns publicly available message for file embargo to released transition' do
+      dataset.publication_state = Databank::PublicationState::RELEASED
+
+      message = Dataset.deposit_confirmation_notice(Databank::PublicationState::Embargo::FILE, dataset)
+
+      expect(message).to include('files are publically available')
+    end
+
+    it 'returns metadata placeholder message for permanently suppressed file to metadata embargo' do
+      dataset.publication_state = Databank::PublicationState::Embargo::METADATA
+
+      message = Dataset.deposit_confirmation_notice(Databank::PublicationState::PermSuppress::FILE, dataset)
+
+      expect(message).to include('descriptive record for your dataset and your files will be <strong>publicly</strong> available')
+      expect(message).to include(dataset.release_date.iso8601)
     end
   end
 
@@ -121,6 +183,30 @@ RSpec.describe Dataset::MessageText, type: :model do
       expect(message).to include(dataset.release_date.iso8601)
     end
 
+    it 'builds metadata-embargo save message when metadata embargo remains in effect' do
+      dataset.publication_state = Databank::PublicationState::Embargo::METADATA
+      dataset.embargo = Databank::PublicationState::Embargo::METADATA
+      dataset.release_date = Date.current + 10
+
+      message = Dataset.publish_modal_msg(dataset: dataset)
+
+      expect(message).to include('save the metadata changes')
+      expect(message).to include(dataset.identifier)
+      expect(message).to include(dataset.release_date.iso8601)
+    end
+
+    it 'builds DOI reservation message for draft dataset with metadata embargo' do
+      dataset.publication_state = Databank::PublicationState::DRAFT
+      dataset.embargo = Databank::PublicationState::Embargo::METADATA
+      dataset.release_date = Date.current + 5
+
+      message = Dataset.publish_modal_msg(dataset: dataset)
+
+      expect(message).to include('This action will reserve a DOI')
+      expect(message).to include("DOI link will fail until #{dataset.release_date.iso8601}")
+      expect(message).to include('All authors will receive a confirmation email')
+    end
+
     it 'builds non-embargo public message for draft datasets' do
       dataset.publication_state = Databank::PublicationState::DRAFT
       dataset.embargo = Databank::PublicationState::Embargo::NONE
@@ -129,6 +215,16 @@ RSpec.describe Dataset::MessageText, type: :model do
 
       expect(message).to include('make the dataset <strong>public</strong>')
       expect(message).to include('data files will be <strong>publicly</strong> available')
+    end
+
+    it 'builds public update message for non-draft non-embargo datasets' do
+      dataset.publication_state = Databank::PublicationState::RELEASED
+      dataset.embargo = Databank::PublicationState::Embargo::NONE
+
+      message = Dataset.publish_modal_msg(dataset: dataset)
+
+      expect(message).to include('make your updates to the dataset record <strong>public</strong>')
+      expect(message).not_to include('All authors will receive a confirmation email')
     end
   end
 end

@@ -155,4 +155,178 @@ RSpec.describe Dataset::Identifiable, type: :model do
       expect(info[:data][:attributes][:state]).to eq('findable')
     end
   end
+
+  describe '#publish_doi' do
+    before do
+      allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new('production'))
+      allow(dataset).to receive(:sleep)
+    end
+
+    it 'returns error when identifier is missing' do
+      dataset.identifier = nil
+
+      expect(dataset.publish_doi[:status]).to eq('error')
+    end
+
+    it 'returns error when metadata is not public' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:metadata_public?).and_return(false)
+
+      result = dataset.publish_doi
+
+      expect(result[:status]).to eq('error')
+      expect(result[:error_text]).to include('metadata can not be public')
+    end
+
+    it 'delegates to update_doi when state is already findable' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:metadata_public?).and_return(true)
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::FINDABLE)
+      allow(dataset).to receive(:update_doi).and_return(status: 'ok')
+
+      expect(dataset.publish_doi).to eq(status: 'ok')
+      expect(dataset).to have_received(:update_doi)
+    end
+
+    it 'creates draft then publishes to findable from unregistered state' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:metadata_public?).and_return(true)
+      allow(dataset).to receive(:doi_state)
+        .and_return(Databank::DoiState::UNREGISTERED, Databank::DoiState::DRAFT, Databank::DoiState::FINDABLE)
+      allow(dataset).to receive(:create_draft_doi).and_return(status: 'ok')
+      allow(dataset).to receive(:datacite_json_body).and_return('{"data":{}}')
+      allow(Dataset).to receive(:put_to_datacite)
+
+      expect(dataset.publish_doi).to eq(status: 'ok')
+      expect(dataset).to have_received(:create_draft_doi)
+      expect(Dataset).to have_received(:put_to_datacite).with(dataset.identifier, '{"data":{}}')
+    end
+
+    it 'returns error for invalid state transitions' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:metadata_public?).and_return(true)
+      allow(dataset).to receive(:doi_state).and_return('bogus-state')
+
+      result = dataset.publish_doi
+
+      expect(result[:status]).to eq('error')
+      expect(result[:error_text]).to include('invalid state for publish_doi')
+    end
+  end
+
+  describe '#register_doi' do
+    before do
+      allow(dataset).to receive(:sleep)
+    end
+
+    it 'returns ok when state is registered and dataset update succeeds' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::REGISTERED)
+      allow(dataset).to receive(:update).and_return(true)
+
+      expect(dataset.register_doi).to eq(status: 'ok')
+    end
+
+    it 'returns error when state is registered and dataset update fails' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::REGISTERED)
+      allow(dataset).to receive(:update).and_return(false)
+
+      result = dataset.register_doi
+      expect(result[:status]).to eq('error')
+    end
+
+    it 'returns invalid-state string when state after setup is not draft' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::FINDABLE)
+
+      result = dataset.register_doi
+
+      expect(result).to include('invalid DataCite state')
+    end
+  end
+
+  describe '#hide_doi' do
+    before do
+      allow(dataset).to receive(:sleep)
+    end
+
+    it 'returns ok for unregistered state' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::UNREGISTERED)
+
+      expect(dataset.hide_doi).to eq(status: 'ok')
+    end
+
+    it 'delegates draft state to delete_doi' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::DRAFT)
+      allow(dataset).to receive(:delete_doi).and_return(status: 'ok')
+
+      expect(dataset.hide_doi).to eq(status: 'ok')
+      expect(dataset).to have_received(:delete_doi)
+    end
+
+    it 'hides findable doi and succeeds when resulting state becomes registered' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::FINDABLE, Databank::DoiState::REGISTERED)
+      allow(dataset).to receive(:datacite_json_body).and_return('{"data":{}}')
+      allow(Dataset).to receive(:put_to_datacite)
+
+      expect(dataset.hide_doi).to eq(status: 'ok')
+      expect(Dataset).to have_received(:put_to_datacite).with(dataset.identifier, '{"data":{}}')
+    end
+  end
+
+  describe '#update_doi' do
+    it 'returns error when identifier is missing' do
+      dataset.identifier = nil
+
+      expect(dataset.update_doi[:status]).to eq('error')
+    end
+
+    it 'forces released publication_state for findable DOI when dataset is not released' do
+      dataset.publication_state = Databank::PublicationState::DRAFT
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::FINDABLE)
+      allow(dataset).to receive(:update).with(publication_state: Databank::PublicationState::RELEASED).and_return(true)
+
+      expect(dataset.update_doi).to eq(status: 'ok')
+    end
+
+    it 'returns error when DataCite put response is nil' do
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::REGISTERED)
+      allow(dataset).to receive(:datacite_json_body).with(nil).and_return('{"data":{}}')
+      allow(Dataset).to receive(:put_to_datacite).and_return(nil)
+
+      result = dataset.update_doi
+      expect(result[:status]).to eq('error')
+    end
+
+    it 'returns ok when DataCite returns code 200' do
+      response = instance_double(Net::HTTPResponse, code: '200')
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::REGISTERED)
+      allow(dataset).to receive(:datacite_json_body).with(nil).and_return('{"data":{}}')
+      allow(Dataset).to receive(:put_to_datacite).and_return(response)
+
+      expect(dataset.update_doi).to eq(status: 'ok')
+    end
+  end
+
+  describe '#delete_doi' do
+    it 'returns ok when state is unregistered' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::UNREGISTERED)
+
+      expect(dataset.delete_doi).to eq(status: 'ok')
+    end
+
+    it 'returns error when state is not draft for deletion' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::REGISTERED)
+
+      result = dataset.delete_doi
+      expect(result[:status]).to eq('error')
+      expect(result[:error_text]).to include('can only remove DataCite DOIs in draft state')
+    end
+  end
 end

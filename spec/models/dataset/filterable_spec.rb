@@ -1,6 +1,77 @@
 require 'rails_helper'
 
 RSpec.describe Dataset::Filterable, type: :model do
+  class FakeSearchDsl
+    attr_reader :calls
+
+    def initialize
+      @calls = []
+    end
+
+    def all_of(&block)
+      @calls << [:all_of, []]
+      instance_eval(&block) if block
+      self
+    end
+
+    def any_of(&block)
+      @calls << [:any_of, []]
+      instance_eval(&block) if block
+      self
+    end
+
+    def with(*args, &block)
+      @calls << [:with, args]
+      instance_eval(&block) if block
+      self
+    end
+
+    def without(*args, &block)
+      @calls << [:without, args]
+      instance_eval(&block) if block
+      self
+    end
+
+    def keywords(*args)
+      @calls << [:keywords, args]
+      self
+    end
+
+    def order_by(*args)
+      @calls << [:order_by, args]
+      self
+    end
+
+    def facet(*args)
+      @calls << [:facet, args]
+      self
+    end
+
+    def paginate(*args)
+      @calls << [:paginate, args]
+      self
+    end
+
+    def method_missing(name, *args, &block)
+      @calls << [name, args]
+      instance_eval(&block) if block
+      self
+    end
+
+    def respond_to_missing?(_name, _include_private = false)
+      true
+    end
+  end
+
+  def search_with_fake_dsl
+    fake = FakeSearchDsl.new
+    allow(Dataset).to receive(:search) do |&block|
+      fake.instance_eval(&block)
+      fake
+    end
+    fake
+  end
+
   before do
     stub_const('Placeholder_FacetRow', Struct.new(:value, :count))
   end
@@ -112,6 +183,117 @@ RSpec.describe Dataset::Filterable, type: :model do
       Dataset.list_with_facet(list: list, search_get_facets: search_get_facets, facet: :subject_text)
 
       expect(list_facet.rows.count { |row| row.value == 'subject-a' }).to eq(1)
+    end
+  end
+
+  describe '.admin_list' do
+    it 'uses identifier filter when q contains slash and defaults sort to updated_at desc' do
+      fake = search_with_fake_dsl
+
+      Dataset.admin_list(params: { q: '10.13012/B2IDB-ABC' }, per_page: 25)
+
+      expect(fake.calls).to include([:with, [:identifier, '10.13012/B2IDB-ABC']])
+      expect(fake.calls).to include([:order_by, [:updated_at, :desc]])
+      expect(fake.calls.none? { |name, _args| name == :keywords }).to be true
+    end
+
+    it 'uses keywords when q has no slash and respects sort_released_asc' do
+      fake = search_with_fake_dsl
+
+      Dataset.admin_list(params: { q: 'climate', 'sort_by' => 'sort_released_asc' }, per_page: 25)
+
+      expect(fake.calls).to include([:keywords, ['climate']])
+      expect(fake.calls).to include([:order_by, [:release_datetime, :asc]])
+    end
+  end
+
+  describe '.depositor_list' do
+    let(:user) { instance_double(User, email: 'depositor@example.org') }
+
+    it 'adds editor filters and applies sort_ingested_asc when requested' do
+      fake = search_with_fake_dsl
+
+      Dataset.depositor_list(
+        user: user,
+        params: { 'editor' => 'editor@example.org', 'sort_by' => 'sort_ingested_asc', q: 'term' },
+        per_page: 25
+      )
+
+      expect(fake.calls).to include([:with, [:editor_emails, 'editor@example.org']])
+      expect(fake.calls).to include([:with, [:depositor_netid, 'editor@example.org']])
+      expect(fake.calls).to include([:keywords, ['term']])
+      expect(fake.calls).to include([:order_by, [:ingest_datetime, :asc]])
+    end
+  end
+
+  describe '.public_list' do
+    it 'applies depositor filter values and sort_ingested_desc' do
+      fake = search_with_fake_dsl
+
+      Dataset.public_list(
+        params: {
+          'depositors' => ['alice@example.org', 'bob@example.org'],
+          'sort_by' => 'sort_ingested_desc',
+          q: 'public term'
+        },
+        per_page: 25
+      )
+
+      expect(fake.calls).to include([:with, [:depositor, 'alice@example.org']])
+      expect(fake.calls).to include([:with, [:depositor, 'bob@example.org']])
+      expect(fake.calls).to include([:keywords, ['public term']])
+      expect(fake.calls).to include([:order_by, [:ingest_datetime, :desc]])
+    end
+
+    it 'uses identifier filter for slash query values' do
+      fake = search_with_fake_dsl
+
+      Dataset.public_list(params: { q: '10.13012/B2IDB-PUBLIC' }, per_page: 25)
+
+      expect(fake.calls).to include([:with, [:identifier, '10.13012/B2IDB-PUBLIC']])
+      expect(fake.calls.none? { |name, _args| name == :keywords }).to be true
+    end
+  end
+
+  describe '.facet queries' do
+    let(:user) { instance_double(User, email: 'depositor@example.org') }
+
+    it 'admin_facets uses identifier query path when q has slash' do
+      fake = search_with_fake_dsl
+
+      Dataset.admin_facets(params: { q: '10.13012/B2IDB-FACET' })
+
+      expect(fake.calls).to include([:with, [:identifier, '10.13012/B2IDB-FACET']])
+      expect(fake.calls.none? { |name, _args| name == :keywords }).to be true
+    end
+
+    it 'depositor_facets uses keywords path when q has no slash' do
+      fake = search_with_fake_dsl
+
+      Dataset.depositor_facets(user: user, params: { q: 'depositor facet term' })
+
+      expect(fake.calls).to include([:keywords, ['depositor facet term']])
+      expect(fake.calls).to include([:facet, [:publication_year]])
+    end
+
+    it 'depositor_my_facets includes visibility facet and user draft viewer filter' do
+      fake = search_with_fake_dsl
+
+      Dataset.depositor_my_facets(user: user, params: { q: 'my facet term' })
+
+      expect(fake.calls).to include([:with, [:draft_viewer_emails, 'depositor@example.org']])
+      expect(fake.calls).to include([:facet, [:visibility_code]])
+      expect(fake.calls).to include([:keywords, ['my facet term']])
+    end
+
+    it 'public_facets includes public facets and supports slash identifier search' do
+      fake = search_with_fake_dsl
+
+      Dataset.public_facets(params: { q: '10.13012/B2IDB-PUBLIC-FACET' })
+
+      expect(fake.calls).to include([:with, [:identifier, '10.13012/B2IDB-PUBLIC-FACET']])
+      expect(fake.calls).to include([:facet, [:creator_names]])
+      expect(fake.calls).to include([:facet, [:publication_year]])
     end
   end
 end

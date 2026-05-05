@@ -118,4 +118,178 @@ RSpec.describe Metric, type: :model do
       end
     end
   end
+
+  describe '.write_dataset_downloads_json' do
+    it 'writes dataset download rows and totals csv' do
+      Dir.mktmpdir('metric-dataset-downloads') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        target_path = METRICS_CONFIG[:dataset_downloads_json][:relative_path]
+        dataset = create(:dataset)
+
+        create(:dataset_download_tally, dataset_key: dataset.key, doi: '10.13012/B2IDB-AAA_V1', tally: 2, download_date: Date.new(2026, 5, 1))
+        create(:dataset_download_tally, dataset_key: dataset.key, doi: '10.13012/B2IDB-AAA_V1', tally: 3, download_date: Date.new(2026, 5, 2))
+
+        Metric.write_dataset_downloads_json
+
+        json = JSON.parse(File.read(target_path))
+        expect(json['dataset_downloads'].length).to eq(2)
+
+        totals_path = target_path.split('.json').first + '_totals.csv'
+        totals_rows = CSV.read(totals_path)
+        expect(totals_rows).to include(['doi', 'tally'])
+        expect(totals_rows).to include(['10.13012/B2IDB-AAA_V1', '5'])
+      end
+    end
+  end
+
+  describe '.write_datafile_downloads_json' do
+    it 'writes file download tally rows to json' do
+      Dir.mktmpdir('metric-datafile-downloads') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        target_path = METRICS_CONFIG[:datafile_downloads_json][:relative_path]
+
+        create(:file_download_tally,
+               doi: '10.13012/B2IDB-AAA_V1',
+               filename: 'sample.csv',
+               download_date: Date.new(2026, 5, 3),
+               tally: 7)
+
+        Metric.write_datafile_downloads_json
+
+        json = JSON.parse(File.read(target_path))
+        expect(json['datafile_downloads'].length).to eq(1)
+        expect(json['datafile_downloads'][0]['file']).to eq('sample.csv')
+        expect(json['datafile_downloads'][0]['tally']).to eq(7)
+      end
+    end
+  end
+
+  describe '.write_datasets_tsv' do
+    it 'writes heading and one row per public dataset' do
+      Dir.mktmpdir('metric-datasets-tsv') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        target_path = METRICS_CONFIG[:datasets_tsv][:relative_path]
+
+        dataset = instance_double(
+          Dataset,
+          identifier: '10.13012/B2IDB-XYZ_V1',
+          ingest_datetime: Time.zone.parse('2026-05-01 12:00:00'),
+          release_date: Date.new(2026, 5, 2),
+          datafiles: [double, double],
+          total_filesize: 1234,
+          total_downloads: 88,
+          num_external_relationships: 3,
+          creators: [double, double],
+          subject: 'Physical Sciences',
+          plain_text_citation: 'Citation text'
+        )
+        allow(dataset).to receive(:handle_related_materials)
+        allow(Dataset).to receive(:all_with_public_metadata).and_return([dataset])
+
+        Metric.write_datasets_tsv
+
+        rows = File.read(target_path).lines.map(&:strip)
+        expect(rows.first).to include('doi')
+        expect(rows[1]).to include('10.13012/B2IDB-XYZ_V1')
+        expect(rows[1]).to include('Citation text')
+      end
+    end
+  end
+
+  describe '.write_datafiles_csv' do
+    it 'processes datafiles in batches of 500' do
+      Dir.mktmpdir('metric-write-datafiles-csv') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+
+        dataset = instance_double(Dataset, datafiles: Array.new(501) { instance_double(Datafile) })
+        allow(Dataset).to receive(:all_with_public_metadata).and_return([dataset])
+        allow(MedusaInfo).to receive(:doi_filename_mimetype).and_return({})
+        allow(Metric).to receive(:write_datafile_csv_datafile_batch)
+
+        Metric.write_datafiles_csv
+
+        expect(Metric).to have_received(:write_datafile_csv_datafile_batch).twice
+      end
+    end
+  end
+
+  describe '.write_container_contents_csv' do
+    it 'writes nested item rows only for archive datafiles' do
+      Dir.mktmpdir('metric-container-contents-csv') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        target_path = METRICS_CONFIG[:container_contents_csv][:relative_path]
+
+        nested_item = instance_double(NestedItem, item_path: 'folder/a.txt', item_name: 'a.txt', media_type: 'text/plain')
+        archive_datafile = instance_double(Datafile, archive?: true, bytestream_name: 'files.zip', nested_items: [nested_item])
+        regular_datafile = instance_double(Datafile, archive?: false, bytestream_name: 'plain.txt', nested_items: [])
+        dataset = instance_double(Dataset, identifier: '10.13012/B2IDB-CONT_V1', datafiles: [archive_datafile, regular_datafile])
+        allow(Dataset).to receive(:all_with_public_metadata).and_return([dataset])
+
+        Metric.write_container_contents_csv
+
+        rows = CSV.read(target_path)
+        expect(rows.length).to eq(2)
+        expect(rows[1]).to eq(['10.13012/B2IDB-CONT_V1', 'files.zip', 'folder/a.txt', 'a.txt', 'text/plain'])
+      end
+    end
+  end
+
+  describe '.write_funders_csv' do
+    it 'writes one row per dataset funder' do
+      Dir.mktmpdir('metric-funders-csv') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        target_path = METRICS_CONFIG[:funders_csv][:relative_path]
+
+        dataset = create(:dataset, identifier: '10.13012/B2IDB-FUND_V1')
+        funder = create(:funder, dataset: dataset, name: 'NSF', grant: 'NSF-42')
+        allow(Dataset).to receive(:all_with_public_metadata).and_return([dataset])
+
+        Metric.write_funders_csv
+
+        rows = CSV.read(target_path)
+        expect(rows).to include(['doi', 'funder', 'grant'])
+        expect(rows).to include(['10.13012/B2IDB-FUND_V1', funder.name, funder.grant])
+      end
+    end
+  end
+
+  describe '.generate_datasets_reports' do
+    it 'writes CSV and text entries only for public most-recent datasets' do
+      Dir.mktmpdir('metric-generate-reports') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        csv_path = METRICS_CONFIG[:dataset_report_csv][:relative_path]
+        text_path = METRICS_CONFIG[:dataset_report_text][:relative_path]
+
+        visible_dataset = instance_double(
+          Dataset,
+          metadata_public?: true,
+          is_most_recent_version: true,
+          key: 'IDB-ABC1234',
+          identifier: '10.13012/B2IDB-ABC1234_V1',
+          release_date: Date.new(2026, 5, 3),
+          funders: [instance_double(Funder, name: 'NSF', grant: 'NSF-99')],
+          title: 'Visible Dataset',
+          keywords: 'alpha; beta',
+          corresponding_creator_name: 'Pat Researcher',
+          corresponding_creator_email: 'pat@example.org',
+          subject: 'Technology and Engineering',
+          plain_text_citation: 'Visible citation text',
+          description: 'Visible description'
+        )
+        hidden_dataset = instance_double(Dataset, metadata_public?: false, is_most_recent_version: true)
+
+        allow(Dataset).to receive(:find_each).and_yield(visible_dataset).and_yield(hidden_dataset)
+
+        Metric.generate_datasets_reports
+
+        csv_rows = CSV.read(csv_path)
+        expect(csv_rows.length).to eq(2)
+        expect(csv_rows[1]).to include('IDB-ABC1234', '10.13012/B2IDB-ABC1234_V1', 'Visible Dataset')
+
+        text_body = File.read(text_path)
+        expect(text_body).to include('Key: IDB-ABC1234')
+        expect(text_body).to include('Description: Visible description')
+      end
+    end
+  end
 end

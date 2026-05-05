@@ -292,6 +292,74 @@ RSpec.describe MedusaIngest, type: :model do
   #   end
   # end
 
+  describe '.on_medusa_succeeded_message' do
+    let(:response_hash) do
+      {
+        'staging_key' => 'staging/key',
+        'medusa_key' => 'medusa/key',
+        'uuid' => 'uuid-123',
+        'status' => 'ok',
+        'parent_dir' => { 'url_path' => 'medusa/path' },
+        'pass_through' => { 'class' => 'datafile', 'identifier' => 'missing-web-id' }
+      }
+    end
+
+    it 'returns false and reports when matching ingest is not found' do
+      relation = instance_double(ActiveRecord::Relation)
+      allow(MedusaIngest).to receive(:where).with(staging_key: 'staging/key').and_return(relation)
+      allow(relation).to receive(:order).with(:updated_at).and_return(relation)
+      allow(relation).to receive(:count).and_return(0)
+      expect(MedusaIngest).to receive(:notify_or_report).with(hash_including(:exception_string))
+
+      expect(MedusaIngest.on_medusa_succeeded_message(response_hash)).to be false
+    end
+
+    it 'returns false and reports when datafile is not found' do
+      ingest = MedusaIngest.new(staging_key: 'staging/key')
+      allow(ingest).to receive(:save!).and_return(true)
+      relation = instance_double(ActiveRecord::Relation)
+      allow(MedusaIngest).to receive(:where).with(staging_key: 'staging/key').and_return(relation)
+      allow(relation).to receive(:order).with(:updated_at).and_return(relation)
+      allow(relation).to receive(:count).and_return(1)
+      allow(relation).to receive(:first).and_return(ingest)
+      allow(Datafile).to receive(:find_by).with(web_id: 'missing-web-id').and_return(nil)
+      expect(MedusaIngest).to receive(:notify_or_report).with(hash_including(:exception_string))
+
+      expect(MedusaIngest.on_medusa_succeeded_message(response_hash)).to be false
+    end
+
+    it 'returns false and reports when datafile is found but not in medusa' do
+      ingest = MedusaIngest.new(staging_key: 'staging/key')
+      allow(ingest).to receive(:save!).and_return(true)
+      relation = instance_double(ActiveRecord::Relation)
+      allow(MedusaIngest).to receive(:where).with(staging_key: 'staging/key').and_return(relation)
+      allow(relation).to receive(:order).with(:updated_at).and_return(relation)
+      allow(relation).to receive(:count).and_return(1)
+      allow(relation).to receive(:first).and_return(ingest)
+
+      datafile = instance_double(Datafile, in_medusa: false)
+      allow(Datafile).to receive(:find_by).with(web_id: 'missing-web-id').and_return(datafile)
+      expect(MedusaIngest).to receive(:notify_or_report).with(hash_including(:exception_string))
+
+      expect(MedusaIngest.on_medusa_succeeded_message(response_hash)).to be false
+    end
+
+    it 'returns false and reports for non-datafile class when dataset is missing' do
+      ingest = MedusaIngest.new(staging_key: 'staging/key')
+      allow(ingest).to receive(:save!).and_return(true)
+      relation = instance_double(ActiveRecord::Relation)
+      allow(MedusaIngest).to receive(:where).with(staging_key: 'staging/key').and_return(relation)
+      allow(relation).to receive(:order).with(:updated_at).and_return(relation)
+      allow(relation).to receive(:count).and_return(1)
+      allow(relation).to receive(:first).and_return(ingest)
+      allow(Dataset).to receive(:find_by).with(key: 'missing-dataset').and_return(nil)
+      expect(MedusaIngest).to receive(:notify_or_report).with(hash_including(:exception_string))
+
+      non_datafile_response = response_hash.merge('pass_through' => { 'class' => 'description', 'identifier' => 'missing-dataset' })
+      expect(MedusaIngest.on_medusa_succeeded_message(non_datafile_response)).to be false
+    end
+  end
+
   describe '.on_medusa_failed_message' do
     let(:response_hash) { { "staging_key" => "staging_key", "status" => "error", "error" => "error message" } }
 
@@ -309,6 +377,29 @@ RSpec.describe MedusaIngest, type: :model do
       expect(ingest.request_status).to eq('error')
       expect(ingest.error_text).to eq('failure detail')
       expect(ingest.response_time).to be_present
+    end
+  end
+
+  describe '.remove_draft_if_in_medusa' do
+    it 'removes matching draft and info files when medusa file exists with equal size' do
+      ingest = create(:medusa_ingest, staging_key: 'draft/key', target_key: 'medusa/key')
+      draft_root = instance_double('draft_root')
+      medusa_root = instance_double('medusa_root')
+      storage_manager = instance_double('storage_manager', draft_root: draft_root, medusa_root: medusa_root)
+      all_relation = instance_double(ActiveRecord::Relation)
+
+      allow(StorageManager).to receive(:instance).and_return(storage_manager)
+      allow(MedusaIngest).to receive(:all).and_return(all_relation)
+      allow(all_relation).to receive(:find_each).and_yield(ingest)
+      allow(draft_root).to receive(:exist?).with('draft/key').and_return(true)
+      allow(medusa_root).to receive(:exist?).with('medusa/key').and_return(true)
+      allow(draft_root).to receive(:size).with('draft/key').and_return(10)
+      allow(medusa_root).to receive(:size).with('medusa/key').and_return(10)
+      allow(draft_root).to receive(:exist?).with('draft/key.info').and_return(true)
+      expect(draft_root).to receive(:delete_content).with('draft/key')
+      expect(draft_root).to receive(:delete_content).with('draft/key.info')
+
+      MedusaIngest.remove_draft_if_in_medusa
     end
   end
 
