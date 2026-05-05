@@ -164,10 +164,10 @@ class Creator < ApplicationRecord
 
   ##
   # validation
-  # @return [Boolean] true if the creator has a valid name, either as an institution or an individual
+  # Adds an error if the creator has neither a valid institution name nor a valid individual name.
   def name?
     has_institution_name = institution_name && institution_name != ""
     has_individual_name = given_name && given_name != "" && family_name && family_name != ""
-    has_institution_name || has_individual_name
+    errors.add(:base, "Creator must have either an institution name or both a given name and family name") unless has_institution_name || has_individual_name
   end
 end

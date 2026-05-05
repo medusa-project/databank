@@ -171,7 +171,7 @@ module Dataset::Versionable
       acknowledge_v_request_email.deliver_now
     rescue Net::SMTPSyntaxError => e
       Rails.logger.warn(e.message)
-      Rails.logger.warn("could not version request mail #{params}")
+      Rails.logger.warn("could not version request mail #{key}")
     rescue StandardError => e
       Rails.logger.warn("error while trying to send version_request_emails #{e.message}")
       raise e

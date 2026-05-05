@@ -41,6 +41,15 @@ RSpec.describe User, type: :model do
   end
 
   describe '#datasets_user_can_view' do
+    it 'returns all datasets for admin role' do
+      user = build(:user, role: Databank::UserRole::ADMIN)
+      admin_datasets = [double, double]
+
+      allow(Dataset).to receive(:all).and_return(admin_datasets)
+
+      expect(user.datasets_user_can_view(user: user)).to eq(admin_datasets)
+    end
+
     it 'returns filtered union for depositor role and excludes forbidden states' do
       user = build(:user, provider: 'shibboleth', email: 'depositor@illinois.edu', role: Databank::UserRole::DEPOSITOR)
       public_ds = double(id: 1)
@@ -63,9 +72,27 @@ RSpec.describe User, type: :model do
 
       expect(result).to contain_exactly(public_ds, owned_ds, ability_ds)
     end
+
+    it 'returns metadata-public datasets for non-admin non-depositor roles' do
+      user = build(:user, role: Databank::UserRole::GUEST)
+      public_ds = [double, double]
+
+      allow(Dataset).to receive(:select).and_return(public_ds)
+
+      expect(user.datasets_user_can_view(user: user)).to eq(public_ds)
+    end
   end
 
   describe '#datasets_user_can_edit' do
+    it 'returns all datasets for admin role' do
+      user = build(:user, role: Databank::UserRole::ADMIN)
+      admin_datasets = [double, double]
+
+      allow(Dataset).to receive(:all).and_return(admin_datasets)
+
+      expect(user.datasets_user_can_edit(user: user)).to eq(admin_datasets)
+    end
+
     it 'returns depositor editable datasets plus update abilities minus forbidden states' do
       user = build(:user, provider: 'shibboleth', email: 'depositor@illinois.edu', role: Databank::UserRole::DEPOSITOR)
       owned_ds = double(id: 10)
@@ -144,6 +171,30 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe '.curators and #associated_curator_ability' do
+    it 'returns users with databank manage ability' do
+      curator_ability = instance_double(UserAbility, user_uid: 'curator@illinois.edu')
+      curator_user = create(:user, uid: 'curator@illinois.edu')
+
+      allow(UserAbility).to receive(:where)
+        .with(resource_type: 'Databank', ability: 'manage', resource_id: nil)
+        .and_return([curator_ability])
+
+      expect(User.curators).to eq([curator_user])
+    end
+
+    it 'returns the first matching associated curator ability for a user' do
+      user = create(:user, provider: 'shibboleth', uid: 'curator@illinois.edu')
+      ability = UserAbility.create!(user_provider: user.provider,
+                                    user_uid: user.uid,
+                                    resource_type: 'Databank',
+                                    ability: 'manage',
+                                    resource_id: nil)
+
+      expect(user.associated_curator_ability).to eq(ability)
+    end
+  end
+
   describe '.from_omniauth / .create_with_omniauth / #update_with_omniauth' do
     let(:auth_hash) do
       {
@@ -171,6 +222,15 @@ RSpec.describe User, type: :model do
       expect(existing).to have_received(:update_with_omniauth).with(auth_hash)
     end
 
+    it 'creates a new user from from_omniauth when no existing user is found' do
+      created = create(:user, provider: 'shibboleth', uid: 'netid@illinois.edu')
+
+      allow(User).to receive(:find_by).with(provider: 'shibboleth', uid: 'netid@illinois.edu').and_return(nil)
+      allow(User).to receive(:create_with_omniauth).with(auth_hash).and_return(created)
+
+      expect(User.from_omniauth(auth_hash)).to eq(created)
+    end
+
     it 'creates user and applies computed role in shibboleth create flow' do
       allow(User).to receive(:user_role).and_return(Databank::UserRole::DEPOSITOR)
 
@@ -191,6 +251,14 @@ RSpec.describe User, type: :model do
       expect(user.reload.email).to eq('netid@illinois.edu')
       expect(user.username).to eq('netid')
       expect(user.role).to eq(Databank::UserRole::DEPOSITOR)
+    end
+  end
+
+  describe '#netid' do
+    it 'returns the left side of the email' do
+      user = build(:user, email: 'left.side@illinois.edu')
+
+      expect(user.netid).to eq('left.side')
     end
   end
 
@@ -231,6 +299,15 @@ RSpec.describe User, type: :model do
       expect(User.user_role(auth)).to eq(Databank::UserRole::NO_DEPOSIT)
     end
 
+    it 'returns depositor for graduate student affiliations' do
+      allow(User).to receive(:admin_uids).and_return([])
+      auth = base_auth.deep_dup
+      auth['extra']['raw_info']['iTrustAffiliation'] = 'student'
+      auth['extra']['raw_info']['uiucEduStudentLevelCode'] = '1G'
+
+      expect(User.user_role(auth)).to eq(Databank::UserRole::DEPOSITOR)
+    end
+
     it 'returns depositor for staff affiliation' do
       allow(User).to receive(:admin_uids).and_return([])
       auth = base_auth.deep_dup
@@ -249,6 +326,24 @@ RSpec.describe User, type: :model do
 
       expect(User.user_role(auth)).to eq(Databank::UserRole::NO_DEPOSIT)
     end
+
+    it 'returns no_deposit and notifies on unexpected split affiliation shape' do
+      allow(User).to receive(:admin_uids).and_return([])
+      auth = base_auth.deep_dup
+      split_source = Class.new do
+        def split(*)
+          []
+        end
+      end.new
+      auth['extra']['raw_info']['iTrustAffiliation'] = split_source
+      mail = double
+      allow(mail).to receive(:deliver_now)
+      allow(Rails.logger).to receive(:warn)
+      expect(DatabankMailer).to receive(:error).and_return(mail)
+
+      expect(User.user_role(auth)).to eq(Databank::UserRole::NO_DEPOSIT)
+      expect(Rails.logger).to have_received(:warn).with(/unexpected auth:/)
+    end
   end
 
   describe '.system_user and .admin_uids' do
@@ -256,6 +351,19 @@ RSpec.describe User, type: :model do
       system = create(:user, provider: 'system', uid: IDB_CONFIG[:system_user_email], email: IDB_CONFIG[:system_user_email])
 
       expect(User.system_user).to eq(system)
+    end
+
+    it 'creates the system user when missing' do
+      User.where(provider: 'system', uid: IDB_CONFIG[:system_user_email]).delete_all
+
+      system = User.system_user
+
+      expect(system.provider).to eq('system')
+      expect(system.uid).to eq(IDB_CONFIG[:system_user_email])
+      expect(system.name).to eq(IDB_CONFIG[:system_user_name])
+      expect(system.email).to eq(IDB_CONFIG[:system_user_email])
+      expect(system.username).to eq(IDB_CONFIG[:system_user_name])
+      expect(system.role).to eq('admin')
     end
 
     it 'combines config admins and databank manage abilities in admin_uids' do
