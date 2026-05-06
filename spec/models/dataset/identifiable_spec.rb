@@ -130,6 +130,12 @@ RSpec.describe Dataset::Identifiable, type: :model do
   end
 
   describe '#doi_infohash' do
+    it 'raises when doi_info_from_datacite returns nil' do
+      allow(dataset).to receive(:doi_info_from_datacite).and_return(nil)
+
+      expect { dataset.doi_infohash }.to raise_error(StandardError, /no response to doi info call/)
+    end
+
     it 'returns empty hash when DataCite returns not found' do
       response = Net::HTTPNotFound.new('1.1', '404', 'Not Found')
       allow(dataset).to receive(:doi_info_from_datacite).and_return(response)
@@ -142,6 +148,22 @@ RSpec.describe Dataset::Identifiable, type: :model do
       allow(dataset).to receive(:doi_info_from_datacite).and_return(response)
 
       expect { dataset.doi_infohash }.to raise_error(StandardError, /credentials could not be verified/)
+    end
+
+    it 'raises when DataCite returns unprocessable entity' do
+      response = Net::HTTPUnprocessableEntity.new('1.1', '422', 'Unprocessable Entity')
+      allow(dataset).to receive(:doi_info_from_datacite).and_return(response)
+
+      expect { dataset.doi_infohash }.to raise_error(StandardError, /bad get_doi request/)
+    end
+
+    it 'raises when successful response body is not valid JSON' do
+      response = Net::HTTPOK.new('1.1', '200', 'OK')
+      response.instance_variable_set(:@read, true)
+      response.instance_variable_set(:@body, 'not json')
+      allow(dataset).to receive(:doi_info_from_datacite).and_return(response)
+
+      expect { dataset.doi_infohash }.to raise_error(StandardError, /response not valid JSON/)
     end
 
     it 'parses successful JSON response' do
@@ -276,6 +298,18 @@ RSpec.describe Dataset::Identifiable, type: :model do
       expect(dataset.hide_doi).to eq(status: 'ok')
       expect(Dataset).to have_received(:put_to_datacite).with(dataset.identifier, '{"data":{}}')
     end
+
+    it 'returns error when hide attempt does not result in registered state' do
+      allow(dataset).to receive(:identifier_present?).and_return(true)
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::FINDABLE, Databank::DoiState::FINDABLE)
+      allow(dataset).to receive(:datacite_json_body).and_return('{"data":{}}')
+      allow(Dataset).to receive(:put_to_datacite)
+
+      result = dataset.hide_doi
+
+      expect(result[:status]).to eq('error')
+      expect(result[:error_text]).to include('problem changing state in DataCite metadata store')
+    end
   end
 
   describe '#update_doi' do
@@ -291,6 +325,17 @@ RSpec.describe Dataset::Identifiable, type: :model do
       allow(dataset).to receive(:update).with(publication_state: Databank::PublicationState::RELEASED).and_return(true)
 
       expect(dataset.update_doi).to eq(status: 'ok')
+    end
+
+    it 'returns error if forcing released publication_state fails' do
+      dataset.publication_state = Databank::PublicationState::DRAFT
+      allow(dataset).to receive(:doi_state).and_return(Databank::DoiState::FINDABLE)
+      allow(dataset).to receive(:update).with(publication_state: Databank::PublicationState::RELEASED).and_return(false)
+
+      result = dataset.update_doi
+
+      expect(result[:status]).to eq('error')
+      expect(result[:error_text]).to include('error updating Illinois Data Bank')
     end
 
     it 'returns error when DataCite put response is nil' do
@@ -327,6 +372,76 @@ RSpec.describe Dataset::Identifiable, type: :model do
       result = dataset.delete_doi
       expect(result[:status]).to eq('error')
       expect(result[:error_text]).to include('can only remove DataCite DOIs in draft state')
+    end
+  end
+
+  describe '.post_to_datacite' do
+    it 'returns nil for unauthorized responses' do
+      http = instance_double(Net::HTTP)
+      response = Net::HTTPUnauthorized.new('1.1', '401', 'Unauthorized')
+      response.instance_variable_set(:@read, true)
+      response.instance_variable_set(:@body, 'unauthorized')
+      datacite_host = IDB_CONFIG[:datacite][:endpoint]
+
+      allow(Net::HTTP).to receive(:new).and_wrap_original do |original, host, port|
+        host == datacite_host ? http : original.call(host, port)
+      end
+      allow(http).to receive(:use_ssl=)
+      allow(http).to receive(:verify_mode=)
+      allow(http).to receive(:request).and_return(response)
+      allow(Rails.logger).to receive(:warn)
+
+      expect(Dataset.post_to_datacite('{"data":{}}')).to be_nil
+    end
+
+    it 'returns response for success responses' do
+      http = instance_double(Net::HTTP)
+      response = Net::HTTPCreated.new('1.1', '201', 'Created')
+      datacite_host = IDB_CONFIG[:datacite][:endpoint]
+
+      allow(Net::HTTP).to receive(:new).and_wrap_original do |original, host, port|
+        host == datacite_host ? http : original.call(host, port)
+      end
+      allow(http).to receive(:use_ssl=)
+      allow(http).to receive(:verify_mode=)
+      allow(http).to receive(:request).and_return(response)
+
+      expect(Dataset.post_to_datacite('{"data":{}}')).to eq(response)
+    end
+  end
+
+  describe '.put_to_datacite' do
+    it 'returns nil for not found responses' do
+      http = instance_double(Net::HTTP)
+      response = Net::HTTPNotFound.new('1.1', '404', 'Not Found')
+      response.instance_variable_set(:@read, true)
+      response.instance_variable_set(:@body, 'not found')
+      datacite_host = IDB_CONFIG[:datacite][:endpoint]
+
+      allow(Net::HTTP).to receive(:new).and_wrap_original do |original, host, port|
+        host == datacite_host ? http : original.call(host, port)
+      end
+      allow(http).to receive(:use_ssl=)
+      allow(http).to receive(:verify_mode=)
+      allow(http).to receive(:request).and_return(response)
+      allow(Rails.logger).to receive(:warn)
+
+      expect(Dataset.put_to_datacite(dataset.identifier, '{"data":{}}')).to be_nil
+    end
+
+    it 'returns response for success responses' do
+      http = instance_double(Net::HTTP)
+      response = Net::HTTPOK.new('1.1', '200', 'OK')
+      datacite_host = IDB_CONFIG[:datacite][:endpoint]
+
+      allow(Net::HTTP).to receive(:new).and_wrap_original do |original, host, port|
+        host == datacite_host ? http : original.call(host, port)
+      end
+      allow(http).to receive(:use_ssl=)
+      allow(http).to receive(:verify_mode=)
+      allow(http).to receive(:request).and_return(response)
+
+      expect(Dataset.put_to_datacite(dataset.identifier, '{"data":{}}')).to eq(response)
     end
   end
 end

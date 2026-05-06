@@ -57,7 +57,7 @@ class DatafilesController < ApplicationController
     authorize! :update, @dataset
     respond_to do |format|
       format.html { redirect_to "/datasets/#{@dataset.key}/datafiles/#{@datafile.web_id}/upload" }
-      format.json { render :edit, status: :created, location: "/datasets/#{@dataset.key}/datafiles/#{@datafile.webi_id}/upload" }
+      format.json { render :edit, status: :created, location: "/datasets/#{@dataset.key}/datafiles/#{@datafile.web_id}/upload" }
     end
   end
 

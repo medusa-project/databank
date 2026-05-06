@@ -13,6 +13,8 @@
 
 class UserAbility < ApplicationRecord
 
+  validates :user_provider, :user_uid, :resource_type, :ability, presence: true
+
   before_save :trim_values
 
   def deposit_exception?

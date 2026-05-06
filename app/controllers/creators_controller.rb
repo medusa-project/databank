@@ -65,10 +65,10 @@ class CreatorsController < ApplicationController
   # Responds to `POST /creators/update_row_order`
   def update_row_order
     @creator = Creator.find(creator_params[:creator_id])
-    row_order_position_integer = Integer(creator_params[:row_order_position])
-    @creator.update_attribute :row_order_position, row_order_position_integer
-    @creator.save!
-    render nothing: true # this is a POST action, updates sent via AJAX, no view rendered
+    requested_position = creator_params[:row_order_position] || creator_params[:row_position]
+    row_order_position_integer = Integer(requested_position)
+    @creator.update!(row_position: row_order_position_integer)
+    head :ok # this is a POST action, updates sent via AJAX, no view rendered
 
   end
   # Responds to `POST /creators/create_for_form`
@@ -113,6 +113,6 @@ class CreatorsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def creator_params
-    params.require(:creator).permit(:dataset_id, :family_name, :given_name, :institution_name, :identifier, :identifier_scheme, :email, :type_of, :is_contact, :row_position, :creator_id)
+    params.require(:creator).permit(:dataset_id, :family_name, :given_name, :institution_name, :identifier, :identifier_scheme, :email, :type_of, :is_contact, :row_position, :row_order_position, :creator_id)
   end
 end

@@ -131,6 +131,35 @@ RSpec.describe FeaturedResearchersController, type: :controller do
 
       expect(response).to render_template(:new)
     end
+
+    it 'returns file upload payload for JSON when save succeeds' do
+      allow(controller).to receive(:to_fileupload).and_return(files: [{ featureid: 123 }])
+
+      post :create, params: {
+        featured_researcher: {
+          name: 'Created Researcher',
+          question: 'What changed?',
+          is_active: true
+        }
+      }, format: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)).to eq('files' => [{ 'featureid' => 123 }])
+    end
+
+    it 'returns unprocessable content for JSON when save fails' do
+      allow_any_instance_of(FeaturedResearcher).to receive(:save).and_return(false)
+
+      post :create, params: {
+        featured_researcher: {
+          name: 'Created Researcher',
+          question: 'What changed?',
+          is_active: true
+        }
+      }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
   end
 
   describe 'PUT #update' do
@@ -165,6 +194,33 @@ RSpec.describe FeaturedResearchersController, type: :controller do
 
       expect(response).to render_template(:edit)
     end
+
+    it 'returns file upload payload for JSON when update succeeds' do
+      allow(controller).to receive(:to_fileupload).and_return(files: [{ featureid: researcher.id }])
+
+      put :update, params: {
+        id: researcher.id,
+        featured_researcher: {
+          name: 'After Update'
+        }
+      }, format: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)).to eq('files' => [{ 'featureid' => researcher.id }])
+    end
+
+    it 'returns unprocessable content for JSON when update fails' do
+      allow_any_instance_of(FeaturedResearcher).to receive(:update).and_return(false)
+
+      put :update, params: {
+        id: researcher.id,
+        featured_researcher: {
+          name: 'After Update'
+        }
+      }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
   end
 
   describe 'DELETE #destroy' do
@@ -180,6 +236,14 @@ RSpec.describe FeaturedResearchersController, type: :controller do
       }.to change(FeaturedResearcher, :count).by(-1)
 
       expect(response).to redirect_to(featured_researchers_url)
+    end
+
+    it 'returns no content for JSON' do
+      researcher = FeaturedResearcher.create!(name: 'Destroy Me')
+
+      delete :destroy, params: { id: researcher.id }, format: :json
+
+      expect(response).to have_http_status(:no_content)
     end
   end
 end

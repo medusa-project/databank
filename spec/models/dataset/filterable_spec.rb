@@ -113,6 +113,16 @@ RSpec.describe Dataset::Filterable, type: :model do
       expect(Dataset).to have_received(:public_list).with(params: params, per_page: 25)
     end
 
+    it 'uses default per_page=25 when per_page is zero' do
+      params = { per_page: '0' }
+      allow(Dataset).to receive(:public_list).and_return(list)
+      allow(Dataset).to receive(:public_facets).and_return(facets)
+
+      Dataset.filtered_list(user_role: Databank::UserRole::GUEST, params: params)
+
+      expect(Dataset).to have_received(:public_list).with(params: params, per_page: 25)
+    end
+
     it 'raises for depositor role when user is missing' do
       expect {
         Dataset.filtered_list(user_role: Databank::UserRole::DEPOSITOR, user: nil, params: {})
@@ -205,6 +215,14 @@ RSpec.describe Dataset::Filterable, type: :model do
       expect(fake.calls).to include([:keywords, ['climate']])
       expect(fake.calls).to include([:order_by, [:release_datetime, :asc]])
     end
+
+    it 'falls back to updated_at desc for unknown sort values' do
+      fake = search_with_fake_dsl
+
+      Dataset.admin_list(params: { q: 'climate', 'sort_by' => 'not-a-sort' }, per_page: 25)
+
+      expect(fake.calls).to include([:order_by, [:updated_at, :desc]])
+    end
   end
 
   describe '.depositor_list' do
@@ -223,6 +241,20 @@ RSpec.describe Dataset::Filterable, type: :model do
       expect(fake.calls).to include([:with, [:depositor_netid, 'editor@example.org']])
       expect(fake.calls).to include([:keywords, ['term']])
       expect(fake.calls).to include([:order_by, [:ingest_datetime, :asc]])
+    end
+
+    it 'uses identifier filter when query contains slash and sort_released_desc' do
+      fake = search_with_fake_dsl
+
+      Dataset.depositor_list(
+        user: user,
+        params: { q: '10.13012/B2IDB-DEPOSITOR', 'sort_by' => 'sort_released_desc' },
+        per_page: 25
+      )
+
+      expect(fake.calls).to include([:with, [:identifier, '10.13012/B2IDB-DEPOSITOR']])
+      expect(fake.calls).to include([:order_by, [:release_datetime, :desc]])
+      expect(fake.calls.none? { |name, _args| name == :keywords }).to be true
     end
   end
 
@@ -253,6 +285,22 @@ RSpec.describe Dataset::Filterable, type: :model do
       expect(fake.calls).to include([:with, [:identifier, '10.13012/B2IDB-PUBLIC']])
       expect(fake.calls.none? { |name, _args| name == :keywords }).to be true
     end
+
+    it 'does not add depositor filters when depositors param is present but empty' do
+      fake = search_with_fake_dsl
+
+      Dataset.public_list(params: { 'depositors' => [] }, per_page: 25)
+
+      expect(fake.calls.none? { |name, args| name == :with && args.first == :depositor }).to be true
+    end
+
+    it 'falls back to updated_at desc when sort_by is unknown' do
+      fake = search_with_fake_dsl
+
+      Dataset.public_list(params: { q: 'public term', 'sort_by' => 'unknown-sort' }, per_page: 25)
+
+      expect(fake.calls).to include([:order_by, [:updated_at, :desc]])
+    end
   end
 
   describe '.facet queries' do
@@ -274,6 +322,15 @@ RSpec.describe Dataset::Filterable, type: :model do
 
       expect(fake.calls).to include([:keywords, ['depositor facet term']])
       expect(fake.calls).to include([:facet, [:publication_year]])
+    end
+
+    it 'depositor_facets uses identifier filter when q includes slash' do
+      fake = search_with_fake_dsl
+
+      Dataset.depositor_facets(user: user, params: { q: '10.13012/B2IDB-DEP-FACET' })
+
+      expect(fake.calls).to include([:with, [:identifier, '10.13012/B2IDB-DEP-FACET']])
+      expect(fake.calls.none? { |name, _args| name == :keywords }).to be true
     end
 
     it 'depositor_my_facets includes visibility facet and user draft viewer filter' do

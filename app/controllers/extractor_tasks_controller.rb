@@ -76,6 +76,6 @@ class ExtractorTasksController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def extractor_task_params
-    params.require([:extractor_task, :web_id])
+    params.require(:extractor_task).permit(:web_id)
   end
 end

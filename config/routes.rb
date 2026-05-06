@@ -28,7 +28,6 @@ Rails.application.routes.draw do
   draw :medusa_ingest
   draw :metric
   resources :nested_items
-  draw :password_reset
   get '/policies', to: 'policies#index', :as => :policies
   resources :related_materials
   get '/researcher_spotlights', to: 'featured_researchers#index'

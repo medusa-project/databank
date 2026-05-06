@@ -15,6 +15,7 @@
 class ExtractorTask < ApplicationRecord
 
   has_one :extractor_response, dependent: :destroy
+  validates :web_id, presence: true
 
   QUEUE_URL = IDB_CONFIG[:queues][:extractor_to_databank_url]
   SQS = QueueManager.instance.sqs_client

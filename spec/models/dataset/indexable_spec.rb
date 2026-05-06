@@ -171,10 +171,10 @@ RSpec.describe Dataset::Indexable, type: :model do
     before do
       Funder.create!(dataset_id: dataset.id, name: 'NSF', code: 'nsf', grant: 'ABC-123')
       Funder.create!(dataset_id: dataset.id, name: 'NIH', code: 'nih', grant: 'XYZ-987')
-      UserAbility.create!(resource_type: 'Dataset', ability: 'view_files', resource_id: dataset.id, user_uid: 'reviewer@example.org')
-      UserAbility.create!(resource_type: 'Dataset', ability: 'view_files', resource_id: dataset.id, user_uid: 'reviewer@example.org')
-      UserAbility.create!(resource_type: 'Dataset', ability: 'update', resource_id: dataset.id, user_uid: 'editor@example.org')
-      UserAbility.create!(resource_type: 'Dataset', ability: 'update', resource_id: dataset.id, user_uid: 'reviewer@example.org')
+      UserAbility.create!(resource_type: 'Dataset', ability: 'view_files', resource_id: dataset.id, user_provider: 'developer', user_uid: 'reviewer@example.org')
+      UserAbility.create!(resource_type: 'Dataset', ability: 'view_files', resource_id: dataset.id, user_provider: 'developer', user_uid: 'reviewer@example.org')
+      UserAbility.create!(resource_type: 'Dataset', ability: 'update', resource_id: dataset.id, user_provider: 'developer', user_uid: 'editor@example.org')
+      UserAbility.create!(resource_type: 'Dataset', ability: 'update', resource_id: dataset.id, user_provider: 'developer', user_uid: 'reviewer@example.org')
       create(:datafile, dataset: dataset, binary_name: 'alpha.csv')
       create(:datafile, dataset: dataset, binary_name: 'beta.tsv')
     end

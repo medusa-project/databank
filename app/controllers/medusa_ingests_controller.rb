@@ -77,6 +77,7 @@ class MedusaIngestsController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list through.
   def medusa_ingest_params
     params.require(:medusa_ingest).permit(:idb_class, :idb_identifier, :staging_path, :request_status, :medusa_path,
-                                          :medusa_uuid, :response_time, :error_text)
+                                          :medusa_uuid, :response_time, :error_text, :staging_key, :target_key,
+                                          :medusa_dataset_dir)
   end
 end

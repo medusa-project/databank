@@ -4,6 +4,15 @@ RSpec.describe ExtractorTask, type: :model do
   let(:dataset) { create(:dataset) }
   let(:datafile) { create(:datafile, dataset: dataset, web_id: 'abc12', binary_name: 'archive.zip', mime_type: 'application/zip') }
 
+  describe 'validations' do
+    it 'requires web_id' do
+      task = ExtractorTask.new(web_id: nil)
+
+      expect(task).not_to be_valid
+      expect(task.errors[:web_id]).to include("can't be blank")
+    end
+  end
+
   describe '#command_string' do
     it 'returns nil when no datafile matches the task web_id' do
       task = ExtractorTask.new(web_id: 'missing')
