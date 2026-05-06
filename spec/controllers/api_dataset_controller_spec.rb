@@ -36,7 +36,7 @@ RSpec.describe ApiDatasetController, type: :controller do
   describe 'POST #datafile' do
     context 'authentication guard' do
       it 'returns not found when dataset is not a draft dataset' do
-        allow(Dataset).to receive(:find_by_key).with(released_dataset.key).and_return(released_dataset)
+        allow(Dataset).to receive(:find_by).with(key: released_dataset.key).and_return(released_dataset)
 
         post :datafile, params: { dataset_key: released_dataset.key }, format: :json
 
@@ -45,7 +45,7 @@ RSpec.describe ApiDatasetController, type: :controller do
       end
 
       it 'returns unauthorized for draft dataset when token authentication fails' do
-        allow(Dataset).to receive(:find_by_key).with(draft_dataset.key).and_return(draft_dataset)
+        allow(Dataset).to receive(:find_by).with(key: draft_dataset.key).and_return(draft_dataset)
 
         post :datafile, params: { dataset_key: draft_dataset.key }, format: :json
 
