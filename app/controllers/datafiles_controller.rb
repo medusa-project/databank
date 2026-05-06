@@ -352,10 +352,6 @@ class DatafilesController < ApplicationController
     datafile.mime_type || "application/octet-stream"
   end
 
-  def safe_media_type(datafile)
-    datafile.mime_type || "application/octet-stream"
-  end
-
   # Utility method used in getting presigned urls for S3
   def disposition(type, datafile)
     if browser.chrome? || browser.safari?
@@ -528,7 +524,7 @@ class DatafilesController < ApplicationController
   end
 
   def load_dataset_for_remote_create
-    @dataset ||= Dataset.find_by(key: params[:dataset_key]) # rubocop:disable Naming/MemoizedInstanceVariableName
+    @dataset = Dataset.find_by(key: params[:dataset_key])
   end
 
   def resolve_remote_file_metadata
