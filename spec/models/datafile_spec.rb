@@ -143,6 +143,39 @@ RSpec.describe Datafile, type: :model do
     end
   end
 
+  describe '.tus_storage_key' do
+    it 'extracts the final path segment from tus_url' do
+      expect(Datafile.tus_storage_key('https://example.test/files/upload-key-123')).to eq('upload-key-123')
+    end
+
+    it 'raises when tus_url does not contain a key' do
+      expect { Datafile.tus_storage_key('') }.to raise_error(ArgumentError, /missing key/)
+      expect { Datafile.tus_storage_key('/') }.to raise_error(ArgumentError, /missing key/)
+    end
+  end
+
+  describe '.build_from_tus' do
+    it 'builds a datafile with centralized TUS attributes' do
+      draft_root_name = StorageManager.instance.draft_root.name
+
+      built = Datafile.build_from_tus(
+        dataset: dataset,
+        tus_url: 'https://example.test/files/abc123',
+        filename: 'file.csv',
+        size: 345,
+        mime_type: 'text/csv'
+      )
+
+      expect(built.dataset_id).to eq(dataset.id)
+      expect(built.web_id).to be_present
+      expect(built.storage_root).to eq(draft_root_name)
+      expect(built.binary_name).to eq('file.csv')
+      expect(built.storage_key).to eq('abc123')
+      expect(built.binary_size).to eq(345)
+      expect(built.mime_type).to eq('text/csv')
+    end
+  end
+
   describe '.peek_type_from_mime' do
     it 'returns none when mime type is missing or malformed' do
       expect(Datafile.peek_type_from_mime(nil, 100)).to eq(Databank::PeekType::NONE)

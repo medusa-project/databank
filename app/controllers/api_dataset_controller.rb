@@ -47,15 +47,12 @@ class ApiDatasetController < ApplicationController
     elsif params.has_key?('tus_url') && params.has_key?('filename') && params.has_key?('size')
 
       begin
-        df = Datafile.new(dataset_id: @dataset.id)
-        tus_url = params[:tus_url]
-        tus_url_arr = tus_url.split('/')
-        tus_key = tus_url_arr[-1]
-
-        df.storage_root = StorageManager.instance.draft_root.name
-        df.binary_name = params[:filename]
-        df.storage_key = tus_key
-        df.binary_size = params[:size]
+        df = Datafile.build_from_tus(
+          dataset: @dataset,
+          tus_url: params[:tus_url],
+          filename: params[:filename],
+          size: params[:size]
+        )
 
         df.save
 

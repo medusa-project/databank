@@ -55,6 +55,26 @@ class Datafile < ApplicationRecord
 
   validates :binary_name, presence: true
 
+  def self.build_from_tus(dataset:, tus_url:, filename:, size:, mime_type: nil, peek_type: nil, peek_text: nil)
+    datafile = Datafile.new(dataset_id: dataset.id)
+    datafile.web_id ||= datafile.generate_web_id
+    datafile.storage_root = StorageManager.instance.draft_root.name
+    datafile.binary_name = filename
+    datafile.storage_key = tus_storage_key(tus_url)
+    datafile.binary_size = size
+    datafile.mime_type = mime_type
+    datafile.peek_type = peek_type unless peek_type.nil?
+    datafile.peek_text = peek_text unless peek_text.nil?
+    datafile
+  end
+
+  def self.tus_storage_key(tus_url)
+    key = tus_url.to_s.split("/").last.to_s
+    raise ArgumentError, "Invalid tus_url: missing key" if key.empty?
+
+    key
+  end
+
   ##
   # Returns the datafile web_id as the parameter for the datafile
   #
