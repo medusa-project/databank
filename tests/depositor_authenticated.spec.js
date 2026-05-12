@@ -11,10 +11,11 @@ test.describe("authenticated depositor flow", () => {
     await expect(page.locator("#continue-button")).toBeVisible();
     await page.click("#continue-button");
     await expect(page).toHaveURL(/\/datasets\/new/);
-    await expect(page.locator("body")).not.toContainText("Restricted Access");
     await expect(
-      page.locator("h1", { hasText: "Deposit Agreement" }),
+      page.getByRole("heading", { name: "Deposit Agreement", exact: true }),
     ).toBeVisible();
+    await expect(page.locator("#agree-form")).toBeVisible();
+    await expect(page.locator("#owner-yes")).toBeVisible();
   }
 
   test("continue from pre-deposit goes to dataset form without login prompt", async ({
@@ -29,37 +30,37 @@ test.describe("authenticated depositor flow", () => {
     await goToDepositAgreement(page);
 
     const warning = page.locator(".deposit-agreement-selection-warning");
-    const agreeButton = page.locator("#agree-button");
+    const agreeButton = page.getByRole("button", { name: "Submit" });
     const havePermission = page.locator("#dataset_have_permission");
     const removedPrivate = page.locator("#dataset_removed_private");
     const agreeValue = page.locator("#dataset_agree");
 
     await expect(agreeButton).toBeDisabled();
 
-    await page.click("#owner-no");
+    await page.locator("#owner-no").check();
     await expect(havePermission).toHaveValue("no");
     await expect(warning).toContainText("Selection Alert");
 
-    await page.click("#owner-yes");
+    await page.locator("#owner-yes").check();
     await expect(havePermission).toHaveValue("yes");
     await expect(warning).not.toContainText("Selection Alert");
 
-    await page.click("#private-no");
+    await page.locator("#private-no").check();
     await expect(removedPrivate).toHaveValue("no");
     await expect(warning).toContainText("Selection Alert");
 
-    await page.click("#private-yes");
+    await page.locator("#private-yes").check();
     await expect(removedPrivate).toHaveValue("yes");
     await expect(page.locator("#private-no")).not.toBeChecked();
     await expect(page.locator("#private-na")).not.toBeChecked();
     await expect(warning).not.toContainText("Selection Alert");
 
-    await page.click("#agree-no");
+    await page.locator("#agree-no").check();
     await expect(agreeValue).toHaveValue("no");
     await expect(warning).toContainText("Selection Alert");
     await expect(agreeButton).toBeDisabled();
 
-    await page.click("#agree-yes");
+    await page.locator("#agree-yes").check();
     await expect(agreeValue).toHaveValue("yes");
     await expect(page.locator("#agree-no")).not.toBeChecked();
     await expect(warning).not.toContainText("Selection Alert");
@@ -71,12 +72,12 @@ test.describe("authenticated depositor flow", () => {
   }) => {
     await goToDepositAgreement(page);
 
-    const agreeButton = page.locator("#agree-button");
+    const agreeButton = page.getByRole("button", { name: "Submit" });
     const removedPrivate = page.locator("#dataset_removed_private");
 
-    await page.click("#owner-yes");
-    await page.click("#private-na");
-    await page.click("#agree-yes");
+    await page.locator("#owner-yes").check();
+    await page.locator("#private-na").check();
+    await page.locator("#agree-yes").check();
 
     await expect(removedPrivate).toHaveValue("na");
     await expect(page.locator("#private-yes")).not.toBeChecked();
@@ -89,11 +90,11 @@ test.describe("authenticated depositor flow", () => {
   }) => {
     await goToDepositAgreement(page);
 
-    await page.click("#owner-yes");
-    await page.click("#private-na");
-    await page.click("#agree-yes");
+    await page.locator("#owner-yes").check();
+    await page.locator("#private-na").check();
+    await page.locator("#agree-yes").check();
 
-    const agreeButton = page.locator("#agree-button");
+    const agreeButton = page.getByRole("button", { name: "Submit" });
     await expect(agreeButton).toBeEnabled();
     await agreeButton.click();
 

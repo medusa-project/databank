@@ -1,5 +1,7 @@
 // creators_ready is a work-around for turbo links to trigger ready function stuff on every page.
 
+Databank.creators = Databank.creators || {};
+
 const creators_ready = function () {
     jQuery('.orcid-search-spinner').hide();
     let cells, desired_width, table_width;
@@ -360,5 +362,19 @@ function showCreatorOrcidSearchModal(creator_index) {
   jQuery('#orcid_creator_search').modal('show');
 }
 
-jQuery(document).ready(creators_ready);
-jQuery(document).on('page:load', creators_ready);
+Databank.creators.ready = creators_ready;
+Databank.creators.addPersonCreator = add_person_creator;
+Databank.creators.addInstitutionCreator = add_institution_creator;
+Databank.creators.removeCreatorRow = remove_creator_row;
+Databank.creators.handleCreatorTable = handleCreatorTable;
+Databank.creators.handleCreatorEmailChange = handle_creator_email_change;
+Databank.creators.generateCreatorPreview = generate_creator_preview;
+Databank.creators.handleContactChange = handle_contact_change;
+Databank.creators.setCreatorOrcidFromSearchModal = set_creator_orcid_from_search_modal;
+Databank.creators.searchCreatorOrcid = search_creator_orcid;
+Databank.creators.getOrcidPerson = getOrcidPerson;
+Databank.creators.enableOrcidImport = enableOrcidImport;
+Databank.creators.showCreatorOrcidSearchModal = showCreatorOrcidSearchModal;
+
+jQuery(document).ready(Databank.creators.ready);
+jQuery(document).on('page:load', Databank.creators.ready);

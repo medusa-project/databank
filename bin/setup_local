@@ -1,11 +1,18 @@
 #!/usr/bin/env ruby
 require "fileutils"
+require "json"
 
 # path to your application root.
 APP_ROOT = File.expand_path("..", __dir__)
 
 def system!(*args)
   system(*args) || abort("\n== Command #{args} failed bun==")
+end
+
+def solr_core_exists?(core_name)
+  status = `curl -s "http://sunspot:8983/solr/admin/cores?action=STATUS&core=#{core_name}"`
+  core_status = JSON.parse(status).dig("status", core_name)
+  core_status.is_a?(Hash) && !core_status.empty?
 end
 
 FileUtils.chdir APP_ROOT do
@@ -31,14 +38,20 @@ FileUtils.chdir APP_ROOT do
   puts "\n== Storing seed datafiles =="
   system! "bin/rails testing:store_seed_datafiles"
 
-  puts "\n== Ensure solr core =="
-  core_exists = system('curl -s "http://sunspot:8983/solr/admin/cores?action=STATUS&core=test" | grep -q "test"')
+  puts "\n== Ensure solr core then reindex =="
+  core_exists = solr_core_exists?("test")
+  puts "== Solr core 'test' exists: #{core_exists} =="
   unless core_exists
     system! 'curl "http://sunspot:8983/solr/admin/cores?action=CREATE&name=test&instanceDir=test&configSet=testset"'
   end
-
-  puts "\n== Reindex solr =="
-  system! "bin/rails sunspot:reindex"
+  core_exists = solr_core_exists?("test")
+  puts "== Solr core 'test' exists in reindex solr step: #{core_exists} =="
+  if core_exists
+    puts "== Solr core 'test' exists, proceeding with reindexing =="
+    system! "bin/rails sunspot:reindex"
+  else
+    puts "== Solr core 'test' does not exist, skipping reindexing =="
+  end
 
   puts "\n== Removing old logs and tempfiles =="
   system! "bin/rails log:clear tmp:clear"

@@ -76,7 +76,7 @@ setup("create role-based authenticated storage states", async ({ browser }) => {
   for (const role of PLAYWRIGHT_ROLES) {
     const targetPath = authStatePath(role);
     if (await authStateExists(targetPath)) {
-      continue;
+      await fs.unlink(targetPath);
     }
 
     const context = await browser.newContext();
@@ -101,7 +101,7 @@ setup("create named user authenticated storage states", async ({ browser }) => {
   for (const { role, name, email } of NAMED_USERS) {
     const targetPath = namedAuthStatePath(role, email);
     if (await authStateExists(targetPath)) {
-      continue;
+      await fs.unlink(targetPath);
     }
 
     const context = await browser.newContext();
