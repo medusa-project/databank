@@ -27,9 +27,9 @@
 # * +is_test+ - true if the dataset is a test dataset
 # * +is_import+ - true if the dataset is an import
 # * +tombstone_date+ - the tombstone date of the dataset
-# * +have_permission+ - assertion that depositor has permission to deposit this dataset, one of "yes", "no", or "unknown"
-# * +removed_private+ - assertion that private files have been removed, one of "yes", "no", or "na"
-# * +agree+ - assertion that the depositor agrees to the terms of deposit, one of "yes", "no", or "unknown"
+# * +have_permission+ - assertion that depositor has permission to deposit this dataset: "yes", "no", or "unknown"
+# * +removed_private+ - assertion that private files have been removed: "yes", "no", or "na"
+# * +agree+ - assertion that the depositor agrees to the terms of deposit: "yes", "no", or "unknown"
 # * +hold_state+ - the hold state of the dataset
 # * +medusa_dataset_dir+ - the medusa dataset directory of the dataset
 # * +dataset_version+ - the version of the dataset
@@ -75,7 +75,14 @@ class Dataset < ApplicationRecord
   include Dataset::Versionable
 
   # audit trail is used to track changes to the dataset and to compute milestone dates such as release date
-  audited except: %i[creator_text key complete is_test is_import updated_at embargo nested_updated_at], allow_mass_assignment: true
+  audited except:                [:creator_text,
+                                  :key,
+                                  :complete,
+                                  :is_test,
+                                  :is_import,
+                                  :updated_at,
+                                  :embargo,
+                                  :nested_updated_at], allow_mass_assignment: true
   has_associated_audits
 
   MIN_FILES = 1
@@ -112,7 +119,7 @@ class Dataset < ApplicationRecord
   before_destroy :remove_from_globus_download
   before_destroy :remove_related_reference
 
-  searchable do
+  searchable do # rubocop:disable Metrics/BlockLength
     text :title,
          :identifier,
          :description,
@@ -153,26 +160,11 @@ class Dataset < ApplicationRecord
   end
 
   def updated_datetime
-    if draft?
-      return updated_at.to_date.iso8601 if nested_updated_at.nil?
+    return most_recent_updated_date if draft?
 
-      return [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
-    end
-    # not a draft
     changelog_array = display_changelog
-    unless changelog_array
-      return updated_at.to_date.iso8601 if nested_updated_at.nil?
-
-      return [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
-    end
-
-    if changelog_array.empty?
-      return release_datetime.to_date.iso8601 if release_datetime > Time.zone.now
-
-      return updated_at.to_date.iso8601 if ingest_datetime.nil?
-
-      return ingest_datetime.to_date.iso8601
-    end
+    return most_recent_updated_date unless changelog_array
+    return updated_datetime_for_empty_changelog if changelog_array.empty?
 
     changelog_array[0][:created_at].to_date.iso8601
   end
@@ -221,7 +213,7 @@ class Dataset < ApplicationRecord
   # Otherwise, it returns false
   def files_public?
     (publication_state == Databank::PublicationState::RELEASED) &&
-      ((hold_state.nil? || (hold_state == Databank::PublicationState::TempSuppress::NONE)))
+      (hold_state.nil? || (hold_state == Databank::PublicationState::TempSuppress::NONE))
   end
 
   ##
@@ -231,9 +223,9 @@ class Dataset < ApplicationRecord
   # - the dataset files are all in Medusa Collection Registry (fileset_preserved?)
   # - the dataset files are all in Globus (globus_downloadable?)
   # and
-  # - the dataset does not have external files (has_external_files?)
+  # - the dataset does not have external files (external_files?)
   def aggregate_downloadable?
-   (fileset_preserved? || globus_downloadable?) && !has_external_files?
+    (fileset_preserved? || globus_downloadable?) && !external_files?
   end
 
   ##
@@ -241,9 +233,9 @@ class Dataset < ApplicationRecord
   # Otherwise, it returns false
   # The criteria for this is at least one of the following is true:
   # - the dataset has external files not that is not nill, empty, or ""
-  def has_external_files?
-    no_external_files = external_files_note.nil? || external_files_note.empty? || external_files_note == ""
-    return !no_external_files
+  def external_files?
+    no_external_files = external_files_note.blank? || external_files_note == ""
+    !no_external_files
   end
 
   ##
@@ -251,12 +243,8 @@ class Dataset < ApplicationRecord
   # Otherwise, it returns false
   # The criteria for this is at least one of the following is true:
   # - the dataset has a total file size greater than the Globus only limit from configuration
-  def is_too_big?
+  def too_big?
     total_filesize.to_i > (IDB_CONFIG[:globus_only_gb].to_i * (2**30))
-  end
-
-  def has_datafiles?
-    datafiles.count.positive?
   end
 
   ##
@@ -300,7 +288,6 @@ class Dataset < ApplicationRecord
   ##
   # @return [DateTime] when the dataset was ingested, which means when it was first something other than a draft
   def ingest_datetime
-
     return DateTime.current if Rails.env.test? || Rails.env.development?
 
     audits.each do |change|
@@ -308,7 +295,9 @@ class Dataset < ApplicationRecord
 
       pub_change = change.audited_changes["publication_state"]
 
-      return change.created_at if pub_change.class == Array && Databank::PublicationState::DRAFT_ARRAY.include?(pub_change[0])
+      if pub_change.instance_of?(Array) && Databank::PublicationState::DRAFT_ARRAY.include?(pub_change[0])
+        return change.created_at
+      end
     end
     # if we get here, there was no change in changelog from draft to another state
     nil
@@ -361,6 +350,19 @@ class Dataset < ApplicationRecord
   end
 
   private
+
+  def most_recent_updated_date
+    return updated_at.to_date.iso8601 if nested_updated_at.nil?
+
+    [updated_at.to_date.iso8601, nested_updated_at.to_date.iso8601].max
+  end
+
+  def updated_datetime_for_empty_changelog
+    return release_datetime.to_date.iso8601 if release_datetime > Time.zone.now
+    return updated_at.to_date.iso8601 if ingest_datetime.nil?
+
+    ingest_datetime.to_date.iso8601
+  end
 
   ##
   # sets the key for the dataset, generating it if it is not already set

@@ -98,5 +98,5 @@
                 -elsif dataset.datafiles.count.zero?
                   %jumbotron
                     No files found
-      -if dataset.has_external_files?
+      -if dataset.external_files?
         =render partial: 'show_external_files', locals: {dataset: dataset}

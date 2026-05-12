@@ -161,7 +161,7 @@ RSpec.describe Dataset, type: :model do
     it 'returns true when preserved files are available and there are no external files' do
       allow(dataset).to receive(:fileset_preserved?).and_return(true)
       allow(dataset).to receive(:globus_downloadable?).and_return(false)
-      allow(dataset).to receive(:has_external_files?).and_return(false)
+      allow(dataset).to receive(:external_files?).and_return(false)
 
       expect(dataset.aggregate_downloadable?).to be true
     end
@@ -169,40 +169,32 @@ RSpec.describe Dataset, type: :model do
     it 'returns false when external files are present' do
       allow(dataset).to receive(:fileset_preserved?).and_return(true)
       allow(dataset).to receive(:globus_downloadable?).and_return(false)
-      allow(dataset).to receive(:has_external_files?).and_return(true)
+      allow(dataset).to receive(:external_files?).and_return(true)
 
       expect(dataset.aggregate_downloadable?).to be false
     end
   end
 
-  describe '#has_external_files?' do
+  describe '#external_files?' do
     it 'returns false when the external files note is blank' do
       dataset.external_files_note = ''
 
-      expect(dataset.has_external_files?).to be false
+      expect(dataset.external_files?).to be false
     end
 
     it 'returns true when the external files note is present' do
       dataset.external_files_note = 'See external repository'
 
-      expect(dataset.has_external_files?).to be true
+      expect(dataset.external_files?).to be true
     end
   end
 
-  describe '#has_datafiles?' do
-    it 'returns true when the dataset has at least one datafile' do
-      allow(dataset).to receive_message_chain(:datafiles, :count).and_return(1)
-
-      expect(dataset.has_datafiles?).to be true
-    end
-  end
-
-  describe '#is_too_big?' do
+  describe '#too_big?' do
     it 'returns true when total filesize is greater than the configured limit' do
       threshold = IDB_CONFIG[:globus_only_gb].to_i * (2**30)
       allow(dataset).to receive(:total_filesize).and_return(threshold + 1)
 
-      expect(dataset.is_too_big?).to be true
+      expect(dataset.too_big?).to be true
     end
   end
 
