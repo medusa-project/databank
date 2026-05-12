@@ -15,7 +15,7 @@ class User < ApplicationRecord
 
   def system_admin?
     admin_netids = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
-    admin_uids = admin_netids.map {|x| x + "@illinois.edu" }
+    admin_uids = admin_netids.map {|x| "#{x}@illinois.edu" }
     return true if admin_uids.include?(uid)
 
     # Optional, non-production-only shortcut: allow users with the admin role
@@ -98,7 +98,7 @@ class User < ApplicationRecord
 
   def self.curators
     curator_abilities = UserAbility.where(resource_type: "Databank", ability: "manage", resource_id: nil)
-    curator_uids = curator_abilities.map {|x| x.user_uid }
+    curator_uids = curator_abilities.map(&:user_uid)
     User.where(uid: curator_uids)
   end
 
@@ -115,33 +115,51 @@ class User < ApplicationRecord
   def self.user_can?(resource_type, resource_id, ability, user)
     return false unless user
     return true if user.admin?
-    return true if user.depositor? && ability == "create" && resource_type == "Dataset"
-    return true if user.depositor? && ability == "read" && resource_type == "Dataset" && resource_id.nil?
-    return true if user.depositor? && ability == "update" && resource_type == "Dataset" && resource_id.nil?
-    return true if user.depositor? && ability == "destroy" && resource_type == "Dataset" && resource_id.nil?
-    if user.depositor? && ability == "read" && resource_type == "Dataset" && resource_id && Dataset.find(resource_id).depositor_email == user.email
-      return true
-    end
-    if user.depositor? && ability == "update" && resource_type == "Dataset" && resource_id && Dataset.find(resource_id).depositor_email == user.email
-      return true
-    end
-    if user.depositor? && ability == "destroy" && resource_type == "Dataset" && resource_id && Dataset.find(resource_id).depositor_email == user.email
-      return true
-    end
-    return true if user.network_reviewer? && ability == "read" && resource_type == "Dataset" && resource_id.nil?
-    if user.network_reviewer? && ability == "read" && resource_type == "Dataset" && resource_id && Dataset.find(resource_id).data_curation_network
-      return true
+
+    if resource_type == "Dataset"
+      return true if depositor_can_create_dataset?(user, ability, resource_id)
+      return true if depositor_can_manage_owned_dataset?(user, ability, resource_id)
+      return true if network_reviewer_can_review_dataset?(user, ability, resource_id)
     end
 
     UserAbility.where(user_provider: user.provider, user_uid: user.uid, resource_type: resource_type,
                       resource_id: resource_id, ability: ability).any?
   end
 
-  # @param [String] resource_type the type of resource
-  # @param [String] resource_id the id of the resource
-  # @param [String] ability the ability to check
   # @param [User] user the user to check
-  # @return [Boolean] true if the
+  # @param [String] ability the ability to check
+  # @param [String] resource_id the id of the resource
+  # @return [Boolean] true if the depositor can create a dataset
+  def self.depositor_can_create_dataset?(user, ability, resource_id)
+    user.depositor? && ability == "create" && resource_id.nil?
+  end
+
+  # @param [User] user the user to check
+  # @param [String] ability the ability to check
+  # @param [String] resource_id the id of the resource
+  # @return [Boolean] true if the depositor can manage a dataset they own
+  def self.depositor_can_manage_owned_dataset?(user, ability, resource_id)
+    return false unless user.depositor?
+
+    # Allow depositors to read/update/destroy datasets in general (without specific resource)
+    return true if ["read", "update", "destroy"].include?(ability) && resource_id.nil?
+
+    # Allow depositors to read/update/destroy their own specific dataset
+    return false unless resource_id
+
+    dataset = Dataset.find(resource_id)
+    ["read", "update", "destroy"].include?(ability) && dataset.depositor_email == user.email
+  end
+
+  # @param [User] user the user to check
+  # @param [String] ability the ability to check
+  # @param [String] resource_id the id of the resource
+  # @return [Boolean] true if the network reviewer can review a dataset
+  def self.network_reviewer_can_review_dataset?(user, ability, resource_id)
+    return false unless user.network_reviewer? && ability == "read"
+
+    resource_id.nil? || Dataset.find(resource_id).data_curation_network
+  end
 
   # @return [User] the system user
   def self.system_user
@@ -154,9 +172,9 @@ class User < ApplicationRecord
   def self.admin_uids
     # curator is an alias for admin
     config_admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
-    config_admin_uids = config_admins.map {|x| x + "@illinois.edu" }
+    config_admin_uids = config_admins.map {|x| "#{x}@illinois.edu" }
     admin_user_abilities = UserAbility.where(resource_type: "Databank", ability: "manage", resource_id: nil)
-    user_ability_admin_uids = admin_user_abilities.map {|x| x.user_uid }
+    user_ability_admin_uids = admin_user_abilities.map(&:user_uid)
     config_admin_uids + user_ability_admin_uids
   end
 
@@ -203,12 +221,12 @@ class User < ApplicationRecord
   # @return [User] the user
   def update_with_omniauth(auth)
     auth["info"]["role"] = User.user_role(auth) if auth["provider"] == "shibboleth"
-    update_attribute(:provider, auth["provider"])
-    update_attribute(:uid, auth["uid"])
-    update_attribute(:email, auth["info"]["email"])
-    update_attribute(:username, email.split("@").first)
-    update_attribute(:name, auth["info"]["name"])
-    update_attribute(:role, auth["info"]["role"])
+    update_attribute(:provider, auth["provider"]) # rubocop:disable Rails/SkipsModelValidations
+    update_attribute(:uid, auth["uid"]) # rubocop:disable Rails/SkipsModelValidations
+    update_attribute(:email, auth["info"]["email"]) # rubocop:disable Rails/SkipsModelValidations
+    update_attribute(:username, email.split("@").first) # rubocop:disable Rails/SkipsModelValidations
+    update_attribute(:name, auth["info"]["name"]) # rubocop:disable Rails/SkipsModelValidations
+    update_attribute(:role, auth["info"]["role"]) # rubocop:disable Rails/SkipsModelValidations
     self
   end
 
@@ -217,7 +235,7 @@ class User < ApplicationRecord
     email.split("@")[0]
   end
 
-  # @return [String] the email of the user
+  # @return [String] the role determined for the user
   # @param auth [Hash] the omniauth response
   # @return [String] the email of the user
   def self.user_role(auth)
@@ -227,33 +245,50 @@ class User < ApplicationRecord
     user = User.find_by(provider: auth["provider"], uid: auth["uid"])
     return Databank::UserRole::DEPOSITOR if user && UserAbility.user_can?("Dataset", nil, "create", user)
 
-    # new users require iTrustAffiliation to determine role
-    unless auth["extra"]["raw_info"]["iTrustAffiliation"].respond_to?(:split)
-      raise StandardError.new("missing iTrustAffiliation")
-    end
-
-    affiliations = auth["extra"]["raw_info"]["iTrustAffiliation"].split(";")
-    if affiliations.respond_to?(:length) && !affiliations.empty?
-      return Databank::UserRole::DEPOSITOR if affiliations.include?("staff")
-
-      if affiliations.include?("student")
-        if auth["extra"]["raw_info"]["uiucEduStudentLevelCode"] == "1U"
-          Databank::UserRole::NO_DEPOSIT
-        else
-          Databank::UserRole::DEPOSITOR
-        end
-      end
-    else
-      Rails.logger.warn("unexpected auth: #{auth.to_yaml}")
-      notification = DatabankMailer.error("Unexpected auth response: #{auth.to_yaml}")
-      notification.deliver_now
-      Databank::UserRole::NO_DEPOSIT
-    end
+    determine_role_from_affiliations(auth)
   rescue StandardError => e
     Rails.logger.warn("error determining user role #{e.message} for #{auth.to_yaml}")
     notification = DatabankMailer.error("error determining user role #{e.message} for #{auth.to_yaml}")
     notification.deliver_now
     Databank::UserRole::NO_DEPOSIT
+  end
+
+  # @param auth [Hash] the omniauth response
+  # @return [String] the role based on user affiliations
+  def self.determine_role_from_affiliations(auth)
+    affiliations = fetch_affiliations(auth)
+    return role_for_affiliations(affiliations, auth) if affiliations.any?
+
+    Rails.logger.warn("unexpected auth: #{auth.to_yaml}")
+    notification = DatabankMailer.error("Unexpected auth response: #{auth.to_yaml}")
+    notification.deliver_now
+    Databank::UserRole::NO_DEPOSIT
+  end
+
+  # @param auth [Hash] the omniauth response
+  # @return [Array<String>] the user's affiliations
+  def self.fetch_affiliations(auth)
+    unless auth["extra"]["raw_info"]["iTrustAffiliation"].respond_to?(:split)
+      raise StandardError.new("missing iTrustAffiliation")
+    end
+
+    auth["extra"]["raw_info"]["iTrustAffiliation"].split(";")
+  end
+
+  # @param affiliations [Array<String>] the user's affiliations
+  # @param auth [Hash] the omniauth response
+  # @return [String] the role based on affiliations
+  def self.role_for_affiliations(affiliations, auth)
+    return Databank::UserRole::DEPOSITOR if affiliations.include?("staff")
+    return role_for_student_affiliation(auth) if affiliations.include?("student")
+
+    nil
+  end
+
+  # @param auth [Hash] the omniauth response
+  # @return [String] the role for students (depends on student level code)
+  def self.role_for_student_affiliation(auth)
+    auth["extra"]["raw_info"]["uiucEduStudentLevelCode"] == "1U" ? Databank::UserRole::NO_DEPOSIT : Databank::UserRole::DEPOSITOR
   end
 
   class << self
