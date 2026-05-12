@@ -88,7 +88,7 @@ class Datafile < ApplicationRecord
   #
   # @return [String] the URL for the datafile in the Illinois Data Bank
   def databank_url
-    "#{IDB_CONFIG[:root_url_text]}/datafiles/#{self.to_param}"
+    "#{IDB_CONFIG[:root_url_text]}/datafiles/#{to_param}"
   end
 
   ##
@@ -96,7 +96,8 @@ class Datafile < ApplicationRecord
   # @param [Hash] _options the options to pass to the JSON generator
   # @return [Hash] the JSON representation of the datafile
   def as_json(_options={})
-    super(only: %i[web_id binary_name binary_size medusa_id storage_root storage_key created_at updated_at])
+    super(only: [:web_id, :binary_name, :binary_size, :medusa_id, :storage_root, :storage_key, :created_at,
+                 :updated_at])
   end
 
   ##
@@ -151,8 +152,9 @@ class Datafile < ApplicationRecord
   # This method ensures that the mime type is set
   # It sets the mime type to the mime type from the name if the mime type is not set
   def ensure_mime_type
-    self.update_attribute(:mime_type, self.mime_type_from_name) unless mime_type
+    update_attribute(:mime_type, mime_type_from_name) unless mime_type
   end
+
   ##
   # @return [Boolean] whether the datafile is a readme file
   def readme?
