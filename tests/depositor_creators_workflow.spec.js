@@ -1,7 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { authStatePath } from "./helpers/auth-state.js";
-
-const baseUrl = process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3000";
+import { goToDepositAgreement } from "./helpers/deposit-flow.js";
 
 function agreementGroup(page, legendText) {
   return page.getByRole("group", { name: legendText });
@@ -11,16 +10,7 @@ test.describe("authenticated depositor creators workflow", () => {
   test.use({ storageState: authStatePath("depositor") });
 
   async function goToDatasetEdit(page) {
-    await page.goto(`${baseUrl}/datasets/pre_deposit`);
-    await expect(page.locator("#continue-button")).toBeVisible();
-    await page.click("#continue-button");
-
-    await expect(page).toHaveURL(/\/datasets\/new/);
-    await expect(
-      page.getByRole("heading", { name: "Deposit Agreement", exact: true }),
-    ).toBeVisible();
-    await expect(page.locator("#agree-form")).toBeVisible();
-    await expect(page.locator("#owner-yes")).toBeVisible();
+    await goToDepositAgreement(page);
 
     const ownerGroup = agreementGroup(
       page,

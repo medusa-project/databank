@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { spawnSync } from "node:child_process";
 import { getNamedAuthState, namedAuthStatePath } from "./helpers/auth-state.js";
+import { BASE_URL } from "./helpers/config.js";
 
-const baseUrl = process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3000";
 const researcherRole = "depositor";
 const researcherEmail = "researcher1@mailinator.com";
 
@@ -100,16 +100,16 @@ test.describe("named user visibility: researcher1", () => {
   test("can view own draft, cannot view others' draft, but can view released dataset", async ({
     page,
   }) => {
-    await page.goto(`${baseUrl}/datasets/${ownDraftKey}`);
+    await page.goto(`${BASE_URL}/datasets/${ownDraftKey}`);
     await expect(page.locator("body")).toContainText(
       "Playwright Own Draft Dataset",
     );
     await expect(page.locator("body")).not.toContainText("Restricted Access");
 
-    await page.goto(`${baseUrl}/datasets/${otherDraftKey}`);
+    await page.goto(`${BASE_URL}/datasets/${otherDraftKey}`);
     await expect(page.locator("body")).toContainText("Restricted Access");
 
-    await page.goto(`${baseUrl}/datasets/${otherReleasedKey}`);
+    await page.goto(`${BASE_URL}/datasets/${otherReleasedKey}`);
     await expect(page.locator("body")).toContainText(
       "Playwright Other Released Dataset",
     );

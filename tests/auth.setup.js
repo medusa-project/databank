@@ -7,8 +7,7 @@ import {
   authStatePath,
   namedAuthStatePath,
 } from "./helpers/auth-state.js";
-
-const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3000";
+import { BASE_URL } from "./helpers/config.js";
 
 async function fillUsingAnySelector(page, selectors, value) {
   for (const selector of selectors) {
@@ -40,7 +39,7 @@ async function submitDeveloperLogin(page) {
   await Promise.all([page.waitForLoadState("networkidle"), submit.click()]);
 }
 
-async function loginAsNamedUser(page, name, email, role) {
+async function loginAsDeveloperUser(page, { name, email, role }) {
   await page.goto(`${BASE_URL}/auth/developer`);
   await fillUsingAnySelector(page, ['input[name="name"]', "#name"], name);
   await fillUsingAnySelector(page, ['input[name="email"]', "#email"], email);
@@ -48,16 +47,15 @@ async function loginAsNamedUser(page, name, email, role) {
   await submitDeveloperLogin(page);
 }
 
-async function loginAsRole(page, role) {
-  await page.goto(`${BASE_URL}/auth/developer`);
+async function loginAsNamedUser(page, name, email, role) {
+  await loginAsDeveloperUser(page, { name, email, role });
+}
 
+async function loginAsRole(page, role) {
   const email = `playwright-${role}@example.edu`;
   const name = `Playwright ${role}`;
 
-  await fillUsingAnySelector(page, ['input[name="name"]', "#name"], name);
-  await fillUsingAnySelector(page, ['input[name="email"]', "#email"], email);
-  await setRoleField(page, role);
-  await submitDeveloperLogin(page);
+  await loginAsDeveloperUser(page, { name, email, role });
 }
 
 async function authStateExists(targetPath) {
