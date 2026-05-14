@@ -1,10 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { authStatePath } from "./helpers/auth-state.js";
-import { goToDepositAgreement } from "./helpers/deposit-flow.js";
-
-function agreementGroup(page, legendText) {
-  return page.getByRole("group", { name: legendText });
-}
+import {
+  goToDepositAgreement,
+  submitDepositAgreement,
+} from "./helpers/deposit-flow.js";
 
 test.describe("authenticated depositor creators workflow", () => {
   test.use({ storageState: authStatePath("depositor") });
@@ -12,23 +11,11 @@ test.describe("authenticated depositor creators workflow", () => {
   async function goToDatasetEdit(page) {
     await goToDepositAgreement(page);
 
-    const ownerGroup = agreementGroup(
-      page,
-      /Are you a creator of this dataset or have you been granted permission by the creator to deposit this dataset\?/,
-    );
-    const privateGroup = agreementGroup(
-      page,
-      /Have you removed any private, confidential, or other legally protected information from the dataset\?/,
-    );
-    const agreementGroupLocator = agreementGroup(
-      page,
-      /Do you agree to the Illinois Data Bank Deposit Agreement in its entirety\?/,
-    );
-
-    await ownerGroup.getByRole("radio", { name: "Yes" }).check();
-    await privateGroup.getByRole("radio", { name: "Not applicable" }).check();
-    await agreementGroupLocator.getByRole("radio", { name: "Yes" }).check();
-    await page.locator("#agree-button").click();
+    await submitDepositAgreement(page, {
+      owner: "yes",
+      removedPrivate: "na",
+      agree: "yes",
+    });
 
     await expect(page).toHaveURL(/\/datasets\/[^/]+\/edit/);
     await expect(page.locator("#creator_table")).toBeVisible();
