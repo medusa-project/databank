@@ -13,6 +13,11 @@ RSpec.describe DatasetsController, type: :controller do
 
   describe 'GET #index' do
     it 'returns a success response' do
+      allow(User).to receive(:find_by).with(email: user.email).and_return(user)
+      allow(user).to receive(:datasets_user_can_view).with(user: user).and_return([dataset])
+      allow(Dataset).to receive(:filtered_list).and_return([])
+      allow(Dataset).to receive(:citation_report).and_return('report body')
+
       get :index
       expect(response).to be_successful
     end
