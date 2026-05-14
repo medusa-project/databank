@@ -10,7 +10,7 @@ module Dataset::Stringable
   extend ActiveSupport::Concern
 
   def plain_text_citation
-    creator_list = if creator_list == ""
+    creator_list = if self.creator_list == ""
                      "[Creator List]"
                    else
                      self.creator_list
@@ -347,7 +347,7 @@ module Dataset::Stringable
       funders << funder.serializable_hash
     end
     materials = []
-    related_materials do |material|
+    related_materials.each do |material|
       materials << material.serializable_hash
     end
     {"idb_dataset" => {"dataset"   => dataset,

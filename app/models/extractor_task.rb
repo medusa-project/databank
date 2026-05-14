@@ -13,8 +13,8 @@
 # * +raw_response+ - raw response from the extractor
 
 class ExtractorTask < ApplicationRecord
-
   has_one :extractor_response, dependent: :destroy
+  validates :web_id, presence: true
 
   QUEUE_URL = IDB_CONFIG[:queues][:extractor_to_databank_url]
   SQS = QueueManager.instance.sqs_client
@@ -27,48 +27,8 @@ class ExtractorTask < ApplicationRecord
   ##
   # Send a task to the extractor
   def initiate_task
-    resp = nil
-    if Rails.env.development? || Rails.env.test?
-      network = "databank_default"
-      docker_container = "ghcr.io/medusa-project/databank-archive-extractor:local"
-      resp = `docker run --network #{network} #{docker_container} ruby -r ./lib/extractor.rb -e "#{command_string}"`
-
-    else
-      client = ECS_CLIENT
-      command = command_string
-      unless command
-        Rails.logger.warn "error generating command in Extractor Task for #{web_id}"
-        return nil
-      end
-
-      task = {
-        cluster:               CLUSTER,
-        count:                 1,
-        launch_type:           "FARGATE",
-        network_configuration: {
-          awsvpc_configuration: {
-            subnets:          IDB_CONFIG[:extractor][:subnets],
-            security_groups:  IDB_CONFIG[:extractor][:security_groups],
-            assign_public_ip: "ENABLED"
-          }
-        },
-        overrides:             {
-          container_overrides: [
-            {
-              name:    IDB_CONFIG[:extractor][:container_name],
-              command: ["ruby",
-                        "-r",
-                        "./lib/extractor.rb",
-                        "-e",
-                        command]
-            }
-          ]
-        },
-        platform_version:      IDB_CONFIG[:extractor][:platform_version],
-        task_definition:       IDB_CONFIG[:extractor][:task_definition]
-      }
-      resp = client.run_task(task)
-    end
+    resp = run_task_for_environment
+    return nil if resp.nil?
 
     failure_count = resp[:failures].count
     unless failure_count.zero?
@@ -125,7 +85,7 @@ class ExtractorTask < ApplicationRecord
   # @return [Array<String>] the list of task ARNs
   def self.current_tasks
     task_list = ECS_CLIENT.list_tasks(cluster: CLUSTER)
-    raise StandardError.new("unexpected task_list: #{task_list.to_yaml.to_s}") unless task_list.task_arns
+    raise StandardError.new("unexpected task_list: #{task_list.to_yaml}") unless task_list.task_arns
 
     task_list.task_arns
   end
@@ -137,18 +97,23 @@ class ExtractorTask < ApplicationRecord
     response = SQS.receive_message(queue_url: QUEUE_URL, max_number_of_messages: 1)
     return nil if response.data.messages.count.zero?
 
-    message = JSON.parse(response.data.messages[0].body)
-    SQS.delete_message({queue_url: QUEUE_URL, receipt_handle: response.data.messages[0].receipt_handle})
+    consume_sqs_message(response.data.messages[0])
+  end
 
-    key = message["object_key"]
-    parsed_key = key.split("/").last
+  def self.consume_sqs_message(raw_message)
+    message = JSON.parse(raw_message.body)
+    SQS.delete_message({queue_url: QUEUE_URL, receipt_handle: raw_message.receipt_handle})
+    parsed_key = message["object_key"].split("/").last
+    message_text = read_and_delete_message_file(parsed_key)
+    {message_web_id: parsed_key.split(".").first, message_text: message_text}
+  end
 
-    message_web_id = parsed_key.split(".").first
-    raise StandardError.new("extractor task message not found for #{message}") unless MESSAGE_ROOT.exist?(parsed_key)
+  def self.read_and_delete_message_file(parsed_key)
+    raise StandardError.new("extractor task message not found for #{parsed_key}") unless MESSAGE_ROOT.exist?(parsed_key)
 
-    message_text = MESSAGE_ROOT.as_string(parsed_key)
+    text = MESSAGE_ROOT.as_string(parsed_key)
     MESSAGE_ROOT.delete_content(parsed_key)
-    {message_web_id: message_web_id, message_text: message_text}
+    text
   end
 
   ##
@@ -157,7 +122,9 @@ class ExtractorTask < ApplicationRecord
   # @param [String] message_text the raw response from the extractor
   def self.handle_incoming_message(message_web_id:, message_text:)
     datafile = Datafile.find_by(web_id: message_web_id)
-    raise StandardError.new("no Datafile found for archive extractor response message: #{message}") unless datafile
+    unless datafile
+      raise StandardError.new("no Datafile found for archive extractor response message: #{message_web_id}")
+    end
 
     ExtractorTask.record_response(datafile: datafile, message_text: message_text)
   end
@@ -170,22 +137,33 @@ class ExtractorTask < ApplicationRecord
     extractor_task = datafile.extractor_task
     raise StandardError.new("no extractor_task:\n#{message_text}") if extractor_task.nil?
 
+    update_task_record(extractor_task, message_text)
+    message = JSON.parse(message_text)
+    extractor_response = create_extractor_response(extractor_task, message)
+    validate_extractor_response!(extractor_response, message_text)
+    datafile.update(peek_type: extractor_response.peek_type, peek_text: extractor_response.peek_text)
+    ExtractorTask.handle_extracted_nested_items(datafile: datafile, nested_items: message["nested_items"])
+  end
+
+  def self.update_task_record(extractor_task, message_text)
     extractor_task.response_at = Time.current
     extractor_task.raw_response = message_text
     extractor_task.save
-    message = JSON.parse(message_text)
-    extractor_response = ExtractorResponse.create(extractor_task_id: extractor_task.id,
-                                                  web_id:            message["web_id"],
-                                                  status:            message["status"],
-                                                  peek_type:         message["peek_type"],
-                                                  peek_text:         message["peek_text"])
+  end
+
+  def self.create_extractor_response(extractor_task, message)
+    ExtractorResponse.create(extractor_task_id: extractor_task.id,
+                             web_id:            message["web_id"],
+                             status:            message["status"],
+                             peek_type:         message["peek_type"],
+                             peek_text:         message["peek_text"])
+  end
+
+  def self.validate_extractor_response!(extractor_response, message_text)
     raise StandardError("invalid #{message_text}") unless extractor_response.valid?
+    return if extractor_response["status"] == Databank::ExtractionStatus::SUCCESS
 
-    success_response = extractor_response["status"] == Databank::ExtractionStatus::SUCCESS
-    raise StandardError.new(extractor_response.to_yaml.to_s) unless success_response
-
-    datafile.update(peek_type: extractor_response.peek_type, peek_text: extractor_response.peek_text)
-    ExtractorTask.handle_extracted_nested_items(datafile: datafile, nested_items: message["nested_items"])
+    raise StandardError.new(extractor_response.to_yaml.to_s)
   end
 
   ##
@@ -204,5 +182,53 @@ class ExtractorTask < ApplicationRecord
                          size:         item["item_size"],
                          is_directory: item["is_directory"] == "true")
     end
+  end
+
+  private
+
+  def run_task_for_environment
+    return run_local_task if Rails.env.development? || Rails.env.test?
+
+    run_ecs_task
+  end
+
+  def run_local_task
+    network = "databank_default"
+    docker_container = "ghcr.io/medusa-project/databank-archive-extractor:local"
+    `docker run --network #{network} #{docker_container} ruby -r ./lib/extractor.rb -e "#{command_string}"`
+  end
+
+  def run_ecs_task
+    command = command_string
+    unless command
+      Rails.logger.warn "error generating command in Extractor Task for #{web_id}"
+      return nil
+    end
+    ECS_CLIENT.run_task(build_ecs_task(command))
+  end
+
+  def build_ecs_task(command)
+    {
+      cluster:               CLUSTER,
+      count:                 1,
+      launch_type:           "FARGATE",
+      network_configuration: {
+        awsvpc_configuration: {
+          subnets:          IDB_CONFIG[:extractor][:subnets],
+          security_groups:  IDB_CONFIG[:extractor][:security_groups],
+          assign_public_ip: "ENABLED"
+        }
+      },
+      overrides:             {
+        container_overrides: [
+          {
+            name:    IDB_CONFIG[:extractor][:container_name],
+            command: ["ruby", "-r", "./lib/extractor.rb", "-e", command]
+          }
+        ]
+      },
+      platform_version:      IDB_CONFIG[:extractor][:platform_version],
+      task_definition:       IDB_CONFIG[:extractor][:task_definition]
+    }
   end
 end

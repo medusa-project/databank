@@ -11,21 +11,14 @@ class MetricsController < ApplicationController
     @title = "Metrics"
   end
 
-  # Responds to `GET /metrics/downloads`
-  def downloads
-    Metric.datasets_downloads_json_to_csv
-    @dataset_downloads_csv_path = "#{Rails.root}/public/dataset_downloads.csv"
-    @dataset_overview_tsv_path = "#{Rails.root}/public/datasets.tsv"
-  end
-
   # Responds to `GET /metrics/dataset_downloads`
   def dataset_downloads
-    render "public/dataset_downloads.json", layout: false
+    serve_metrics_file(Rails.root.join("public/dataset_downloads.json"), type: "application/json")
   end
 
   # Responds to `GET /metrics/file_downloads`
   def file_downloads
-    render "public/datafile_downloads.json", layout: false
+    serve_metrics_file(Rails.root.join("public/datafile_downloads.json"), type: "application/json")
   end
 
   # Responds to `GET /metrics/datafiles`
@@ -37,28 +30,28 @@ class MetricsController < ApplicationController
   # @deprecated - interface just uses public/datasets.tsv filepath
   # for example: https://databank.illinois.edu/datasets.tsv
   def datasets_tsv
-    render METRICS_CONFIG[:datasets_tsv][:relative_path], layout: false
+    serve_metrics_file(METRICS_CONFIG[:datasets_tsv][:relative_path], type: "text/tab-separated-values")
   end
 
   # @deprecated - interface just uses public/datafiles.csv filepath
   # for example: https://databank.illinois.edu/datafiles.csv
   def datafiles_csv
-    render METRICS_CONFIG[:datafiles_csv][:relative_path], layout: false
+    serve_metrics_file(METRICS_CONFIG[:datafiles_csv][:relative_path], type: "text/csv")
   end
 
   # Responds to `GET /metrics/funders_csv`
   def funders_csv
-    render METRICS_CONFIG[:funders_csv][:relative_path], layout: false
+    serve_metrics_file(METRICS_CONFIG[:funders_csv][:relative_path], type: "text/csv")
   end
 
   # Responds to `GET /metrics/archived_content_csv`
   def archived_content_csv
-    render "public/archive_file_contents.csv", layout: false
+    serve_metrics_file(Rails.root.join("public/archive_file_contents.csv"), type: "text/csv")
   end
 
   # Responds to `GET /metrics/related_materials_csv`
   def related_materials_csv
-    render METRICS_CONFIG[:related_materials_csv][:relative_path], layout: false
+    serve_metrics_file(METRICS_CONFIG[:related_materials_csv][:relative_path], type: "text/csv")
   end
 
   # Responds to `GET /metrics/refresh_dataset_downloads`
@@ -112,5 +105,14 @@ class MetricsController < ApplicationController
     Metric.write_container_contents_csv
     message = "Container contents csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
     redirect_to metrics_path, notice: message
-  end 
+  end
+
+  private
+
+  def serve_metrics_file(path, type:)
+    file_path = path.to_s
+    return head :not_found unless File.file?(file_path)
+
+    send_file file_path, type: type, disposition: "inline"
+  end
 end

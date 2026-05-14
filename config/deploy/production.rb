@@ -6,14 +6,14 @@
 # server 'example.com', user: 'deploy', roles: %w{app db web}, my_property: :my_value
 # server 'example.com', user: 'deploy', roles: %w{app web}, other_property: :other_value
 # server 'db.example.com', user: 'deploy', roles: %w{db}
-server 'databank-prod.library.illinois.edu', user: 'databank', roles: %w{app db web}
+server 'databank-prod-rocky.library.illinois.edu', user: 'databank', roles: %w{app db web}
 
 set :rails_env, 'production'
 
 set :ssh_options, {
-    forward_agent: true,
-    auth_methods: ["publickey"],
-    keys: ["#{Dir.home}/.ssh/medusa_prod.pem"]
+  forward_agent: true,
+  auth_methods: ["publickey"],
+  keys: ["#{Dir.home}/.ssh/medusa-2023.pem"]
 }
 
 # Ask which branch to deploy
@@ -79,6 +79,7 @@ namespace :deploy do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
       execute_rake "databank:rails_cache:clear"
       execute_rake "sunspot:reindex"
+      execute_rake "experts:generate_doc"
     end
   end
 

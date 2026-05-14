@@ -33,7 +33,7 @@ class IngestResponsesController < ApplicationController
         format.json { render :show, status: :created, location: @ingest_response }
       else
         format.html { render :new }
-        format.json { render json: @ingest_response.errors, status: :unprocessable_entity }
+        format.json { render json: @ingest_response.errors, status: :unprocessable_content }
       end
     end
   end
@@ -47,7 +47,7 @@ class IngestResponsesController < ApplicationController
         format.json { render :show, status: :ok, location: @ingest_response }
       else
         format.html { render :edit }
-        format.json { render json: @ingest_response.errors, status: :unprocessable_entity }
+        format.json { render json: @ingest_response.errors, status: :unprocessable_content }
       end
     end
   end

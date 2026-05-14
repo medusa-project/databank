@@ -23,7 +23,7 @@
                   %tr
                     .row
                       %span.col-md-4
-                        %button(class="btn btn-danger" type="button" onclick="deleteSelected()")
+                        %button(class="btn btn-danger" type="button" data-file-action="delete-selected")
                           Delete Selected
                           %span.checkFileSelectedCount
                           %span.glyphicon.glyphicon-trash
@@ -45,7 +45,7 @@
                           %span(class="col-md-8")
                             -if draft && can_edit
                               %label
-                                %input(type="checkbox" class="checkFile checkFileGroup" name="selected_files[]" value="#{i}" onchange="handleCheckFileGroupChange()" )
+                                %input(type="checkbox" class="checkFile checkFileGroup" name="selected_files[]" value="#{i}" data-file-action="selection-change" )
                                 =datafile.bytestream_name
                             -else
                               = datafile.bytestream_name
@@ -57,7 +57,7 @@
                             -#   = datafile.bytestream? ? "exists in storage" : "does NOT exist in storage"
                           %span{class: "col-md-2"}
                             - if draft && can_edit
-                              %button(type="button" id="remove_#{i}" class="btn btn-danger btn-sm" onclick="remove_file_row(#{i})")
+                              %button(type="button" id="remove_#{i}" class="btn btn-danger btn-sm" data-file-action="remove-row" data-file-index="#{i}")
                                 Delete
                           = df.hidden_field :_destroy, value: false
                           = df.hidden_field :web_id

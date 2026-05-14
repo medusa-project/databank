@@ -32,7 +32,7 @@ class FundersController < ApplicationController
         format.json { render :show, status: :created, location: @funder }
       else
         format.html { render :new }
-        format.json { render json: @funder.errors, status: :unprocessable_entity }
+        format.json { render json: @funder.errors, status: :unprocessable_content }
       end
     end
   end
@@ -46,7 +46,7 @@ class FundersController < ApplicationController
         format.json { render :show, status: :ok, location: @funder }
       else
         format.html { render :edit }
-        format.json { render json: @funder.errors, status: :unprocessable_entity }
+        format.json { render json: @funder.errors, status: :unprocessable_content }
       end
     end
   end

@@ -32,7 +32,7 @@ class RelatedMaterialsController < ApplicationController
         format.json { render :show, status: :created, location: @related_material }
       else
         format.html { render :new }
-        format.json { render json: @related_material.errors, status: :unprocessable_entity }
+        format.json { render json: @related_material.errors, status: :unprocessable_content }
       end
     end
   end
@@ -46,7 +46,7 @@ class RelatedMaterialsController < ApplicationController
         format.json { render :show, status: :ok, location: @related_material }
       else
         format.html { render :edit }
-        format.json { render json: @related_material.errors, status: :unprocessable_entity }
+        format.json { render json: @related_material.errors, status: :unprocessable_content }
       end
     end
   end

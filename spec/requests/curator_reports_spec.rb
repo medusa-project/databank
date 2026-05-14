@@ -153,4 +153,46 @@ RSpec.describe "/curator_reports", type: :request do
       expect(response).to redirect_to(curator_reports_url)
     end
   end
+
+  describe "POST /request_file_audit" do
+    it "initiates a file audit report and redirects with notice for HTML" do
+      expect(CuratorReport).to receive(:initiate_report_generation).with(
+        report_type: Databank::ReportType::FILE_AUDIT,
+        requesting_user: admin_user,
+        notes: "audit note"
+      )
+
+      post request_file_audit_curator_reports_url, params: { notes: "audit note" }
+
+      expect(response).to redirect_to(curator_reports_url)
+      expect(flash[:notice]).to eq("File audit report was successfully requested.")
+    end
+
+    it "returns no content for JSON" do
+      allow(CuratorReport).to receive(:initiate_report_generation)
+
+      post request_file_audit_curator_reports_url, params: { notes: "audit note" }, as: :json
+
+      expect(response).to have_http_status(:no_content)
+    end
+  end
+
+  describe "GET /download" do
+    it "streams CSV report data in test environment" do
+      curator_report = CuratorReport.create!(
+        valid_attributes.merge(storage_root: "report-root", storage_key: "file_audit_report.csv")
+      )
+      s3_body = double("body", read: "col_a,col_b\n1,2\n")
+      s3_object = double("object", body: s3_body)
+      allow_any_instance_of(CuratorReport).to receive(:download_object).and_return(s3_object)
+
+      get download_curator_report_url(curator_report)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.content_type).to include("text/csv")
+      expect(response.headers["Content-Disposition"]).to include("attachment")
+      expect(response.headers["Content-Disposition"]).to include("file_audit_report.csv")
+      expect(response.body).to eq("col_a,col_b\n1,2\n")
+    end
+  end
 end

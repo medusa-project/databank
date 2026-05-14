@@ -88,7 +88,7 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render json: {private_share_link: "#{@dataset.sharing_link}"}, status: :ok }
       else
         format.html { redirect_to dataset_path(@dataset), notice: "Error generating share link." }
-        format.json { render json: {private_share_link: nil}, status: :unprocessable_entity }
+        format.json { render json: {private_share_link: nil}, status: :unprocessable_content }
       end
     end
   end
@@ -97,7 +97,7 @@ collaborators to access the data files while the dataset is not public.</li>
     @dataset.import_from_globus
     render json: {}, status: :ok
   rescue StandardError => e
-    render json: {error: e.message}, status: :unprocessable_entity
+    render json: {error: e.message}, status: :unprocessable_content
   end
 
   # GET /datasets
@@ -151,7 +151,7 @@ collaborators to access the data files while the dataset is not public.</li>
     end
     @globus_downloadable = @dataset.globus_downloadable?
     @dataset_preserved = @dataset.fileset_preserved?
-    @dataset_aggregate_downloadable = (@dataset_preserved || @globus_downloadable) && !@dataset.has_external_files?
+    @dataset_aggregate_downloadable = (@dataset_preserved || @globus_downloadable) && !@dataset.external_files?
     @dataset.ensure_embargo
     @dataset.ensure_version_group
     set_file_mode
@@ -202,7 +202,7 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
         format.html { redirect_to dataset_path(@dataset.key), alert: "Error attempting to update permissions." }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -288,7 +288,7 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render :edit, status: :created, location: edit_dataset_path(@dataset.key) }
       else
         format.html { render :new }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -364,7 +364,7 @@ collaborators to access the data files while the dataset is not public.</li>
                 redirect_to dataset_path(@dataset.key),
                             notice: "Error updating DataCite Metadata, details have been logged."
               }
-              format.json { render json: @dataset.errors, status: :unprocessable_entity }
+              format.json { render json: @dataset.errors, status: :unprocessable_content }
             end
           else # this else means completion_check was not ok within publish context
             # Rails.logger.warn Dataset.completion_check(@dataset)
@@ -379,7 +379,7 @@ collaborators to access the data files while the dataset is not public.</li>
         end
       else # this else means update failed
         format.html { render :edit }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -417,7 +417,7 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render json: {status: :ok}, content_type: request.format, layout: false }
       else
         format.html { redirect_to redirect_url, alert: "Error attempting to delete dataset." }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -445,7 +445,7 @@ collaborators to access the data files while the dataset is not public.</li>
       else
         Rails.logger.warn ("Error removing sharing link for #{@dataset.key}")
         format.html { redirect_to dataset_path(@dataset.key), notice: "Unexpected Error" }
-        format.json { render json: {error: "Unexpected Error"}, status: :unprocessable_entity }
+        format.json { render json: {error: "Unexpected Error"}, status: :unprocessable_content }
       end
     end
   end
@@ -459,7 +459,7 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -473,7 +473,7 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -489,7 +489,7 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -514,7 +514,7 @@ collaborators to access the data files while the dataset is not public.</li>
         end
       else
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -536,7 +536,7 @@ collaborators to access the data files while the dataset is not public.</li>
         end
       else
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -557,14 +557,14 @@ collaborators to access the data files while the dataset is not public.</li>
           format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
         else
           format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-          format.json { render json: @dataset.errors, status: :unprocessable_entity }
+          format.json { render json: @dataset.errors, status: :unprocessable_content }
         end
       end
     rescue StandardError
       @dataset.save
       respond_to do |format|
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Failed to remove from Globus Download.) }
-        format.json { render json: {}, status: :unprocessable_entity }
+        format.json { render json: {}, status: :unprocessable_content }
       end
     end
   end
@@ -579,7 +579,7 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -595,7 +595,7 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -619,7 +619,7 @@ collaborators to access the data files while the dataset is not public.</li>
           format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
         else
           format.html { redirect_to dataset_path(@dataset.key), %(Error - see log.) }
-          format.json { render json: @dataset.errors, status: :unprocessable_entity }
+          format.json { render json: @dataset.errors, status: :unprocessable_content }
         end
       end
     rescue StandardError
@@ -628,7 +628,7 @@ collaborators to access the data files while the dataset is not public.</li>
         format.html {
           redirect_to dataset_path(@dataset.key), alert: %(Failed to remove from DataCite or Globus Download.)
         }
-        format.json { render json: {}, status: :unprocessable_entity }
+        format.json { render json: {}, status: :unprocessable_content }
       end
     end
   end
@@ -659,7 +659,7 @@ collaborators to access the data files while the dataset is not public.</li>
           render :edit,
                  alert: "There was a problem updating the dataset. The error has been logged and the Research Data Service has been alerted."
         }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -677,21 +677,21 @@ collaborators to access the data files while the dataset is not public.</li>
           redirect_to dataset_path(@dataset.key),
                       notice: "Error in publishing dataset has been logged for review by the Research Data Service."
         }
-        format.json { render json: {status: :unprocessable_entity}, content_type: request.format, layout: false }
+        format.json { render json: {status: :unprocessable_content}, content_type: request.format, layout: false }
       elsif publish_attempt_result[:status] == "ok" && @dataset.save
         pub_notice = Dataset.deposit_confirmation_notice(publish_attempt_result[:old_publication_state], @dataset)
         format.html { redirect_to dataset_path(@dataset.key), notice: pub_notice }
         format.json { render json: :show, status: :ok, location: dataset_path(@dataset.key) }
       elsif publish_attempt_result[:status] == "error"
         format.html { redirect_to dataset_path(@dataset.key), notice: publish_attempt_result[:error_text] }
-        format.json { render json: {status: :unprocessable_entity}, content_type: request.format, layout: false }
+        format.json { render json: {status: :unprocessable_content}, content_type: request.format, layout: false }
       else
         Rails.logger.warn "unexepected error in attempt to publish: #{publish_attempt_result}"
         format.html {
           redirect_to dataset_path(@dataset.key),
                       notice: "Error in publishing dataset has been logged for review by the Research Data Service."
         }
-        format.json { render json: {status: :unprocessable_entity}, content_type: request.format, layout: false }
+        format.json { render json: {status: :unprocessable_content}, content_type: request.format, layout: false }
       end
     end
   end
@@ -702,7 +702,7 @@ collaborators to access the data files while the dataset is not public.</li>
     if @dataset.send_publication_notice
       {render: {status: :ok}, content_type: :json, layout: false}
     else
-      {render: {status: :unprocessable_entity}, content_type: :json, layout: false}
+      {render: {status: :unprocessable_content}, content_type: :json, layout: false}
     end
   end
 

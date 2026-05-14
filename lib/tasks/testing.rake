@@ -9,6 +9,7 @@ namespace :testing do
   desc "add seed binaries to bucket"
   task store_seed_datafiles: :environment do
     puts "adding seed binaries to bucket"
+    transfer_manager = Aws::S3::TransferManager.new(client: Application.aws_client)
 
     source_root = "test/fixtures/files"
     Datafile.all.each do |datafile|
@@ -30,7 +31,7 @@ namespace :testing do
         rescue Aws::S3::Errors::NoSuchKey
           puts "uploading #{key}"
         end
-        Aws::S3::Resource.new(client: Application.aws_client).bucket(root.bucket).object(key).upload_file(file)
+        transfer_manager.upload_file(file, bucket: root.bucket, key: key)
       end
     end
 

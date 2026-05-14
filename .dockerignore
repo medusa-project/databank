@@ -1,0 +1,3 @@
+# Exclude crash dumps from build context
+*.core
+qemu_chrome_*.core

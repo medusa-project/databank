@@ -36,7 +36,7 @@ module DatasetsController::Versionable
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -48,7 +48,7 @@ module DatasetsController::Versionable
       unless files_to_copy.count.positive?
         respond_to do |format|
           format.html { render :edit, alert: "No files selected for copy." }
-          format.json { render json: { error: "No files selected for copy." }, status: :unprocessable_entity }
+          format.json { render json: { error: "No files selected for copy." }, status: :unprocessable_content }
         end
         return
       end
@@ -61,7 +61,7 @@ module DatasetsController::Versionable
     else
       respond_to do |format|
         format.html { render :edit, alert: "Error attempting to copy files." }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -76,7 +76,7 @@ module DatasetsController::Versionable
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
         format.html { redirect_to dataset_path(@dataset.previous_key), notice: "error attempting to create version" }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
@@ -94,7 +94,7 @@ module DatasetsController::Versionable
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-        format.json { render json: @dataset.errors, status: :unprocessable_entity }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end

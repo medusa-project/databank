@@ -50,7 +50,7 @@ namespace :bulk do
   task cabbi_editor: :environment do
     raise("already done, do not run again")
     # case Rails.env
-    # when "prod-rocky"
+    # when "production"
     #   cabbi_editor = User.find_by(email: "krhodges@illinois.edu")
     # when "demo"
     #   cabbi_editor = User.find_by(email: "srobbins@illinois.edu")
@@ -67,7 +67,7 @@ namespace :bulk do
     #   puts "Processing record #{count}: #{record['dataset_id']}"
     #   dataset = Dataset.find_by(title: record["DatasetTitle"])
     #   if dataset.present?
-    #     if [ "prod-rocky", "demo"].include?(Rails.env)
+    #     if [ "production", "demo"].include?(Rails.env)
     #       UserAbility.add_to_editors(dataset: dataset, email: cabbi_editor.email)
     #     else
     #       puts "not valid, must be tested on demo"
@@ -83,7 +83,7 @@ end
 # assumes all are CCBY4, check for any new batch
 def create_dataset_from_cabbi(record:, primary_contact:)
   depositor = case Rails.env
-              when "prod-rocky"
+              when "production"
                 {name: "Leslie A. Stoecker", email: "lensor@illinois.edu"}
               when "demo"
                 {name: "Colleen Fallaw", email: "mfall3@illinois.edu"}

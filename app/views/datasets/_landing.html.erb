@@ -112,7 +112,7 @@
 
     <!-- BEGIN file section -->
 
-    <%= render partial: 'datasets/show_files', locals: {dataset: @dataset, globus_only: @dataset.is_too_big?, shared_by_link: @shared_by_link} %>
+    <%= render partial: 'datasets/show_files', locals: {dataset: @dataset, globus_only: @dataset.too_big?, shared_by_link: @shared_by_link} %>
 
     <!-- END file section -->
   <% end %>

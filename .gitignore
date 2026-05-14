@@ -6,6 +6,8 @@
 
 config/databank-local.yml
 config/medusa_storage-local.yml
+config/credentials/demo.key
+config/credentials/production.key
 
 *.rbc
 capybara-*.html
@@ -79,6 +81,8 @@ yarn-debug.log*
 
 # Ignore local files.
 core
+*.core
+qemu_chrome_*.core
 public/read_only_msg_plus.txt
 config/master.key
 public/uploads
@@ -114,7 +118,6 @@ stop.sh
 config/initializers/secret_token.rb
 /config/credentials/demo.key
 /config/credentials/production.key
-/config/credentials/prod-rocky.key
 /config/databank-development.yml
 /config/databank-local.yml
 /config/databank-test.yml
@@ -132,3 +135,10 @@ node_modules
 .idea
 
 /app/views/guide/scratch.html
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

@@ -12,18 +12,33 @@
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [3000],
+  "forwardPorts": [3000, 9323],
 
     // Force linux/amd64 platform for compatibility
     // "runArgs" is not supported in devcontainer.json. Remove this line if present.
 
   // Configure tool-specific properties.
-  // "customizations": {},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-playwright.playwright",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "Shopify.ruby-lsp",
+        "misogi.ruby-rubocop",
+        "aki77.rails-routes",
+        "redhat.vscode-yaml",
+        "eamodio.gitlens",
+        "karunamurti.haml",
+        "craigmaslowski.erb"
+      ]
+    }
+  },
 
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   // "remoteUser": "root",
 
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "bin/setup_local"
+  "postCreateCommand": "npm ci && npx playwright install-deps && npx playwright install chromium firefox webkit && bin/setup_local"
 }

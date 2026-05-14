@@ -69,7 +69,7 @@ class WelcomeController < ApplicationController
         format.json {render :index, status: :ok}
       else
         format.html {render :index, notice: "unexpected error"}
-        format.json {render json: {}, status: :unprocessable_entity}
+        format.json {render json: {}, status: :unprocessable_content}
       end
     end
   end

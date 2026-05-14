@@ -13,6 +13,8 @@
 
 class UserAbility < ApplicationRecord
 
+  validates :user_provider, :user_uid, :resource_type, :ability, presence: true
+
   before_save :trim_values
 
   def deposit_exception?
@@ -68,7 +70,7 @@ class UserAbility < ApplicationRecord
     # @param [User] user The user to remove from the list of curators
     def remove_curator(user:)
       UserAbility.where(resource_type: "Databank",
-                        model_id:      nil,
+                        resource_id:   nil,
                         user_provider: user.provider,
                         user_uid:      user.uid,
                         ability:       "manage").destroy_all
@@ -92,7 +94,7 @@ class UserAbility < ApplicationRecord
     # @param [User] user The user to revoke the ability to deposit, used when not granted by shib attributes.
     def revoke_deposit_exception(user:)
       UserAbility.where(resource_type: "Dataset",
-                        model_id:      nil,
+                        resource_id:   nil,
                         user_provider: user.provider,
                         user_uid:      user.uid,
                         ability:       "create").destroy_all

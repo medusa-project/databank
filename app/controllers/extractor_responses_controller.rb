@@ -28,8 +28,8 @@ class ExtractorResponsesController < ApplicationController
         format.html { redirect_to @extractor_response, notice: "Extractor response was successfully created." }
         format.json { render :show, status: :created, location: @extractor_response }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @extractor_response.errors, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
+        format.json { render json: @extractor_response.errors, status: :unprocessable_content }
       end
     end
   end
@@ -41,8 +41,8 @@ class ExtractorResponsesController < ApplicationController
         format.html { redirect_to @extractor_response, notice: "Extractor response was successfully updated." }
         format.json { render :show, status: :ok, location: @extractor_response }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @extractor_response.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @extractor_response.errors, status: :unprocessable_content }
       end
     end
   end

@@ -13,8 +13,38 @@ RSpec.describe DatasetsController, type: :controller do
 
   describe 'GET #index' do
     it 'returns a success response' do
+      allow(User).to receive(:find_by).with(email: user.email).and_return(user)
+      allow(user).to receive(:datasets_user_can_view).with(user: user).and_return([dataset])
+      allow(Dataset).to receive(:filtered_list).and_return([])
+      allow(Dataset).to receive(:citation_report).and_return('report body')
+
       get :index
       expect(response).to be_successful
+    end
+
+    it 'assigns depositor-visible datasets for logged in depositors' do
+      visible_dataset = [dataset]
+      allow(User).to receive(:find_by).with(email: user.email).and_return(user)
+      allow(user).to receive(:datasets_user_can_view).with(user: user).and_return(visible_dataset)
+      allow(Dataset).to receive(:filtered_list).and_return([])
+      allow(Dataset).to receive(:citation_report).and_return('report body')
+
+      get :index
+
+      expect(assigns(:datasets)).to eq(visible_dataset)
+    end
+
+    it 'downloads the citation report when requested' do
+      allow(User).to receive(:find_by).with(email: user.email).and_return(user)
+      allow(user).to receive(:datasets_user_can_view).with(user: user).and_return([dataset])
+      allow(Dataset).to receive(:filtered_list).and_return([])
+      allow(Dataset).to receive(:citation_report).and_return('report body')
+
+      get :index, params: { download: 'now' }
+
+      expect(response).to be_successful
+      expect(response.body).to eq('report body')
+      expect(response.headers['Content-Disposition']).to include('report.txt')
     end
   end
 
@@ -22,6 +52,22 @@ RSpec.describe DatasetsController, type: :controller do
     it 'returns a success response' do
       get :show, params: { id: dataset.to_param }
       expect(response).to be_successful
+    end
+
+    it 'redirects the special share-code dataset to the replacement dataset' do
+      special = create(:dataset, key: 'IDB-5266692')
+
+      get :show, params: { id: special.to_param, code: 'secret-code' }
+
+      expect(response).to redirect_to(dataset_path('IDB-1985555', code: 'secret-code'))
+    end
+
+    it 'marks the dataset as shared by link when the provided code matches' do
+      dataset.create_share_code(id: dataset.id)
+
+      get :show, params: { id: dataset.to_param, code: dataset.current_share_code }
+
+      expect(assigns(:shared_by_link)).to eq(true)
     end
   end
 
@@ -36,6 +82,27 @@ RSpec.describe DatasetsController, type: :controller do
     it 'returns a success response' do
       get :edit, params: { id: dataset.to_param }
       expect(response).to be_successful
+    end
+  end
+
+  describe 'GET #pre_deposit' do
+    it 'returns success and assigns pre-deposit title' do
+      get :pre_deposit
+
+      expect(response).to be_successful
+      expect(assigns(:dataset)).to be_a_new(Dataset)
+      expect(assigns(:title)).to eq('Pre-Deposit Considerations')
+    end
+  end
+
+  describe 'GET #pre_version' do
+    it 'returns success and assigns previous dataset by id' do
+      get :pre_version, params: { id: dataset.to_param }
+
+      expect(response).to be_successful
+      expect(assigns(:previous)).to eq(dataset)
+      expect(assigns(:dataset)).to be_a_new(Dataset)
+      expect(assigns(:title)).to eq('New Version')
     end
   end
 
@@ -108,6 +175,15 @@ RSpec.describe DatasetsController, type: :controller do
         expect(response).to be_successful
       end
     end
+
+    it 'returns unprocessable content when import raises an error' do
+      allow_any_instance_of(Dataset).to receive(:import_from_globus).and_raise(StandardError, 'globus failure')
+
+      post :import_from_globus, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(JSON.parse(response.body)).to eq('error' => 'globus failure')
+    end
   end
 
   describe 'POST #publish' do
@@ -146,12 +222,50 @@ RSpec.describe DatasetsController, type: :controller do
       post :share, params: { id: draft1.to_param }
       expect(response.status).to eq(302)
     end
+
+    it 'returns the share link for json requests when a code exists' do
+      allow_any_instance_of(Dataset).to receive(:current_share_code).and_return('share-code')
+      allow_any_instance_of(Dataset).to receive(:sharing_link).and_return('https://example.test/share')
+
+      post :share, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)).to eq('private_share_link' => 'https://example.test/share')
+    end
+
+    it 'returns unprocessable content for json requests when no share code can be generated' do
+      allow_any_instance_of(Dataset).to receive(:current_share_code).and_return(nil)
+      allow_any_instance_of(Dataset).to receive(:create_share_code)
+
+      post :share, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(JSON.parse(response.body)).to eq('private_share_link' => nil)
+    end
   end
 
   describe 'POST #remove_sharing_link' do
     it 'removes the sharing link' do
       post :remove_sharing_link, params: { id: dataset.to_param }
       expect(response.status).to eq(302)
+    end
+
+    it 'returns ok in json when share code is removed' do
+      share_code = dataset.create_share_code(id: dataset.id)
+
+      post :remove_sharing_link, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(ShareCode.find_by(id: share_code.id)).to be_nil
+    end
+
+    it 'returns unprocessable content in json when there is no share code' do
+      allow(Rails.logger).to receive(:warn)
+
+      post :remove_sharing_link, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(JSON.parse(response.body)).to eq('error' => 'Unexpected Error')
     end
   end
 
@@ -185,6 +299,27 @@ RSpec.describe DatasetsController, type: :controller do
       post :temporarily_suppress_metadata, params: { id: dataset.to_param }
       expect(response.status).to eq(302)
     end
+
+    it 'returns ok in json when save succeeds but update_doi fails' do
+      sign_in users(:curator1)
+      allow_any_instance_of(Dataset).to receive(:save).and_return(true)
+      allow_any_instance_of(Dataset).to receive(:update_doi).and_return(false)
+
+      post :temporarily_suppress_metadata, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'returns unprocessable content in json when save fails' do
+      sign_in users(:curator1)
+      errors = double(as_json: { hold_state: ['invalid'] })
+      allow_any_instance_of(Dataset).to receive(:save).and_return(false)
+      allow_any_instance_of(Dataset).to receive(:errors).and_return(errors)
+
+      post :temporarily_suppress_metadata, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
   end
 
   describe 'POST #unsuppress' do
@@ -192,6 +327,16 @@ RSpec.describe DatasetsController, type: :controller do
       sign_in users(:curator1)
       post :unsuppress, params: { id: dataset.to_param }
       expect(response.status).to eq(302)
+    end
+
+    it 'returns ok in json when save succeeds but update_doi fails' do
+      sign_in users(:curator1)
+      allow_any_instance_of(Dataset).to receive(:save).and_return(true)
+      allow_any_instance_of(Dataset).to receive(:update_doi).and_return(false)
+
+      post :unsuppress, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:ok)
     end
   end
 
@@ -213,6 +358,42 @@ RSpec.describe DatasetsController, type: :controller do
     it 'gets the current token' do
       get :get_current_token, params: { id: dataset.to_param }
       expect(response).to be_successful
+    end
+
+    it 'returns none when the dataset has no current token' do
+      allow_any_instance_of(Dataset).to receive(:current_token).and_return(nil)
+
+      get :get_current_token, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to be_successful
+      expect(JSON.parse(response.body)).to eq('token' => 'none')
+    end
+  end
+
+  describe 'PATCH #update_permissions' do
+    before do
+      allow(controller).to receive(:authorize!).with(:manage, dataset)
+    end
+
+    it 'updates permissions and redirects when the dataset saves' do
+      expect(UserAbility).to receive(:update_permissions).with(dataset.key, ['reviewer@example.org'], ['editor@example.org'])
+      allow_any_instance_of(Dataset).to receive(:save).and_return(true)
+
+      patch :update_permissions, params: { id: dataset.to_param, reviewer_emails: ['reviewer@example.org'], editor_emails: ['editor@example.org'] }
+
+      expect(response).to redirect_to(dataset_path(dataset.key))
+      expect(flash[:notice]).to eq('Permissions updated.')
+    end
+
+    it 'returns unprocessable content in json when the dataset save fails' do
+      errors = double(as_json: { key: ['invalid'] })
+      allow_any_instance_of(Dataset).to receive(:save).and_return(false)
+      allow_any_instance_of(Dataset).to receive(:errors).and_return(errors)
+      allow(UserAbility).to receive(:update_permissions)
+
+      patch :update_permissions, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
     end
   end
 
@@ -376,9 +557,122 @@ RSpec.describe DatasetsController, type: :controller do
 
       it 'returns an unprocessable entity response with JSON format' do
         post :update_permissions, params: { id: dataset.to_param, reviewer_emails: reviewer_emails, editor_emails: editor_emails }, format: :json
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.content_type).to eq('application/json; charset=utf-8')
       end
+    end
+  end
+
+  describe 'POST #suppression_action' do
+    before do
+      allow(controller).to receive(:authorize!).and_return(true)
+    end
+
+    it 'redirects to the requested suppression action' do
+      post :suppression_action, params: { id: dataset.to_param, suppression_action: 'temporarily_suppress_files' }
+
+      expect(response).to redirect_to(action: 'temporarily_suppress_files')
+    end
+  end
+
+  describe 'GET #review_requests' do
+    before do
+      allow(controller).to receive(:authorize!).with(:manage, instance_of(Dataset)).and_return(true)
+    end
+
+    it 'builds a new review request for the dataset' do
+      get :review_requests, params: { id: dataset.to_param }
+
+      expect(response).to be_successful
+      expect(assigns(:review_request)).to be_a(ReviewRequest)
+      expect(assigns(:review_request).dataset_key).to eq(dataset.key)
+    end
+  end
+
+  describe 'GET #version_controls' do
+    before do
+      allow(controller).to receive(:authorize!).with(:manage, instance_of(Dataset)).and_return(true)
+    end
+
+    it 'assigns previous dataset reference' do
+      allow_any_instance_of(Dataset).to receive(:previous_idb_dataset).and_return(nil)
+
+      get :version_controls, params: { id: dataset.to_param }
+
+      expect(response).to be_successful
+      expect(assigns(:previous)).to be_nil
+    end
+  end
+
+  describe 'GET #citation_text' do
+    it 'returns plain text citation in json' do
+      allow_any_instance_of(Dataset).to receive(:plain_text_citation).and_return('Sample Citation')
+
+      get :citation_text, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)).to eq('citation' => 'Sample Citation')
+    end
+  end
+
+  describe 'GET #download_link' do
+    let!(:download_datafile) { create(:datafile, dataset: dataset, web_id: 'abc123') }
+
+    before do
+      dataset.update!(identifier: '10.13012/B2IDB-DOWNLOAD_V1')
+    end
+
+    it 'returns error when no web_ids are provided' do
+      get :download_link, params: { id: dataset.to_param }, format: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)).to eq('status' => 'error', 'error' => 'no web_ids in request')
+    end
+
+    it 'returns ok url and total_size when downloader client succeeds' do
+      allow(DownloaderClient).to receive(:datafiles_download_hash).and_return(
+        status: 'ok', download_url: 'https://dl.example/file.zip', total_size: 123
+      )
+      allow_any_instance_of(Datafile).to receive(:record_download)
+
+      get :download_link, params: { id: dataset.to_param, web_ids: 'abc123' }, format: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)).to eq(
+        'status' => 'ok',
+        'url' => 'https://dl.example/file.zip',
+        'total_size' => 123
+      )
+    end
+
+    it 'returns error payload when downloader client returns error' do
+      allow(DownloaderClient).to receive(:datafiles_download_hash).and_return(
+        status: 'error', error: 'internal error downloading files'
+      )
+
+      get :download_link, params: { id: dataset.to_param, web_ids: 'abc123' }, format: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)).to eq(
+        'status' => 'error',
+        'error' => 'internal error downloading files'
+      )
+    end
+  end
+
+  describe 'GET #download_metrics' do
+    it 'returns internal server error for unimplemented handler' do
+      get :download_metrics, params: { id: dataset.to_param }
+
+      expect(response).to have_http_status(:internal_server_error)
+    end
+  end
+
+  describe 'GET #confirm_review' do
+    it 'returns a successful response' do
+      get :confirm_review, params: { id: dataset.to_param }
+
+      expect(response).to be_successful
     end
   end
 end

@@ -77,23 +77,23 @@
   %h3 Guides
   %p
     Guidance will continue to be available to you throughout this process.  To review any of this information, open the
-    %a(href="#{IDB_CONFIG[:root_url_text]}/guides" class="underline" )
+    %a#guides-link(href="#{IDB_CONFIG[:root_url_text]}/guides")
       %span.glyphicon.glyphicon-question-sign
       Guides
     menu at the top of each page.
   %p
     For context-specific help, click the question icon
-    %a(href="#{IDB_CONFIG[:root_url_text]}/guides")
+    %a#context-specific-help-link(href="#{IDB_CONFIG[:root_url_text]}/guides")
       %span.far.fa-question-circle
     near form elements for additional details.
   %h3 Contact Us
   %p
     If you have questions or need assistance, please fill out our
-    %a(href="https://forms.illinois.edu/sec/1628290621" class="underline" )
+    %a#consultation-request-form-link(href="https://forms.illinois.edu/sec/1628290621")
       consultation request form
     or
     = succeed "." do
-      %a(href="mailto: databank@library.illinois.edu" class="underline")
+      %a#email-us-link(href="mailto: databank@library.illinois.edu")
         email us
 -if Databank::Application.file_mode != Databank::FileMode::READ_ONLY
   .row.line-above
@@ -101,10 +101,10 @@
       %nav(aria-label="Progress" data-skip-to-info="landmark navigation" data-skip-to-acc-name="Progress" data-skip-to-id="100")
         %ul.list-unstyled
           %li.navitem
-            = link_to "/datasets/new", class: "btn btn-primary btn-block idb", name: "continue" do
+            = link_to "/datasets/new", class: "btn btn-primary btn-block idb", name: "continue-button", id: "continue-button" do
               Continue
               %span(class="glyphicon glyphicon-triangle-right")
           %li.navitem
-            = link_to "/", class: "btn btn-danger btn-block idb", name: "cancel" do
+            = link_to "/", class: "btn btn-danger btn-block idb", name: "cancel-button", id:  "cancel-button" do
               %span(class="glyphicon glyphicon-remove")
               Cancel

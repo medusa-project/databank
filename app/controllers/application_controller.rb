@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::InvalidCrossOriginRequest, with: :render_400
   rescue_from StandardError, with: :error_occurred
   rescue_from ActionView::MissingTemplate do |_exception|
-    render json: {}, status: :unprocessable_entity
+    render json: {}, status: :unprocessable_content
   end
 
   after_action :store_location

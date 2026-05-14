@@ -34,7 +34,7 @@ class ExtractorTasksController < ApplicationController
         format.json { render :show, status: :created, location: @extractor_task }
       else
         format.html { render :new }
-        format.json { render json: @extractor_task.errors, status: :unprocessable_entity }
+        format.json { render json: @extractor_task.errors, status: :unprocessable_content }
       end
     end
   end
@@ -48,7 +48,7 @@ class ExtractorTasksController < ApplicationController
         format.json { render :show, status: :ok, location: @extractor_task }
       else
         format.html { render :edit }
-        format.json { render json: @extractor_task.errors, status: :unprocessable_entity }
+        format.json { render json: @extractor_task.errors, status: :unprocessable_content }
       end
     end
   end
@@ -76,6 +76,6 @@ class ExtractorTasksController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def extractor_task_params
-    params.require([:extractor_task, :web_id])
+    params.require(:extractor_task).permit(:web_id)
   end
 end

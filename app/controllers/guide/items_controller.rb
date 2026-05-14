@@ -36,8 +36,8 @@ module Guide
           format.html { redirect_to @guide_item, notice: "Item was successfully created." }
           format.json { render :show, status: :created, location: @guide_item }
         else
-          format.html { render :new, status: :unprocessable_entity }
-          format.json { render json: @guide_item.errors, status: :unprocessable_entity }
+          format.html { render :new, status: :unprocessable_content }
+          format.json { render json: @guide_item.errors, status: :unprocessable_content }
         end
       end
     end
@@ -49,8 +49,8 @@ module Guide
           format.html { redirect_to @guide_item, notice: "Item was successfully updated." }
           format.json { render :show, status: :ok, location: @guide_item }
         else
-          format.html { render :edit, status: :unprocessable_entity }
-          format.json { render json: @guide_item.errors, status: :unprocessable_entity }
+          format.html { render :edit, status: :unprocessable_content }
+          format.json { render json: @guide_item.errors, status: :unprocessable_content }
         end
       end
     end

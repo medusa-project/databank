@@ -8,8 +8,6 @@ require "aws-sdk-sqs"
 require "aws-sdk-ecs"
 require "securerandom"
 
-include Databank
-
 namespace :extractor_tasks do
   desc "get and handle message from Illinois Data Bank Archive Extractor"
   task get_extractor_response: :environment do

@@ -53,7 +53,7 @@ services:
     ports:
       - '11211:11211'
   databank:
-    platform: linux/amd64
+    platform: linux/arm64
     build:
       context: ..
       dockerfile: .devcontainer/databank/Dockerfile

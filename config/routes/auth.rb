@@ -8,6 +8,5 @@ match '/login', to: 'sessions#new', as: :login, via: [:get, :post]
 match '/logout', to: 'sessions#destroy', as: :logout, via: [:get, :post]
 get "/on_failed_registration", to: "welcome#on_failed_registration"
 match '/auth/:provider', to: 'sessions#new', via: [:get, :post]
-resources :password_resets, only: [:new, :create, :edit, :update]
 resources :user_abilities
 get '/welcome/deposit_login_modal', to: 'welcome#deposit_login_modal'

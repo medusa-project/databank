@@ -131,7 +131,7 @@ class DatabankMailer < ActionMailer::Base
     subject = prepend_system_code(subject_base)
     @dataset = Dataset.find_by(key: dataset_key)
     if @dataset
-      mail(to:      dataset.depositor_email,
+      mail(to:      @dataset.depositor_email,
            cc:      [IDB_CONFIG[:admin][:contact_email], IDB_CONFIG[:admin][:temp_contact_email]],
            subject: subject)
     else
@@ -208,10 +208,6 @@ because dataset not found for key: #{dataset_key}."
   ##
   # Sends an email to the user for use when a password is reset.
   # @param identity [Identity] the identity of the user
-  def password_reset(identity)
-    @identity = identity
-    mail(to: @identity.email, subject: "Illinois Data Bank password reset")
-  end
 
   ##
   # Sends an email to the admin with a report of the related materials links.

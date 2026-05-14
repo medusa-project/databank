@@ -10,23 +10,25 @@ RUN apt-get update --allow-releaseinfo-change \
 	&& echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
 	&& apt-get update --allow-releaseinfo-change \
 	&& apt-get install -y --no-install-recommends \
-		build-essential \
-		autoconf \
-		automake \
-		libtool \
-		pkg-config \
-		systemd \
-		nodejs \
-		libmemcached-dev \
-		libmagic-dev \
-		yarn \
-		postgresql-client \
-		libpq-dev \
-		memcached \
-		emacs-nox \
-		libxml2-dev \
-		libxslt1-dev \
-		zlib1g-dev \
+	build-essential \
+	ripgrep \
+	autoconf \
+	automake \
+	libtool \
+	pkg-config \
+	systemd \
+	nodejs \
+	npm \
+	libmemcached-dev \
+	libmagic-dev \
+	yarn \
+	postgresql-client \
+	libpq-dev \
+	memcached \
+	emacs-nox \
+	libxml2-dev \
+	libxslt1-dev \
+	zlib1g-dev \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 

@@ -5,7 +5,6 @@ class CuratorsController < ApplicationController
   before_action :set_user_ability, only: [:show, :edit, :update, :destroy]
 
   # Responds to `GET /curators`
-  # Responds to `GET /curators.json`
   def index
     config_admins = IDB_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
     @config_admin_uids = config_admins.map {|x| x + "@illinois.edu" }
@@ -14,7 +13,6 @@ class CuratorsController < ApplicationController
   end
 
   # Responds to `GET /curators/1`
-  # Responds to `GET /curators/1.json`
   def show; end
 
   # Responds to `GET /curators/new`
@@ -26,43 +24,29 @@ class CuratorsController < ApplicationController
   def edit; end
 
   # Responds to `POST /curators`
-  # Responds to `POST /curators.json`
   def create
     @user_ability = UserAbility.new(user_ability_params)
 
-    respond_to do |format|
-      if @user_ability.save
-        format.html { redirect_to "/curators", notice: 'Curator was successfully added.' }
-        format.json { render :show, status: :created, location: @user_ability }
-      else
-        format.html { render :new }
-        format.json { render json: @user_ability.errors, status: :unprocessable_entity }
-      end
+    if @user_ability.save
+      redirect_to "/curators", notice: 'Curator was successfully added.'
+    else
+      render :new
     end
   end
 
   # Responds to `PATCH/PUT /curators/1`
-  # Responds to `PATCH/PUT /curators/1.json`
   def update
-    respond_to do |format|
-      if @user_ability.update(user_ability_params)
-        format.html { redirect_to "/curators", notice: 'Curator was successfully updated.' }
-        format.json { render :show, status: :ok, location: @user_ability }
-      else
-        format.html { render :edit }
-        format.json { render json: @user_ability.errors, status: :unprocessable_entity }
-      end
+    if @user_ability.update(user_ability_params)
+      redirect_to "/curators", notice: 'Curator was successfully updated.'
+    else
+      render :edit
     end
   end
 
   # Responds to `DELETE /curators/1`
-  # Responds to `DELETE /curators/1.json`
   def destroy
     @user_ability.destroy
-    respond_to do |format|
-      format.html { redirect_to "/curators", notice: 'Curator was successfully removed.' }
-      format.json { head :no_content }
-    end
+    redirect_to "/curators", notice: 'Curator was successfully removed.'
   end
 
   private

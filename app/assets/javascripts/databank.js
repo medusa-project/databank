@@ -1,4 +1,5 @@
+// Legacy global kept for inline handlers and files that call isEmail() directly.
+// The canonical implementation lives in Databank.utils.isEmail (idb_utils.js).
 function isEmail(email) {
-    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-    return regex.test(email);
+    return Databank.utils.isEmail(email);
 }

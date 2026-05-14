@@ -308,161 +308,37 @@ function pad(n) {
     return n < 10 ? '0' + n : n
 }
 
-function setDepositor(email, name) {
+// Delegates to Databank.agreement (dataset_agreement.js).
+function setDepositor(email, name) { Databank.agreement.setDepositor(email, name); }
 
-    jQuery('#depositor_email').val(email);
-    jQuery('#depositor_name').val(name);
-    jQuery('.save').show();
-    jQuery('.new-dataset-progress').show();
-    jQuery('.dataset').removeAttr("disabled");
-    jQuery('.file-field').removeAttr("disabled");
-    jQuery('.add-attachment-subform-button').show();
-    clearDepositAgreementSelectionWarning();
-}
-
-function handleAgreeModal(email, name) {
-
-    if (jQuery('#owner-yes').is(":checked") && jQuery('#agree-yes').is(":checked") && (jQuery('#private-yes').is(":checked") || jQuery('#private-na').is(":checked"))) {
-        setDepositor(email, name);
-        jQuery('#new_dataset').submit();
-    } else {
-        // should not get here
-        jQuery('#agree-button').prop("disabled", true);
-    }
-}
+function handleAgreeModal(email, name) { Databank.agreement.handleModal(email, name); }
 
 
-function handlePrivateYes() {
-    if (jQuery('#private-yes').is(':checked')) {
-        jQuery('#dataset_removed_private').val('yes');
-        jQuery('#review_link').html('<a href="/datasets/review_deposit_agreement?removed=yes" target="_blank">Review Deposit Agreement</a>');
-        jQuery('#private-na').attr('checked', false);
-        jQuery('#private-no').attr('checked', false);
-        if (agree_answers_all_yes()) {
-            allow_agree_submit();
-        }
-        if (agree_answers_none_no()) {
-            clearDepositAgreementSelectionWarning();
-        }
-    } else {
-        jQuery('#agree-button').prop("disabled", true);
-        jQuery('#dataset_removed_private').val('no');
-    }
-}
+function handlePrivateYes() { Databank.agreement.handlePrivateYes(); }
 
-function handlePrivateNA() {
+function handlePrivateNA() { Databank.agreement.handlePrivateNA(); }
 
-    if (jQuery('#private-na').is(':checked')) {
-        jQuery('#review_link').html('<a href="/datasets/review_deposit_agreement?removed=na" target="_blank">Review Deposit Agreement</a>');
-        jQuery('#dataset_removed_private').val('na');
-        jQuery('#private-yes').attr('checked', false);
-        jQuery('#private-no').attr('checked', false);
-        if (agree_answers_all_yes()) {
-            allow_agree_submit();
-        }
-        if (agree_answers_none_no()) {
-            clearDepositAgreementSelectionWarning();
-        }
+function handlePrivateNo() { Databank.agreement.handlePrivateNo(); }
 
-    } else {
-        jQuery('#agree-button').prop("disabled", true);
-        jQuery('#dataset_removed_private').val('no');
-    }
-}
+function showDepositAgreementSelectionWarning() { Databank.agreement.showSelectionWarning(); }
+function clearDepositAgreementSelectionWarning() { Databank.agreement.clearSelectionWarning(); }
 
-function handlePrivateNo() {
-    if (jQuery('#private-no').is(':checked')) {
-        jQuery('#dataset_removed_private').val('no');
-        jQuery('#private-na').attr('checked', false);
-        jQuery('#private-yes').attr('checked', false);
-        jQuery('#agree-button').prop("disabled", true);
-        showDepositAgreementSelectionWarning();
-    } else {
-        if (agree_answers_none_no()) {
-            clearDepositAgreementSelectionWarning();
-        }
-    }
-}
+function handleOwnerYes() { Databank.agreement.handleOwnerYes(); }
 
-function showDepositAgreementSelectionWarning() {
-   selection_warning_html = "<h2>Selection Alert</h2><p><span class='glyphicon glyphicon-alert'></span> The selections you have made indicate that you are not ready to deposit your dataset.</p><p>Illinois Data bank curators are available to discuss your dataset with you. Please <a href='http://localhost:3000/contact'>contact us</a>!</p>";
-   jQuery('.deposit-agreement-selection-warning').html(selection_warning_html);
-}
-function clearDepositAgreementSelectionWarning() {
-    jQuery('.deposit-agreement-selection-warning').html("");
-}
+function handleOwnerNo() { Databank.agreement.handleOwnerNo(); }
 
-function handleOwnerYes() {
-    if (jQuery('#owner-yes').is(':checked')) {
-        jQuery('#dataset_have_permission').val('yes');
-        jQuery('#owner-no').attr('checked', false);
-        if (agree_answers_all_yes()) {
-            allow_agree_submit();
-        }
-        if (agree_answers_none_no()) {
-            clearDepositAgreementSelectionWarning();
-        }
-    } else {
-        jQuery('#agree-button').prop("disabled", true);
-        jQuery('#dataset_have_permission').val('no');
-    }
-}
+function handleAgreeYes() { Databank.agreement.handleAgreeYes(); }
 
-function handleOwnerNo() {
-    if (jQuery('#owner-no').is(':checked')) {
-        jQuery('#dataset_have_permission').val('no');
-        jQuery('#owner-yes').attr('checked', false);
-        jQuery('#agree-button').prop("disabled", true);
-        showDepositAgreementSelectionWarning();
-    } else {
-        if (agree_answers_none_no()) {
-            clearDepositAgreementSelectionWarning();
-        }
-    }
-}
+function handleAgreeNo() { Databank.agreement.handleAgreeNo(); }
 
-function handleAgreeYes() {
-    if (jQuery('#agree-yes').is(':checked')) {
-        jQuery('#agree-no').attr('checked', false);
-        jQuery('#dataset_agree').val('yes');
-        if (agree_answers_all_yes()) {
-            allow_agree_submit();
-        }
-        if (agree_answers_none_no()) {
-            clearDepositAgreementSelectionWarning();
-        }
+function agree_answers_all_yes() { return Databank.agreement.allAnswersYes(); }
 
-    } else {
-        jQuery('#agree-button').prop("disabled", true);
-        jQuery('#dataset_agree').val('no');
-    }
-}
+function agree_answers_none_no() { return Databank.agreement.noneAnswersNo(); }
 
-function handleAgreeNo() {
-    if (jQuery('#agree-no').is(':checked')) {
-        jQuery('#dataset_agree').val('no');
-        jQuery('#agree-yes').attr('checked', false);
-        jQuery('#agree-button').prop("disabled", true);
-        showDepositAgreementSelectionWarning();
-    } else {
-        if (agree_answers_none_no()) {
-            clearDepositAgreementSelectionWarning();
-        }
-    }
-}
+function allow_agree_submit() { Databank.agreement.allowSubmit(); }
 
-function agree_answers_all_yes() {
-    return ((jQuery('#owner-yes').is(':checked')) && ((jQuery('#private-yes').is(':checked')) || (jQuery('#private-na').is(':checked'))) && (jQuery('#agree-yes').is(':checked')))
-}
-
-function agree_answers_none_no() {
-    return !((jQuery('#owner-no').is(':checked')) || (jQuery('#private-no').is(':checked')) || (jQuery('#agree-no').is(':checked')))
-}
-
-function allow_agree_submit() {
-    jQuery('#agree-button').prop("disabled", false);
-    clearDepositAgreementSelectionWarning();
-}
+// Previously undefined — now delegates to Databank.agreement.handleNotAgreed.
+function handleNotAgreed() { Databank.agreement.handleNotAgreed(); }
 
 function clear_help_form() {
     jQuery('input .help').val('');
@@ -808,6 +684,10 @@ function addInternalEditorRow(){
     var reviewerRow ="<div class='row'><div class='col-md-1'><div class='pull-right'><input name='internal_editor[]' type='checkbox' value='" + netid + "' checked='checked'></div></div><div class='col-md-3'>"+ netid +"</div>"
     jQuery(reviewerRow).prependTo("#newEditorsDiv");
     jQuery("#newInternalEditor").val("");
+}
+
+function addEditorRow(){
+    return addInternalEditorRow();
 }
 
 function importFromGlobus(){
