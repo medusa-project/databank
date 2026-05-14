@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 ruby '3.3.6'
-gem 'rails', '~> 7.2.2'
+gem 'rails', '~> 7.2.3', '>= 7.2.3.1'
 
 # Use postgresql as the database for Active Record
 gem "pg", force_ruby_platform: true
@@ -103,8 +103,16 @@ gem "rest-client"
 # gem 'httpclient', git: 'git://github.com/medusa-project/httpclient.git'
 
 gem "equivalent-xml"
-gem "nokogiri", force_ruby_platform: true
+
+# Security patches for Dependabot vulnerabilities
+gem "addressable", ">= 2.9.0"
+gem "erb", ">= 6.0.4"
+gem "json", ">= 2.19.2"
+gem "net-imap", ">= 0.6.4"
+gem "nokogiri", ">= 1.19.3", force_ruby_platform: true
 gem "nokogiri-diff", force_ruby_platform: true
+gem "rack", ">= 3.2.6"
+gem "rack-session", ">= 2.1.2"
 
 # use sunspot for searching
 gem "progress_bar"
