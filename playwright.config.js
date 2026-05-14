@@ -84,12 +84,4 @@ export default defineConfig({
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],
-
-  /* Run the Rails server before starting tests */
-  webServer: {
-    command: "bundle exec rails s -p 3000",
-    url: baseURL,
-    reuseExistingServer: true,
-    timeout: 120 * 1000,
-  },
 });
