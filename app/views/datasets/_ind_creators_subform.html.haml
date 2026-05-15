@@ -49,9 +49,9 @@
           = cf.hidden_field :row_position # value set via AJAX
           = cf.hidden_field :type_of, value: Databank::CreatorType::PERSON
 
-          = cf.text_field :family_name, class: "form-control dataset creator", placeholder: "[e.g.: Smith]", onchange: "generate_creator_preview()"
+          = cf.text_field :family_name, class: "form-control dataset creator", placeholder: "[e.g.: Smith]"
         %td(class="col-md-2")
-          = cf.text_field :given_name, class: "form-control dataset creator", placeholder: "[e.g.: Jean W.]", onchange: "generate_creator_preview()"
+          = cf.text_field :given_name, class: "form-control dataset creator", placeholder: "[e.g.: Jean W.]"
         %td(class="col-md-2")
           = cf.text_field :identifier, class: "form-control dataset", "data-mask" => "9999-9999-9999-999*", placeholder: "[xxxx-xxxx-xxxx-xxxx]"
           = cf.hidden_field :identifier_scheme, value: "ORCID"
@@ -61,10 +61,10 @@
             Look Up &nbsp;
             =image_tag 'iD_icon_16x16.png', alt: "ORCiD icon"
         %td(class="col-md-2")
-          = cf.email_field :email, class: "form-control dataset creator-email", placeholder: "[e.g.: netid@illinois.edu]", onchange: "handle_creator_email_change(this)"
+          = cf.email_field :email, class: "form-control dataset creator-email", placeholder: "[e.g.: netid@illinois.edu]"
         %td(class="col-md-1" align="center" )
           = cf.hidden_field :is_contact
-          %input{type: "radio", name: "primary_contact", class: "dataset contact_radio", value: i, onchange: "handle_contact_change()", "aria-label": "Primary Contact", checked: ("checked" if creator.is_contact?)}
+          %input{type: "radio", name: "primary_contact", class: "dataset contact_radio", value: i, "aria-label": "Primary Contact", checked: ("checked" if creator.is_contact?)}
         %td(class="col-md-1")
 -# Add/Remove Creator buttons inserted via ajax
 %table(id="deleted_creator_table")

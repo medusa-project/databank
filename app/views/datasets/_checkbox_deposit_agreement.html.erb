@@ -24,9 +24,9 @@
       <span data-toggle="tooltip" data-html="true" title="Deposit into the Illinois Data Bank requires that the depositor be the creator of the dataset or have permission." tabindex="0">
         <span class="glyphicon glyphicon-info-sign tip-target"></span></span>
       <div class="checkbox">
-        <label><input type="checkbox" class="agree" id="owner-yes" onclick="handleOwnerYes()">Yes</label>
+        <label><input type="checkbox" class="agree" id="owner-yes">Yes</label>
         <br/>
-        <label><input type="checkbox" class="agree" id="owner-no" onclick="handleOwnerNo()">No</label>
+        <label><input type="checkbox" class="agree" id="owner-no">No</label>
       </div>
     </div>
     <div class="form-group">
@@ -35,13 +35,13 @@
         <span class="glyphicon glyphicon-info-sign tip-target"></span></span>
 
       <div class="checkbox">
-        <label><input type="checkbox" class="private-checkbox agree" id="private-yes" onclick="handlePrivateYes()">Yes</label>
+        <label><input type="checkbox" class="private-checkbox agree" id="private-yes">Yes</label>
       </div>
       <div class="checkbox">
-        <label><input type="checkbox" class="private-checkbox agree" id="private-no" onclick="handlePrivateNo()">No</label>
+        <label><input type="checkbox" class="private-checkbox agree" id="private-no">No</label>
       </div>
       <div class="checkbox">
-        <label><input type="checkbox" class="private-checkbox agree" id="private-na" onclick="handlePrivateNA()">Not
+        <label><input type="checkbox" class="private-checkbox agree" id="private-na">Not
           applicable</label>
       </div>
     </div>
@@ -50,9 +50,9 @@
       <span data-toggle="tooltip" data-html="true" title="Deposit into Illinois Data Bank requires agreement to the Deposit Agreement. Click on the Deposit Agreement heading above to view the full agreement." tabindex="0">
         <span class="glyphicon glyphicon-info-sign tip-target"></span></span>
       <div class="checkbox">
-        <label><input type="checkbox" class="agree" id="agree-yes" onclick="handleAgreeYes()">Yes</label>
+        <label><input type="checkbox" class="agree" id="agree-yes">Yes</label>
         <br/>
-        <label><input type="checkbox" class="agree" id="agree-no" onclick="handleAgreeNo()">No</label>
+        <label><input type="checkbox" class="agree" id="agree-no">No</label>
       </div>
     </div>
   </form>
@@ -66,7 +66,7 @@
         <ul class="list-unstyled">
           <li class="navitem">
             <% current_user_name = j(current_user.name) %>
-            <%= link_to "#", class: "btn btn-block btn-primary", id: "agree-button", onclick: "handleAgreeModal('#{current_user.email}', '#{current_user_name}'); return false;", type: "button" do %>
+            <%= link_to "#", class: "btn btn-block btn-primary", id: "agree-button", type: "button", data: { depositor_email: current_user.email, depositor_name: current_user_name } do %>
               <span class="glyphicon glyphicon-check"></span> Submit
             <% end %>
           </li>

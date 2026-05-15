@@ -49,7 +49,15 @@ function bindContributorTableEvents() {
           );
         }
       },
-    );
+    )
+    .off("change.contributorActions", "input.contributor")
+    .on("change.contributorActions", "input.contributor", function () {
+      generate_contributor_preview();
+    })
+    .off("change.contributorActions", "input.contributor-email")
+    .on("change.contributorActions", "input.contributor-email", function () {
+      handle_contributor_email_change(this);
+    });
 }
 
 function add_contributor_row() {
@@ -81,14 +89,14 @@ function add_contributor_row() {
     '][type_of]" id="dataset_contributors_attributes_' +
     newId +
     '_type_of" />' +
-    '<input onchange="generate_contributor_preview()" class="form-control dataset contributor" placeholder="[e.g.: Smith]" type="text" name="dataset[contributors_attributes][' +
+    '<input class="form-control dataset contributor" placeholder="[e.g.: Smith]" type="text" name="dataset[contributors_attributes][' +
     newId +
     '][family_name]" id="dataset_contributors_attributes_' +
     newId +
     '_family_name" />' +
     "</td>" +
     '<td class="col-md-2">' +
-    '<input onchange="generate_contributor_preview()" class="form-control dataset contributor" placeholder="[e.g.: Jean W.]" type="text" name="dataset[contributors_attributes][' +
+    '<input class="form-control dataset contributor" placeholder="[e.g.: Jean W.]" type="text" name="dataset[contributors_attributes][' +
     newId +
     '][given_name]" id="dataset_contributors_attributes_' +
     newId +
@@ -112,7 +120,7 @@ function add_contributor_row() {
     '"><span class="glyphicon glyphicon-search"></span>&nbsp;Look Up&nbsp;<img src="/iD_icon_16x16.png">' +
     "</td>" +
     '<td class="col-md-3">' +
-    '<input onchange="handle_contributor_email_change(this)" class="form-control dataset contributor-email" placeholder="[e.g.: netid@illinois.edu]" type="email" name="dataset[contributors_attributes][' +
+    '<input class="form-control dataset contributor-email" placeholder="[e.g.: netid@illinois.edu]" type="email" name="dataset[contributors_attributes][' +
     newId +
     '][email]" id="dataset_contributors_attributes_' +
     newId +
@@ -205,7 +213,7 @@ function contributorRowActions(contributor_index, isLastRow) {
 }
 
 // Delegates to Databank.utils.validateEmailField (idb_utils.js).
-// Global name kept for existing onchange="handle_contributor_email_change(this)" handlers.
+// Global name kept for compatibility with any external callers.
 function handle_contributor_email_change(input) {
   Databank.utils.validateEmailField(input);
 }

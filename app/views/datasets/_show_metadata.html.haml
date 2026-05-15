@@ -11,16 +11,16 @@
               %span(class="caret")
             %ul(class="dropdown-menu pull-right text-left")
               %li
-                %a(id="datasetForm:endNoteLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_endNote_XML"')
+                %a(id="datasetForm:endNoteLink" href="/datasets/#{dataset.key}/download_endNote_XML")
                   EndNote XML
               %li
-                %a(id="datasetForm:risLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_RIS"')
+                %a(id="datasetForm:risLink" href="/datasets/#{dataset.key}/download_RIS")
                   RIS Format
               %li
-                %a(id="datasetForm:BibTeXLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_BibTeX"')
+                %a(id="datasetForm:BibTeXLink" href="/datasets/#{dataset.key}/download_BibTeX")
                   BibTeX Format
               %li
-                %a(id="datasetForm:plainTextCitationLink" href="#" onclick='window.location = "/datasets/#{dataset.key}/download_plaintext_citation"')
+                %a(id="datasetForm:plainTextCitationLink" href="/datasets/#{dataset.key}/download_plaintext_citation")
                   Plain Text
       .citation-example
         =dataset.plain_text_citation

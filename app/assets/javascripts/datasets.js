@@ -80,8 +80,54 @@ ready = function () {
           event.preventDefault();
           draft2version();
           break;
+        case "set-org-creators":
+          event.preventDefault();
+          setOrgCreators(
+            jQuery(this).data("dataset-id"),
+            jQuery(this).data("org-creators-value"),
+          );
+          break;
+        case "import-globus":
+          event.preventDefault();
+          importFromGlobus();
+          break;
         default:
           break;
+      }
+    });
+
+  jQuery(document)
+    .off("click.windowOpen", "[data-window-open-url]")
+    .on("click.windowOpen", "[data-window-open-url]", function (event) {
+      event.preventDefault();
+      var url = jQuery(this).data("window-open-url");
+      if (url) {
+        window.open(url);
+      }
+    })
+    .off("click.clearMsgMiddle", "[data-clear-msg-middle]")
+    .on("click.clearMsgMiddle", "[data-clear-msg-middle]", function () {
+      clear_msg_middle();
+    });
+
+  jQuery("#confirmPublishBtn")
+    .off("click")
+    .on("click", function () {
+      update_and_publish();
+    });
+
+  jQuery("#confirmHelpBtn")
+    .off("click")
+    .on("click", function () {
+      window.open("/help");
+    });
+
+  jQuery("#confirmCancelBtn")
+    .off("click")
+    .on("click", function () {
+      var cancelUrl = jQuery(this).data("cancel-url");
+      if (cancelUrl) {
+        window.location.assign(cancelUrl);
       }
     });
 

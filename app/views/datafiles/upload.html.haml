@@ -7,7 +7,7 @@
       The system detected an unfinished upload. To resume it, please select the same file and press the green button. <br />
       Resume not working or receiving error messages? Then please click #{link_to 'here', "/datasets/#{@dataset.key}/datafiles/#{@datafile.web_id}/reset_upload"} to delete the temoporary file and start over.
 
-%button(type="button" class="btn btn-primary"  onclick='window.location = "/datasets/#{@dataset.key}"' )
+%a.btn.btn-primary{href: "/datasets/#{@dataset.key}"}
   %span(class="glyphicon glyphicon-arrow-left" )
   Back
 

@@ -4,185 +4,251 @@
 // inline onclick/onchange handlers in views continue to work unchanged.
 
 (function (window) {
-    window.Databank = window.Databank || {};
+  window.Databank = window.Databank || {};
 
-    window.Databank.agreement = {
+  function bindEvents() {
+    jQuery(document)
+      .off("change.agreement", "#owner-yes")
+      .on("change.agreement", "#owner-yes", function () {
+        Databank.agreement.handleOwnerYes();
+      })
+      .off("change.agreement", "#owner-no")
+      .on("change.agreement", "#owner-no", function () {
+        Databank.agreement.handleOwnerNo();
+      })
+      .off("change.agreement", "#private-yes")
+      .on("change.agreement", "#private-yes", function () {
+        Databank.agreement.handlePrivateYes();
+      })
+      .off("change.agreement", "#private-no")
+      .on("change.agreement", "#private-no", function () {
+        Databank.agreement.handlePrivateNo();
+      })
+      .off("change.agreement", "#private-na")
+      .on("change.agreement", "#private-na", function () {
+        Databank.agreement.handlePrivateNA();
+      })
+      .off("change.agreement", "#agree-yes")
+      .on("change.agreement", "#agree-yes", function () {
+        Databank.agreement.handleAgreeYes();
+      })
+      .off("change.agreement", "#agree-no")
+      .on("change.agreement", "#agree-no", function () {
+        Databank.agreement.handleAgreeNo();
+      })
+      .off("click.agreement", "#agree-button")
+      .on("click.agreement", "#agree-button", function (event) {
+        event.preventDefault();
+        Databank.agreement.handleModal(
+          jQuery(this).data("depositor-email"),
+          jQuery(this).data("depositor-name"),
+        );
+      });
+  }
 
-        // Warning banner ---------------------------------------------------
+  window.Databank.agreement = {
+    // Warning banner ---------------------------------------------------
 
-        showSelectionWarning: function () {
-            var html = "<h2>Selection Alert</h2>" +
-                "<p><span class='glyphicon glyphicon-alert'></span> " +
-                "The selections you have made indicate that you are not ready to " +
-                "deposit your dataset.</p>" +
-                "<p>Illinois Data Bank curators are available to discuss your dataset " +
-                "with you. Please <a href='/contact'>contact us</a>!</p>";
-            jQuery('.deposit-agreement-selection-warning').html(html);
-        },
+    showSelectionWarning: function () {
+      var html =
+        "<h2>Selection Alert</h2>" +
+        "<p><span class='glyphicon glyphicon-alert'></span> " +
+        "The selections you have made indicate that you are not ready to " +
+        "deposit your dataset.</p>" +
+        "<p>Illinois Data Bank curators are available to discuss your dataset " +
+        "with you. Please <a href='/contact'>contact us</a>!</p>";
+      jQuery(".deposit-agreement-selection-warning").html(html);
+    },
 
-        clearSelectionWarning: function () {
-            jQuery('.deposit-agreement-selection-warning').html('');
-        },
+    clearSelectionWarning: function () {
+      jQuery(".deposit-agreement-selection-warning").html("");
+    },
 
-        // State checks -----------------------------------------------------
+    // State checks -----------------------------------------------------
 
-        allAnswersYes: function () {
-            return (
-                jQuery('#owner-yes').is(':checked') &&
-                (jQuery('#private-yes').is(':checked') || jQuery('#private-na').is(':checked')) &&
-                jQuery('#agree-yes').is(':checked')
-            );
-        },
+    allAnswersYes: function () {
+      return (
+        jQuery("#owner-yes").is(":checked") &&
+        (jQuery("#private-yes").is(":checked") ||
+          jQuery("#private-na").is(":checked")) &&
+        jQuery("#agree-yes").is(":checked")
+      );
+    },
 
-        noneAnswersNo: function () {
-            return !(
-                jQuery('#owner-no').is(':checked') ||
-                jQuery('#private-no').is(':checked') ||
-                jQuery('#agree-no').is(':checked')
-            );
-        },
+    noneAnswersNo: function () {
+      return !(
+        jQuery("#owner-no").is(":checked") ||
+        jQuery("#private-no").is(":checked") ||
+        jQuery("#agree-no").is(":checked")
+      );
+    },
 
-        // Submit control ---------------------------------------------------
+    // Submit control ---------------------------------------------------
 
-        allowSubmit: function () {
-            jQuery('#agree-button').prop('disabled', false);
-            Databank.agreement.clearSelectionWarning();
-        },
+    allowSubmit: function () {
+      jQuery("#agree-button").prop("disabled", false);
+      Databank.agreement.clearSelectionWarning();
+    },
 
-        // Depositor setup --------------------------------------------------
+    // Depositor setup --------------------------------------------------
 
-        setDepositor: function (email, name) {
-            jQuery('#depositor_email').val(email);
-            jQuery('#depositor_name').val(name);
-            jQuery('.save').show();
-            jQuery('.new-dataset-progress').show();
-            jQuery('.dataset').removeAttr('disabled');
-            jQuery('.file-field').removeAttr('disabled');
-            jQuery('.add-attachment-subform-button').show();
-            Databank.agreement.clearSelectionWarning();
-        },
+    setDepositor: function (email, name) {
+      jQuery("#depositor_email").val(email);
+      jQuery("#depositor_name").val(name);
+      jQuery(".save").show();
+      jQuery(".new-dataset-progress").show();
+      jQuery(".dataset").removeAttr("disabled");
+      jQuery(".file-field").removeAttr("disabled");
+      jQuery(".add-attachment-subform-button").show();
+      Databank.agreement.clearSelectionWarning();
+    },
 
-        // Called when the user cancels or the form is shown without a depositor.
-        // Previously undefined in the codebase — this is the canonical definition.
-        handleNotAgreed: function () {
-            jQuery('#agree-button').prop('disabled', true);
-            jQuery('.agree').prop('checked', false);
-            jQuery('.private-checkbox').prop('checked', false);
-            jQuery('#dataset_have_permission').val('no');
-            jQuery('#dataset_removed_private').val('no');
-            jQuery('#dataset_agree').val('no');
-            Databank.agreement.clearSelectionWarning();
-        },
+    // Called when the user cancels or the form is shown without a depositor.
+    // Previously undefined in the codebase — this is the canonical definition.
+    handleNotAgreed: function () {
+      jQuery("#agree-button").prop("disabled", true);
+      jQuery(".agree").prop("checked", false);
+      jQuery(".private-checkbox").prop("checked", false);
+      jQuery("#dataset_have_permission").val("no");
+      jQuery("#dataset_removed_private").val("no");
+      jQuery("#dataset_agree").val("no");
+      Databank.agreement.clearSelectionWarning();
+    },
 
-        // Modal submit handler ---------------------------------------------
+    // Modal submit handler ---------------------------------------------
 
-        handleModal: function (email, name) {
-            if (
-                jQuery('#owner-yes').is(':checked') &&
-                jQuery('#agree-yes').is(':checked') &&
-                (jQuery('#private-yes').is(':checked') || jQuery('#private-na').is(':checked'))
-            ) {
-                Databank.agreement.setDepositor(email, name);
-                jQuery('#new_dataset').submit();
-            } else {
-                // should not get here — button is disabled until all boxes are ticked
-                jQuery('#agree-button').prop('disabled', true);
-            }
-        },
+    handleModal: function (email, name) {
+      if (
+        jQuery("#owner-yes").is(":checked") &&
+        jQuery("#agree-yes").is(":checked") &&
+        (jQuery("#private-yes").is(":checked") ||
+          jQuery("#private-na").is(":checked"))
+      ) {
+        Databank.agreement.setDepositor(email, name);
+        jQuery("#new_dataset").submit();
+      } else {
+        // should not get here — button is disabled until all boxes are ticked
+        jQuery("#agree-button").prop("disabled", true);
+      }
+    },
 
-        // Radio / checkbox handlers ----------------------------------------
+    // Radio / checkbox handlers ----------------------------------------
 
-        handleOwnerYes: function () {
-            if (jQuery('#owner-yes').is(':checked')) {
-                jQuery('#dataset_have_permission').val('yes');
-                jQuery('#owner-no').attr('checked', false);
-                if (Databank.agreement.allAnswersYes()) { Databank.agreement.allowSubmit(); }
-                if (Databank.agreement.noneAnswersNo()) { Databank.agreement.clearSelectionWarning(); }
-            } else {
-                jQuery('#agree-button').prop('disabled', true);
-                jQuery('#dataset_have_permission').val('no');
-            }
-        },
-
-        handleOwnerNo: function () {
-            if (jQuery('#owner-no').is(':checked')) {
-                jQuery('#dataset_have_permission').val('no');
-                jQuery('#owner-yes').attr('checked', false);
-                jQuery('#agree-button').prop('disabled', true);
-                Databank.agreement.showSelectionWarning();
-            } else {
-                if (Databank.agreement.noneAnswersNo()) { Databank.agreement.clearSelectionWarning(); }
-            }
-        },
-
-        handlePrivateYes: function () {
-            if (jQuery('#private-yes').is(':checked')) {
-                jQuery('#dataset_removed_private').val('yes');
-                jQuery('#review_link').html(
-                    '<a href="/datasets/review_deposit_agreement?removed=yes" target="_blank">' +
-                    'Review Deposit Agreement</a>'
-                );
-                jQuery('#private-na').attr('checked', false);
-                jQuery('#private-no').attr('checked', false);
-                if (Databank.agreement.allAnswersYes()) { Databank.agreement.allowSubmit(); }
-                if (Databank.agreement.noneAnswersNo()) { Databank.agreement.clearSelectionWarning(); }
-            } else {
-                jQuery('#agree-button').prop('disabled', true);
-                jQuery('#dataset_removed_private').val('no');
-            }
-        },
-
-        handlePrivateNA: function () {
-            if (jQuery('#private-na').is(':checked')) {
-                jQuery('#review_link').html(
-                    '<a href="/datasets/review_deposit_agreement?removed=na" target="_blank">' +
-                    'Review Deposit Agreement</a>'
-                );
-                jQuery('#dataset_removed_private').val('na');
-                jQuery('#private-yes').attr('checked', false);
-                jQuery('#private-no').attr('checked', false);
-                if (Databank.agreement.allAnswersYes()) { Databank.agreement.allowSubmit(); }
-                if (Databank.agreement.noneAnswersNo()) { Databank.agreement.clearSelectionWarning(); }
-            } else {
-                jQuery('#agree-button').prop('disabled', true);
-                jQuery('#dataset_removed_private').val('no');
-            }
-        },
-
-        handlePrivateNo: function () {
-            if (jQuery('#private-no').is(':checked')) {
-                jQuery('#dataset_removed_private').val('no');
-                jQuery('#private-na').attr('checked', false);
-                jQuery('#private-yes').attr('checked', false);
-                jQuery('#agree-button').prop('disabled', true);
-                Databank.agreement.showSelectionWarning();
-            } else {
-                if (Databank.agreement.noneAnswersNo()) { Databank.agreement.clearSelectionWarning(); }
-            }
-        },
-
-        handleAgreeYes: function () {
-            if (jQuery('#agree-yes').is(':checked')) {
-                jQuery('#agree-no').attr('checked', false);
-                jQuery('#dataset_agree').val('yes');
-                if (Databank.agreement.allAnswersYes()) { Databank.agreement.allowSubmit(); }
-                if (Databank.agreement.noneAnswersNo()) { Databank.agreement.clearSelectionWarning(); }
-            } else {
-                jQuery('#agree-button').prop('disabled', true);
-                jQuery('#dataset_agree').val('no');
-            }
-        },
-
-        handleAgreeNo: function () {
-            if (jQuery('#agree-no').is(':checked')) {
-                jQuery('#dataset_agree').val('no');
-                jQuery('#agree-yes').attr('checked', false);
-                jQuery('#agree-button').prop('disabled', true);
-                Databank.agreement.showSelectionWarning();
-            } else {
-                if (Databank.agreement.noneAnswersNo()) { Databank.agreement.clearSelectionWarning(); }
-            }
+    handleOwnerYes: function () {
+      if (jQuery("#owner-yes").is(":checked")) {
+        jQuery("#dataset_have_permission").val("yes");
+        jQuery("#owner-no").attr("checked", false);
+        if (Databank.agreement.allAnswersYes()) {
+          Databank.agreement.allowSubmit();
         }
-    };
+        if (Databank.agreement.noneAnswersNo()) {
+          Databank.agreement.clearSelectionWarning();
+        }
+      } else {
+        jQuery("#agree-button").prop("disabled", true);
+        jQuery("#dataset_have_permission").val("no");
+      }
+    },
 
+    handleOwnerNo: function () {
+      if (jQuery("#owner-no").is(":checked")) {
+        jQuery("#dataset_have_permission").val("no");
+        jQuery("#owner-yes").attr("checked", false);
+        jQuery("#agree-button").prop("disabled", true);
+        Databank.agreement.showSelectionWarning();
+      } else {
+        if (Databank.agreement.noneAnswersNo()) {
+          Databank.agreement.clearSelectionWarning();
+        }
+      }
+    },
+
+    handlePrivateYes: function () {
+      if (jQuery("#private-yes").is(":checked")) {
+        jQuery("#dataset_removed_private").val("yes");
+        jQuery("#review_link").html(
+          '<a href="/datasets/review_deposit_agreement?removed=yes" target="_blank">' +
+            "Review Deposit Agreement</a>",
+        );
+        jQuery("#private-na").attr("checked", false);
+        jQuery("#private-no").attr("checked", false);
+        if (Databank.agreement.allAnswersYes()) {
+          Databank.agreement.allowSubmit();
+        }
+        if (Databank.agreement.noneAnswersNo()) {
+          Databank.agreement.clearSelectionWarning();
+        }
+      } else {
+        jQuery("#agree-button").prop("disabled", true);
+        jQuery("#dataset_removed_private").val("no");
+      }
+    },
+
+    handlePrivateNA: function () {
+      if (jQuery("#private-na").is(":checked")) {
+        jQuery("#review_link").html(
+          '<a href="/datasets/review_deposit_agreement?removed=na" target="_blank">' +
+            "Review Deposit Agreement</a>",
+        );
+        jQuery("#dataset_removed_private").val("na");
+        jQuery("#private-yes").attr("checked", false);
+        jQuery("#private-no").attr("checked", false);
+        if (Databank.agreement.allAnswersYes()) {
+          Databank.agreement.allowSubmit();
+        }
+        if (Databank.agreement.noneAnswersNo()) {
+          Databank.agreement.clearSelectionWarning();
+        }
+      } else {
+        jQuery("#agree-button").prop("disabled", true);
+        jQuery("#dataset_removed_private").val("no");
+      }
+    },
+
+    handlePrivateNo: function () {
+      if (jQuery("#private-no").is(":checked")) {
+        jQuery("#dataset_removed_private").val("no");
+        jQuery("#private-na").attr("checked", false);
+        jQuery("#private-yes").attr("checked", false);
+        jQuery("#agree-button").prop("disabled", true);
+        Databank.agreement.showSelectionWarning();
+      } else {
+        if (Databank.agreement.noneAnswersNo()) {
+          Databank.agreement.clearSelectionWarning();
+        }
+      }
+    },
+
+    handleAgreeYes: function () {
+      if (jQuery("#agree-yes").is(":checked")) {
+        jQuery("#agree-no").attr("checked", false);
+        jQuery("#dataset_agree").val("yes");
+        if (Databank.agreement.allAnswersYes()) {
+          Databank.agreement.allowSubmit();
+        }
+        if (Databank.agreement.noneAnswersNo()) {
+          Databank.agreement.clearSelectionWarning();
+        }
+      } else {
+        jQuery("#agree-button").prop("disabled", true);
+        jQuery("#dataset_agree").val("no");
+      }
+    },
+
+    handleAgreeNo: function () {
+      if (jQuery("#agree-no").is(":checked")) {
+        jQuery("#dataset_agree").val("no");
+        jQuery("#agree-yes").attr("checked", false);
+        jQuery("#agree-button").prop("disabled", true);
+        Databank.agreement.showSelectionWarning();
+      } else {
+        if (Databank.agreement.noneAnswersNo()) {
+          Databank.agreement.clearSelectionWarning();
+        }
+      }
+    },
+  };
+
+  jQuery(document).ready(bindEvents);
+  jQuery(document).on("page:load", bindEvents);
 })(window);

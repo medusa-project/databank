@@ -15,15 +15,15 @@
 
       <div class="modal-footer container-fluid">
 
-        <button onclick='update_and_publish()' , type="button" class="btn btn-primary" data-dismiss="modal" id="login-button">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirmPublishBtn">
           <span class="glyphicon glyphicon-send"></span> Publish
         </button>
 
-        <button onclick='window.open("/help")' , type="button" class="btn btn-success" data-dismiss="modal" id="help-button">
+        <button type="button" class="btn btn-success" data-dismiss="modal" id="confirmHelpBtn">
           <span class="glyphicon glyphicon-question-sign"></span> Get Help
         </button>
 
-        <button onclick='window.location = "/datasets/<%=@dataset.key%>"' , type="button" class="btn btn-danger" data-dismiss="modal" id="help-button">
+        <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirmCancelBtn" data-cancel-url="/datasets/<%=@dataset.key%>">
           <span class="glyphicon glyphicon-remove"></span> Cancel
         </button>
       </div>
