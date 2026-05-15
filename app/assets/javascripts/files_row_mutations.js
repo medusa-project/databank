@@ -143,7 +143,7 @@
         "<label>" +
         '<input class="checkFile checkFileGroup" name="selected_files[]" type="checkbox" value="' +
         newId +
-        '" onchange="handleCheckFileGroupChange()">' +
+        '" data-file-action="selection-change">' +
         file.name +
         "</input>" +
         "</label>" +
@@ -160,9 +160,9 @@
       } else {
         row =
           row +
-          '<button type="button" class="btn btn-danger btn-sm" onclick="remove_file_row(' +
+          '<button type="button" class="btn btn-danger btn-sm" data-file-action="remove-row" data-file-index="' +
           newId +
-          ')">Remove</button></span>';
+          '">Remove</button></span>';
       }
 
       row = row + "</span></div></td></tr>";

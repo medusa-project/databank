@@ -21,23 +21,23 @@
       }
 
       jQuery("#preview_btn_" + web_id).attr("aria-expanded", "true");
+      jQuery("#preview_btn_" + web_id).attr(
+        "data-file-action",
+        "hide-preview-text",
+      );
       jQuery("#preview_glyph_" + web_id).removeClass("glyphicon-eye-open");
       jQuery("#preview_glyph_" + web_id).addClass("glyphicon-eye-close");
-      jQuery("#preview_btn_" + web_id).attr(
-        "onclick",
-        "hide_preview('" + web_id + "')",
-      );
     },
 
     previewMd: function (web_id) {
       jQuery("#preview_" + web_id).show();
       jQuery("#preview_btn_" + web_id).attr("aria-expanded", "true");
+      jQuery("#preview_md_btn_" + web_id).attr(
+        "data-file-action",
+        "hide-preview-md",
+      );
       jQuery("#preview_glyph_" + web_id).removeClass("glyphicon-eye-open");
       jQuery("#preview_glyph_" + web_id).addClass("glyphicon-eye-close");
-      jQuery("#preview_md_btn_" + web_id).attr(
-        "onclick",
-        "hide_md_preview('" + web_id + "')",
-      );
     },
 
     hideMdPreview: function (web_id) {
@@ -45,20 +45,17 @@
       jQuery("#preview_glyph_" + web_id).removeClass("glyphicon-eye-close");
       jQuery("#preview_glyph_" + web_id).addClass("glyphicon-eye-open");
       jQuery("#preview_md_btn_" + web_id).attr(
-        "onclick",
-        "preview_md('" + web_id + "')",
+        "data-file-action",
+        "preview-md",
       );
       jQuery("#preview_" + web_id).hide();
     },
 
     hidePreview: function (web_id) {
       jQuery("#preview_btn_" + web_id).attr("aria-expanded", "false");
+      jQuery("#preview_btn_" + web_id).attr("data-file-action", "preview-text");
       jQuery("#preview_glyph_" + web_id).removeClass("glyphicon-eye-close");
       jQuery("#preview_glyph_" + web_id).addClass("glyphicon-eye-open");
-      jQuery("#preview_btn_" + web_id).attr(
-        "onclick",
-        "preview('" + web_id + "')",
-      );
       jQuery("#preview_" + web_id).hide();
     },
 
@@ -75,23 +72,23 @@
         );
         jQuery(".spinner_" + web_id).hide();
       }
-      jQuery("#preview_img_btn_" + web_id).html(
-        '<button type="button" aria-expanded="true" class="btn btn-sm btn-success" onclick="hide_image_preview(&#39;' +
-          iiif_root +
-          "&#39;, &#39;" +
-          web_id +
-          '&#39;)"><span class="glyphicon glyphicon-eye-close"></span> View</button>',
-      );
+      var imageButton = jQuery("#preview_img_btn_" + web_id).find("button");
+      imageButton.attr("aria-expanded", "true");
+      imageButton.attr("data-file-action", "hide-preview-image");
+      imageButton.attr("data-iiif-root", iiif_root);
+      imageButton.attr("data-web-id", web_id);
+      jQuery("#preview_glyph_" + web_id).removeClass("glyphicon-eye-open");
+      jQuery("#preview_glyph_" + web_id).addClass("glyphicon-eye-close");
     },
 
     hideImagePreview: function (iiif_root, web_id) {
-      jQuery("#preview_img_btn_" + web_id).html(
-        '<button type="button" aria-expanded="false" class="btn btn-sm btn-success" onclick="preview_image(&#39;' +
-          iiif_root +
-          "&#39;, &#39;" +
-          web_id +
-          '&#39;)"><span class="glyphicon glyphicon-eye-open"></span> View</button>',
-      );
+      var imageButton = jQuery("#preview_img_btn_" + web_id).find("button");
+      imageButton.attr("aria-expanded", "false");
+      imageButton.attr("data-file-action", "preview-image");
+      imageButton.attr("data-iiif-root", iiif_root);
+      imageButton.attr("data-web-id", web_id);
+      jQuery("#preview_glyph_" + web_id).removeClass("glyphicon-eye-close");
+      jQuery("#preview_glyph_" + web_id).addClass("glyphicon-eye-open");
       jQuery("#preview_" + web_id).hide();
     },
   };

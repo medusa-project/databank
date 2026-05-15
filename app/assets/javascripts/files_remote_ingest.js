@@ -54,9 +54,9 @@
           } else {
             row =
               row +
-              '<button type="button" class="btn btn-danger btn-sm" onclick="remove_file_row(' +
+              '<button type="button" class="btn btn-danger btn-sm" data-file-action="remove-row" data-file-index="' +
               newId +
-              ')">Remove</button></span>';
+              '">Remove</button></span>';
           }
 
           row = row + "</span></div></td></tr>";
