@@ -2,13 +2,13 @@
 %form(action="/datasets" id="searchForm" accept-charset="UTF-8" method="get" )
 
   .hide-when-printing
-    %button(type="button" class="btn btn-info" onclick="backToSearch()" )
+    %button(type="button" id="citationBackBtn" class="btn btn-info")
       %span(class="glyphicon glyphicon-triangle-left" )
       Go back to search
     %a(href="javascript:window.print()" class="btn btn-success idb" )
       Print
       %span(class="glyphicon glyphicon-print")
-    %button(type="button" class="btn btn-primary" onclick="downloadCitationReport()" )
+    %button(type="button" id="citationDownloadBtn" class="btn btn-primary")
       Download
       %span.glyphicon.glyphicon-download
 

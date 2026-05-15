@@ -24,7 +24,7 @@
                 %input(type="text" class="form-control" name="creator-given" id="creator-given" )
             .col-md-4
               %br
-              %button(type="button" class="btn btn-primary" onclick="search_creator_orcid()" )
+              %button(type="button" id="creator-orcid-search-btn" class="btn btn-primary")
                 %span(class="glyphicon glyphicon-search" )
                 Search
           .loading.text-center
@@ -38,7 +38,7 @@
             %button(type="button" class="btn btn-danger" data-dismiss="modal")
               %span(class="glyphicon glyphicon-remove" )
               Cancel
-            %button(type='button' id='orcid-import-btn' class='btn btn-success' data-dismiss="modal" onclick='set_creator_orcid_from_search_modal()' disabled)
+            %button(type='button' id='orcid-import-creator-btn' class='btn btn-success' data-dismiss="modal" disabled)
               %span(class="glyphicon glyphicon-transfer" )
               Import Selection
 

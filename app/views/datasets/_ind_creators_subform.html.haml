@@ -56,7 +56,7 @@
           = cf.text_field :identifier, class: "form-control dataset", "data-mask" => "9999-9999-9999-999*", placeholder: "[xxxx-xxxx-xxxx-xxxx]"
           = cf.hidden_field :identifier_scheme, value: "ORCID"
         %td(class="col-md-1" )
-          %button(type="button" class="btn btn-primary btn-block orcid-search-btn" onclick="showCreatorOrcidSearchModal('#{i}')" )
+          %button(type="button" class="btn btn-primary btn-block orcid-search-btn" data-creator-action="orcid-search" data-creator-index="#{i}")
             %span(class="glyphicon glyphicon-search" )
             Look Up &nbsp;
             =image_tag 'iD_icon_16x16.png', alt: "ORCiD icon"

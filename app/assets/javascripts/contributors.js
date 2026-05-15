@@ -40,6 +40,13 @@ function bindContributorTableEvents() {
 
         if (action === "remove") {
           remove_contributor_row(jQuery(this).data("contributor-index"));
+          return;
+        }
+
+        if (action === "orcid-search") {
+          showContributorOrcidSearchModal(
+            jQuery(this).data("contributor-index"),
+          );
         }
       },
     );
@@ -100,11 +107,9 @@ function add_contributor_row() {
     '_identifier" />' +
     "</td>" +
     '<td class="col-md-1">' +
-    '<button type="button" class="btn btn-primary btn-block orcid-search-btn" data-id="' +
+    '<button type="button" class="btn btn-primary btn-block orcid-search-btn" data-contributor-action="orcid-search" data-contributor-index="' +
     newId +
-    '" onclick="showContributorOrcidSearchModal(' +
-    newId +
-    ')"><span class="glyphicon glyphicon-search"></span>&nbsp;Look Up&nbsp;<img src="/iD_icon_16x16.png">' +
+    '"><span class="glyphicon glyphicon-search"></span>&nbsp;Look Up&nbsp;<img src="/iD_icon_16x16.png">' +
     "</td>" +
     '<td class="col-md-3">' +
     '<input onchange="handle_contributor_email_change(this)" class="form-control dataset contributor-email" placeholder="[e.g.: netid@illinois.edu]" type="email" name="dataset[contributors_attributes][' +
@@ -413,7 +418,7 @@ function search_contributor_orcid() {
                 orcid +
                 "</a></td><td>" +
                 affiliation +
-                "</td><td><input type='radio' name='orcid-search-select' onclick='enableOrcidImport()'  value='" +
+                "</td><td><input type='radio' name='orcid-search-select' value='" +
                 orcid +
                 "~" +
                 family_name +
@@ -491,7 +496,7 @@ function enableOrcidImport() {
 }
 
 function showContributorOrcidSearchModal(contributor_index) {
-  jQuery("#orcid-import-btn").prop("disabled", true);
+  jQuery("#orcid-import-contributor-btn").prop("disabled", true);
 
   jQuery("#contributor-index").val(contributor_index);
   var contributorFamilyName = jQuery(
@@ -510,6 +515,31 @@ function showContributorOrcidSearchModal(contributor_index) {
     });
   jQuery("#orcid_contributor_search").modal("show");
 }
+
+function bindContributorOrcidModalEvents() {
+  jQuery(document)
+    .off("click.contributorOrcid", "#contributor-orcid-search-btn")
+    .on("click.contributorOrcid", "#contributor-orcid-search-btn", function () {
+      search_contributor_orcid();
+    })
+    .off("click.contributorOrcid", "#orcid-import-contributor-btn")
+    .on("click.contributorOrcid", "#orcid-import-contributor-btn", function () {
+      set_contributor_orcid_from_search_modal();
+    })
+    .off(
+      "change.contributorOrcid",
+      "#orcid_contributor_search input[name='orcid-search-select']",
+    )
+    .on(
+      "change.contributorOrcid",
+      "#orcid_contributor_search input[name='orcid-search-select']",
+      function () {
+        enableOrcidImport();
+      },
+    );
+}
+
+bindContributorOrcidModalEvents();
 
 jQuery(document).ready(contributors_ready);
 jQuery(document).on("page:load", contributors_ready);

@@ -57,6 +57,11 @@ function bindCreatorTableEvents() {
           jQuery(this).data("creator-index"),
           jQuery(this).data("creator-type"),
         );
+        return;
+      }
+
+      if (action === "orcid-search") {
+        showCreatorOrcidSearchModal(jQuery(this).data("creator-index"));
       }
     });
 }
@@ -72,7 +77,7 @@ function add_person_creator() {
     newId = maxId + 1;
   }
   creator_index_max_element.val(newId);
-  const creator_row = `<tr class="item row" id="creator_index_${newId}"><td><span style="display:inline;" class="glyphicon glyphicon-resize-vertical"></span></td><td class="col-md-2"><input type="hidden" value="${jQuery("#creator_table tr").length}" name="dataset[creators_attributes][${newId}][row_position]" id="dataset_creators_attributes_${newId}_row_position" /><input value="0" type="hidden" name="dataset[creators_attributes][${newId}][type_of]" id="dataset_creators_attributes_${newId}_type_of" /><input onchange="generate_creator_preview()" class="form-control dataset creator" placeholder="[e.g.: Smith]" type="text" name="dataset[creators_attributes][${newId}][family_name]" id="dataset_creators_attributes_${newId}_family_name" /></td><td class="col-md-2"><input onchange="generate_creator_preview()" class="form-control dataset creator" placeholder="[e.g.: Jean W.]" type="text" name="dataset[creators_attributes][${newId}][given_name]" id="dataset_creators_attributes_${newId}_given_name" /></td><td class="col-md-2"><input value="ORCID" type="hidden" name="dataset[creators_attributes][${newId}][identifier_scheme]" id="dataset_creators_attributes_${newId}_identifier_scheme" /><input class="form-control dataset orcid-mask" data-mask="9999-9999-9999-999*" placeholder="[xxxx-xxxx-xxxx-xxxx]" type="text" name="dataset[creators_attributes][${newId}][identifier]" id="dataset_creators_attributes_${newId}_identifier" /></td><td class="col-md-1"><button type="button" class="btn btn-primary btn-block orcid-search-btn" data-id="${newId}" onclick="showCreatorOrcidSearchModal(${newId})"><span class="glyphicon glyphicon-search"></span>&nbsp;Look Up&nbsp;<img src="/iD_icon_16x16.png" alt="orcid icon"></td><td class="col-md-2"><input onchange="handle_creator_email_change(this)" class="form-control dataset creator-email" placeholder="[e.g.: netid@illinois.edu]" type="email" name="dataset[creators_attributes][${newId}][email]" id="dataset_creators_attributes_${newId}_email" /></td><td class="col-md-2"><input name="dataset[creators_attributes][${newId}][is_contact]" type="hidden" value="false" id="dataset_creators_attributes_${newId}_is_contact"><input class="dataset contact_radio" name="primary_contact" onchange="handle_contact_change()" type="radio"  value="${newId}"></td><td class="col-md-1"></td></tr>`;
+  const creator_row = `<tr class="item row" id="creator_index_${newId}"><td><span style="display:inline;" class="glyphicon glyphicon-resize-vertical"></span></td><td class="col-md-2"><input type="hidden" value="${jQuery("#creator_table tr").length}" name="dataset[creators_attributes][${newId}][row_position]" id="dataset_creators_attributes_${newId}_row_position" /><input value="0" type="hidden" name="dataset[creators_attributes][${newId}][type_of]" id="dataset_creators_attributes_${newId}_type_of" /><input onchange="generate_creator_preview()" class="form-control dataset creator" placeholder="[e.g.: Smith]" type="text" name="dataset[creators_attributes][${newId}][family_name]" id="dataset_creators_attributes_${newId}_family_name" /></td><td class="col-md-2"><input onchange="generate_creator_preview()" class="form-control dataset creator" placeholder="[e.g.: Jean W.]" type="text" name="dataset[creators_attributes][${newId}][given_name]" id="dataset_creators_attributes_${newId}_given_name" /></td><td class="col-md-2"><input value="ORCID" type="hidden" name="dataset[creators_attributes][${newId}][identifier_scheme]" id="dataset_creators_attributes_${newId}_identifier_scheme" /><input class="form-control dataset orcid-mask" data-mask="9999-9999-9999-999*" placeholder="[xxxx-xxxx-xxxx-xxxx]" type="text" name="dataset[creators_attributes][${newId}][identifier]" id="dataset_creators_attributes_${newId}_identifier" /></td><td class="col-md-1"><button type="button" class="btn btn-primary btn-block orcid-search-btn" data-creator-action="orcid-search" data-creator-index="${newId}"><span class="glyphicon glyphicon-search"></span>&nbsp;Look Up&nbsp;<img src="/iD_icon_16x16.png" alt="orcid icon"></td><td class="col-md-2"><input onchange="handle_creator_email_change(this)" class="form-control dataset creator-email" placeholder="[e.g.: netid@illinois.edu]" type="email" name="dataset[creators_attributes][${newId}][email]" id="dataset_creators_attributes_${newId}_email" /></td><td class="col-md-2"><input name="dataset[creators_attributes][${newId}][is_contact]" type="hidden" value="false" id="dataset_creators_attributes_${newId}_is_contact"><input class="dataset contact_radio" name="primary_contact" onchange="handle_contact_change()" type="radio"  value="${newId}"></td><td class="col-md-1"></td></tr>`;
   jQuery("#creator_table tbody:last-child").append(creator_row);
 
   handleCreatorTable(0);
@@ -412,7 +417,7 @@ function search_creator_orcid() {
                 orcid +
                 "</a></td><td>" +
                 affiliation +
-                "</td><td><input type='radio' name='orcid-search-select' onclick='enableOrcidImport()'  value='" +
+                "</td><td><input type='radio' name='orcid-search-select' value='" +
                 orcid +
                 "~" +
                 family_name +
@@ -476,7 +481,7 @@ function enableOrcidImport() {
 }
 
 function showCreatorOrcidSearchModal(creator_index) {
-  jQuery("#orcid-import-btn").prop("disabled", true);
+  jQuery("#orcid-import-creator-btn").prop("disabled", true);
   jQuery("#creator-index").val(creator_index);
   let creatorFamilyName = jQuery(
     "#dataset_creators_attributes_" + creator_index + "_family_name",
@@ -495,6 +500,31 @@ function showCreatorOrcidSearchModal(creator_index) {
     });
   jQuery("#orcid_creator_search").modal("show");
 }
+
+function bindCreatorOrcidModalEvents() {
+  jQuery(document)
+    .off("click.creatorOrcid", "#creator-orcid-search-btn")
+    .on("click.creatorOrcid", "#creator-orcid-search-btn", function () {
+      search_creator_orcid();
+    })
+    .off("click.creatorOrcid", "#orcid-import-creator-btn")
+    .on("click.creatorOrcid", "#orcid-import-creator-btn", function () {
+      set_creator_orcid_from_search_modal();
+    })
+    .off(
+      "change.creatorOrcid",
+      "#orcid_creator_search input[name='orcid-search-select']",
+    )
+    .on(
+      "change.creatorOrcid",
+      "#orcid_creator_search input[name='orcid-search-select']",
+      function () {
+        enableOrcidImport();
+      },
+    );
+}
+
+bindCreatorOrcidModalEvents();
 
 Databank.creators.ready = creators_ready;
 Databank.creators.addPersonCreator = add_person_creator;

@@ -115,7 +115,7 @@
                 %span(class="glyphicon glyphicon-info-sign" )
             - elsif ['ok', 'na'].include?(@completion_check)
               -if (can? :edit, @dataset) && !@has_unmodified_review && (@dataset.ok_to_publish? || @dataset.version_eligible_for_review?)
-                %button(type="button" class="btn btn-primary btn-block" onclick="showReviewModal()" aria-haspopup="dialog")
+                %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#review" aria-haspopup="dialog")
                   Pre-Publication Review
                   %span(class="glyphicon glyphicon-triangle-right" )
             -else
@@ -130,11 +130,11 @@
               %span(class="glyphicon glyphicon-link")
               Generate private sharing link
           -if @dataset.publication_state == Databank::PublicationState::DRAFT
-            %button(type="button" class="btn btn-info btn-block" name="cancel" onclick='window.location = "/datasets?q=editor=%5B%5D=#{current_user.name}&context=exit_draft"' )
+            = link_to("/datasets?q=editor=%5B%5D=#{current_user.name}&context=exit_draft", class: "btn btn-info btn-block", name: "cancel") do
               %span(class="glyphicon glyphicon-pushpin" )
               Exit this saved dataset
           -else
-            %button(type="button" class="btn btn-info btn-block" name="cancel" onclick='window.location = "/datasets?q=editor=%5B%5D==#{current_user.name}&context=exit_doi"' )
+            = link_to("/datasets?q=editor=%5B%5D==#{current_user.name}&context=exit_doi", class: "btn btn-info btn-block", name: "cancel") do
               %span(class="glyphicon glyphicon-pushpin" )
               Exit this saved dataset
           - if [Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(@dataset.publication_state)
