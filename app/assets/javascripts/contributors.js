@@ -3,6 +3,7 @@
 var contributors_ready;
 contributors_ready = function () {
   jQuery(".orcid-search-spinner").hide();
+  bindContributorTableEvents();
   var cells, desired_width, table_width;
   if (jQuery("#contributor_table tr").length > 0) {
     table_width = jQuery("#contributor_table").width();
@@ -22,6 +23,27 @@ contributors_ready = function () {
 
   //alert("contributors.js javascript working");
 };
+
+function bindContributorTableEvents() {
+  jQuery("#contributor_table")
+    .off("click.contributorActions")
+    .on(
+      "click.contributorActions",
+      "button[data-contributor-action]",
+      function () {
+        var action = jQuery(this).data("contributor-action");
+
+        if (action === "add") {
+          add_contributor_row();
+          return;
+        }
+
+        if (action === "remove") {
+          remove_contributor_row(jQuery(this).data("contributor-index"));
+        }
+      },
+    );
+}
 
 function add_contributor_row() {
   jQuery("#update-confirm").prop("disabled", false);
@@ -71,7 +93,7 @@ function add_contributor_row() {
     '][identifier_scheme]" id="dataset_contributors_attributes_' +
     newId +
     '_identifier_scheme" />' +
-    '<input class="form-control dataset orcid-mask", data-mask="9999-9999-9999-999*", placeholder="[xxxx-xxxx-xxxx-xxxx]" type="text" name="dataset[contributors_attributes][' +
+    '<input class="form-control dataset orcid-mask" data-mask="9999-9999-9999-999*" placeholder="[xxxx-xxxx-xxxx-xxxx]" type="text" name="dataset[contributors_attributes][' +
     newId +
     '][identifier]" id="dataset_contributors_attributes_' +
     newId +
@@ -168,10 +190,11 @@ function contributorRowActions(contributor_index, isLastRow) {
   return Databank.utils.rowActionButtons({
     includeAdd: isLastRow,
     removeAttributes: {
-      onclick: "remove_contributor_row(\\x22" + contributor_index + "\\x22 )",
+      "data-contributor-action": "remove",
+      "data-contributor-index": contributor_index,
     },
     addAttributes: {
-      onclick: "add_contributor_row()",
+      "data-contributor-action": "add",
     },
   });
 }
@@ -275,6 +298,11 @@ function set_contributor_orcid_from_search_modal() {
   var selected = jQuery(
     "input[type='radio'][name='orcid-search-select']:checked",
   ).val();
+
+  if (!selected) {
+    return;
+  }
+
   var select_split = selected.split("~");
   var selected_id = select_split[0];
   var selected_family = select_split[1];
@@ -296,9 +324,10 @@ function search_contributor_orcid() {
   jQuery(".orcid-search-spinner").show();
 
   var endpoint = "https://pub.orcid.org/v3.0/search?q=";
+  var search_query = "";
+
   if (jQuery("#contributor-family").val() != "") {
-    var search_query =
-      "family-name:" + jQuery("#contributor-family").val() + "*";
+    search_query = "family-name:" + jQuery("#contributor-family").val() + "*";
     if (jQuery("#contributor-given").val() != "") {
       search_query =
         search_query +
@@ -307,13 +336,20 @@ function search_contributor_orcid() {
         "*";
     }
   } else if (jQuery("#contributor-given").val() != "") {
-    var search_query =
-      "given-names:" + jQuery("#contributor-given").val() + "*";
+    search_query = "given-names:" + jQuery("#contributor-given").val() + "*";
+  }
+
+  if (!search_query) {
+    jQuery(".orcid-search-spinner").hide();
+    jQuery("#orcid-search-results").append(
+      "<p>Please enter a family name or given name to search ORCID.</p>",
+    );
+    return;
   }
 
   var search_string = endpoint + search_query;
 
-  js.ajax({
+  jQuery.ajax({
     url: search_string,
     dataType: "jsonp",
     success: function (data) {
@@ -322,11 +358,12 @@ function search_contributor_orcid() {
       try {
         var responseJson = data;
 
-        total_found = responseJson["num-found"];
+        var total_found = responseJson["num-found"];
 
-        resultJson = responseJson["result"];
+        var resultJson = responseJson["result"];
 
         var identifiers = [];
+        var entry;
 
         for (var i = 0; i < total_found; i++) {
           if (typeof resultJson[i] != "undefined") {
@@ -335,8 +372,6 @@ function search_contributor_orcid() {
             identifiers.push(entry);
           }
         }
-
-        var choices = [];
 
         var max_records = total_found;
 
@@ -414,7 +449,7 @@ function getOrcidPerson(orcid) {
   xmlHttp.open("GET", personUrl, false); // false for synchronous request
   xmlHttp.setRequestHeader("Accept", "application/json");
   xmlHttp.send(null);
-  response = xmlHttp.responseText;
+  var response = xmlHttp.responseText;
 
   var responseJson = JSON.parse(response);
 
@@ -431,7 +466,7 @@ function getOrcidAffiliation(orcid) {
   xmlHttp.open("GET", employmentsUrl, false); // false for synchronous request
   xmlHttp.setRequestHeader("Accept", "application/json");
   xmlHttp.send(null);
-  response = xmlHttp.responseText;
+  var response = xmlHttp.responseText;
 
   var responseJson = JSON.parse(response);
 

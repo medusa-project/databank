@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/config.js";
+import { continueFromPreDeposit } from "./helpers/deposit-flow.js";
 
 test.describe("anonymous deposit access", () => {
   test("deposit link takes anonymous user to pre_deposit page", async ({
@@ -23,10 +24,7 @@ test.describe("anonymous deposit access", () => {
   test("continue from pre_deposit shows restricted access and login prompt", async ({
     page,
   }) => {
-    await page.goto(`${BASE_URL}/datasets/pre_deposit`);
-    await expect(page.locator("#continue-button")).toBeVisible();
-
-    await page.click("#continue-button");
+    await continueFromPreDeposit(page);
 
     await expect(page).toHaveURL(/\/datasets\/new/);
     await expect(page.locator("body")).toContainText("Restricted Access");

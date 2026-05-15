@@ -4,6 +4,7 @@ Databank.creators = Databank.creators || {};
 
 const creators_ready = function () {
   jQuery(".orcid-search-spinner").hide();
+  bindCreatorTableEvents();
   let cells, desired_width, table_width;
   if (jQuery("#creator_table tr").length > 0) {
     const person_creators_type = 0;
@@ -34,6 +35,31 @@ const creators_ready = function () {
     );
   }
 };
+
+function bindCreatorTableEvents() {
+  jQuery("#creator_table")
+    .off("click.creatorActions")
+    .on("click.creatorActions", "button[data-creator-action]", function () {
+      const action = jQuery(this).data("creator-action");
+
+      if (action === "add") {
+        const addType = jQuery(this).data("creator-add-type");
+        if (addType === 1) {
+          add_institution_creator();
+        } else {
+          add_person_creator();
+        }
+        return;
+      }
+
+      if (action === "remove") {
+        remove_creator_row(
+          jQuery(this).data("creator-index"),
+          jQuery(this).data("creator-type"),
+        );
+      }
+    });
+}
 
 function add_person_creator() {
   jQuery("#update-confirm").prop("disabled", false);
@@ -164,19 +190,18 @@ function handleCreatorTable(creator_type) {
 function creatorRowActions(creator_index, creator_type, isLastRow) {
   const org_creators_type = 1;
   const removeCreatorType = creator_type === org_creators_type ? 1 : 0;
-  const addCreatorHandler =
-    creator_type === org_creators_type
-      ? "add_institution_creator()"
-      : "add_person_creator()";
+  const addCreatorType = creator_type === org_creators_type ? 1 : 0;
 
   return Databank.utils.rowActionButtons({
     includeAdd: isLastRow,
     removeAttributes: {
-      onclick:
-        "remove_creator_row(" + creator_index + ", " + removeCreatorType + " )",
+      "data-creator-action": "remove",
+      "data-creator-index": creator_index,
+      "data-creator-type": removeCreatorType,
     },
     addAttributes: {
-      onclick: addCreatorHandler,
+      "data-creator-action": "add",
+      "data-creator-add-type": addCreatorType,
     },
   });
 }

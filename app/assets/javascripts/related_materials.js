@@ -2,8 +2,26 @@
 
 var related_materials_ready;
 related_materials_ready = function () {
+  bindMaterialTableEvents();
   handleMaterialTable();
 };
+
+function bindMaterialTableEvents() {
+  jQuery("#material_table")
+    .off("click.materialActions")
+    .on("click.materialActions", "button[data-material-action]", function () {
+      var action = jQuery(this).data("material-action");
+
+      if (action === "add") {
+        add_material_row();
+        return;
+      }
+
+      if (action === "remove") {
+        remove_material_row(jQuery(this).data("material-index"));
+      }
+    });
+}
 
 function handleMaterialChange(materialIndex) {
   jQuery("#update-confirm").prop("disabled", false);
@@ -81,10 +99,11 @@ function materialRowActions(material_index, isLastRow) {
   return Databank.utils.rowActionButtons({
     includeAdd: isLastRow,
     removeAttributes: {
-      onclick: "remove_material_row(\\x22" + material_index + "\\x22 )",
+      "data-material-action": "remove",
+      "data-material-index": material_index,
     },
     addAttributes: {
-      onclick: "add_material_row()",
+      "data-material-action": "add",
     },
   });
 }

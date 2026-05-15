@@ -316,16 +316,41 @@ collaborators to access the data files while the dataset is not public.</li>
             end
           end
         end
-        if dataset_params[:org_creators] == "true" && old_creator_state == false
-          # convert individual creators to additional contacts (contributors)
-          @dataset.ind_creators_to_contributors
-          params["context"] = "continue_edit"
-        elsif dataset_params[:org_creators] == "false" && old_creator_state == true
-          # delete all institutional creators
-          @dataset.institutional_creators.delete_all
-          # convert all additional contacts (contributors) to individual authors
-          @dataset.contributors_to_ind_creators
-          params["context"] = "continue_edit"
+        begin
+          if dataset_params[:org_creators] == "true" && old_creator_state == false
+            # Convert individual creators to additional contacts (contributors) atomically.
+            @dataset.ind_creators_to_contributors!
+            params["context"] = "continue_edit"
+          elsif dataset_params[:org_creators] == "false" && old_creator_state == true
+            # Convert additional contacts (contributors) back to individual authors atomically.
+            @dataset.transaction do
+              @dataset.institutional_creators.delete_all
+              @dataset.contributors_to_ind_creators!
+            end
+            params["context"] = "continue_edit"
+          end
+        rescue StandardError => e
+          Rails.logger.error("creator/contributor switch failed for dataset #{@dataset.key}: #{e.class}: #{e.message}")
+          @dataset.update_column(:org_creators, old_creator_state)
+          @dataset.reload
+          @dataset.errors.add(:base, "Unable to switch creator type. Please verify required author/contact fields and try again.")
+
+          @dataset.creators.build unless @dataset.creators.count.positive?
+          @dataset.funders.build unless @dataset.funders.count.positive?
+          @dataset.related_materials.build unless @dataset.related_materials.count.positive?
+          @completion_check = Dataset.completion_check(@dataset)
+          @dataset.org_creators = @dataset.org_creators || false
+          @publish_modal_msg = Dataset.publish_modal_msg(dataset: @dataset)
+          @dataset.embargo ||= Databank::PublicationState::Embargo::NONE
+          @token = @dataset.current_token
+          @funder_info_arr = FUNDER_INFO_ARR
+          @license_info_arr = LICENSE_INFO_ARR
+          @dataset.subject = Databank::Subject::NONE unless @dataset.subject
+          @title = @dataset.title.present? ? "Edit #{@dataset.title}" : "Edit Dataset #{@dataset.key}"
+
+          format.html { render :edit, status: :unprocessable_content }
+          format.json { render json: @dataset.errors, status: :unprocessable_content }
+          return
         end
         if params.has_key?("context") && params["context"] == "exit"
           if Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)

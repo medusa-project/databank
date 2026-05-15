@@ -63,32 +63,44 @@ module Dataset::Authorable
   end
 
   def ind_creators_to_contributors
-    individual_creators.each do |creator|
-      Contributor.create(dataset_id:        creator.dataset_id,
-                         given_name:        creator.given_name,
-                         family_name:       creator.family_name,
-                         email:             creator.email,
-                         identifier:        creator.identifier,
-                         identifier_scheme: creator.identifier_scheme,
-                         row_order:         creator.row_order,
-                         row_position:      creator.row_position,
-                         type_of:           Databank::CreatorType::PERSON)
-      creator.destroy
-    end
+    ind_creators_to_contributors!
   end
 
   def contributors_to_ind_creators
-    contributors.each do |contributor|
-      Creator.create(dataset_id:        contributor.dataset_id,
-                     given_name:        contributor.given_name,
-                     family_name:       contributor.family_name,
-                     email:             contributor.email,
-                     identifier:        contributor.identifier,
-                     identifier_scheme: contributor.identifier_scheme,
-                     row_order:         contributor.row_order,
-                     row_position:      contributor.row_position,
-                     type_of:           Databank::CreatorType::PERSON)
-      contributor.destroy
+    contributors_to_ind_creators!
+  end
+
+  def ind_creators_to_contributors!
+    transaction do
+      individual_creators.to_a.each do |creator|
+        Contributor.create!(dataset_id:        creator.dataset_id,
+                            given_name:        creator.given_name,
+                            family_name:       creator.family_name,
+                            email:             creator.email,
+                            identifier:        creator.identifier,
+                            identifier_scheme: creator.identifier_scheme,
+                            row_order:         creator.row_order,
+                            row_position:      creator.row_position,
+                            type_of:           Databank::CreatorType::PERSON)
+        creator.destroy!
+      end
+    end
+  end
+
+  def contributors_to_ind_creators!
+    transaction do
+      contributors.to_a.each do |contributor|
+        Creator.create!(dataset_id:        contributor.dataset_id,
+                        given_name:        contributor.given_name,
+                        family_name:       contributor.family_name,
+                        email:             contributor.email,
+                        identifier:        contributor.identifier,
+                        identifier_scheme: contributor.identifier_scheme,
+                        row_order:         contributor.row_order,
+                        row_position:      contributor.row_position,
+                        type_of:           Databank::CreatorType::PERSON)
+        contributor.destroy!
+      end
     end
   end
 
