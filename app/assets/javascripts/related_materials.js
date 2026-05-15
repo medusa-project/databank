@@ -20,12 +20,44 @@ function bindMaterialTableEvents() {
       if (action === "remove") {
         remove_material_row(jQuery(this).data("material-index"));
       }
-    });
+    })
+    .off(
+      "change.materialActions",
+      "select[id^='dataset_related_materials_attributes_'][id$='_selected_type']",
+    )
+    .on(
+      "change.materialActions",
+      "select[id^='dataset_related_materials_attributes_'][id$='_selected_type']",
+      function () {
+        var match = this.id.match(
+          /^dataset_related_materials_attributes_(\d+)_selected_type$/,
+        );
+        if (match) {
+          handleMaterialChange(match[1]);
+        }
+      },
+    )
+    .off(
+      "change.materialActions",
+      "input[name='datacite_relation'][class*='material_checkbox_']",
+    )
+    .on(
+      "change.materialActions",
+      "input[name='datacite_relation'][class*='material_checkbox_']",
+      function () {
+        var classMatch = (this.className || "").match(
+          /material_checkbox_(\d+)/,
+        );
+        if (classMatch) {
+          handle_relationship_box(classMatch[1]);
+        }
+      },
+    );
 }
 
 function handleMaterialChange(materialIndex) {
   jQuery("#update-confirm").prop("disabled", false);
-  materialSelectVal = jQuery(
+  var materialSelectVal = jQuery(
     "#dataset_related_materials_attributes_" + materialIndex + "_selected_type",
   ).val();
 
@@ -129,9 +161,7 @@ function add_material_row() {
     '][_destroy]" id="dataset_related_materials_attributes_' +
     newId +
     '__destroy" />' +
-    '<select class="form-control dataset" onchange="handleMaterialChange(' +
-    newId +
-    ')" name="dataset[related_materials_attributes][' +
+    '<select class="form-control dataset" name="dataset[related_materials_attributes][' +
     newId +
     '][selected_type]" id="dataset_related_materials_attributes_' +
     newId +
@@ -188,33 +218,23 @@ function add_material_row() {
       '_datacite_list" />' +
       '<input name="datacite_relation" type="checkbox" value="IsSupplementTo" class="material_checkbox_' +
       newId +
-      '" onchange="handle_relationship_box(' +
-      newId +
-      ')"> IsSupplementTo </input>' +
+      '"> IsSupplementTo </input>' +
       "<br/>" +
       '<input name="datacite_relation" type="checkbox" value="IsSupplementedBy" class="material_checkbox_' +
       newId +
-      '" onchange="handle_relationship_box(' +
-      newId +
-      ')"> IsSupplementedBy  </input>' +
+      '"> IsSupplementedBy  </input>' +
       "<br/>" +
       '<input name="datacite_relation" type="checkbox" value="IsCitedBy" class="material_checkbox_' +
       newId +
-      '" onchange="handle_relationship_box(' +
-      newId +
-      ')"> IsCitedBy </input>' +
+      '"> IsCitedBy </input>' +
       "<br/>" +
       '<input name="datacite_relation" type="checkbox" value="IsPreviousVersionOf" class="material_checkbox_' +
       newId +
-      '" onchange="handle_relationship_box(' +
-      newId +
-      ')"> IsPreviousVersionOf </input>' +
+      '"> IsPreviousVersionOf </input>' +
       "<br/>" +
       '<input name="datacite_relation" type="checkbox" value="IsNewVersionOf" class="material_checkbox_' +
       newId +
-      '" onchange="handle_relationship_box(' +
-      newId +
-      ')"> IsNewVersionOf </input>' +
+      '"> IsNewVersionOf </input>' +
       "</div>" +
       "</td>" +
       "<td>" +
@@ -281,7 +301,7 @@ function remove_material_row(material_index) {
     add_material_row();
   }
   jQuery("#update-confirm").prop("disabled", false);
-  handleFunderTable();
+  handleMaterialTable();
 }
 
 function handle_relationship_box(material_index) {

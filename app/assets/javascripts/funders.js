@@ -22,12 +22,26 @@ function bindFunderTableEvents() {
       if (action === "remove") {
         remove_funder_row(jQuery(this).data("funder-index"));
       }
-    });
+    })
+    .off(
+      "change.funderActions",
+      "select[id^='dataset_funders_attributes_'][id$='_code']",
+    )
+    .on(
+      "change.funderActions",
+      "select[id^='dataset_funders_attributes_'][id$='_code']",
+      function () {
+        var match = this.id.match(/^dataset_funders_attributes_(\d+)_code$/);
+        if (match) {
+          handleFunderChange(match[1]);
+        }
+      },
+    );
 }
 
 function handleFunderChange(funderIndex) {
   jQuery("#update-confirm").prop("disabled", false);
-  funderSelectVal = jQuery(
+  var funderSelectVal = jQuery(
     "#dataset_funders_attributes_" + funderIndex + "_code",
   ).val();
   console.log(funderSelectVal);
@@ -258,9 +272,7 @@ function add_funder_row() {
     '][identifier_scheme]" id="dataset_funders_attributes_' +
     newId +
     '_identifier_scheme" />' +
-    '<select class="form-control dataset" onchange="handleFunderChange(' +
-    newId +
-    ')" name="dataset[funders_attributes][' +
+    '<select class="form-control dataset" name="dataset[funders_attributes][' +
     newId +
     '][code]" id="dataset_funders_attributes_' +
     newId +
