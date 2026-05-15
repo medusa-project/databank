@@ -43,7 +43,7 @@
           = cf.email_field :email, class: "form-control dataset creator-email", placeholder: "[e.g.: creator@institute.org]"
         %td(class="col-md-1" align="center" )
           = cf.hidden_field :is_contact
-          %input(type="radio" name="primary_contact" class="dataset contact_radio" value="#{i}" aria-label="Primary Contact"#{' checked="true"' if creator.is_contact?})
+          %input{type: "radio", name: "primary_contact", class: "dataset contact_radio", value: i, "aria-label": "Primary Contact", checked: creator.is_contact?}
         %td(class="col-md-1")
 -# Add/Remove Creator buttons inserted via ajax
 %table(id="deleted_creator_table")

@@ -26,7 +26,6 @@
 //= require dataset_agreement
 //= require contributors
 //= require creators
-//= require data_curation_network
 //= require databank
 //= require datasets
 //= require tus

@@ -23,7 +23,7 @@ function bindFilesDelegatedActions() {
     .off("click.filesActions", "[data-file-action]")
     .on("click.filesActions", "[data-file-action]", function (event) {
       var $target = jQuery(this);
-      var action = $target.data("file-action");
+      var action = $target.attr("data-file-action");
 
       switch (action) {
         case "create-remote":
@@ -32,43 +32,45 @@ function bindFilesDelegatedActions() {
           break;
         case "preview-text":
           event.preventDefault();
-          Databank.files.previewUI.preview($target.data("web-id"));
+          Databank.files.previewUI.preview($target.attr("data-web-id"));
           break;
         case "hide-preview-text":
           event.preventDefault();
-          Databank.files.previewUI.hidePreview($target.data("web-id"));
+          Databank.files.previewUI.hidePreview($target.attr("data-web-id"));
           break;
         case "preview-md":
           event.preventDefault();
-          Databank.files.previewUI.previewMd($target.data("web-id"));
+          Databank.files.previewUI.previewMd($target.attr("data-web-id"));
           break;
         case "hide-preview-md":
           event.preventDefault();
-          Databank.files.previewUI.hideMdPreview($target.data("web-id"));
+          Databank.files.previewUI.hideMdPreview($target.attr("data-web-id"));
           break;
         case "preview-image":
           event.preventDefault();
           Databank.files.previewUI.previewImage(
-            $target.data("iiif-root"),
-            $target.data("web-id"),
+            $target.attr("data-iiif-root"),
+            $target.attr("data-web-id"),
           );
           break;
         case "hide-preview-image":
           event.preventDefault();
           Databank.files.previewUI.hideImagePreview(
-            $target.data("iiif-root"),
-            $target.data("web-id"),
+            $target.attr("data-iiif-root"),
+            $target.attr("data-web-id"),
           );
           break;
         case "remove-row":
           event.preventDefault();
-          Databank.files.rowMutations.removeFileRow($target.data("file-index"));
+          Databank.files.rowMutations.removeFileRow(
+            $target.attr("data-file-index"),
+          );
           break;
         case "remove-filejob":
           event.preventDefault();
           Databank.files.rowMutations.removeFileJobRow(
-            $target.data("job-id"),
-            $target.data("datafile-id"),
+            $target.attr("data-job-id"),
+            $target.attr("data-datafile-id"),
           );
           break;
         case "delete-selected":
