@@ -697,7 +697,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
     respond_to do |format|
       if publish_attempt_result[:status] == "ok" && !Databank::PublicationState::PUB_ARRAY.include?(@dataset.publication_state)
-        Rails.logger.warn "publish failed, but sent ok status for #{dataset.key}"
+        Rails.logger.warn "publish failed, but sent ok status for #{@dataset.key}"
         format.html {
           redirect_to dataset_path(@dataset.key),
                       notice: "Error in publishing dataset has been logged for review by the Research Data Service."

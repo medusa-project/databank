@@ -106,7 +106,7 @@
         .col-md-4
           - if Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
             - if (can? :manage, @dataset) && ['ok', 'na'].include?(@completion_check)
-              %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit")
+              %button(type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#deposit" id="curator-publish-button" aria-haspopup="dialog")
                 Curator Publish
                 %span(class="glyphicon glyphicon-triangle-right" )
             - elsif @has_unmodified_review
