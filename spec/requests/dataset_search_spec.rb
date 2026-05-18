@@ -1,11 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe "DatasetSearch", type: :request do
+  # This spec depends on fixture-backed datasets/users and a populated Solr index.
+  # After a test DB rebuild, fixtures are loaded by RSpec per-example, then we reindex+commit below.
   fixtures :users, :datasets, :datafiles, :creators, :related_materials
 
   before do
     Dataset.all.each(&:ensure_creator_editors)
+    Sunspot.remove_all!(Dataset)
     Dataset.reindex
+    Sunspot.commit
   end
 
   describe "GET /datasets for guest" do
