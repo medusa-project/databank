@@ -136,16 +136,18 @@ class Metric
     ##
     # write the datafile downloads json
     def write_datafile_downloads_json
+      batch_size = IDB_CONFIG[:batch_size] || 500
       target_path = METRICS_CONFIG[:datafile_downloads_json][:relative_path]
       File.open(target_path, "w") do |f|
         f.print %({"datafile_downloads":[)
-        total_file_tallies = FileDownloadTally.all
-        total_file_tallies.each_with_index do |row, i|
-          row_json = { doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally }.to_json
-          f.print "," unless i.zero?
-          f.print row_json
-          f.puts "]}" if i == (total_file_tallies.count - 1)
+        FileDownloadTally.find_in_batches(batch_size: batch_size).with_index do |batch, batch_index|
+          batch.each_with_index do |row, row_index|
+            row_json = {doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally}.to_json
+            f.puts "," unless batch_index.zero? && row_index.zero?
+            f.print row_json
+          end
         end
+        f.puts "]}"
       end
     end
 
@@ -155,7 +157,7 @@ class Metric
     # @return [void]
     def write_datafiles_csv
       doi_filename_mimetype = MedusaInfo.doi_filename_mimetype
-      render(json: { error: "mimetype map not found", status: 500 }) && (return nil) unless doi_filename_mimetype
+      render(json: { error: "mimetype map not found", status: 500}) && (return nil) unless doi_filename_mimetype
       datasets = Dataset.all_with_public_metadata
       target_path = METRICS_CONFIG[:datafiles_csv][:relative_path]
       File.open(target_path, "w") do |f|
@@ -164,9 +166,9 @@ class Metric
         end
       end
       datasets.each do |dataset|
-        # divide into batches of 500
-        # write each batch to the file
-        dataset.datafiles.each_slice(500) do |datafiles|
+        # divide into batches write each batch to the file
+        batch_size = IDB_CONFIG[:batch_size] || 500
+        dataset.datafiles.each_slice(batch_size) do |datafiles|
           write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype)
         end
       end
