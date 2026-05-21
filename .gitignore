@@ -133,6 +133,10 @@ node_modules
 /config/serializations/help_transition.txt
 .DS_Store
 .idea
+/10-*/*
+/20-*/*
+/30-*/*
+/40-*/*
 
 /app/views/guide/scratch.html
 

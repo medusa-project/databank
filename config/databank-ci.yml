@@ -120,5 +120,7 @@ medusa_info:
 
 :testers: "tester@example.com,not_tester@example.com"
 
+:batch_size: 500
+
 :read_only_msg_path:  <%= Rails.root.join('public', 'read_only_msg_plus.txt') %>
 :help_transition_filepath: <%= Rails.root.join('config', 'serializations', 'help_transition.txt') %>
