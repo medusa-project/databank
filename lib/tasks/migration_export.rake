@@ -4,6 +4,9 @@ require "json"
 require "digest"
 require "fileutils"
 
+module Migration; end
+module Migration::Legacy; end
+
 class Migration::Legacy::ExportSerializer
   def initialize(dataset)
     @dataset = dataset
