@@ -77,4 +77,50 @@ test.describe("authenticated depositor creators workflow", () => {
       page.locator("#dataset_creators_attributes_0_is_contact"),
     ).toHaveValue("false");
   });
+
+  test("orcid creator modal enables import on selection and imports values", async ({
+    page,
+  }) => {
+    await goToDatasetEdit(page);
+
+    const lookUpButton = page
+      .locator("#creator_table .orcid-search-btn")
+      .first();
+    await expect(lookUpButton).toBeVisible();
+    await lookUpButton.click();
+
+    const modal = page.locator("#orcid_creator_search");
+    const importButton = page.locator("#orcid-import-creator-btn");
+    await expect(modal).toBeVisible();
+    await expect(importButton).toBeDisabled();
+
+    await page.evaluate(() => {
+      const results = document.querySelector(
+        "#orcid_creator_search #orcid-search-results",
+      );
+      if (!results) {
+        return;
+      }
+
+      results.innerHTML =
+        "<input type='radio' name='orcid-search-select' value='0000-0001-1111-2222~Doe~Jane'/>";
+    });
+
+    await page
+      .locator("#orcid_creator_search input[name='orcid-search-select']")
+      .check();
+
+    await expect(importButton).toBeEnabled();
+    await importButton.click();
+
+    await expect(
+      page.locator("#dataset_creators_attributes_0_identifier"),
+    ).toHaveValue("0000-0001-1111-2222");
+    await expect(
+      page.locator("#dataset_creators_attributes_0_family_name"),
+    ).toHaveValue("Doe");
+    await expect(
+      page.locator("#dataset_creators_attributes_0_given_name"),
+    ).toHaveValue("Jane");
+  });
 });

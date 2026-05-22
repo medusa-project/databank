@@ -39,7 +39,9 @@
     // Enables the "Import Selected ORCID" button inside the search modal.
     // Duplicated verbatim in creators.js and contributors.js previously.
     enableOrcidImport: function () {
-      jQuery("#orcid-import-btn").prop("disabled", false);
+      jQuery(
+        "#orcid-import-creator-btn, #orcid-import-contributor-btn, #orcid-import-btn",
+      ).prop("disabled", false);
     },
 
     // Dynamic table helpers --------------------------------------------
