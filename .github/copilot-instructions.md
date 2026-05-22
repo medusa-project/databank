@@ -1,0 +1,1 @@
+All generated UI code must strictly adhere to WCAG 2.2 AA standards. Ensure the use of semantic HTML elements, provide full keyboard navigation, include appropriate ARIA roles and labels, and manage focus dynamically where necessary. Do not use non-semantic elements for interactive controls.
