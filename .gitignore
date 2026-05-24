@@ -137,6 +137,7 @@ node_modules
 /20-*/*
 /30-*/*
 /40-*/*
+/databank-2.code-workspace
 
 /app/views/guide/scratch.html
 
