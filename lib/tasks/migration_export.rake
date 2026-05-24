@@ -139,6 +139,46 @@ class Migration::Legacy::ExportSerializer
   end
 end
 
+class Migration::Legacy::GuideExportSerializer
+  def initialize(record)
+    @record = record
+  end
+
+  def as_json
+    {
+      type: record.class.name,
+      attributes: serialized_attributes
+    }
+  end
+
+  private
+
+  attr_reader :record
+
+  def serialized_attributes
+    base = {
+      id: record.id,
+      anchor: record.anchor,
+      label: record.label,
+      ordinal: record.ordinal,
+      public: record.public,
+      heading: record.heading,
+      body: record.body,
+      created_at: record.created_at,
+      updated_at: record.updated_at
+    }
+
+    case record
+    when Guide::Item
+      base.merge(section_id: record.section_id)
+    when Guide::Subitem
+      base.merge(item_id: record.item_id)
+    else
+      base
+    end
+  end
+end
+
 namespace :migration do # rubocop:disable Metrics/BlockLength
   namespace :legacy do # rubocop:disable Metrics/BlockLength
     desc "Export legacy datasets to NDJSON with SHA256 artifacts"
@@ -199,6 +239,89 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       puts "Checksum: #{checksum_path}"
       puts "Manifest: #{manifest_path}"
       puts "Record count: #{count}"
+    end
+
+    desc "Export legacy guides to NDJSON with SHA256 artifacts"
+    task export_guides_bundle: :environment do # rubocop:disable Metrics/BlockLength
+      output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports_guides").to_s)
+
+      timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
+      run_dir = File.join(output_root, timestamp)
+      FileUtils.mkdir_p(run_dir)
+
+      bundle_file = "legacy_guides.ndjson"
+      bundle_path = File.join(run_dir, bundle_file)
+      checksum_path = "#{bundle_path}.sha256"
+      manifest_path = File.join(run_dir, "manifest.json")
+
+      digest = Digest::SHA256.new
+      record_count = 0
+      section_count = 0
+      item_count = 0
+      subitem_count = 0
+
+      scope = Guide::Section.includes(guide_items: :guide_subitems)
+
+      File.open(bundle_path, "w") do |file|
+        sections = scope.to_a.sort_by { |section| [ section.ordinal || Float::INFINITY, section.id ] }
+
+        sections.each do |section|
+          line = JSON.generate(Migration::Legacy::GuideExportSerializer.new(section).as_json)
+          file.write(line)
+          file.write("\n")
+          digest.update(line)
+          digest.update("\n")
+          record_count += 1
+          section_count += 1
+
+          items = section.guide_items.to_a.sort_by { |item| [ item.ordinal || Float::INFINITY, item.id ] }
+          items.each do |item|
+            line = JSON.generate(Migration::Legacy::GuideExportSerializer.new(item).as_json)
+            file.write(line)
+            file.write("\n")
+            digest.update(line)
+            digest.update("\n")
+            record_count += 1
+            item_count += 1
+
+            subitems = item.guide_subitems.to_a.sort_by { |subitem| [ subitem.ordinal || Float::INFINITY, subitem.id ] }
+            subitems.each do |subitem|
+              line = JSON.generate(Migration::Legacy::GuideExportSerializer.new(subitem).as_json)
+              file.write(line)
+              file.write("\n")
+              digest.update(line)
+              digest.update("\n")
+              record_count += 1
+              subitem_count += 1
+            end
+          end
+        end
+      end
+
+      checksum = digest.hexdigest
+      File.write(checksum_path, "#{checksum}  #{bundle_file}\n")
+
+      manifest = {
+        generated_at: Time.current.utc.iso8601,
+        bundle_file: bundle_file,
+        record_count: record_count,
+        counts: {
+          "Guide::Section" => section_count,
+          "Guide::Item" => item_count,
+          "Guide::Subitem" => subitem_count
+        },
+        sha256: checksum,
+        format_version: 1
+      }
+      File.write(manifest_path, JSON.pretty_generate(manifest))
+
+      puts "Bundle: #{bundle_path}"
+      puts "Checksum: #{checksum_path}"
+      puts "Manifest: #{manifest_path}"
+      puts "Record count: #{record_count}"
+      puts "Guide::Section: #{section_count}"
+      puts "Guide::Item: #{item_count}"
+      puts "Guide::Subitem: #{subitem_count}"
     end
   end
 end
