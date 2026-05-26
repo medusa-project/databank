@@ -10,7 +10,7 @@
 
       .modal-footer.container-fluid
 
-        %button.btn.btn-primary.idb{"onclick"=>%Q(window.location="/datasets/#{@dataset.key}/publish"), 'type'=>'button', 'data-dismiss'=>"modal", 'id' =>"login-button"  }
+        %button.btn.btn-primary.idb{"onclick"=>%Q(window.location="/datasets/#{@dataset.key}/publish"), 'type'=>'button', 'data-dismiss'=>"modal", 'id' =>"publish-button"  }
           %span(class="glyphicon glyphicon-send")
           Publish
 
@@ -18,6 +18,6 @@
           %span(class="glyphicon glyphicon-question-sign")
           Get Help
 
-        %button.btn.btn-danger.idb{"onclick"=>%Q(window.location="/datasets/#{@dataset.key}"), 'type'=>'button', 'data-dismiss'=>"modal", 'id'=>"help-button"}
+        %button.btn.btn-danger.idb{"onclick"=>%Q(window.location="/datasets/#{@dataset.key}"), 'type'=>'button', 'data-dismiss'=>"modal", 'id'=>"cancel-button"}
           %span(class="glyphicon glyphicon-remove")
           Cancel

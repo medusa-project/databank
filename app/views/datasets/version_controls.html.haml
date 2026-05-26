@@ -282,10 +282,10 @@
               .row
                 .col-md-4
                   -if @dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
-                    %button(id="suppressReviewBtn" type="button" class="btn btn-lg btn-success btn-block" onclick="unsuppressReview()" )
+                    %button(id="suppressReviewBtn" type="button" class="btn btn-lg btn-success btn-block" data-dataset-action="unsuppress-review")
                       Permit Pre-Publication Review
                   -else
-                    %button(id="suppressReviewBtn" type="button" class="btn btn-lg btn-primary btn-block" onclick="suppressReview()" )
+                    %button(id="suppressReviewBtn" type="button" class="btn btn-lg btn-primary btn-block" data-dataset-action="suppress-review")
                       Block Pre-Publication Review
                 .col-md-8
                   %ul
@@ -299,11 +299,11 @@
               .row
                 .col-md-4
                   -if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION
-                    %button(id="publishOverideBtn" type="button" class="btn btn-lg btn-danger btn-block" onclick="version2draft()" )
+                    %button(id="publishOverideBtn" type="button" class="btn btn-lg btn-danger btn-block" data-dataset-action="version-to-draft")
                       %span(class="glyphicon glyphicon-fire" )
                       Permit Publish without Pre-Publication Review
                   -elsif @dataset.publication_state == Databank::PublicationState::DRAFT
-                    %button(id="publishOverideBtn" type="button" class="btn btn-lg btn-primary btn-block" onclick="draft2version()" )
+                    %button(id="publishOverideBtn" type="button" class="btn btn-lg btn-primary btn-block" data-dataset-action="draft-to-version")
                       Designate this Draft Dataset a Version (draft)
                   -else
                     %button(id="publishOverideBtn" type="button" class="btn btn-lg btn-default btn-block" disabled )

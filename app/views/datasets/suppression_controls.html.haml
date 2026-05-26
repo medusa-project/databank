@@ -20,10 +20,10 @@
 
           .col-md-4
             -if @dataset.suppress_changelog?
-              %button(id="suppressChangelogBtn" type="btn" class="btn btn-lg btn-success btn-block" onclick="unsuppressChangelog()" )
+              %button(id="suppressChangelogBtn" type="button" class="btn btn-lg btn-success btn-block" data-dataset-action="unsuppress-changelog")
                 UNSUPPRESS Changelog
             -else
-              %button(id="suppressChangelogBtn" type="btn" class="btn btn-lg btn-success btn-block" onclick="suppressChangelog()" )
+              %button(id="suppressChangelogBtn" type="button" class="btn btn-lg btn-success btn-block" data-dataset-action="suppress-changelog")
                 Suppress Changelog
           .col-md-8
             %ul
@@ -36,13 +36,13 @@
           .col-md-4
             - case @dataset.visibility
               -when 'Metadata and Files Published', 'Metadata and Files Publication Delayed (Embargoed)', 'Metadata Published, Files Publication Delayed (Embargoed)'
-                %button(id="tmpSuppressFilesBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="tmpSuppressFiles()")
+                %button(id="tmpSuppressFilesBtn" type="button" class="btn btn-lg btn-warning btn-block" data-dataset-action="tmp-suppress-files")
                   Temporarily Suppress File(s) Only
               -when 'Metadata Published, Files Temporarily Suppressed'
-                %button(id="tmpSuppressFilesBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="unsuppress()")
+                %button(id="tmpSuppressFilesBtn" type="button" class="btn btn-lg btn-warning btn-block" data-dataset-action="unsuppress")
                   UNSUPPRESS File(s)
               -when 'Metadata and Files Temporarily Suppressed', 'Metadata Published, Files Withdrawn', 'Withdrawn'
-                %button(disabled id="tmpSuppressFilesBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="tmpSuppressFiles()")
+                %button(disabled id="tmpSuppressFilesBtn" type="button" class="btn btn-lg btn-warning btn-block" data-dataset-action="tmp-suppress-files")
                   Temporarily Suppress File(s) Only
 
           .col-md-8
@@ -61,13 +61,13 @@
           .col-md-4
             - case @dataset.visibility
               -when 'Metadata and Files Published', 'Metadata and Files Publication Delayed (Embargoed)', 'Metadata Published, Files Publication Delayed (Embargoed)', 'Metadata Published, Files Withdrawn', 'Metadata Published, Files Temporarily Suppressed'
-                %button(id="tmpSuppressMetadataBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="tmpSuppressMetadata()")
+                %button(id="tmpSuppressMetadataBtn" type="button" class="btn btn-lg btn-warning btn-block" data-dataset-action="tmp-suppress-metadata")
                   Temporarily Suppress File(s) and Metadata
               -when 'Metadata and Files Temporarily Suppressed'
-                %button(id="tmpSuppressMetadataBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="unsuppress()")
+                %button(id="tmpSuppressMetadataBtn" type="button" class="btn btn-lg btn-warning btn-block" data-dataset-action="unsuppress")
                   UNSUPPRESS File(s) and Metadata
               -when 'Withdrawn'
-                %button(disabled id="tmpSuppressMetadataBtn" type="button" class="btn btn-lg btn-warning btn-block" onclick="tmpSuppressMetadata()")
+                %button(disabled id="tmpSuppressMetadataBtn" type="button" class="btn btn-lg btn-warning btn-block" data-dataset-action="tmp-suppress-metadata")
                   Temporarily Suppress File(s) and Metadata
 
           .col-md-8
@@ -93,10 +93,10 @@
         .row
           .col-md-4
             -if [Databank::PublicationState::PermSuppress::METADATA, Databank::PublicationState::PermSuppress::FILE].include? @dataset.publication_state
-              %button(disabled id="permSuppressFilesBtn" type="button" class="btn btn-lg btn-danger btn-block" onclick="permSuppressFiles()")
+              %button(disabled id="permSuppressFilesBtn" type="button" class="btn btn-lg btn-danger btn-block" data-dataset-action="perm-suppress-files")
                 Permanently Suppress File(s) Only
             -else
-              %button(id="permSuppressFilesBtn" type="button" class="btn btn-lg btn-danger btn-block" onclick="permSuppressFiles()")
+              %button(id="permSuppressFilesBtn" type="button" class="btn btn-lg btn-danger btn-block" data-dataset-action="perm-suppress-files")
                 Permanently Suppress File(s) Only
           .col-md-8
             %ul
@@ -114,10 +114,10 @@
         .row
           .col-md-4
             -if @dataset.publication_state == Databank::PublicationState::PermSuppress::METADATA
-              %button(disabled id="permSuppressMetadataBtn" type="button" class="btn btn-lg btn-danger btn-block" onclick="permSuppressMetadata()")
+              %button(disabled id="permSuppressMetadataBtn" type="button" class="btn btn-lg btn-danger btn-block" data-dataset-action="perm-suppress-metadata")
                 Permanently Suppress File(s) and Metadata
             -else
-              %button(id="permSuppressMetadataBtn" type="button" class="btn btn-lg btn-danger btn-block" onclick="permSuppressMetadata()")
+              %button(id="permSuppressMetadataBtn" type="button" class="btn btn-lg btn-danger btn-block" data-dataset-action="perm-suppress-metadata")
                 Permanently Suppress File(s) and Metadata
           .col-md-8
             %ul

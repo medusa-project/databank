@@ -16,7 +16,7 @@
               =ff.hidden_field :_destroy, value: false
               =ff.hidden_field :identifier
               =ff.hidden_field :identifier_scheme
-              =ff.collection_select :code, @funder_info_arr, :code, :name, {prompt: true}, {class: "form-control dataset", onchange: "handleFunderChange(#{i})"}
+              =ff.collection_select :code, @funder_info_arr, :code, :name, {prompt: true}, {class: "form-control dataset"}
             %td
 
               -if funder.code && funder.code == 'other'

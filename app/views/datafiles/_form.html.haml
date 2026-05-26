@@ -6,7 +6,7 @@
 
 -if @dataset
   %br
-  %button(type="button" class="btn btn-primary"  onclick='window.location = "/datasets/#{@dataset.key}"' )
+  %a.btn.btn-primary{href: "/datasets/#{@dataset.key}"}
     %span(class="glyphicon glyphicon-arrow-left" )
     Back
   %h3

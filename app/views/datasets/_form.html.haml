@@ -67,7 +67,7 @@
                 .row.curator-only
                   %span(class="glyphicon glyphicon-warning-sign" )
                   Switching creator type deletes all creators of current type and sumbits form, which saves any other changes.
-                  %button(type="button" class="btn btn-primary" onclick="setOrgCreators(#{@dataset.id.to_s}, #{toggled_value})")
+                  %button(type="button" class="btn btn-primary" data-dataset-action="set-org-creators" data-dataset-id="#{@dataset.id}" data-org-creators-value="#{toggled_value}")
                     -if @dataset.org_creators && @dataset.org_creators == true
                       Switch to Individual Creators
                     -else
@@ -279,7 +279,7 @@
                   - if can? :manage, @dataset
                     .row.curator-only
                       .col-md-5
-                        %button.btn.btn-success.fileinput-button(type="button" onclick="importFromGlobus()")
+                        %button.btn.btn-success.fileinput-button(type="button" data-dataset-action="import-globus")
                           %span.glyphicon.glyphicon-link
                           Import from Globus
                       .col-md-7

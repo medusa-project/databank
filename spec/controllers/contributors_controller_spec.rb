@@ -75,7 +75,7 @@ RSpec.describe ContributorsController, type: :controller do
         post :create, params: { contributor: valid_attributes }
       }.to change(Contributor, :count).by(1)
 
-      expect(response).to redirect_to(Contributor.last)
+      expect(response).to redirect_to(assigns(:contributor))
     end
 
     it 'returns created json for valid params' do

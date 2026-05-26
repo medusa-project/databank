@@ -1,44 +1,21 @@
 import { test, expect } from "@playwright/test";
 import { authStatePath } from "./helpers/auth-state.js";
-
-const baseUrl = process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3000";
-
-function agreementGroup(page, legendText) {
-  return page.getByRole("group", { name: legendText });
-}
+import {
+  goToDepositAgreement,
+  submitDepositAgreement,
+} from "./helpers/deposit-flow.js";
 
 test.describe("authenticated depositor creators workflow", () => {
   test.use({ storageState: authStatePath("depositor") });
 
   async function goToDatasetEdit(page) {
-    await page.goto(`${baseUrl}/datasets/pre_deposit`);
-    await expect(page.locator("#continue-button")).toBeVisible();
-    await page.click("#continue-button");
+    await goToDepositAgreement(page);
 
-    await expect(page).toHaveURL(/\/datasets\/new/);
-    await expect(
-      page.getByRole("heading", { name: "Deposit Agreement", exact: true }),
-    ).toBeVisible();
-    await expect(page.locator("#agree-form")).toBeVisible();
-    await expect(page.locator("#owner-yes")).toBeVisible();
-
-    const ownerGroup = agreementGroup(
-      page,
-      /Are you a creator of this dataset or have you been granted permission by the creator to deposit this dataset\?/,
-    );
-    const privateGroup = agreementGroup(
-      page,
-      /Have you removed any private, confidential, or other legally protected information from the dataset\?/,
-    );
-    const agreementGroupLocator = agreementGroup(
-      page,
-      /Do you agree to the Illinois Data Bank Deposit Agreement in its entirety\?/,
-    );
-
-    await ownerGroup.getByRole("radio", { name: "Yes" }).check();
-    await privateGroup.getByRole("radio", { name: "Not applicable" }).check();
-    await agreementGroupLocator.getByRole("radio", { name: "Yes" }).check();
-    await page.locator("#agree-button").click();
+    await submitDepositAgreement(page, {
+      owner: "yes",
+      removedPrivate: "na",
+      agree: "yes",
+    });
 
     await expect(page).toHaveURL(/\/datasets\/[^/]+\/edit/);
     await expect(page.locator("#creator_table")).toBeVisible();
@@ -99,5 +76,51 @@ test.describe("authenticated depositor creators workflow", () => {
     await expect(
       page.locator("#dataset_creators_attributes_0_is_contact"),
     ).toHaveValue("false");
+  });
+
+  test("orcid creator modal enables import on selection and imports values", async ({
+    page,
+  }) => {
+    await goToDatasetEdit(page);
+
+    const lookUpButton = page
+      .locator("#creator_table .orcid-search-btn")
+      .first();
+    await expect(lookUpButton).toBeVisible();
+    await lookUpButton.click();
+
+    const modal = page.locator("#orcid_creator_search");
+    const importButton = page.locator("#orcid-import-creator-btn");
+    await expect(modal).toBeVisible();
+    await expect(importButton).toBeDisabled();
+
+    await page.evaluate(() => {
+      const results = document.querySelector(
+        "#orcid_creator_search #orcid-search-results",
+      );
+      if (!results) {
+        return;
+      }
+
+      results.innerHTML =
+        "<input type='radio' name='orcid-search-select' value='0000-0001-1111-2222~Doe~Jane'/>";
+    });
+
+    await page
+      .locator("#orcid_creator_search input[name='orcid-search-select']")
+      .check();
+
+    await expect(importButton).toBeEnabled();
+    await importButton.click();
+
+    await expect(
+      page.locator("#dataset_creators_attributes_0_identifier"),
+    ).toHaveValue("0000-0001-1111-2222");
+    await expect(
+      page.locator("#dataset_creators_attributes_0_family_name"),
+    ).toHaveValue("Doe");
+    await expect(
+      page.locator("#dataset_creators_attributes_0_given_name"),
+    ).toHaveValue("Jane");
   });
 });

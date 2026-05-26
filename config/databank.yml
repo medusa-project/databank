@@ -102,11 +102,6 @@ medusa_info:
 :system_user_email: <%= Rails.application.credentials[:system_user_email] %>
 
 :tmpdir: <%= Rails.application.credentials[:tmpdir] %>
-
-
-
-
-
-
+:batch_size: 500
 
 :help_transition_filepath: <%= Rails.root.join('config', 'serializations', 'help_transition.txt') %>

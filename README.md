@@ -75,6 +75,30 @@ To run the test suite, use the following command:
 rspec
 ```
 
+### Migration Bundle Export (Legacy Databank)
+
+Legacy databank can export migration bundles for databank-2 import.
+
+```sh
+bin/rails migration:legacy:export_bundle
+```
+
+Optional params:
+
+- `OUTPUT_ROOT=/path/to/output_dir` (default: `tmp/migration_exports`)
+- `SINCE=2026-01-01T00:00:00Z` (export records with `updated_at >= SINCE`)
+- `UNTIL=2026-02-01T00:00:00Z` (export records with `updated_at < UNTIL`)
+- `INCLUDE_TESTS=true` (default excludes test datasets)
+
+Each run writes three artifacts in a timestamped directory:
+
+- `legacy_datasets.ndjson` (one dataset record per line)
+- `legacy_datasets.ndjson.sha256` (SHA256 checksum sidecar)
+- `manifest.json` (record count, checksum, run metadata)
+
+The NDJSON payload includes sensitive depositor/owner fields intended for secure
+migration into databank-2.
+
 ### Deployment
 
 Authorized members of Library IT at the University of Illinois Urbana Champaign can review internal documentation.

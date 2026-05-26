@@ -1,9 +1,8 @@
 // @ts-check
 import { test, expect } from "@playwright/test";
+import { BASE_URL } from "./helpers/config.js";
 
 test("root path contains Illinois Data Bank", async ({ page }) => {
-  const baseUrl = process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3000";
-
-  await page.goto(baseUrl);
+  await page.goto(BASE_URL);
   await expect(page.locator("body")).toContainText("Illinois Data Bank");
 });

@@ -14,9 +14,9 @@
       -else
         %div(id="validation-warning")
         %br
-        %button(type="button" id="update-confirm" class="btn btn-primary btn-block" onclick="confirm_update()" )
+        %button(type="button" id="update-confirm" class="btn btn-primary btn-block")
           Confirm
           %span(class="glyphicon glyphicon-triangle-right" )
-        %button(type="button" class="btn btn-danger btn-block" name="cancel" onclick='window.location = "/datasets?q=&depositors%5B%5D=#{current_user.name}"')
+        = link_to("/datasets?q=&depositors%5B%5D=#{current_user.name}", class: "btn btn-danger btn-block", name: "cancel") do
           %span(class="glyphicon glyphicon-remove" )
           Cancel

@@ -1,22 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { authStatePath } from "./helpers/auth-state.js";
-
-const baseUrl = process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3000";
+import { goToDepositAgreement } from "./helpers/deposit-flow.js";
 
 test.describe("authenticated depositor flow", () => {
   test.use({ storageState: authStatePath("depositor") });
-
-  async function goToDepositAgreement(page) {
-    await page.goto(`${baseUrl}/datasets/pre_deposit`);
-    await expect(page.locator("#continue-button")).toBeVisible();
-    await page.click("#continue-button");
-    await expect(page).toHaveURL(/\/datasets\/new/);
-    await expect(
-      page.getByRole("heading", { name: "Deposit Agreement", exact: true }),
-    ).toBeVisible();
-    await expect(page.locator("#agree-form")).toBeVisible();
-    await expect(page.locator("#owner-yes")).toBeVisible();
-  }
 
   test("continue from pre-deposit goes to dataset form without login prompt", async ({
     page,
