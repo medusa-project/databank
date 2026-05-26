@@ -179,6 +179,35 @@ class Migration::Legacy::GuideExportSerializer
   end
 end
 
+class Migration::Legacy::FeaturedResearcherExportSerializer
+  def initialize(featured_researcher)
+    @featured_researcher = featured_researcher
+  end
+
+  def as_json
+    {
+      type: "FeaturedResearcher",
+      attributes: {
+        id: featured_researcher.id,
+        name: featured_researcher.name,
+        question: featured_researcher.question,
+        testimonial: featured_researcher.testimonial,
+        bio: featured_researcher.bio,
+        photo_url: featured_researcher.photo_url,
+        dataset_url: featured_researcher.dataset_url,
+        article_url: featured_researcher.article_url,
+        is_active: featured_researcher.is_active,
+        created_at: featured_researcher.created_at,
+        updated_at: featured_researcher.updated_at
+      }
+    }
+  end
+
+  private
+
+  attr_reader :featured_researcher
+end
+
 namespace :migration do # rubocop:disable Metrics/BlockLength
   namespace :legacy do # rubocop:disable Metrics/BlockLength
     desc "Export legacy datasets to NDJSON with SHA256 artifacts"
@@ -322,6 +351,68 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       puts "Guide::Section: #{section_count}"
       puts "Guide::Item: #{item_count}"
       puts "Guide::Subitem: #{subitem_count}"
+    end
+
+    desc "Export legacy researcher spotlights to NDJSON with SHA256 artifacts"
+    task export_featured_researchers_bundle: :environment do
+      output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports_featured_researchers").to_s)
+      active_only = ENV.fetch("ACTIVE_ONLY", "false").casecmp("true").zero?
+      since_raw = ENV["SINCE"]
+      until_raw = ENV["UNTIL"]
+
+      since_time = since_raw.present? ? Time.zone.parse(since_raw) : nil
+      until_time = until_raw.present? ? Time.zone.parse(until_raw) : nil
+
+      timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
+      run_dir = File.join(output_root, timestamp)
+      FileUtils.mkdir_p(run_dir)
+
+      bundle_file = "legacy_featured_researchers.ndjson"
+      bundle_path = File.join(run_dir, bundle_file)
+      checksum_path = "#{bundle_path}.sha256"
+      manifest_path = File.join(run_dir, "manifest.json")
+
+      scope = FeaturedResearcher.order(:id)
+      scope = scope.where(is_active: true) if active_only
+      scope = scope.where("updated_at >= ?", since_time) if since_time
+      scope = scope.where("updated_at < ?", until_time) if until_time
+
+      digest = Digest::SHA256.new
+      count = 0
+
+      File.open(bundle_path, "w") do |file|
+        scope.find_each(batch_size: 200) do |featured_researcher|
+          line = JSON.generate(Migration::Legacy::FeaturedResearcherExportSerializer.new(featured_researcher).as_json)
+          file.write(line)
+          file.write("\n")
+          digest.update(line)
+          digest.update("\n")
+          count += 1
+        end
+      end
+
+      checksum = digest.hexdigest
+      File.write(checksum_path, "#{checksum}  #{bundle_file}\n")
+
+      manifest = {
+        generated_at: Time.current.utc.iso8601,
+        bundle_file: bundle_file,
+        record_count: count,
+        counts: {
+          "FeaturedResearcher" => count
+        },
+        sha256: checksum,
+        active_only: active_only,
+        since: since_time&.iso8601,
+        until: until_time&.iso8601,
+        format_version: 1
+      }
+      File.write(manifest_path, JSON.pretty_generate(manifest))
+
+      puts "Bundle: #{bundle_path}"
+      puts "Checksum: #{checksum_path}"
+      puts "Manifest: #{manifest_path}"
+      puts "Record count: #{count}"
     end
   end
 end
