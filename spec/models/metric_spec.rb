@@ -107,8 +107,8 @@ RSpec.describe Metric, type: :model do
           uri: '10.9999/example',
           selected_type: 'JournalArticle'
         )
-        dataset = double(identifier: '10.13012/B2IDB-XYZ_V1', related_materials: [material])
-        allow(Dataset).to receive(:all_with_public_metadata).and_return([dataset])
+        dataset = double(identifier: '10.13012/B2IDB-XYZ_V1', related_materials: [material], metadata_public?: true)
+        allow(Dataset).to receive(:find_each).and_yield(dataset)
 
         Metric.write_related_materials_csv
 
@@ -172,6 +172,7 @@ RSpec.describe Metric, type: :model do
 
         dataset = instance_double(
           Dataset,
+          metadata_public?: true,
           identifier: '10.13012/B2IDB-XYZ_V1',
           ingest_datetime: Time.zone.parse('2026-05-01 12:00:00'),
           release_date: Date.new(2026, 5, 2),
@@ -184,7 +185,7 @@ RSpec.describe Metric, type: :model do
           plain_text_citation: 'Citation text'
         )
         allow(dataset).to receive(:handle_related_materials)
-        allow(Dataset).to receive(:all_with_public_metadata).and_return([dataset])
+        allow(Dataset).to receive(:find_each).and_yield(dataset)
 
         Metric.write_datasets_tsv
 
@@ -201,8 +202,8 @@ RSpec.describe Metric, type: :model do
       Dir.mktmpdir('metric-write-datafiles-csv') do |dir|
         stub_const('METRICS_CONFIG', metrics_config_for(dir))
 
-        dataset = instance_double(Dataset, datafiles: Array.new(501) { instance_double(Datafile) })
-        allow(Dataset).to receive(:all_with_public_metadata).and_return([dataset])
+        dataset = instance_double(Dataset, metadata_public?: true, datafiles: Array.new(501) { instance_double(Datafile) })
+        allow(Dataset).to receive(:find_each).and_yield(dataset)
         allow(MedusaInfo).to receive(:doi_filename_mimetype).and_return({})
         allow(Metric).to receive(:write_datafile_csv_datafile_batch)
 
@@ -222,8 +223,8 @@ RSpec.describe Metric, type: :model do
         nested_item = instance_double(NestedItem, item_path: 'folder/a.txt', item_name: 'a.txt', media_type: 'text/plain')
         archive_datafile = instance_double(Datafile, archive?: true, bytestream_name: 'files.zip', nested_items: [nested_item])
         regular_datafile = instance_double(Datafile, archive?: false, bytestream_name: 'plain.txt', nested_items: [])
-        dataset = instance_double(Dataset, identifier: '10.13012/B2IDB-CONT_V1', datafiles: [archive_datafile, regular_datafile])
-        allow(Dataset).to receive(:all_with_public_metadata).and_return([dataset])
+        dataset = instance_double(Dataset, identifier: '10.13012/B2IDB-CONT_V1', metadata_public?: true, datafiles: [archive_datafile, regular_datafile])
+        allow(Dataset).to receive(:find_each).and_yield(dataset)
 
         Metric.write_container_contents_csv
 
@@ -242,7 +243,8 @@ RSpec.describe Metric, type: :model do
 
         dataset = create(:dataset, identifier: '10.13012/B2IDB-FUND_V1')
         funder = create(:funder, dataset: dataset, name: 'NSF', grant: 'NSF-42')
-        allow(Dataset).to receive(:all_with_public_metadata).and_return([dataset])
+        allow(Dataset).to receive(:find_each).and_yield(dataset)
+        allow(dataset).to receive(:metadata_public?).and_return(true)
 
         Metric.write_funders_csv
 

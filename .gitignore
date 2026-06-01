@@ -138,6 +138,8 @@ node_modules
 /30-*/*
 /40-*/*
 /databank-2.code-workspace
+# Ignore lock files
+/public/*.lock
 
 /app/views/guide/scratch.html
 

@@ -109,90 +109,147 @@ RSpec.describe MetricsController, type: :controller do
   end
 
   describe 'GET #refresh_dataset_downloads' do
-    it 'initiates refresh and renders index' do
-      allow(Metric).to receive(:write_dataset_downloads_json)
+    it 'initiates refresh and redirects to metrics index' do
+      job = instance_double(MetricRefreshJob)
+      delayed = double('DelayedProxy')
+      allow(Metric).to receive(:in_progress?).with(:dataset_downloads_json).and_return(false)
+      allow(Metric).to receive(:set_in_progress).with(:dataset_downloads_json)
+      allow(MetricRefreshJob).to receive(:new).with(:dataset_downloads_json).and_return(job)
+      allow(job).to receive(:delay).and_return(delayed)
+      allow(delayed).to receive(:perform)
 
       get :refresh_dataset_downloads
 
-      expect(response).to be_successful
-      expect(Metric).to have_received(:write_dataset_downloads_json)
+      expect(response).to redirect_to(metrics_path)
+      expect(flash[:notice]).to include('refresh started')
+      expect(Metric).to have_received(:set_in_progress).with(:dataset_downloads_json)
+      expect(MetricRefreshJob).to have_received(:new).with(:dataset_downloads_json)
     end
   end
 
   describe 'GET #refresh_datafile_downloads' do
     it 'initiates refresh and redirects to metrics index' do
-      allow(Metric).to receive(:write_datafile_downloads_json)
+      job = instance_double(MetricRefreshJob)
+      delayed = double('DelayedProxy')
+      allow(Metric).to receive(:in_progress?).with(:datafile_downloads_json).and_return(false)
+      allow(Metric).to receive(:set_in_progress).with(:datafile_downloads_json)
+      allow(MetricRefreshJob).to receive(:new).with(:datafile_downloads_json).and_return(job)
+      allow(job).to receive(:delay).and_return(delayed)
+      allow(delayed).to receive(:perform)
 
       get :refresh_datafile_downloads
 
       expect(response).to redirect_to(metrics_path)
-      expect(flash[:notice]).to include('Dataset downloads json refresh initiated')
+      expect(flash[:notice]).to include('refresh started')
+      expect(MetricRefreshJob).to have_received(:new).with(:datafile_downloads_json)
     end
   end
 
   describe 'GET #refresh_datasets_tsv' do
     it 'initiates refresh and redirects to metrics index' do
-      allow(Metric).to receive(:write_datasets_tsv)
+      job = instance_double(MetricRefreshJob)
+      delayed = double('DelayedProxy')
+      allow(Metric).to receive(:in_progress?).with(:datasets_tsv).and_return(false)
+      allow(Metric).to receive(:set_in_progress).with(:datasets_tsv)
+      allow(MetricRefreshJob).to receive(:new).with(:datasets_tsv).and_return(job)
+      allow(job).to receive(:delay).and_return(delayed)
+      allow(delayed).to receive(:perform)
 
       get :refresh_datasets_tsv
 
       expect(response).to redirect_to(metrics_path)
-      expect(flash[:notice]).to include('Datasets tsv refresh initiated')
+      expect(flash[:notice]).to include('refresh started')
+      expect(MetricRefreshJob).to have_received(:new).with(:datasets_tsv)
     end
   end
 
   describe 'GET #refresh_datafiles_csv' do
     it 'initiates refresh and redirects to metrics index' do
-      allow(Metric).to receive(:write_datafiles_csv)
+      job = instance_double(MetricRefreshJob)
+      delayed = double('DelayedProxy')
+      allow(Metric).to receive(:in_progress?).with(:datafiles_csv).and_return(false)
+      allow(Metric).to receive(:set_in_progress).with(:datafiles_csv)
+      allow(MetricRefreshJob).to receive(:new).with(:datafiles_csv).and_return(job)
+      allow(job).to receive(:delay).and_return(delayed)
+      allow(delayed).to receive(:perform)
 
       get :refresh_datafiles_csv
 
       expect(response).to redirect_to(metrics_path)
-      expect(flash[:notice]).to include('Datafiles csv refresh initiated')
+      expect(flash[:notice]).to include('refresh started')
+      expect(MetricRefreshJob).to have_received(:new).with(:datafiles_csv)
     end
   end
 
   describe 'GET #refresh_container_csv' do
     it 'initiates refresh and redirects to metrics index' do
-      allow(Metric).to receive(:write_container_contents_csv)
+      job = instance_double(MetricRefreshJob)
+      delayed = double('DelayedProxy')
+      allow(Metric).to receive(:in_progress?).with(:container_contents_csv).and_return(false)
+      allow(Metric).to receive(:set_in_progress).with(:container_contents_csv)
+      allow(MetricRefreshJob).to receive(:new).with(:container_contents_csv).and_return(job)
+      allow(job).to receive(:delay).and_return(delayed)
+      allow(delayed).to receive(:perform)
 
       get :refresh_container_csv
 
       expect(response).to redirect_to(metrics_path)
-      expect(flash[:notice]).to include('Container contents csv refresh initiated')
+      expect(flash[:notice]).to include('refresh started')
+      expect(MetricRefreshJob).to have_received(:new).with(:container_contents_csv)
     end
   end
 
   describe 'GET #refresh_funders_csv' do
     it 'initiates refresh and redirects to metrics index' do
-      allow(Metric).to receive(:write_funders_csv)
+      job = instance_double(MetricRefreshJob)
+      delayed = double('DelayedProxy')
+      allow(Metric).to receive(:in_progress?).with(:funders_csv).and_return(false)
+      allow(Metric).to receive(:set_in_progress).with(:funders_csv)
+      allow(MetricRefreshJob).to receive(:new).with(:funders_csv).and_return(job)
+      allow(job).to receive(:delay).and_return(delayed)
+      allow(delayed).to receive(:perform)
 
       get :refresh_funders_csv
 
       expect(response).to redirect_to(metrics_path)
-      expect(flash[:notice]).to include('Funders csv refresh initiated')
+      expect(flash[:notice]).to include('refresh started')
+      expect(MetricRefreshJob).to have_received(:new).with(:funders_csv)
     end
   end
 
   describe 'GET #refresh_related_materials_csv' do
     it 'initiates refresh and redirects to metrics index' do
-      allow(Metric).to receive(:write_related_materials_csv)
+      job = instance_double(MetricRefreshJob)
+      delayed = double('DelayedProxy')
+      allow(Metric).to receive(:in_progress?).with(:related_materials_csv).and_return(false)
+      allow(Metric).to receive(:set_in_progress).with(:related_materials_csv)
+      allow(MetricRefreshJob).to receive(:new).with(:related_materials_csv).and_return(job)
+      allow(job).to receive(:delay).and_return(delayed)
+      allow(delayed).to receive(:perform)
 
       get :refresh_related_materials_csv
 
       expect(response).to redirect_to(metrics_path)
-      expect(flash[:notice]).to include('Related materials csv refresh initiated')
+      expect(flash[:notice]).to include('refresh started')
+      expect(MetricRefreshJob).to have_received(:new).with(:related_materials_csv)
     end
   end
 
   describe 'GET #refresh_container_contents_csv' do
     it 'initiates refresh and redirects to metrics index' do
-      allow(Metric).to receive(:write_container_contents_csv)
+      job = instance_double(MetricRefreshJob)
+      delayed = double('DelayedProxy')
+      allow(Metric).to receive(:in_progress?).with(:container_contents_csv).and_return(false)
+      allow(Metric).to receive(:set_in_progress).with(:container_contents_csv)
+      allow(MetricRefreshJob).to receive(:new).with(:container_contents_csv).and_return(job)
+      allow(job).to receive(:delay).and_return(delayed)
+      allow(delayed).to receive(:perform)
 
       get :refresh_container_contents_csv
 
       expect(response).to redirect_to(metrics_path)
-      expect(flash[:notice]).to include('Container contents csv refresh initiated')
+      expect(flash[:notice]).to include('refresh started')
+      expect(MetricRefreshJob).to have_received(:new).with(:container_contents_csv)
     end
   end
 end
