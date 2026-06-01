@@ -108,8 +108,6 @@ class Metric
     # @return [void]
     def write_datasets_tsv
       metric_key = :datasets_tsv
-      return if in_progress?(metric_key)
-
       set_in_progress(metric_key)
       begin
         target_path = METRICS_CONFIG[metric_key][:relative_path]
@@ -145,8 +143,6 @@ class Metric
     # Each record is written on its own line for line-by-line processability.
     def write_dataset_downloads_json
       metric_key = :dataset_downloads_json
-      return if in_progress?(metric_key)
-
       set_in_progress(metric_key)
       begin
         batch_size = IDB_CONFIG[:batch_size] || 500
@@ -187,8 +183,6 @@ class Metric
     # Each record is written on its own line for line-by-line processability.
     def write_datafile_downloads_json
       metric_key = :datafile_downloads_json
-      return if in_progress?(metric_key)
-
       set_in_progress(metric_key)
       begin
         batch_size = IDB_CONFIG[:batch_size] || 500
@@ -216,8 +210,6 @@ class Metric
     # @return [void]
     def write_datafiles_csv
       metric_key = :datafiles_csv
-      return if in_progress?(metric_key)
-
       set_in_progress(metric_key)
       begin
         doi_filename_mimetype = MedusaInfo.doi_filename_mimetype
@@ -270,8 +262,6 @@ class Metric
     # @return [void]
     def write_container_contents_csv
       metric_key = :container_contents_csv
-      return if in_progress?(metric_key)
-
       set_in_progress(metric_key)
       begin
         target_path = METRICS_CONFIG[metric_key][:relative_path]
@@ -306,8 +296,6 @@ class Metric
     # @return [void]
     def write_funders_csv
       metric_key = :funders_csv
-      return if in_progress?(metric_key)
-
       set_in_progress(metric_key)
       begin
         target_path = METRICS_CONFIG[metric_key][:relative_path]
@@ -334,8 +322,6 @@ class Metric
     # @return [void]
     def write_related_materials_csv
       metric_key = :related_materials_csv
-      return if in_progress?(metric_key)
-
       set_in_progress(metric_key)
       begin
         target_path = METRICS_CONFIG[metric_key][:relative_path]
