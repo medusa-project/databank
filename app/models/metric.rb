@@ -4,6 +4,8 @@
 # Encapsulates handling reports offered on the metrics page.
 
 class Metric
+  LOCK_KEYS = %i[dataset_downloads_json datafile_downloads_json datasets_tsv datafiles_csv container_contents_csv funders_csv related_materials_csv].freeze
+
   class << self
 
     ##
@@ -16,6 +18,43 @@ class Metric
       Metric.write_container_contents_csv
       Metric.write_funders_csv
       Metric.write_related_materials_csv
+    end
+
+    ##
+    # @param metric_key [Symbol] key from METRICS_CONFIG
+    # @return [String] path to the lock file for the given metric
+    def lock_path(metric_key)
+      "#{METRICS_CONFIG[metric_key][:relative_path]}.lock"
+    end
+
+    ##
+    # @param metric_key [Symbol] key from METRICS_CONFIG
+    # @return [Boolean] true if a refresh is currently in progress for this metric
+    def in_progress?(metric_key)
+      File.exist?(lock_path(metric_key))
+    end
+
+    ##
+    # @return [Hash] map of metric_key => Boolean indicating in-progress state for each metric
+    def refresh_status
+      LOCK_KEYS.each_with_object({}) do |key, hash|
+        hash[key] = in_progress?(key)
+      end
+    end
+
+    ##
+    # Create the lock file for the given metric key.
+    # @param metric_key [Symbol]
+    def set_in_progress(metric_key)
+      FileUtils.touch(lock_path(metric_key))
+    end
+
+    ##
+    # Remove the lock file for the given metric key.
+    # @param metric_key [Symbol]
+    def clear_in_progress(metric_key)
+      path = lock_path(metric_key)
+      File.delete(path) if File.exist?(path)
     end
 
     ##
@@ -65,112 +104,133 @@ class Metric
 
     ##
     # write the datasets tsv
-    # This method is used to write the datasets tsv
+    # Processes datasets one at a time via find_each to limit memory usage.
     # @return [void]
     def write_datasets_tsv
-      target_path = METRICS_CONFIG[:datasets_tsv][:relative_path]
-      datasets = Dataset.all_with_public_metadata
-      headings = ["doi",
-                  "ingest_date",
-                  "release_date",
-                  "num_files",
-                  "num_bytes",
-                  "total_downloads",
-                  "num_relationships",
-                  "num_creators",
-                  "subject",
-                  "citation_text"]
-      headings_row = headings.join("\t")
-      values_rows = []
-      datasets.each do |dataset|
-        dataset.handle_related_materials
-        values = [dataset.identifier.to_s,
-                  dataset.ingest_datetime.to_date.iso8601.to_s,
-                  dataset.release_date.iso8601.to_s,
-                  dataset.datafiles.count.to_s,
-                  dataset.total_filesize.to_s,
-                  dataset.total_downloads.to_s,
-                  dataset.num_external_relationships.to_s,
-                  dataset.creators.count.to_s,
-                  dataset.subject.to_s,
-                  dataset.plain_text_citation]
-        values_row = values.join("\t")
-        values_rows << "#{values_row}\n"
-      end
-      File.open(target_path, "w") do |f|
-        f.puts headings_row
-        f.puts values_rows
+      metric_key = :datasets_tsv
+      set_in_progress(metric_key)
+      begin
+        target_path = METRICS_CONFIG[metric_key][:relative_path]
+        headings = %w[doi ingest_date release_date num_files num_bytes total_downloads
+                      num_relationships num_creators subject citation_text]
+        File.open(target_path, "w") do |f|
+          f.puts headings.join("\t")
+          Dataset.find_each do |dataset|
+            next unless dataset.metadata_public?
+
+            dataset.handle_related_materials
+            values = [dataset.identifier.to_s,
+                      dataset.ingest_datetime.to_date.iso8601.to_s,
+                      dataset.release_date.iso8601.to_s,
+                      dataset.datafiles.count.to_s,
+                      dataset.total_filesize.to_s,
+                      dataset.total_downloads.to_s,
+                      dataset.num_external_relationships.to_s,
+                      dataset.creators.count.to_s,
+                      dataset.subject.to_s,
+                      dataset.plain_text_citation]
+            f.puts values.join("\t")
+          end
+        end
+      ensure
+        clear_in_progress(metric_key)
       end
     end
 
     ##
     # write the dataset downloads json
+    # Processes tallies in batches to limit memory usage.
+    # Each record is written on its own line for line-by-line processability.
     def write_dataset_downloads_json
-      target_path = METRICS_CONFIG[:dataset_downloads_json][:relative_path]
-      doi_totals_hash = {}
-      File.open(target_path, "w") do |f|
-        f.print %({"dataset_downloads":[)
-        #dataset_download_tallies = DatasetDownloadTally.public_tallies
-        dataset_download_tallies = DatasetDownloadTally.all
-        dataset_download_tallies.each_with_index do |row, i|
-          row_json = { doi: row.doi, date: row.download_date, tally: row.tally }.to_json
-          if doi_totals_hash.key?(row.doi)
-            doi_totals_hash[row.doi] += row.tally
-          else
-            doi_totals_hash[row.doi] = row.tally
+      metric_key = :dataset_downloads_json
+      set_in_progress(metric_key)
+      begin
+        batch_size = IDB_CONFIG[:batch_size] || 500
+        target_path = METRICS_CONFIG[metric_key][:relative_path]
+        doi_totals_hash = {}
+        first_record = true
+        File.open(target_path, "w") do |f|
+          f.puts %({"dataset_downloads":[)
+          DatasetDownloadTally.find_in_batches(batch_size: batch_size) do |batch|
+            batch.each do |row|
+              row_json = { doi: row.doi, date: row.download_date, tally: row.tally }.to_json
+              if doi_totals_hash.key?(row.doi)
+                doi_totals_hash[row.doi] += row.tally
+              else
+                doi_totals_hash[row.doi] = row.tally
+              end
+              f.puts(first_record ? row_json : ",#{row_json}")
+              first_record = false
+            end
           end
-          f.print "," unless i.zero?
-          f.print row_json
-          f.puts "]}" if i == (dataset_download_tallies.count - 1)
+          f.puts "]}"
         end
-      end
-      totals_path = target_path.split(".json").first + "_totals.csv"
-      File.open(totals_path, "w") do |f|
-        f.puts "doi,tally"
-        doi_totals_hash.each do |doi, tally|
-          f.puts "#{doi},#{tally}"
+        totals_path = target_path.split(".json").first + "_totals.csv"
+        File.open(totals_path, "w") do |f|
+          f.puts "doi,tally"
+          doi_totals_hash.each do |doi, tally|
+            f.puts "#{doi},#{tally}"
+          end
         end
+      ensure
+        clear_in_progress(metric_key)
       end
     end
 
     ##
     # write the datafile downloads json
+    # Processes tallies in batches to limit memory usage.
+    # Each record is written on its own line for line-by-line processability.
     def write_datafile_downloads_json
-      batch_size = IDB_CONFIG[:batch_size] || 500
-      target_path = METRICS_CONFIG[:datafile_downloads_json][:relative_path]
-      File.open(target_path, "w") do |f|
-        f.print %({"datafile_downloads":[)
-        FileDownloadTally.find_in_batches(batch_size: batch_size).with_index do |batch, batch_index|
-          batch.each_with_index do |row, row_index|
-            row_json = {doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally}.to_json
-            f.puts "," unless batch_index.zero? && row_index.zero?
-            f.print row_json
+      metric_key = :datafile_downloads_json
+      set_in_progress(metric_key)
+      begin
+        batch_size = IDB_CONFIG[:batch_size] || 500
+        target_path = METRICS_CONFIG[metric_key][:relative_path]
+        first_record = true
+        File.open(target_path, "w") do |f|
+          f.puts %({"datafile_downloads":[)
+          FileDownloadTally.find_in_batches(batch_size: batch_size) do |batch|
+            batch.each do |row|
+              row_json = { doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally }.to_json
+              f.puts(first_record ? row_json : ",#{row_json}")
+              first_record = false
+            end
           end
+          f.puts "]}"
         end
-        f.puts "]}"
+      ensure
+        clear_in_progress(metric_key)
       end
     end
 
     ##
     # write the datafiles csv
-    # This method is used to write the datafiles csv
+    # Processes datasets one at a time via find_each; datafiles in batches per dataset.
     # @return [void]
     def write_datafiles_csv
-      doi_filename_mimetype = MedusaInfo.doi_filename_mimetype
-      render(json: { error: "mimetype map not found", status: 500}) && (return nil) unless doi_filename_mimetype
-      datasets = Dataset.all_with_public_metadata
-      target_path = METRICS_CONFIG[:datafiles_csv][:relative_path]
-      File.open(target_path, "w") do |f|
-        CSV.open(f, "w") do |report|
-          report << ["doi", "pub_date", "filename", "file_format", "num_bytes", "total_downloads"]
-        end
-      end
-      datasets.each do |dataset|
-        # divide into batches write each batch to the file
+      metric_key = :datafiles_csv
+      set_in_progress(metric_key)
+      begin
+        doi_filename_mimetype = MedusaInfo.doi_filename_mimetype
+        render(json: { error: "mimetype map not found", status: 500 }) && (return nil) unless doi_filename_mimetype
+
         batch_size = IDB_CONFIG[:batch_size] || 500
-        dataset.datafiles.each_slice(batch_size) do |datafiles|
-          write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype)
+        target_path = METRICS_CONFIG[metric_key][:relative_path]
+        File.open(target_path, "w") do |f|
+          CSV.open(f, "w") do |report|
+            report << ["doi", "pub_date", "filename", "file_format", "num_bytes", "total_downloads"]
+          end
         end
+        Dataset.find_each do |dataset|
+          next unless dataset.metadata_public?
+
+          dataset.datafiles.each_slice(batch_size) do |datafiles|
+            write_datafile_csv_datafile_batch(target_path, dataset, datafiles, doi_filename_mimetype)
+          end
+        end
+      ensure
+        clear_in_progress(metric_key)
       end
     end
 
@@ -198,74 +258,92 @@ class Metric
 
     ##
     # write_container_contents_csv
-    # This method is used to write the container contents csv
+    # Processes datasets one at a time via find_each to limit memory usage.
     # @return [void]
     def write_container_contents_csv
-      datasets = Dataset.all_with_public_metadata
-      target_path = METRICS_CONFIG[:container_contents_csv][:relative_path]
-      File.open(target_path, "w") do |f|
-        CSV.open(f, "w") do |report|
-          report << ["doi", "container_filename", "content_filepath", "content_filename", "file_format"]
-          datasets.each do |dataset|
-            dataset.datafiles.each do |datafile|
-              next unless datafile.archive?
+      metric_key = :container_contents_csv
+      set_in_progress(metric_key)
+      begin
+        target_path = METRICS_CONFIG[metric_key][:relative_path]
+        File.open(target_path, "w") do |f|
+          CSV.open(f, "w") do |report|
+            report << ["doi", "container_filename", "content_filepath", "content_filename", "file_format"]
+            Dataset.find_each do |dataset|
+              next unless dataset.metadata_public?
 
-              content_files = datafile.nested_items
-              content_files.each do |item|
-                report << [dataset.identifier.to_s,
-                           datafile.bytestream_name.to_s,
-                           item.item_path,
-                           item.item_name,
-                           item.media_type]
+              dataset.datafiles.each do |datafile|
+                next unless datafile.archive?
+
+                datafile.nested_items.each do |item|
+                  report << [dataset.identifier.to_s,
+                             datafile.bytestream_name.to_s,
+                             item.item_path,
+                             item.item_name,
+                             item.media_type]
+                end
               end
             end
           end
         end
+      ensure
+        clear_in_progress(metric_key)
       end
     end
+
     ##
     # write_funders_csv
-    # This method is used to write the funders csv
+    # Processes datasets one at a time via find_each to limit memory usage.
     # @return [void]
     def write_funders_csv
-      target_path = METRICS_CONFIG[:funders_csv][:relative_path]
-      datasets = Dataset.all_with_public_metadata
-      File.open(target_path, "w") do |f|
-        CSV.open(f, "w") do |report|
-          report << ["doi", "funder", "grant"]
-          datasets.each do |dataset|
-            dataset.funders.each do |funder|
-              report << [dataset.identifier, funder.name, funder.grant]
+      metric_key = :funders_csv
+      set_in_progress(metric_key)
+      begin
+        target_path = METRICS_CONFIG[metric_key][:relative_path]
+        File.open(target_path, "w") do |f|
+          CSV.open(f, "w") do |report|
+            report << ["doi", "funder", "grant"]
+            Dataset.find_each do |dataset|
+              next unless dataset.metadata_public?
+
+              dataset.funders.each do |funder|
+                report << [dataset.identifier, funder.name, funder.grant]
+              end
             end
           end
         end
+      ensure
+        clear_in_progress(metric_key)
       end
     end
 
     ##
     # write_related_materials_csv
-    # This method is used to write the related materials csv
+    # Processes datasets one at a time via find_each to limit memory usage.
     # @return [void]
     def write_related_materials_csv
-      target_path = METRICS_CONFIG[:related_materials_csv][:relative_path]
-      datasets = Dataset.all_with_public_metadata
-      File.open(target_path, "w") do |f|
-        CSV.open(f, "w") do |report|
-          report << ["doi,datacite_relationship", "material_id_type", "material_id,material_type"]
-          datasets.each do |dataset|
-            dataset.related_materials.each do |material|
-              datacite_arr = []
-              if material.datacite_list && material.datacite_list != ""
-                datacite_arr = material.datacite_list.split(",")
-              end
-              datacite_arr.each do |relationship|
-                if ["IsPreviousVersionOf", "IsNewVersionOf"].exclude?(relationship)
+      metric_key = :related_materials_csv
+      set_in_progress(metric_key)
+      begin
+        target_path = METRICS_CONFIG[metric_key][:relative_path]
+        File.open(target_path, "w") do |f|
+          CSV.open(f, "w") do |report|
+            report << ["doi", "datacite_relationship", "material_id_type", "material_id", "material_type"]
+            Dataset.find_each do |dataset|
+              next unless dataset.metadata_public?
+
+              dataset.related_materials.each do |material|
+                datacite_arr = (material.datacite_list.presence || "").split(",")
+                datacite_arr.each do |relationship|
+                  next if ["IsPreviousVersionOf", "IsNewVersionOf"].include?(relationship)
+
                   report << [dataset.identifier.to_s, relationship.to_s, material.uri_type.to_s, material.uri.to_s, material.selected_type.to_s]
                 end
               end
             end
           end
         end
+      ensure
+        clear_in_progress(metric_key)
       end
     end
 

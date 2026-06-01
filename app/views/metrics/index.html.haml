@@ -5,6 +5,7 @@
        container_contents_csv:  "not found",
        related_materials_csv:   "not found",
        funders_csv:             "not found"}
+-refresh_status = @refresh_status || {}
 
 %h2 Metrics
 .metrics-border
@@ -17,14 +18,23 @@
   %h3
     -link = '<a href="/dataset_downloads.json" >Dataset downloads json</a>'.html_safe
     = modified_times[:dataset_downloads_json] == "not found" ? "Dataset downloads json not currently available" : link
+  -if refresh_status[:dataset_downloads_json]
+    %p.alert.alert-info{"role" => "status"}
+      %strong Refresh in progress.
+      Please refresh this page manually to check for an updated status.
   %p.inline-block
     Modified:
     = modified_times[:dataset_downloads_json]
   -if current_user && current_user.role == 'admin'
     .curator-only.inline-block
-      %a{href: "/metrics/refresh_dataset_downloads", class: "btn btn-success btn-sm idb"}
-        %span.glyphicon.glyphicon-refresh
-        Regenerate Dataset downloads json
+      -if refresh_status[:dataset_downloads_json]
+        %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Dataset downloads json
+      -else
+        %a{href: "/metrics/refresh_dataset_downloads", class: "btn btn-success btn-sm idb"}
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Dataset downloads json
   .indent
     %p
       A json string detailing downloads calculated per
@@ -34,14 +44,23 @@
   %h3
     -link = '<a href="/datafile_downloads.json">Datafile downloads json</a>'.html_safe
     = modified_times[:datafile_downloads_json] == "not found" ? "Datafile downloads json not currently available" : link
+  -if refresh_status[:datafile_downloads_json]
+    %p.alert.alert-info{"role" => "status"}
+      %strong Refresh in progress.
+      Please refresh this page manually to check for an updated status.
   %p.inline-block
     Modified:
     = modified_times[:datafile_downloads_json]
   -if current_user && current_user.role == 'admin'
     .curator-only.inline-block
-      %a{href: "/metrics/refresh_datafile_downloads", class: "btn btn-success btn-sm idb"}
-        %span.glyphicon.glyphicon-refresh
-        Regenerate Datafile downloads json
+      -if refresh_status[:datafile_downloads_json]
+        %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Datafile downloads json
+      -else
+        %a{href: "/metrics/refresh_datafile_downloads", class: "btn btn-success btn-sm idb"}
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Datafile downloads json
   .indent
     %p
       A json string detailing downloads calculated per
@@ -57,18 +76,31 @@
   %h3
     -if modified_times[:datasets_tsv] == "not found"
       Datafiles listing not found
+    -elsif refresh_status[:datasets_tsv]
+      %span.btn.btn-primary.idb{"aria-disabled" => "true", "tabindex" => "-1", style: "opacity:0.65;cursor:not-allowed;", title: "Refresh in progress"}
+        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+        Datasets TSV
     -else
       %a(href="/datasets.tsv" class="btn btn-primary idb" )
-        %span.glyphicon.glyphicon-download
+        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
         Datasets TSV
+  -if refresh_status[:datasets_tsv]
+    %p.alert.alert-info{"role" => "status"}
+      %strong Refresh in progress.
+      Please refresh this page manually to check for an updated status.
   %p.inline-block
     Modified:
     = modified_times[:datasets_tsv]
   -if current_user && current_user.role == 'admin'
     .curator-only.inline-block
-      %a(href="/metrics/refresh_datasets_tsv" class="btn btn-success btn-sm idb" )
-        %span.glyphicon.glyphicon-refresh
-        Regenerate Datasets TSV
+      -if refresh_status[:datasets_tsv]
+        %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Datasets TSV
+      -else
+        %a(href="/metrics/refresh_datasets_tsv" class="btn btn-success btn-sm idb" )
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Datasets TSV
   .indent
     %p
       Button triggers a tab-separated-values (TSV) file download of select dataset features.
@@ -112,18 +144,31 @@
   %h3
     -if modified_times[:datafiles_csv] == "not found"
       Datafiles CSV not available
+    -elsif refresh_status[:datafiles_csv]
+      %span.btn.btn-primary.idb{"aria-disabled" => "true", "tabindex" => "-1", style: "opacity:0.65;cursor:not-allowed;", title: "Refresh in progress"}
+        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+        Datafiles CSV
     -else
       %a(href="/datafiles.csv" class="btn btn-primary idb" )
-        %span.glyphicon.glyphicon-download
+        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
         Datafiles CSV
+  -if refresh_status[:datafiles_csv]
+    %p.alert.alert-info{"role" => "status"}
+      %strong Refresh in progress.
+      Please refresh this page manually to check for an updated status.
   %p.inline-block
     modified:
     = modified_times[:datafiles_csv]
   -if current_user && current_user.role == 'admin'
     .curator-only.inline-block
-      %a(href="/metrics/refresh_datafiles_csv" class="btn btn-success btn-sm idb" )
-        %span.glyphicon.glyphicon-refresh
-        Regenerate Datafiles CSV
+      -if refresh_status[:datafiles_csv]
+        %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Datafiles CSV
+      -else
+        %a(href="/metrics/refresh_datafiles_csv" class="btn btn-success btn-sm idb" )
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Datafiles CSV
   .indent
     %p
       Button triggers a csv file download of datafile details.
@@ -156,18 +201,31 @@
   %h3
     -if modified_times[:container_contents_csv] == "not found"
       Container Contents CSV not available
+    -elsif refresh_status[:container_contents_csv]
+      %span.btn.btn-primary.idb{"aria-disabled" => "true", "tabindex" => "-1", style: "opacity:0.65;cursor:not-allowed;", title: "Refresh in progress"}
+        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+        Container File Contents (zip) CSV
     -else
       %a{href: "/archive_file_contents.csv", class: "btn btn-primary idb"}
-        %span.glyphicon.glyphicon-download
+        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
         Container File Contents (zip) CSV
+  -if refresh_status[:container_contents_csv]
+    %p.alert.alert-info{"role" => "status"}
+      %strong Refresh in progress.
+      Please refresh this page manually to check for an updated status.
   %p.inline-block
     modified:
     = modified_times[:container_contents_csv]
   -if current_user && current_user.role == 'admin'
     .curator-only.inline-block
-      %a{href: "/metrics/refresh_container_contents_csv", class: "btn btn-success btn-sm idb"}
-        %span.glyphicon.glyphicon-refresh
-        Regenerate Container File Contents CSV
+      -if refresh_status[:container_contents_csv]
+        %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Container File Contents CSV
+      -else
+        %a{href: "/metrics/refresh_container_contents_csv", class: "btn btn-success btn-sm idb"}
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Container File Contents CSV
   .indent
     %p
       Button triggers a csv file download of contents details for files in complex container formats (.zip, .tar.gz, .7z).
@@ -196,18 +254,31 @@
   %h3
     -if modified_times[:related_materials_csv] == "not found"
       Related Materials CSV not available
+    -elsif refresh_status[:related_materials_csv]
+      %span.btn.btn-primary.idb{"aria-disabled" => "true", "tabindex" => "-1", style: "opacity:0.65;cursor:not-allowed;", title: "Refresh in progress"}
+        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+        Related Materials CSV
     -else
       %a(href="/related_materials.csv" class="btn btn-primary idb" )
-        %span.glyphicon.glyphicon-download
+        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
         Related Materials CSV
+  -if refresh_status[:related_materials_csv]
+    %p.alert.alert-info{"role" => "status"}
+      %strong Refresh in progress.
+      Please refresh this page manually to check for an updated status.
   %p.inline-block
     modified:
     = modified_times[:related_materials_csv]
   -if current_user && current_user.role == 'admin'
     .curator-only.inline-block
-      %a(href="/metrics/refresh_related_materials_csv" class="btn btn-success btn-sm idb")
-        %span.glyphicon.glyphicon-refresh
-        Regenerate Related Materials CSV
+      -if refresh_status[:related_materials_csv]
+        %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Related Materials CSV
+      -else
+        %a(href="/metrics/refresh_related_materials_csv" class="btn btn-success btn-sm idb")
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Related Materials CSV
   .indent
     %p
       Button triggers a csv file download.
@@ -237,18 +308,31 @@
   %h3
     -if modified_times[:funders_csv] == "not found"
       Funders CSV not available
-    -else  
-      %a(href="/funders.csv" class="btn btn-primary idb" )
-        %span.glyphicon.glyphicon-download
+    -elsif refresh_status[:funders_csv]
+      %span.btn.btn-primary.idb{"aria-disabled" => "true", "tabindex" => "-1", style: "opacity:0.65;cursor:not-allowed;", title: "Refresh in progress"}
+        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
         Funders CSV
+    -else
+      %a(href="/funders.csv" class="btn btn-primary idb" )
+        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+        Funders CSV
+  -if refresh_status[:funders_csv]
+    %p.alert.alert-info{"role" => "status"}
+      %strong Refresh in progress.
+      Please refresh this page manually to check for an updated status.
   %p.inline-block
     modified:
     = modified_times[:funders_csv]
   -if current_user && current_user.role == 'admin'
     .curator-only.inline-block
-      %a(href="/metrics/refresh_funders_csv" class="btn btn-success btn-sm idb")
-        %span.glyphicon.glyphicon-refresh
-        Regenerate Funders CSV
+      -if refresh_status[:funders_csv]
+        %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Funders CSV
+      -else
+        %a(href="/metrics/refresh_funders_csv" class="btn btn-success btn-sm idb")
+          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+          Regenerate Funders CSV
   .indent
     %p
       Button triggers a csv file download.

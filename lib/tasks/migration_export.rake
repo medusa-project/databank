@@ -42,6 +42,7 @@ class Migration::Legacy::ExportSerializer
       funders:                    serialized_funders,
       related_materials:          serialized_related_materials,
       datafiles:                  serialized_datafiles,
+      notes:                      serialized_notes,
       url:                        dataset_json_url
     }
   end
@@ -137,6 +138,17 @@ class Migration::Legacy::ExportSerializer
       }
     end
   end
+
+  def serialized_notes
+    dataset.notes.order(:created_at, :id).map do |note|
+      {
+        body:       note.body,
+        author:     note.author,
+        created_at: note.created_at,
+        updated_at: note.updated_at
+      }
+    end
+  end
 end
 
 class Migration::Legacy::GuideExportSerializer
@@ -229,7 +241,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       checksum_path = "#{bundle_path}.sha256"
       manifest_path = File.join(run_dir, "manifest.json")
 
-      scope = Dataset.includes(:creators, :contributors, :funders, :related_materials, :datafiles)
+      scope = Dataset.includes(:creators, :contributors, :funders, :related_materials, :datafiles, :notes)
       scope = scope.where(is_test: false) unless include_tests
       scope = scope.where("updated_at >= ?", since_time) if since_time
       scope = scope.where("updated_at < ?", until_time) if until_time

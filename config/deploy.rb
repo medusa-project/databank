@@ -62,6 +62,21 @@ namespace :databank do
     execute_rake "databank:rails_cache:clear"
   end
 
+  desc "Clear stale metric lock files left over from an interrupted refresh"
+  task :clear_metric_locks do
+    on roles(:app) do
+      lock_files = capture(:find, "#{shared_path}/public", "-maxdepth 1 -name '*.lock' 2>/dev/null || true").split
+      if lock_files.empty?
+        info "No stale metric lock files found."
+      else
+        lock_files.each do |lock_file|
+          execute :rm, "-f", lock_file
+          info "Removed stale metric lock file: #{lock_file}"
+        end
+      end
+    end
+  end
+
   def execute_rake(task)
     on roles(:app) do
       within release_path do
@@ -72,3 +87,5 @@ namespace :databank do
     end
   end
 end
+
+before "deploy:publishing", "databank:clear_metric_locks"
