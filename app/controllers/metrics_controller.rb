@@ -8,6 +8,7 @@ class MetricsController < ApplicationController
   # Responds to `GET /metrics`
   def index
     @modified_times = Metric.modified_times
+    @refresh_status = Metric.refresh_status
     @title = "Metrics"
   end
 
@@ -56,58 +57,51 @@ class MetricsController < ApplicationController
 
   # Responds to `GET /metrics/refresh_dataset_downloads`
   def refresh_dataset_downloads
-    Metric.write_dataset_downloads_json
-    message = "Dataset downloads json refresh initiated. Refresh in a few minutes to check for new modified timestamp."
-    render :index, alert: message
+    enqueue_metric_refresh(:dataset_downloads_json, "Dataset downloads JSON")
   end
 
   # Responds to `GET /metrics/refresh_datafile_downloads`
   def refresh_datafile_downloads
-    Metric.write_datafile_downloads_json
-    message = "Dataset downloads json refresh initiated. Refresh in a few minutes to check for new modified timestamp."
-    redirect_to metrics_path, notice: message
+    enqueue_metric_refresh(:datafile_downloads_json, "Datafile downloads JSON")
   end
 
   # Responds to `GET /metrics/refresh_datasets_tsv`
   def refresh_datasets_tsv
-    Metric.write_datasets_tsv
-    message = "Datasets tsv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
-    redirect_to metrics_path, notice: message
+    enqueue_metric_refresh(:datasets_tsv, "Datasets TSV")
   end
 
   # Responds to `GET /metrics/refresh_datafiles_csv`
   def refresh_datafiles_csv
-    Metric.write_datafiles_csv
-    message = "Datafiles csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
-    redirect_to metrics_path, notice: message
+    enqueue_metric_refresh(:datafiles_csv, "Datafiles CSV")
   end
 
   # Responds to `GET /metrics/refresh_container_csv`
   def refresh_container_csv
-    Metric.write_container_contents_csv
-    message = "Container contents csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
-    redirect_to metrics_path, notice: message
+    enqueue_metric_refresh(:container_contents_csv, "Container contents CSV")
   end
 
   def refresh_funders_csv
-    Metric.write_funders_csv
-    message = "Funders csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
-    redirect_to metrics_path, notice: message
+    enqueue_metric_refresh(:funders_csv, "Funders CSV")
   end
 
   def refresh_related_materials_csv
-    Metric.write_related_materials_csv
-    message = "Related materials csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
-    redirect_to metrics_path, notice: message
+    enqueue_metric_refresh(:related_materials_csv, "Related materials CSV")
   end
 
   def refresh_container_contents_csv
-    Metric.write_container_contents_csv
-    message = "Container contents csv refresh initiated. Refresh in a few minutes to check for new modified timestamp."
-    redirect_to metrics_path, notice: message
+    enqueue_metric_refresh(:container_contents_csv, "Container contents CSV")
   end
 
   private
+
+  def enqueue_metric_refresh(metric_key, label)
+    if Metric.in_progress?(metric_key)
+      redirect_to metrics_path, alert: "#{label} refresh is already in progress. Please refresh the page to check status."
+    else
+      MetricRefreshJob.new(metric_key).delay.perform
+      redirect_to metrics_path, notice: "#{label} refresh started. Please refresh this page manually to check for an updated status."
+    end
+  end
 
   def serve_metrics_file(path, type:)
     file_path = path.to_s
