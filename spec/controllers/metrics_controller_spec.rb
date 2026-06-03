@@ -31,6 +31,28 @@ RSpec.describe MetricsController, type: :controller do
     end
   end
 
+  describe 'GET #admin_metrics' do
+    it 'shows not authorized message when not logged in' do
+      allow(controller).to receive(:current_user).and_return(nil)
+      allow(controller).to receive(:authorize!).and_raise(CanCan::AccessDenied.new('Not authorized', :manage, :all))
+
+      get :admin_metrics
+
+      expect(response).to redirect_to(IDB_CONFIG[:root_url_text])
+      expect(flash[:alert]).to eq('You are not authorized to access the requested resource.')
+    end
+
+    it 'shows not authorized message when logged in without access' do
+      allow(controller).to receive(:current_user).and_return(double('User', role: 'depositor'))
+      allow(controller).to receive(:authorize!).and_raise(CanCan::AccessDenied.new('Not authorized', :manage, :all))
+
+      get :admin_metrics
+
+      expect(response).to redirect_to(IDB_CONFIG[:root_url_text])
+      expect(flash[:alert]).to eq('You are not authorized to access the requested resource.')
+    end
+  end
+
   describe 'GET #dataset_downloads' do
     it 'returns dataset downloads json content' do
       get :dataset_downloads, format: :json

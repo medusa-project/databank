@@ -16,6 +16,9 @@ class MetricsController < ApplicationController
     @modified_times = Metric.modified_times
     @refresh_status = Metric.refresh_status
     @title = "Admin metrics"
+  rescue CanCan::AccessDenied
+    redirect_to IDB_CONFIG[:root_url_text],
+                alert: "You are not authorized to access the requested resource."
   end
 
   # Responds to `GET /metrics/dataset_downloads`
