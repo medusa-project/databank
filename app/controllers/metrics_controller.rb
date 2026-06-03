@@ -7,9 +7,15 @@ class MetricsController < ApplicationController
 
   # Responds to `GET /metrics`
   def index
+    @title = "Metrics"
+    render layout: false
+  end
+
+  def admin_metrics
+    authorize! :manage, :all
     @modified_times = Metric.modified_times
     @refresh_status = Metric.refresh_status
-    @title = "Metrics"
+    @title = "Admin metrics"
   end
 
   # Responds to `GET /metrics/dataset_downloads`
