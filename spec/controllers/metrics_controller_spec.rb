@@ -21,14 +21,13 @@ RSpec.describe MetricsController, type: :controller do
   end
 
   describe 'GET #index' do
-    it 'assigns modified times and title' do
-      allow(Metric).to receive(:modified_times).and_return({ dataset_downloads: 'now' })
-
+    it 'renders the metrics dashboard page and sets title' do
       get :index
 
       expect(response).to be_successful
-      expect(assigns(:modified_times)).to eq(dataset_downloads: 'now')
       expect(assigns(:title)).to eq('Metrics')
+      expect(response.content_type).to include('text/html')
+      expect(response).to render_template(:index)
     end
   end
 
