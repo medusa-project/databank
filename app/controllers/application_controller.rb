@@ -10,6 +10,8 @@ class ApplicationController < ActionController::Base
   include CanCan::ControllerAdditions
 
   rescue_from ActionController::InvalidCrossOriginRequest, with: :render_400
+  rescue_from ActionController::UnknownFormat, with: :render_406
+  rescue_from ActionDispatch::RemoteIp::IpSpoofAttackError, with: :render_400
   rescue_from StandardError, with: :error_occurred
   rescue_from ActionView::MissingTemplate do |_exception|
     render json: {}, status: :unprocessable_content
@@ -20,6 +22,11 @@ class ApplicationController < ActionController::Base
   def render_400
     self.response_body = nil
     render(nothing: true, status: :bad_request)
+  end
+
+  def render_406
+    self.response_body = nil
+    render(nothing: true, status: :not_acceptable)
   end
 
   def store_location
