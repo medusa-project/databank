@@ -259,6 +259,7 @@ class DatafilesController < ApplicationController
     enqueue_remote_datafile_job
     assign_remote_datafile_fields
     @datafile.save
+    head :accepted
   end
 
   # Responds to `POST /datafiles/remote_content_length`
