@@ -13,6 +13,10 @@ RSpec.describe ApplicationController, type: :controller do
     def process_error
       error_occurred(request.env['test.exception'])
     end
+
+    def raise_parse_error
+      raise ActionDispatch::Http::Parameters::ParseError, 'malformed request parameters'
+    end
   end
 
   before do
@@ -20,6 +24,7 @@ RSpec.describe ApplicationController, type: :controller do
       get 'index' => 'anonymous#index'
       get 'login' => 'anonymous#login'
       get 'process_error' => 'anonymous#process_error'
+      get 'raise_parse_error' => 'anonymous#raise_parse_error'
     end
   end
 
@@ -61,6 +66,7 @@ RSpec.describe ApplicationController, type: :controller do
     def exception_with_instance_of(klass, message: 'simulated error')
       exception = StandardError.new(message)
       allow(exception).to receive(:instance_of?) { |arg| arg == klass }
+      allow(exception).to receive(:is_a?) { |arg| arg == klass || arg == StandardError }
       exception
     end
 
@@ -112,6 +118,17 @@ RSpec.describe ApplicationController, type: :controller do
       expect(DatabankMailer).to have_received(:error).with(include('boom'))
       expect(notification).to have_received(:deliver_now)
       expect(response).to have_http_status(:internal_server_error)
+    end
+  end
+
+  describe 'malformed parameter handling' do
+    it 'returns bad_request and does not notify tech team for parse errors' do
+      allow(DatabankMailer).to receive(:error)
+
+      get :raise_parse_error
+
+      expect(response).to have_http_status(:bad_request)
+      expect(DatabankMailer).not_to have_received(:error)
     end
   end
 end
