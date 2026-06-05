@@ -776,7 +776,6 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
         .where(resource_type: "Dataset")
         .where.not(resource_id: nil)
         .where(ability: %w[read view_files update])
-        .includes(:dataset)
         .order(:resource_id, :user_provider, :user_uid, :ability)
         .group_by { |ability| [ ability.resource_id, ability.user_provider, ability.user_uid ] }
 
