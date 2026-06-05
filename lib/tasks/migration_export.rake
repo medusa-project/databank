@@ -244,6 +244,37 @@ class Migration::Legacy::PermissionExportSerializer
   attr_reader :type, :email, :user_provider, :user_uid
 end
 
+class Migration::Legacy::DatasetAccessGrantExportSerializer
+  def initialize(dataset_key:, email:, access_level:, user_provider:, user_uid:, legacy_resource_id:, abilities:)
+    @dataset_key = dataset_key
+    @email = email
+    @access_level = access_level
+    @user_provider = user_provider
+    @user_uid = user_uid
+    @legacy_resource_id = legacy_resource_id
+    @abilities = abilities
+  end
+
+  def as_json
+    {
+      type: "DatasetAccessGrant",
+      attributes: {
+        dataset_key: dataset_key,
+        email: email,
+        access_level: access_level,
+        source_provider: user_provider,
+        source_uid: user_uid,
+        legacy_resource_id: legacy_resource_id,
+        abilities: abilities
+      }
+    }
+  end
+
+  private
+
+  attr_reader :dataset_key, :email, :access_level, :user_provider, :user_uid, :legacy_resource_id, :abilities
+end
+
 namespace :migration do # rubocop:disable Metrics/BlockLength
   namespace :legacy do # rubocop:disable Metrics/BlockLength
     desc "Export legacy datasets to NDJSON with SHA256 artifacts"
@@ -551,6 +582,117 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       puts "Record count: #{unique_records.count}"
       puts "ManagedCurator: #{counts.fetch('ManagedCurator', 0)}"
       puts "ManagedDepositException: #{counts.fetch('ManagedDepositException', 0)}"
+      puts "Skipped invalid: #{skipped}"
+    end
+
+    desc "Export legacy dataset access grants to NDJSON with SHA256 artifacts"
+    task export_dataset_access_grants_bundle: :environment do
+      output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports_dataset_access_grants").to_s)
+
+      timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
+      run_dir = File.join(output_root, "dataset_access_grants_#{timestamp}")
+      FileUtils.mkdir_p(run_dir)
+
+      bundle_file = "legacy_dataset_access_grants.ndjson"
+      bundle_path = File.join(run_dir, bundle_file)
+      checksum_path = "#{bundle_path}.sha256"
+      manifest_path = File.join(run_dir, "manifest.json")
+
+      normalize_email = lambda do |value|
+        raw = value.to_s.strip.downcase
+        return nil if raw.blank?
+
+        return raw if raw.include?("@")
+
+        "#{raw}@illinois.edu"
+      end
+
+      resolve_email = lambda do |ability|
+        user = User.find_by(provider: ability.user_provider, uid: ability.user_uid)
+        candidate = user&.email.presence || ability.user_uid
+        normalized = normalize_email.call(candidate)
+        return nil unless normalized =~ URI::MailTo::EMAIL_REGEXP
+
+        normalized
+      end
+
+      grouped_rows = UserAbility
+        .where(resource_type: "Dataset")
+        .where.not(resource_id: nil)
+        .where(ability: %w[read view_files update])
+        .includes(:dataset)
+        .order(:resource_id, :user_provider, :user_uid, :ability)
+        .group_by { |ability| [ ability.resource_id, ability.user_provider, ability.user_uid ] }
+
+      records = []
+      skipped = 0
+
+      grouped_rows.each_value do |abilities_for_user|
+        exemplar = abilities_for_user.first
+        dataset = Dataset.find_by(id: exemplar.resource_id)
+        if dataset.nil? || dataset.key.blank?
+          skipped += 1
+          next
+        end
+
+        email = resolve_email.call(exemplar)
+        if email.blank?
+          skipped += 1
+          next
+        end
+
+        ability_names = abilities_for_user.map { |ability| ability.ability.to_s }.uniq.sort
+        access_level = ability_names.include?("update") ? "editor" : "viewer"
+
+        records << Migration::Legacy::DatasetAccessGrantExportSerializer.new(
+          dataset_key: dataset.key,
+          email: email,
+          access_level: access_level,
+          user_provider: exemplar.user_provider,
+          user_uid: exemplar.user_uid,
+          legacy_resource_id: exemplar.resource_id,
+          abilities: ability_names
+        ).as_json
+      end
+
+      unique_records = records.uniq { |record| [ record.dig(:attributes, :dataset_key), record.dig(:attributes, :email) ] }
+      counts = unique_records.group_by { |record| record.dig(:attributes, :access_level) }.transform_values(&:count)
+
+      digest = Digest::SHA256.new
+      File.open(bundle_path, "w") do |file|
+        unique_records.each do |record|
+          line = JSON.generate(record)
+          file.write(line)
+          file.write("\n")
+          digest.update(line)
+          digest.update("\n")
+        end
+      end
+
+      checksum = digest.hexdigest
+      File.write(checksum_path, "#{checksum}  #{bundle_file}\n")
+
+      manifest = {
+        generated_at: Time.current.utc.iso8601,
+        bundle_file: bundle_file,
+        record_count: unique_records.count,
+        counts: {
+          "DatasetAccessGrant" => unique_records.count,
+          "viewer" => counts.fetch("viewer", 0),
+          "editor" => counts.fetch("editor", 0)
+        },
+        skipped_invalid: skipped,
+        sha256: checksum,
+        format_version: 1
+      }
+      File.write(manifest_path, JSON.pretty_generate(manifest))
+
+      puts "Bundle: #{bundle_path}"
+      puts "Checksum: #{checksum_path}"
+      puts "Manifest: #{manifest_path}"
+      puts "Record count: #{unique_records.count}"
+      puts "Viewer grants: #{counts.fetch('viewer', 0)}"
+      puts "Editor grants: #{counts.fetch('editor', 0)}"
       puts "Skipped invalid: #{skipped}"
     end
   end
