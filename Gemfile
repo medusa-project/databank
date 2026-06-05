@@ -194,7 +194,7 @@ group :development, :test do
   gem "byebug"
   gem "brakeman", require: false
   gem "bundler-audit", require: false
-  gem "puma"
+  gem "puma", ">= 8.0.2"
   gem "rb-readline"
   gem "shoulda-matchers"
   gem 'rspec-rails'
