@@ -220,6 +220,30 @@ class Migration::Legacy::FeaturedResearcherExportSerializer
   attr_reader :featured_researcher
 end
 
+class Migration::Legacy::PermissionExportSerializer
+  def initialize(type:, email:, user_provider:, user_uid:)
+    @type = type
+    @email = email
+    @user_provider = user_provider
+    @user_uid = user_uid
+  end
+
+  def as_json
+    {
+      type: type,
+      attributes: {
+        email: email,
+        source_provider: user_provider,
+        source_uid: user_uid
+      }
+    }
+  end
+
+  private
+
+  attr_reader :type, :email, :user_provider, :user_uid
+end
+
 namespace :migration do # rubocop:disable Metrics/BlockLength
   namespace :legacy do # rubocop:disable Metrics/BlockLength
     desc "Export legacy datasets to NDJSON with SHA256 artifacts"
@@ -425,6 +449,109 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       puts "Checksum: #{checksum_path}"
       puts "Manifest: #{manifest_path}"
       puts "Record count: #{count}"
+    end
+
+    desc "Export legacy curator/deposit-exception permissions to NDJSON with SHA256 artifacts"
+    task export_permissions_bundle: :environment do
+      output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports_permissions").to_s)
+
+      timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
+      run_dir = File.join(output_root, "permissions_#{timestamp}")
+      FileUtils.mkdir_p(run_dir)
+
+      bundle_file = "legacy_permissions.ndjson"
+      bundle_path = File.join(run_dir, bundle_file)
+      checksum_path = "#{bundle_path}.sha256"
+      manifest_path = File.join(run_dir, "manifest.json")
+
+      normalize_email = lambda do |value|
+        raw = value.to_s.strip.downcase
+        return nil if raw.blank?
+
+        return raw if raw.include?("@")
+
+        "#{raw}@illinois.edu"
+      end
+
+      resolve_email = lambda do |ability|
+        user = User.find_by(provider: ability.user_provider, uid: ability.user_uid)
+        candidate = user&.email.presence || ability.user_uid
+        normalized = normalize_email.call(candidate)
+        return nil unless normalized =~ URI::MailTo::EMAIL_REGEXP
+
+        normalized
+      end
+
+      records = []
+      skipped = 0
+
+      curator_rows = UserAbility.where(resource_type: "Databank", resource_id: nil, ability: "manage").order(:id)
+      curator_rows.find_each do |ability|
+        email = resolve_email.call(ability)
+        if email.blank?
+          skipped += 1
+          next
+        end
+
+        records << Migration::Legacy::PermissionExportSerializer.new(
+          type: "ManagedCurator",
+          email: email,
+          user_provider: ability.user_provider,
+          user_uid: ability.user_uid
+        ).as_json
+      end
+
+      deposit_exception_rows = UserAbility.where(resource_type: "Dataset", resource_id: nil, ability: "create").order(:id)
+      deposit_exception_rows.find_each do |ability|
+        email = resolve_email.call(ability)
+        if email.blank?
+          skipped += 1
+          next
+        end
+
+        records << Migration::Legacy::PermissionExportSerializer.new(
+          type: "ManagedDepositException",
+          email: email,
+          user_provider: ability.user_provider,
+          user_uid: ability.user_uid
+        ).as_json
+      end
+
+      unique_records = records.uniq { |record| [ record[:type], record.dig(:attributes, :email) ] }
+      counts = unique_records.group_by { |record| record[:type] }.transform_values(&:count)
+
+      digest = Digest::SHA256.new
+      File.open(bundle_path, "w") do |file|
+        unique_records.each do |record|
+          line = JSON.generate(record)
+          file.write(line)
+          file.write("\n")
+          digest.update(line)
+          digest.update("\n")
+        end
+      end
+
+      checksum = digest.hexdigest
+      File.write(checksum_path, "#{checksum}  #{bundle_file}\n")
+
+      manifest = {
+        generated_at: Time.current.utc.iso8601,
+        bundle_file: bundle_file,
+        record_count: unique_records.count,
+        counts: counts,
+        skipped_invalid: skipped,
+        sha256: checksum,
+        format_version: 1
+      }
+      File.write(manifest_path, JSON.pretty_generate(manifest))
+
+      puts "Bundle: #{bundle_path}"
+      puts "Checksum: #{checksum_path}"
+      puts "Manifest: #{manifest_path}"
+      puts "Record count: #{unique_records.count}"
+      puts "ManagedCurator: #{counts.fetch('ManagedCurator', 0)}"
+      puts "ManagedDepositException: #{counts.fetch('ManagedDepositException', 0)}"
+      puts "Skipped invalid: #{skipped}"
     end
   end
 end
