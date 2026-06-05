@@ -9,7 +9,7 @@ Databank is the Ruby on Rails web application component of Illinois Data Bank, w
 ### Prerequisites
 
 - Ruby (version 3.3.6)
-- Rails (version 7.2.2)
+- Rails (version 7.2.3)
 - PostgreSQL
 - Solr
 
