@@ -275,6 +275,46 @@ class Migration::Legacy::DatasetAccessGrantExportSerializer
   attr_reader :dataset_key, :email, :access_level, :user_provider, :user_uid, :legacy_resource_id, :abilities
 end
 
+class Migration::Legacy::MedusaIngestExportSerializer
+  def initialize(medusa_ingest)
+    @medusa_ingest = medusa_ingest
+  end
+
+  def as_json
+    {
+      type: "MedusaIngest",
+      attributes: {
+        legacy_id: medusa_ingest.id,
+        dataset_key: dataset_key,
+        idb_class: medusa_ingest.idb_class,
+        idb_identifier: medusa_ingest.idb_identifier,
+        staging_path: medusa_ingest.staging_path,
+        staging_key: medusa_ingest.staging_key,
+        target_key: medusa_ingest.target_key,
+        medusa_path: medusa_ingest.medusa_path,
+        medusa_uuid: medusa_ingest.medusa_uuid,
+        medusa_dataset_dir: medusa_ingest.medusa_dataset_dir,
+        request_status: medusa_ingest.request_status,
+        response_time: medusa_ingest.response_time,
+        error_text: medusa_ingest.error_text,
+        created_at: medusa_ingest.created_at,
+        updated_at: medusa_ingest.updated_at
+      }
+    }
+  end
+
+  private
+
+  attr_reader :medusa_ingest
+
+  def dataset_key
+    return medusa_ingest.idb_identifier if medusa_ingest.idb_class != "datafile"
+
+    datafile = Datafile.includes(:dataset).find_by(web_id: medusa_ingest.idb_identifier)
+    datafile&.dataset&.key
+  end
+end
+
 namespace :migration do # rubocop:disable Metrics/BlockLength
   namespace :legacy do # rubocop:disable Metrics/BlockLength
     desc "Export legacy datasets to NDJSON with SHA256 artifacts"
@@ -694,6 +734,80 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       puts "Viewer grants: #{counts.fetch('viewer', 0)}"
       puts "Editor grants: #{counts.fetch('editor', 0)}"
       puts "Skipped invalid: #{skipped}"
+    end
+
+    desc "Export legacy Medusa ingests to NDJSON with SHA256 artifacts"
+    task export_medusa_ingests_bundle: :environment do
+      output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports_medusa_ingests").to_s)
+      since_raw = ENV["SINCE"]
+      until_raw = ENV["UNTIL"]
+
+      since_time = since_raw.present? ? Time.zone.parse(since_raw) : nil
+      until_time = until_raw.present? ? Time.zone.parse(until_raw) : nil
+
+      timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
+      run_dir = File.join(output_root, "medusa_ingests_#{timestamp}")
+      FileUtils.mkdir_p(run_dir)
+
+      bundle_file = "legacy_medusa_ingests.ndjson"
+      bundle_path = File.join(run_dir, bundle_file)
+      checksum_path = "#{bundle_path}.sha256"
+      manifest_path = File.join(run_dir, "manifest.json")
+
+      scope = MedusaIngest.order(:id)
+      scope = scope.where("updated_at >= ?", since_time) if since_time
+      scope = scope.where("updated_at < ?", until_time) if until_time
+
+      records = []
+      skipped = 0
+
+      scope.find_each(batch_size: 500) do |medusa_ingest|
+        record = Migration::Legacy::MedusaIngestExportSerializer.new(medusa_ingest).as_json
+        if record.dig(:attributes, :dataset_key).blank?
+          skipped += 1
+          next
+        end
+
+        records << record
+      end
+
+      counts = records.group_by { |record| record.dig(:attributes, :request_status).to_s.presence || "pending" }.transform_values(&:count)
+
+      digest = Digest::SHA256.new
+      File.open(bundle_path, "w") do |file|
+        records.each do |record|
+          line = JSON.generate(record)
+          file.write(line)
+          file.write("\n")
+          digest.update(line)
+          digest.update("\n")
+        end
+      end
+
+      checksum = digest.hexdigest
+      File.write(checksum_path, "#{checksum}  #{bundle_file}\n")
+
+      manifest = {
+        generated_at: Time.current.utc.iso8601,
+        bundle_file: bundle_file,
+        record_count: records.count,
+        counts: {
+          "MedusaIngest" => records.count
+        }.merge(counts),
+        skipped_invalid: skipped,
+        sha256: checksum,
+        format_version: 1
+      }
+      File.write(manifest_path, JSON.pretty_generate(manifest))
+
+      puts "Bundle: #{bundle_path}"
+      puts "Checksum: #{checksum_path}"
+      puts "Manifest: #{manifest_path}"
+      puts "Record count: #{records.count}"
+      puts "Skipped invalid: #{skipped}"
+      counts.keys.sort.each do |status|
+        puts "request_status #{status}: #{counts.fetch(status, 0)}"
+      end
     end
   end
 end
