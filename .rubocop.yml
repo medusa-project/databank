@@ -11,6 +11,7 @@ AllCops:
     - 'db/**/*'
     - 'config/**/*'
     - 'script/**/*'
+    - 'vendor/**/*'
 
 # Commonly used screens these days easily fit more than 80 characters.
 Layout/LineLength:
