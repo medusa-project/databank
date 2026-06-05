@@ -43,6 +43,7 @@ class Migration::Legacy::ExportSerializer
       related_materials:          serialized_related_materials,
       datafiles:                  serialized_datafiles,
       notes:                      serialized_notes,
+      token:                      serialized_token,
       url:                        dataset_json_url
     }
   end
@@ -148,6 +149,18 @@ class Migration::Legacy::ExportSerializer
         updated_at: note.updated_at
       }
     end
+  end
+
+  def serialized_token
+    token = Token.where(dataset_key: dataset.key).order(updated_at: :desc, id: :desc).first
+    return nil if token.nil?
+
+    {
+      identifier: token.identifier,
+      expires: token.expires,
+      created_at: token.created_at,
+      updated_at: token.updated_at
+    }
   end
 end
 
@@ -313,6 +326,85 @@ class Migration::Legacy::MedusaIngestExportSerializer
     datafile = Datafile.includes(:dataset).find_by(web_id: medusa_ingest.idb_identifier)
     datafile&.dataset&.key
   end
+end
+
+class Migration::Legacy::DatasetDownloadTallyExportSerializer
+  def initialize(dataset_download_tally)
+    @dataset_download_tally = dataset_download_tally
+  end
+
+  def as_json
+    {
+      type: "DatasetDownloadTally",
+      attributes: {
+        legacy_id: dataset_download_tally.id,
+        dataset_key: dataset_download_tally.dataset_key,
+        doi: dataset_download_tally.doi,
+        download_date: dataset_download_tally.download_date,
+        tally: dataset_download_tally.tally,
+        created_at: dataset_download_tally.created_at,
+        updated_at: dataset_download_tally.updated_at
+      }
+    }
+  end
+
+  private
+
+  attr_reader :dataset_download_tally
+end
+
+class Migration::Legacy::FileDownloadTallyExportSerializer
+  def initialize(file_download_tally)
+    @file_download_tally = file_download_tally
+  end
+
+  def as_json
+    {
+      type: "FileDownloadTally",
+      attributes: {
+        legacy_id: file_download_tally.id,
+        file_web_id: file_download_tally.file_web_id,
+        filename: file_download_tally.filename,
+        dataset_key: file_download_tally.dataset_key,
+        doi: file_download_tally.doi,
+        download_date: file_download_tally.download_date,
+        tally: file_download_tally.tally,
+        created_at: file_download_tally.created_at,
+        updated_at: file_download_tally.updated_at
+      }
+    }
+  end
+
+  private
+
+  attr_reader :file_download_tally
+end
+
+class Migration::Legacy::DayFileDownloadExportSerializer
+  def initialize(day_file_download)
+    @day_file_download = day_file_download
+  end
+
+  def as_json
+    {
+      type: "DayFileDownload",
+      attributes: {
+        legacy_id: day_file_download.id,
+        ip_address: day_file_download.ip_address,
+        file_web_id: day_file_download.file_web_id,
+        filename: day_file_download.filename,
+        dataset_key: day_file_download.dataset_key,
+        doi: day_file_download.doi,
+        download_date: day_file_download.download_date,
+        created_at: day_file_download.created_at,
+        updated_at: day_file_download.updated_at
+      }
+    }
+  end
+
+  private
+
+  attr_reader :day_file_download
 end
 
 namespace :migration do # rubocop:disable Metrics/BlockLength
@@ -808,6 +900,114 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       counts.keys.sort.each do |status|
         puts "request_status #{status}: #{counts.fetch(status, 0)}"
       end
+    end
+
+    desc "Export legacy download metrics records to NDJSON with SHA256 artifacts"
+    task export_download_metrics_bundle: :environment do
+      output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports_download_metrics").to_s)
+      include_tests = ENV.fetch("INCLUDE_TESTS", "false").casecmp("true").zero?
+      since_raw = ENV["SINCE"]
+      until_raw = ENV["UNTIL"]
+
+      since_time = since_raw.present? ? Time.zone.parse(since_raw) : nil
+      until_time = until_raw.present? ? Time.zone.parse(until_raw) : nil
+
+      timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
+      run_dir = File.join(output_root, "download_metrics_#{timestamp}")
+      FileUtils.mkdir_p(run_dir)
+
+      bundle_file = "legacy_download_metrics.ndjson"
+      bundle_path = File.join(run_dir, bundle_file)
+      checksum_path = "#{bundle_path}.sha256"
+      manifest_path = File.join(run_dir, "manifest.json")
+
+      test_dataset_keys = include_tests ? [] : Dataset.where(is_test: true).pluck(:key)
+
+      dataset_scope = DatasetDownloadTally.order(:id)
+      file_scope = FileDownloadTally.order(:id)
+      day_scope = DayFileDownload.order(:id)
+
+      unless include_tests
+        dataset_scope = dataset_scope.where.not(dataset_key: test_dataset_keys)
+        file_scope = file_scope.where.not(dataset_key: test_dataset_keys)
+        day_scope = day_scope.where.not(dataset_key: test_dataset_keys)
+      end
+
+      if since_time
+        dataset_scope = dataset_scope.where("updated_at >= ?", since_time)
+        file_scope = file_scope.where("updated_at >= ?", since_time)
+        day_scope = day_scope.where("updated_at >= ?", since_time)
+      end
+
+      if until_time
+        dataset_scope = dataset_scope.where("updated_at < ?", until_time)
+        file_scope = file_scope.where("updated_at < ?", until_time)
+        day_scope = day_scope.where("updated_at < ?", until_time)
+      end
+
+      digest = Digest::SHA256.new
+      counts = Hash.new(0)
+      record_count = 0
+
+      File.open(bundle_path, "w") do |file|
+        dataset_scope.find_each(batch_size: 1000) do |row|
+          line = JSON.generate(Migration::Legacy::DatasetDownloadTallyExportSerializer.new(row).as_json)
+          file.write(line)
+          file.write("\n")
+          digest.update(line)
+          digest.update("\n")
+          counts["DatasetDownloadTally"] += 1
+          record_count += 1
+        end
+
+        file_scope.find_each(batch_size: 1000) do |row|
+          line = JSON.generate(Migration::Legacy::FileDownloadTallyExportSerializer.new(row).as_json)
+          file.write(line)
+          file.write("\n")
+          digest.update(line)
+          digest.update("\n")
+          counts["FileDownloadTally"] += 1
+          record_count += 1
+        end
+
+        day_scope.find_each(batch_size: 1000) do |row|
+          line = JSON.generate(Migration::Legacy::DayFileDownloadExportSerializer.new(row).as_json)
+          file.write(line)
+          file.write("\n")
+          digest.update(line)
+          digest.update("\n")
+          counts["DayFileDownload"] += 1
+          record_count += 1
+        end
+      end
+
+      checksum = digest.hexdigest
+      File.write(checksum_path, "#{checksum}  #{bundle_file}\n")
+
+      manifest = {
+        generated_at: Time.current.utc.iso8601,
+        bundle_file: bundle_file,
+        record_count: record_count,
+        counts: {
+          "DatasetDownloadTally" => counts.fetch("DatasetDownloadTally", 0),
+          "FileDownloadTally" => counts.fetch("FileDownloadTally", 0),
+          "DayFileDownload" => counts.fetch("DayFileDownload", 0)
+        },
+        sha256: checksum,
+        include_tests: include_tests,
+        since: since_time&.iso8601,
+        until: until_time&.iso8601,
+        format_version: 1
+      }
+      File.write(manifest_path, JSON.pretty_generate(manifest))
+
+      puts "Bundle: #{bundle_path}"
+      puts "Checksum: #{checksum_path}"
+      puts "Manifest: #{manifest_path}"
+      puts "Record count: #{record_count}"
+      puts "DatasetDownloadTally records: #{counts.fetch('DatasetDownloadTally', 0)}"
+      puts "FileDownloadTally records: #{counts.fetch('FileDownloadTally', 0)}"
+      puts "DayFileDownload records: #{counts.fetch('DayFileDownload', 0)}"
     end
   end
 end
