@@ -69,10 +69,27 @@ rails server
 
 ### Running Tests
 
-To run the test suite, use the following command:
+Databank uses two test layers:
+
+- Full regression testing (local/devcontainer): Docker-based RSpec and browser tests
+- Lightweight CI checks (local and GitHub Actions): security and lint checks
+
+To run the full RSpec suite in the current shell environment, use:
 
 ```
 rspec
+```
+
+For local/devcontainer parity with production-like services, use:
+
+```sh
+./docker-test.sh
+```
+
+To run Playwright browser tests against a running application instance:
+
+```sh
+npm run playwright:test
 ```
 
 ### Migration Bundle Export (Legacy Databank)
@@ -213,4 +230,56 @@ A few seed datasets are populated by the docker-run script.
 
 #### GitHub Actions
 
-For developers in Library IT at University of Illinois Urbana-Champaign authorized to commit to the code repository in GitHub, the rspec tests will be automatically run on commit to main branch or on a pull request.
+For developers in Library IT at University of Illinois Urbana-Champaign authorized to commit to the code repository in GitHub, lightweight CI checks run on pull requests and commits to `main`:
+
+- `scan_ruby` (Brakeman and bundler-audit)
+- `scan_js` (npm audit)
+- `lint` (RuboCop)
+
+These checks are intentionally lightweight to reduce remote CI build load.
+
+Run the same lightweight checks locally before pushing:
+
+```sh
+bin/ci
+```
+
+Full regression testing remains local/devcontainer based:
+
+- `./docker-test.sh` for RSpec-based integration testing
+- `npm run playwright:test` for Playwright browser testing (against a running app)
+
+#### Pre-Push Checklist
+
+Run this checklist before pushing a branch. It is ordered from fastest checks to slower checks.
+
+1. Install/update dependencies when needed.
+
+```sh
+bundle install
+npm ci
+```
+
+2. Run lightweight CI parity checks (matches required GitHub Actions checks `scan_ruby`, `scan_js`, and `lint`).
+
+```sh
+bin/ci
+```
+
+`bin/ci` covers the required PR checks as follows:
+
+- `scan_ruby`: Brakeman + bundler-audit
+- `scan_js`: npm audit
+- `lint`: RuboCop
+
+3. Run full regression tests locally for behavior confidence.
+
+```sh
+./docker-test.sh
+```
+
+4. Run browser regression tests when UI flows changed.
+
+```sh
+npm run playwright:test
+```

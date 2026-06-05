@@ -111,6 +111,8 @@ gem "json", ">= 2.19.2"
 gem "net-imap", ">= 0.6.4"
 gem "nokogiri", ">= 1.19.3", force_ruby_platform: true
 gem "nokogiri-diff", force_ruby_platform: true
+gem "faraday", ">= 2.14.2"
+gem "jwt", "~> 2.10", ">= 2.10.3"
 gem "rack", ">= 3.2.6"
 gem "rack-session", ">= 2.1.2"
 
@@ -190,6 +192,8 @@ gem 'airbrussh'
 
 group :development, :test do
   gem "byebug"
+  gem "brakeman", require: false
+  gem "bundler-audit", require: false
   gem "puma"
   gem "rb-readline"
   gem "shoulda-matchers"
