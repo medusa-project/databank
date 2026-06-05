@@ -94,8 +94,7 @@ RSpec.describe DatafilesController, type: :controller do
     it "enqueues CreateDatafileFromRemoteJob for remote file ingestion" do
       job = instance_double(Delayed::Job, id: 4321)
       allow(Delayed::Job).to receive(:enqueue).and_return(job)
-      notification = instance_double(ActionMailer::MessageDelivery, deliver_now: true)
-      allow(DatabankMailer).to receive(:error).and_return(notification)
+      allow(DatabankMailer).to receive(:error)
 
       post :create_from_url, params: {
         dataset_key: dataset.key,
@@ -105,9 +104,8 @@ RSpec.describe DatafilesController, type: :controller do
       }
 
       expect(Delayed::Job).to have_received(:enqueue).with(instance_of(CreateDatafileFromRemoteJob))
-      expect(response).to have_http_status(:internal_server_error)
-      expect(DatabankMailer).to have_received(:error)
-      expect(notification).to have_received(:deliver_now)
+      expect(response).to have_http_status(:accepted)
+      expect(DatabankMailer).not_to have_received(:error)
     end
   end
 

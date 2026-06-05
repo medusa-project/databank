@@ -661,10 +661,18 @@ RSpec.describe DatasetsController, type: :controller do
   end
 
   describe 'GET #download_metrics' do
-    it 'returns internal server error for unimplemented handler' do
+    it 'returns not_implemented for unimplemented handler' do
       get :download_metrics, params: { id: dataset.to_param }
 
-      expect(response).to have_http_status(:internal_server_error)
+      expect(response).to have_http_status(:not_implemented)
+    end
+  end
+
+  describe 'GET #record_text' do
+    it 'returns a successful response' do
+      get :record_text, params: { id: dataset.to_param }
+
+      expect(response).to be_successful
     end
   end
 

@@ -998,10 +998,14 @@ collaborators to access the data files while the dataset is not public.</li>
   end
 
   # Responds to `Get /datasets/:id/download_metrics`
-  def download_metrics; end
+  def download_metrics
+    head :not_implemented
+  end
 
   # Responds to `Get /datasets/:id/record_text`
-  def record_text; end
+  def record_text
+    render "recordtext"
+  end
 
   # Responds to `Get /datasets/:id/confirm_review`
   def confirm_review; end

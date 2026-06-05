@@ -233,7 +233,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       until_time = until_raw.present? ? Time.zone.parse(until_raw) : nil
 
       timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
-      run_dir = File.join(output_root, timestamp)
+      run_dir = File.join(output_root, "dataset_#{timestamp}")
       FileUtils.mkdir_p(run_dir)
 
       bundle_file = "legacy_datasets.ndjson"
@@ -287,7 +287,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports_guides").to_s)
 
       timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
-      run_dir = File.join(output_root, timestamp)
+      run_dir = File.join(output_root, "guide_#{timestamp}")
       FileUtils.mkdir_p(run_dir)
 
       bundle_file = "legacy_guides.ndjson"
@@ -376,7 +376,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       until_time = until_raw.present? ? Time.zone.parse(until_raw) : nil
 
       timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
-      run_dir = File.join(output_root, timestamp)
+      run_dir = File.join(output_root, "spotlight_#{timestamp}")
       FileUtils.mkdir_p(run_dir)
 
       bundle_file = "legacy_featured_researchers.ndjson"
