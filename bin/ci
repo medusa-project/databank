@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+bundle exec rubocop --fail-level error
+bin/bundler-audit
+npm audit --audit-level=high
+bin/brakeman --quiet --no-pager --no-exit-on-warn --exit-on-error

@@ -1793,8 +1793,13 @@ GEM
       hashie (>= 3.5, < 6)
       httpclient (~> 2.8)
       jwt (>= 1.4, < 3)
+    brakeman (8.0.4)
+      racc
     browser (6.2.0)
     builder (3.3.0)
+    bundler-audit (0.9.3)
+      bundler (>= 1.2.0)
+      thor (~> 1.0)
     bunny (2.24.0)
       amq-protocol (~> 2.3)
       sorted_set (~> 1, >= 1.0.2)
@@ -1900,11 +1905,11 @@ GEM
       railties (>= 6.1.0)
     faker (3.5.3)
       i18n (>= 1.8.11, < 2)
-    faraday (2.14.1)
+    faraday (2.14.2)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
-    faraday-net_http (3.4.2)
+    faraday-net_http (3.4.4)
       net-http (~> 0.5)
     ffi (1.17.3)
     ffi (1.17.3-aarch64-linux-gnu)
@@ -1966,11 +1971,11 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (8.0.0)
       railties (>= 3.2.16)
-    json (2.19.5)
+    json (2.19.8)
     json_spec (1.1.5)
       multi_json (~> 1.0)
       rspec (>= 2.0, < 4.0)
-    jwt (2.10.2)
+    jwt (2.10.3)
       base64
     language_server-protocol (3.17.0.5)
     launchy (3.1.1)
@@ -2339,8 +2344,10 @@ DEPENDENCIES
   bootsnap
   bootstrap-sass
   boxr
+  brakeman
   browser
   builder
+  bundler-audit
   bunny
   bunny-mock
   byebug
@@ -2363,6 +2370,7 @@ DEPENDENCIES
   erb (>= 6.0.4)
   factory_bot_rails
   faker
+  faraday (>= 2.14.2)
   figaro
   font-awesome-sass
   haml
@@ -2374,6 +2382,7 @@ DEPENDENCIES
   jquery-ui-rails
   json (>= 2.19.2)
   json_spec
+  jwt (~> 2.10, >= 2.10.3)
   launchy
   medusa_storage!
   mime-types
