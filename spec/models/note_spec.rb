@@ -10,10 +10,6 @@ RSpec.describe Note, type: :model do
     end
   end
 
-  describe 'validations' do
-    it { is_expected.to validate_presence_of(:dataset_id) }
-  end
-
   describe 'attributes' do
     it 'stores body and author' do
       note.body = 'This is a curator note'

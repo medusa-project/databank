@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Guide::Item < ApplicationRecord
-  belongs_to :guide_section, class_name: 'Guide::Section', optional: true
+  belongs_to :guide_section, class_name: 'Guide::Section', foreign_key: :section_id, optional: true
   has_many :guide_subitems, dependent: nil, class_name: 'Guide::Subitem'
 
   def has_children?
