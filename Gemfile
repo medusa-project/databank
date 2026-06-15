@@ -108,7 +108,7 @@ gem "equivalent-xml"
 gem "addressable", ">= 2.9.0"
 gem "erb", ">= 6.0.4"
 gem "json", ">= 2.19.2"
-gem "net-imap", ">= 0.6.4"
+gem "net-imap", ">= 0.6.4.1"
 gem "nokogiri", ">= 1.19.3", force_ruby_platform: true
 gem "nokogiri-diff", force_ruby_platform: true
 gem "faraday", ">= 2.14.2"
