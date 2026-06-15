@@ -117,8 +117,12 @@ collaborators to access the data files while the dataset is not public.</li>
     end
     if params[:q].present?
       @title = "Datasets: #{params[:q]}"
+      @is_search_results = true
+      # Prevent search engines from indexing dynamically generated search result pages
+      response.set_header('X-Robots-Tag', 'noindex, nofollow')
     else
       @title = "Datasets"
+      @is_search_results = false
     end
     @search = Dataset.filtered_list(user_role: user_role, user: user, params: params)
     @report = Dataset.citation_report(@search, request.original_url, current_user)

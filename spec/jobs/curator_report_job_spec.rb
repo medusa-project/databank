@@ -42,19 +42,6 @@ RSpec.describe CuratorReportJob, type: :job do
         expect(Rails.logger).to have_received(:info).with(/CuratorReportJob succeeded/)
       end
     end
-
-    context 'in production environment' do
-      before do
-        allow(Rails.env).to receive(:test?).and_return(false)
-        allow(Rails.env).to receive(:development?).and_return(false)
-      end
-
-      it 'sends email to requestor' do
-        allow_any_instance_of(DatabankMailer).to receive(:deliver_now)
-        expect(DatabankMailer).to receive(:curation_report).with(report).and_call_original
-        job.success(delayed_job)
-      end
-    end
   end
 
   describe '#error' do

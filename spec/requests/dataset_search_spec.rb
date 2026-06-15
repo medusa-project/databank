@@ -21,6 +21,17 @@ RSpec.describe "DatasetSearch", type: :request do
       expected_identifiers = Dataset.select(&:metadata_public?).pluck(:identifier)
       expect(expected_identifiers & actual_identifiers).to eq(expected_identifiers)
     end
+
+    it "escapes the search title and prevents indexing" do
+      query = %q[<script>alert(1)</script>]
+
+      get datasets_path(q: query)
+
+      expect(response).to have_http_status(:success)
+      expect(response.headers["X-Robots-Tag"]).to eq("noindex, nofollow")
+      expect(response.body).to include("Datasets: &lt;script&gt;alert(1)&lt;/script&gt; | Illinois Data Bank | Illinois")
+      expect(response.body).not_to include(query)
+    end
   end
 
   describe "GET /datasets for depositor" do

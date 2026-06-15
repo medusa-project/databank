@@ -2,7 +2,7 @@
 require 'json'
 
 class Guide::Section < ApplicationRecord
-  has_many :guide_items, dependent: nil, class_name: 'Guide::Item'
+  has_many :guide_items, dependent: :destroy, class_name: 'Guide::Item', foreign_key: :section_id
 
   def self.anchors_in_use
     section_anchors = Guide::Section.all.pluck(:anchor)

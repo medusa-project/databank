@@ -7,7 +7,7 @@ RSpec.describe Guide::Item, type: :model do
 
   describe 'associations' do
     it 'belongs to a guide section' do
-      expect(item).to belong_to(:guide_section).optional
+      expect(item).to belong_to(:guide_section).class_name('Guide::Section').with_foreign_key('section_id').optional
     end
 
     it 'has many guide subitems' do
