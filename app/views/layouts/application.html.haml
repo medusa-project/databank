@@ -36,6 +36,9 @@
     :javascript
       var SkipToConfig = { 'settings': { 'skipTo': { displayOption: 'static', colorTheme: 'illinois', headings: 'h1, h2, h3', } } };
     = csrf_meta_tags
+    -# Security: Prevent search engines from indexing dynamically generated search result pages
+    - if @is_search_results
+      %meta{name: "robots", content: "noindex, nofollow"}/
 
     - if @dataset && @dataset.publication_state && @dataset.publication_state != Databank::PublicationState::DRAFT
       %meta{:content => "#{@dataset.title}", :name => "citation_title"}/
