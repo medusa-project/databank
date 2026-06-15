@@ -116,8 +116,7 @@ collaborators to access the data files while the dataset is not public.</li>
       @datasets = Dataset.select(&:metadata_public?)
     end
     if params[:q].present?
-      # Security: escape search query to prevent XSS/SEO spam attacks in page title
-      @title = "Datasets: #{h(params[:q])}"
+      @title = "Datasets: #{params[:q]}"
       @is_search_results = true
       # Prevent search engines from indexing dynamically generated search result pages
       response.set_header('X-Robots-Tag', 'noindex, nofollow')
