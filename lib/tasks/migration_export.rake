@@ -9,10 +9,11 @@ module Migration::Legacy; end
 
 # Migration bundle export usage examples (legacy databank)
 #
-# Export all datasets (primary bundle):
-#   bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports
+# Export all bundles at once into one root (recommended):
+#   bin/rails migration:legacy:export_all OUTPUT_ROOT=/tmp/databank_exports
 #
-# Export all cutover bundles into one root (each task creates timestamped subdir):
+# Or export individually:
+#   bin/rails migration:legacy:export_users_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   bin/rails migration:legacy:export_permissions_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   bin/rails migration:legacy:export_dataset_access_grants_bundle OUTPUT_ROOT=/tmp/databank_exports
@@ -20,13 +21,14 @@ module Migration::Legacy; end
 #   bin/rails migration:legacy:export_featured_researchers_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   bin/rails migration:legacy:export_medusa_ingests_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   bin/rails migration:legacy:export_download_metrics_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   bin/rails migration:legacy:export_audits_bundle OUTPUT_ROOT=/tmp/databank_exports
 #
-# Common filters:
+# Common filters (applied before running export commands):
 #   SINCE=2026-01-01T00:00:00Z UNTIL=2026-02-01T00:00:00Z
 #   INCLUDE_TESTS=true (dataset and download metrics exports)
 #   ACTIVE_ONLY=true (featured researcher export)
 #
-# Expected artifacts per bundle run:
+# Each export task creates a timestamped subdirectory with:
 #   <bundle>.ndjson
 #   <bundle>.ndjson.sha256
 #   manifest.json
