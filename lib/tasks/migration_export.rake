@@ -9,10 +9,11 @@ module Migration::Legacy; end
 
 # Migration bundle export usage examples (legacy databank)
 #
-# Export all datasets (primary bundle):
-#   bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports
+# Export all bundles at once into one root (recommended):
+#   bin/rails migration:legacy:export_all OUTPUT_ROOT=/tmp/databank_exports
 #
-# Export all cutover bundles into one root (each task creates timestamped subdir):
+# Or export individually:
+#   bin/rails migration:legacy:export_users_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   bin/rails migration:legacy:export_permissions_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   bin/rails migration:legacy:export_dataset_access_grants_bundle OUTPUT_ROOT=/tmp/databank_exports
@@ -20,13 +21,14 @@ module Migration::Legacy; end
 #   bin/rails migration:legacy:export_featured_researchers_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   bin/rails migration:legacy:export_medusa_ingests_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   bin/rails migration:legacy:export_download_metrics_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   bin/rails migration:legacy:export_audits_bundle OUTPUT_ROOT=/tmp/databank_exports
 #
-# Common filters:
+# Common filters (applied before running export commands):
 #   SINCE=2026-01-01T00:00:00Z UNTIL=2026-02-01T00:00:00Z
 #   INCLUDE_TESTS=true (dataset and download metrics exports)
 #   ACTIVE_ONLY=true (featured researcher export)
 #
-# Expected artifacts per bundle run:
+# Each export task creates a timestamped subdirectory with:
 #   <bundle>.ndjson
 #   <bundle>.ndjson.sha256
 #   manifest.json
@@ -59,6 +61,7 @@ class Migration::Legacy::ExportSerializer
       is_import:                  dataset.is_import,
       tombstone_date:             dataset.tombstone_date,
       dataset_version:            dataset.dataset_version,
+      nested_updated_at:          dataset.nested_updated_at,
       created_at:                 dataset.created_at,
       updated_at:                 dataset.updated_at,
       creators:                   serialized_creators,
@@ -98,6 +101,7 @@ class Migration::Legacy::ExportSerializer
         name:         creator.institution_name,
         email:        creator.email,
         identifier:   creator.identifier,
+        identifier_scheme: creator.identifier_scheme,
         is_contact:   creator.is_contact,
         row_position: creator.row_position,
         created_at:   creator.created_at,
@@ -113,6 +117,7 @@ class Migration::Legacy::ExportSerializer
         given_name:   contributor.given_name,
         name:         contributor.institution_name,
         identifier:   contributor.identifier,
+        identifier_scheme: contributor.identifier_scheme,
         row_position: contributor.row_position,
         created_at:   contributor.created_at,
         updated_at:   contributor.updated_at
@@ -135,13 +140,25 @@ class Migration::Legacy::ExportSerializer
 
   def serialized_related_materials
     dataset.related_materials.order(:id).map do |material|
+      relation_types =
+        if material.respond_to?(:relationship_arr)
+          material.relationship_arr
+        else
+          material.datacite_list.to_s.split(",").map(&:strip).reject(&:blank?)
+        end
+
       {
         material_type: material.material_type,
+        selected_type: material.selected_type,
         availability:  material.availability,
         link:          material.link,
         uri:           material.uri,
         uri_type:      material.uri_type,
         citation:      material.citation,
+        note:          material.note,
+        datacite_list: relation_types.join(","),
+        relation_types: relation_types,
+        relation_type: relation_types.first,
         created_at:    material.created_at,
         updated_at:    material.updated_at
       }
@@ -185,6 +202,154 @@ class Migration::Legacy::ExportSerializer
       created_at: token.created_at,
       updated_at: token.updated_at
     }
+  end
+end
+
+class Migration::Legacy::AuditExportSerializer
+  AUDITABLE_TYPES = [ "Dataset", "Creator", "Contributor", "Funder", "RelatedMaterial" ].freeze
+
+  def initialize(audit:, dataset:)
+    @audit = audit
+    @dataset = dataset
+  end
+
+  def as_json
+    {
+      type: "Audit",
+      attributes: {
+        legacy_audit_id: audit.id,
+        dataset_key: dataset.key,
+        action: audit.action,
+        version: audit.version,
+        comment: audit.comment,
+        remote_address: audit.remote_address,
+        request_uuid: audit.request_uuid,
+        created_at: audit.created_at,
+        audited_changes: audit.audited_changes,
+        username: audit.username,
+        user_type: audit.user_type,
+        legacy_user_id: audit.user_id,
+        user_identity: serialized_user_identity,
+        auditable: serialized_reference(type: audit.auditable_type, legacy_id: audit.auditable_id, record: audit.auditable),
+        associated: serialized_reference(type: audit.associated_type, legacy_id: audit.associated_id, record: audit.associated)
+      }
+    }
+  end
+
+  private
+
+  attr_reader :audit, :dataset
+
+  def serialized_user_identity
+    return nil unless audit.user_id.present?
+
+    user = User.find_by(id: audit.user_id)
+    return nil if user.nil?
+
+    {
+      provider: user.provider,
+      uid: user.uid,
+      email: user.email
+    }
+  end
+
+  def serialized_reference(type:, legacy_id:, record:)
+    return nil if type.blank? && legacy_id.blank?
+
+    {
+      type: type,
+      legacy_id: legacy_id,
+      locator: locator_for(type: type, record: record)
+    }
+  end
+
+  def locator_for(type:, record:)
+    case type
+    when "Dataset"
+      {
+        key: dataset.key
+      }
+    when "Creator", "Contributor"
+      {
+        row_position: attribute_value(record: record, key: "row_position"),
+        given_name: attribute_value(record: record, key: "given_name"),
+        family_name: attribute_value(record: record, key: "family_name"),
+        institution_name: attribute_value(record: record, key: "institution_name", fallback_keys: [ "name" ]),
+        name: normalized_name(record: record)
+      }.compact
+    when "Funder"
+      {
+        name: attribute_value(record: record, key: "name"),
+        identifier: attribute_value(record: record, key: "identifier"),
+        grant: attribute_value(record: record, key: "grant", fallback_keys: [ "award_number" ])
+      }.compact
+    when "RelatedMaterial"
+      {
+        uri: attribute_value(record: record, key: "uri"),
+        citation: attribute_value(record: record, key: "citation"),
+        link: attribute_value(record: record, key: "link"),
+        material_type: attribute_value(record: record, key: "material_type"),
+        title: normalized_related_material_title(record: record)
+      }.compact
+    else
+      {}
+    end
+  end
+
+  def normalized_name(record:)
+    institution_name = attribute_value(record: record, key: "institution_name", fallback_keys: [ "name" ])
+    return institution_name if institution_name.present?
+
+    [
+      attribute_value(record: record, key: "given_name"),
+      attribute_value(record: record, key: "family_name")
+    ].compact.join(" ").strip.presence
+  end
+
+  def normalized_related_material_title(record:)
+    [
+      attribute_value(record: record, key: "citation"),
+      attribute_value(record: record, key: "link"),
+      attribute_value(record: record, key: "material_type")
+    ].compact.find(&:present?)
+  end
+
+  def attribute_value(record:, key:, fallback_keys: [])
+    value = nil
+    if record.respond_to?(key)
+      value = record.public_send(key)
+    else
+      changed_value = key_from_changes(key)
+      value = changed_value if changed_value.present?
+    end
+
+    return value if value.present?
+
+    fallback_keys.each do |fallback_key|
+      fallback_value = nil
+      if record.respond_to?(fallback_key)
+        fallback_value = record.public_send(fallback_key)
+      else
+        fallback_value = key_from_changes(fallback_key)
+      end
+      return fallback_value if fallback_value.present?
+    end
+
+    nil
+  end
+
+  def key_from_changes(key)
+    return nil unless audit.audited_changes.is_a?(Hash)
+
+    raw_value = audit.audited_changes[key] || audit.audited_changes[key.to_sym]
+    return raw_value unless raw_value.is_a?(Array)
+
+    case audit.action.to_s
+    when "destroy"
+      raw_value.first
+    else
+      raw_value.last
+    end
   end
 end
 
@@ -255,6 +420,81 @@ class Migration::Legacy::FeaturedResearcherExportSerializer
   private
 
   attr_reader :featured_researcher
+end
+
+class Migration::Legacy::UserExportSerializer
+  ROLE_MAP = {
+    Databank::UserRole::ADMIN => "curator",
+    Databank::UserRole::DEPOSITOR => "depositor",
+    Databank::UserRole::GUEST => "guest",
+    Databank::UserRole::NO_DEPOSIT => "no_deposit"
+  }.freeze
+
+  def initialize(user)
+    @user = user
+  end
+
+  def as_json
+    {
+      type: "User",
+      attributes: {
+        provider: normalized_provider,
+        uid: normalized_uid,
+        email: normalized_email,
+        username: normalized_username,
+        name: normalized_name,
+        role: user.role,
+        mapped_role: mapped_role,
+        created_at: user.created_at,
+        updated_at: user.updated_at
+      }
+    }
+  end
+
+  def mapped_role
+    ROLE_MAP[user.role.to_s]
+  end
+
+  def exportable?
+    normalized_provider.present? && normalized_uid.present? && normalized_email.present? && mapped_role.present?
+  end
+
+  def skip_reason
+    return "unsupported_role" if mapped_role.blank?
+    return "missing_provider" if normalized_provider.blank?
+    return "missing_uid" if normalized_uid.blank?
+    return "invalid_email" if normalized_email.blank?
+
+    nil
+  end
+
+  private
+
+  attr_reader :user
+
+  def normalized_provider
+    user.provider.to_s.strip.presence
+  end
+
+  def normalized_uid
+    user.uid.to_s.strip.presence
+  end
+
+  def normalized_email
+    raw = user.email.to_s.strip.downcase
+    return nil if raw.blank?
+    return nil unless raw =~ URI::MailTo::EMAIL_REGEXP
+
+    raw
+  end
+
+  def normalized_username
+    user.username.to_s.strip.presence || normalized_email.to_s.split("@").first.presence
+  end
+
+  def normalized_name
+    user.name.to_s.strip.presence || normalized_email
+  end
 end
 
 class Migration::Legacy::PermissionExportSerializer
@@ -433,6 +673,76 @@ end
 
 namespace :migration do # rubocop:disable Metrics/BlockLength
   namespace :legacy do # rubocop:disable Metrics/BlockLength
+    desc "Export legacy users to NDJSON with SHA256 artifacts"
+    task export_users_bundle: :environment do
+      output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports_users").to_s)
+
+      timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
+      run_dir = File.join(output_root, "users_#{timestamp}")
+      FileUtils.mkdir_p(run_dir)
+
+      bundle_file = "legacy_users.ndjson"
+      bundle_path = File.join(run_dir, bundle_file)
+      checksum_path = "#{bundle_path}.sha256"
+      manifest_path = File.join(run_dir, "manifest.json")
+
+      records = []
+      counts_by_role = Hash.new(0)
+      counts_by_mapped_role = Hash.new(0)
+      skipped_counts = Hash.new(0)
+
+      User.order(:id).find_each do |user|
+        serializer = Migration::Legacy::UserExportSerializer.new(user)
+        counts_by_role[user.role.to_s] += 1
+
+        unless serializer.exportable?
+          skipped_counts[serializer.skip_reason] += 1
+          next
+        end
+
+        counts_by_mapped_role[serializer.mapped_role] += 1
+        records << serializer.as_json
+      end
+
+      digest = Digest::SHA256.new
+      File.open(bundle_path, "w") do |file|
+        records.each do |record|
+          line = JSON.generate(record)
+          file.write(line)
+          file.write("\n")
+          digest.update(line)
+          digest.update("\n")
+        end
+      end
+
+      checksum = digest.hexdigest
+      File.write(checksum_path, "#{checksum}  #{bundle_file}\n")
+
+      manifest = {
+        generated_at: Time.current.utc.iso8601,
+        bundle_file: bundle_file,
+        record_count: records.count,
+        counts: {
+          "User" => records.count,
+          "by_role" => counts_by_role,
+          "by_mapped_role" => counts_by_mapped_role,
+          "skipped" => skipped_counts
+        },
+        sha256: checksum,
+        format_version: 1
+      }
+      File.write(manifest_path, JSON.pretty_generate(manifest))
+
+      puts "Bundle: #{bundle_path}"
+      puts "Checksum: #{checksum_path}"
+      puts "Manifest: #{manifest_path}"
+      puts "Record count: #{records.count}"
+      puts "Skipped unsupported_role: #{skipped_counts.fetch('unsupported_role', 0)}"
+      puts "Skipped missing_provider: #{skipped_counts.fetch('missing_provider', 0)}"
+      puts "Skipped missing_uid: #{skipped_counts.fetch('missing_uid', 0)}"
+      puts "Skipped invalid_email: #{skipped_counts.fetch('invalid_email', 0)}"
+    end
+
     desc "Export legacy datasets to NDJSON with SHA256 artifacts"
     task export_bundle: :environment do # rubocop:disable Metrics/BlockLength
       output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports").to_s)
@@ -491,6 +801,28 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       puts "Checksum: #{checksum_path}"
       puts "Manifest: #{manifest_path}"
       puts "Record count: #{count}"
+    end
+
+    desc "Export all legacy migration bundles in required order"
+    task export_all: :environment do
+      %w[
+        migration:legacy:export_users_bundle
+        migration:legacy:export_bundle
+        migration:legacy:export_permissions_bundle
+        migration:legacy:export_dataset_access_grants_bundle
+        migration:legacy:export_guides_bundle
+        migration:legacy:export_featured_researchers_bundle
+        migration:legacy:export_medusa_ingests_bundle
+        migration:legacy:export_download_metrics_bundle
+        migration:legacy:export_audits_bundle
+      ].each do |task_name|
+        puts "Running #{task_name}"
+        task = Rake::Task[task_name]
+        task.reenable
+        task.invoke
+      end
+
+      puts "Legacy export sequence complete."
     end
 
     desc "Export legacy guides to NDJSON with SHA256 artifacts"
@@ -629,6 +961,78 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
         since: since_time&.iso8601,
         until: until_time&.iso8601,
         format_version: 1
+      }
+      File.write(manifest_path, JSON.pretty_generate(manifest))
+
+      puts "Bundle: #{bundle_path}"
+      puts "Checksum: #{checksum_path}"
+      puts "Manifest: #{manifest_path}"
+      puts "Record count: #{count}"
+    end
+
+    desc "Export legacy audits to NDJSON with SHA256 artifacts"
+    task export_audits_bundle: :environment do # rubocop:disable Metrics/BlockLength
+      output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports_audits").to_s)
+      include_tests = ENV.fetch("INCLUDE_TESTS", "false").casecmp("true").zero?
+      since_raw = ENV["SINCE"]
+      until_raw = ENV["UNTIL"]
+
+      since_time = since_raw.present? ? Time.zone.parse(since_raw) : nil
+      until_time = until_raw.present? ? Time.zone.parse(until_raw) : nil
+
+      timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
+      run_dir = File.join(output_root, "audit_#{timestamp}")
+      FileUtils.mkdir_p(run_dir)
+
+      bundle_file = "legacy_audits.ndjson"
+      bundle_path = File.join(run_dir, bundle_file)
+      checksum_path = "#{bundle_path}.sha256"
+      manifest_path = File.join(run_dir, "manifest.json")
+
+      scope = Dataset.order(:id)
+      scope = scope.where(is_test: false) unless include_tests
+      scope = scope.where("updated_at >= ?", since_time) if since_time
+      scope = scope.where("updated_at < ?", until_time) if until_time
+
+      digest = Digest::SHA256.new
+      count = 0
+      counts_by_type = Hash.new(0)
+      counts_by_action = Hash.new(0)
+
+      File.open(bundle_path, "w") do |file|
+        scope.find_each(batch_size: 100) do |dataset|
+          audits = (dataset.audits.to_a + dataset.associated_audits.to_a).uniq(&:id)
+          audits.sort_by { |audit| [ audit.created_at || Time.at(0), audit.id ] }.each do |audit|
+            next unless Migration::Legacy::AuditExportSerializer::AUDITABLE_TYPES.include?(audit.auditable_type)
+
+            line = JSON.generate(Migration::Legacy::AuditExportSerializer.new(audit: audit, dataset: dataset).as_json)
+            file.write(line)
+            file.write("\n")
+            digest.update(line)
+            digest.update("\n")
+            count += 1
+            counts_by_type[audit.auditable_type] += 1
+            counts_by_action[audit.action.to_s] += 1
+          end
+        end
+      end
+
+      checksum = digest.hexdigest
+      File.write(checksum_path, "#{checksum}  #{bundle_file}\n")
+
+      manifest = {
+        generated_at: Time.current.utc.iso8601,
+        bundle_file: bundle_file,
+        record_count: count,
+        sha256: checksum,
+        include_tests: include_tests,
+        since: since_time&.iso8601,
+        until: until_time&.iso8601,
+        counts: {
+          "Audit" => count,
+          "by_auditable_type" => counts_by_type,
+          "by_action" => counts_by_action
+        }
       }
       File.write(manifest_path, JSON.pretty_generate(manifest))
 
