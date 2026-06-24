@@ -2029,7 +2029,7 @@ GEM
     net-ssh (7.3.0)
     netrc (0.11.0)
     nio4r (2.7.5)
-    nokogiri (1.19.3)
+    nokogiri (1.19.4)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     nokogiri-diff (0.3.0)
@@ -2389,7 +2389,7 @@ DEPENDENCIES
   minitar
   modernizr-rails
   net-imap (>= 0.6.4.1)
-  nokogiri (>= 1.19.3)
+  nokogiri (>= 1.19.4)
   nokogiri-diff
   omniauth-rails_csrf_protection
   omniauth-shibboleth
