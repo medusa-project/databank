@@ -35,6 +35,8 @@ gem "jquery-ui-rails"
 # Use clipboard-rails to access clipboard.js Javascript library
 gem 'clipboard-rails', '~> 1.7', '>= 1.7.1'
 
+gem "concurrent-ruby", ">= 1.3.7"
+
 # Use filemagic to detect file types
 gem "ruby-filemagic"
 
