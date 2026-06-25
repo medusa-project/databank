@@ -175,8 +175,26 @@ class Migration::Legacy::ExportSerializer
         storage_root: datafile.storage_root,
         storage_key:  datafile.storage_key,
         description:  datafile.description,
+        peek_type:    datafile.peek_type,
+        peek_content: datafile.peek_content,
+        nested_items: serialized_nested_items(datafile),
         created_at:   datafile.created_at,
         updated_at:   datafile.updated_at
+      }
+    end
+  end
+
+  def serialized_nested_items(datafile, parent_id: nil)
+    datafile.nested_items.where(parent_id: parent_id).order(:id).map do |nested_item|
+      {
+        item_name:   nested_item.item_name,
+        media_type:  nested_item.media_type,
+        size:        nested_item.size,
+        item_path:   nested_item.item_path,
+        is_directory: nested_item.is_directory,
+        children:    serialized_nested_items(datafile, parent_id: nested_item.id),
+        created_at:  nested_item.created_at,
+        updated_at:  nested_item.updated_at
       }
     end
   end
