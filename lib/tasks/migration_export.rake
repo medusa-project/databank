@@ -176,7 +176,7 @@ class Migration::Legacy::ExportSerializer
         storage_key:  datafile.storage_key,
         description:  datafile.description,
         peek_type:    datafile.peek_type,
-        peek_content: datafile.peek_content,
+        peek_text:    datafile.peek_text,
         nested_items: serialized_nested_items(datafile),
         created_at:   datafile.created_at,
         updated_at:   datafile.updated_at
