@@ -175,6 +175,9 @@ class Migration::Legacy::ExportSerializer
 
   def serialized_datafiles
     dataset.datafiles.order(:id).map do |datafile|
+      # Pre-load all nested items in one query instead of recursively querying
+      nested_items_by_parent = datafile.nested_items.order(:id).group_by(&:parent_id)
+      
       {
         web_id:       datafile.web_id,
         binary_name:  datafile.binary_name,
@@ -185,24 +188,24 @@ class Migration::Legacy::ExportSerializer
         description:  datafile.description,
         peek_type:    datafile.peek_type,
         peek_text:    datafile.peek_text,
-        nested_items: serialized_nested_items(datafile),
+        nested_items: build_nested_items_tree(nil, nested_items_by_parent),
         created_at:   datafile.created_at,
         updated_at:   datafile.updated_at
       }
     end
   end
 
-  def serialized_nested_items(datafile, parent_id: nil)
-    datafile.nested_items.where(parent_id: parent_id).order(:id).map do |nested_item|
+  def build_nested_items_tree(parent_id, nested_items_by_parent)
+    (nested_items_by_parent[parent_id] || []).map do |nested_item|
       {
-        item_name:   nested_item.item_name,
-        media_type:  nested_item.media_type,
-        size:        nested_item.size,
-        item_path:   nested_item.item_path,
+        item_name:    nested_item.item_name,
+        media_type:   nested_item.media_type,
+        size:         nested_item.size,
+        item_path:    nested_item.item_path,
         is_directory: nested_item.is_directory,
-        children:    serialized_nested_items(datafile, parent_id: nested_item.id),
-        created_at:  nested_item.created_at,
-        updated_at:  nested_item.updated_at
+        children:     build_nested_items_tree(nested_item.id, nested_items_by_parent),
+        created_at:   nested_item.created_at,
+        updated_at:   nested_item.updated_at
       }
     end
   end
