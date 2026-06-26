@@ -10,28 +10,36 @@ module Migration::Legacy; end
 # Migration bundle export usage examples (legacy databank)
 #
 # Export all bundles at once into one root (recommended):
-#   bin/rails migration:legacy:export_all OUTPUT_ROOT=/tmp/databank_exports
+#   RAILS_ENV=demo bin/rails migration:legacy:export_all OUTPUT_ROOT=/tmp/databank_exports
 #
 # Or export individually:
-#   bin/rails migration:legacy:export_users_bundle OUTPUT_ROOT=/tmp/databank_exports
-#   bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports
-#   bin/rails migration:legacy:export_permissions_bundle OUTPUT_ROOT=/tmp/databank_exports
-#   bin/rails migration:legacy:export_dataset_access_grants_bundle OUTPUT_ROOT=/tmp/databank_exports
-#   bin/rails migration:legacy:export_guides_bundle OUTPUT_ROOT=/tmp/databank_exports
-#   bin/rails migration:legacy:export_featured_researchers_bundle OUTPUT_ROOT=/tmp/databank_exports
-#   bin/rails migration:legacy:export_medusa_ingests_bundle OUTPUT_ROOT=/tmp/databank_exports
-#   bin/rails migration:legacy:export_download_metrics_bundle OUTPUT_ROOT=/tmp/databank_exports
-#   bin/rails migration:legacy:export_audits_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   RAILS_ENV=demo bin/rails migration:legacy:export_users_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   RAILS_ENV=demo bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   RAILS_ENV=demo bin/rails migration:legacy:export_permissions_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   RAILS_ENV=demo bin/rails migration:legacy:export_dataset_access_grants_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   RAILS_ENV=demo bin/rails migration:legacy:export_guides_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   RAILS_ENV=demo bin/rails migration:legacy:export_featured_researchers_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   RAILS_ENV=demo bin/rails migration:legacy:export_medusa_ingests_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   RAILS_ENV=demo bin/rails migration:legacy:export_download_metrics_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   RAILS_ENV=demo bin/rails migration:legacy:export_audits_bundle OUTPUT_ROOT=/tmp/databank_exports
+#
+# Individual exports useful for testing, re-running failed bundles, or selective metadata migration
 #
 # Common filters (applied before running export commands):
 #   SINCE=2026-01-01T00:00:00Z UNTIL=2026-02-01T00:00:00Z
 #   INCLUDE_TESTS=true (dataset and download metrics exports)
 #   ACTIVE_ONLY=true (featured researcher export)
 #
+# Dataset exports now include archive content hierarchy (nested_items) extracted from:
+#   - ZIP files (bsdiff, bzip2, gzip, xz formats)
+#   - TAR archives and compressed variants
+#   - RAR and 7z archives
+#   Nested items preserve parent-child relationships for directory structure.
+#
 # Each export task creates a timestamped subdirectory with:
-#   <bundle>.ndjson
-#   <bundle>.ndjson.sha256
-#   manifest.json
+#   <bundle>.ndjson (NDJSON records, may be large for dataset exports with archives)
+#   <bundle>.ndjson.sha256 (SHA256 checksum for integrity verification)
+#   manifest.json (metadata about the export including record count and format version)
 
 class Migration::Legacy::ExportSerializer
   def initialize(dataset)
@@ -786,8 +794,13 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       scope = scope.where("updated_at < ?", until_time) if until_time
       scope = scope.order(:id)
 
+      # Count total datasets for progress reporting
+      total_datasets = scope.count
+      puts "Exporting #{total_datasets} datasets..."
+
       digest = Digest::SHA256.new
       count = 0
+      start_time = Time.current
 
       File.open(bundle_path, "w") do |file|
         scope.find_each(batch_size: 200) do |dataset|
@@ -798,6 +811,15 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
           digest.update(line)
           digest.update("\n")
           count += 1
+
+          # Progress indicator every 10 records
+          if count % 10 == 0
+            elapsed = (Time.current - start_time).to_i
+            rate = count.to_f / elapsed
+            remaining = ((total_datasets - count) / rate).to_i
+            percent = (count.to_f / total_datasets * 100).round(1)
+            puts "[#{percent}%] #{count}/#{total_datasets} (#{elapsed}s elapsed, ~#{remaining}s remaining) - #{dataset.key}"
+          end
         end
       end
 
@@ -815,10 +837,13 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       }
       File.write(manifest_path, JSON.pretty_generate(manifest))
 
+      total_time = (Time.current - start_time).to_i
+      puts "\n✓ Export complete!"
       puts "Bundle: #{bundle_path}"
       puts "Checksum: #{checksum_path}"
       puts "Manifest: #{manifest_path}"
       puts "Record count: #{count}"
+      puts "Total time: #{total_time}s"
     end
 
     desc "Export all legacy migration bundles in required order"
