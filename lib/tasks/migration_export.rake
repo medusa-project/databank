@@ -1482,5 +1482,359 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       puts "FileDownloadTally records: #{counts.fetch('FileDownloadTally', 0)}"
       puts "DayFileDownload records: #{counts.fetch('DayFileDownload', 0)}"
     end
+
+    # Flat NDJSON export format for memory-efficient imports
+    # Each entity type (dataset, datafile, nested_item) gets its own line with foreign key references
+    class Migration::Legacy::FlatExportSerializer
+      def self.serialize_dataset(dataset)
+        {
+          type: "dataset",
+          dataset_id: dataset.key,
+          title: dataset.title,
+          identifier: dataset.identifier,
+          publisher: dataset.publisher,
+          publication_year: dataset.publication_year,
+          description: dataset.description,
+          license: dataset.license,
+          corresponding_creator_name: dataset.corresponding_creator_name,
+          depositor_name: dataset.depositor_name,
+          depositor_email: dataset.depositor_email,
+          owner_uid: owner_uid_for(dataset),
+          subject: dataset.subject,
+          keywords: dataset.keywords,
+          publication_state: dataset.publication_state,
+          hold_state: dataset.hold_state,
+          release_date: dataset.release_date,
+          embargo: dataset.embargo,
+          is_test: dataset.is_test,
+          is_import: dataset.is_import,
+          tombstone_date: dataset.tombstone_date,
+          dataset_version: dataset.dataset_version,
+          nested_updated_at: dataset.nested_updated_at,
+          created_at: dataset.created_at,
+          updated_at: dataset.updated_at,
+          creators: serialize_people(dataset.creators),
+          contributors: serialize_people(dataset.contributors),
+          funders: serialize_people(dataset.funders),
+          related_materials: serialize_related_materials(dataset.related_materials),
+          notes: serialize_notes(dataset.notes),
+          token: serialize_token(dataset)
+        }
+      end
+
+      def self.serialize_datafile(dataset, datafile)
+        {
+          type: "datafile",
+          dataset_id: dataset.key,
+          datafile_id: datafile.web_id,
+          web_id: datafile.web_id,
+          binary_name: datafile.binary_name,
+          binary_size: datafile.binary_size,
+          medusa_id: datafile.medusa_id,
+          storage_root: datafile.storage_root,
+          storage_key: datafile.storage_key,
+          description: datafile.description,
+          peek_type: datafile.peek_type,
+          peek_text: datafile.peek_text,
+          created_at: datafile.created_at,
+          updated_at: datafile.updated_at
+        }
+      end
+
+      def self.serialize_nested_items(dataset, datafile)
+        # Yield each nested item record with parent relationship
+        items_by_parent = datafile.nested_items.order(:id).group_by(&:parent_id)
+        
+        def serialize_items_recursive(dataset_id, datafile_id, parent_id, items_by_parent)
+          (items_by_parent[parent_id] || []).each do |item|
+            yield({
+              type: "nested_item",
+              dataset_id: dataset_id,
+              datafile_id: datafile_id,
+              item_id: "ni-#{item.id}",
+              parent_item_id: item.parent_id.present? ? "ni-#{item.parent_id}" : nil,
+              item_name: item.item_name,
+              media_type: item.media_type,
+              size: item.size,
+              item_path: item.item_path,
+              is_directory: item.is_directory,
+              created_at: item.created_at,
+              updated_at: item.updated_at
+            })
+            
+            # Recursively yield children
+            serialize_items_recursive(dataset_id, datafile_id, item.id, items_by_parent) { |record| yield(record) }
+          end
+        end
+
+        serialize_items_recursive(dataset.key, datafile.web_id, nil, items_by_parent) { |record| yield(record) }
+      end
+
+      private
+
+      def self.owner_uid_for(dataset)
+        user = User.find_by(email: dataset.depositor_email)
+        return user.uid if user&.uid.present?
+        "legacy:#{dataset.depositor_email}" if dataset.depositor_email.present?
+      end
+
+      def self.serialize_people(people)
+        people.order(
+          Arel.sql("COALESCE(row_position, position) ASC, id ASC")
+        ).map do |person|
+          {
+            name: person.name,
+            email: person.email,
+            orcid: person.orcid,
+            position: person.position,
+            affiliation: person.affiliation
+          }
+        end
+      end
+
+      def self.serialize_related_materials(materials)
+        materials.order(
+          Arel.sql("COALESCE(row_position, position) ASC, id ASC")
+        ).map do |material|
+          {
+            title: material.title,
+            url: material.url,
+            material_type: material.material_type
+          }
+        end
+      end
+
+      def self.serialize_notes(notes)
+        notes.order(:created_at, :id).map do |note|
+          {
+            body: note.body,
+            author: note.author,
+            created_at: note.created_at
+          }
+        end
+      end
+
+      def self.serialize_token(dataset)
+        token = Token.where(dataset_key: dataset.key).order(updated_at: :desc, id: :desc).first
+        return nil unless token
+        
+        {
+          identifier: token.identifier,
+          expires: token.expires,
+          created_at: token.created_at
+        }
+      end
+    end
+
+    desc "Export legacy datasets in flat NDJSON format (memory-efficient)"
+    task export_flat_bundle: :environment do # rubocop:disable Metrics/BlockLength
+      output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports").to_s)
+      include_tests = ENV.fetch("INCLUDE_TESTS", "false").casecmp("true").zero?
+      since_raw = ENV["SINCE"]
+      until_raw = ENV["UNTIL"]
+
+      since_time = since_raw.present? ? Time.zone.parse(since_raw) : nil
+      until_time = until_raw.present? ? Time.zone.parse(until_raw) : nil
+
+      timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
+      run_dir = File.join(output_root, "dataset_flat_#{timestamp}")
+      FileUtils.mkdir_p(run_dir)
+
+      bundle_file = "legacy_datasets.ndjson"
+      bundle_path = File.join(run_dir, bundle_file)
+      checksum_path = "#{bundle_path}.sha256"
+      manifest_path = File.join(run_dir, "manifest.json")
+
+      scope = Dataset.includes(:creators, :contributors, :funders, :related_materials, :datafiles, :notes)
+      scope = scope.where(is_test: false) unless include_tests
+      scope = scope.where("updated_at >= ?", since_time) if since_time
+      scope = scope.where("updated_at < ?", until_time) if until_time
+      scope = scope.order(:id)
+
+      total_datasets = scope.count
+      puts "Exporting #{total_datasets} datasets in flat format..."
+
+      digest = Digest::SHA256.new
+      dataset_count = 0
+      datafile_count = 0
+      nested_item_count = 0
+      start_time = Time.current
+
+      File.open(bundle_path, "w") do |file|
+        scope.find_each(batch_size: 50) do |dataset|
+          # Write dataset record
+          dataset_record = Migration::Legacy::FlatExportSerializer.serialize_dataset(dataset)
+          line = JSON.generate(dataset_record)
+          file.write(line)
+          file.write("\n")
+          digest.update(line)
+          digest.update("\n")
+          dataset_count += 1
+
+          # Write datafile records and nested items
+          dataset.datafiles.each do |datafile|
+            datafile_record = Migration::Legacy::FlatExportSerializer.serialize_datafile(dataset, datafile)
+            line = JSON.generate(datafile_record)
+            file.write(line)
+            file.write("\n")
+            digest.update(line)
+            digest.update("\n")
+            datafile_count += 1
+
+            # Write nested item records (streaming)
+            Migration::Legacy::FlatExportSerializer.serialize_nested_items(dataset, datafile) do |item_record|
+              line = JSON.generate(item_record)
+              file.write(line)
+              file.write("\n")
+              digest.update(line)
+              digest.update("\n")
+              nested_item_count += 1
+            end
+          end
+
+          if dataset_count % 10 == 0
+            elapsed = (Time.current - start_time).to_i
+            rate = dataset_count.to_f / elapsed
+            remaining = ((total_datasets - dataset_count) / rate).to_i
+            percent = (dataset_count.to_f / total_datasets * 100).round(1)
+            puts "[#{percent}%] #{dataset_count}/#{total_datasets} datasets, #{datafile_count} datafiles, #{nested_item_count} items (#{elapsed}s elapsed, ~#{remaining}s remaining)"
+          end
+        end
+      end
+
+      checksum = digest.hexdigest
+      File.write(checksum_path, "#{checksum}  #{bundle_file}\n")
+
+      manifest = {
+        generated_at: Time.current.utc.iso8601,
+        bundle_file: bundle_file,
+        format_version: 2,
+        format_type: "flat",
+        record_counts: {
+          datasets: dataset_count,
+          datafiles: datafile_count,
+          nested_items: nested_item_count
+        },
+        sha256: checksum,
+        include_tests: include_tests,
+        since: since_time&.iso8601,
+        until: until_time&.iso8601
+      }
+      File.write(manifest_path, JSON.pretty_generate(manifest))
+
+      total_time = (Time.current - start_time).to_i
+      puts "\n✓ Flat format export complete!"
+      puts "Bundle: #{bundle_path}"
+      puts "Checksum: #{checksum_path}"
+      puts "Manifest: #{manifest_path}"
+      puts "Datasets: #{dataset_count}"
+      puts "Datafiles: #{datafile_count}"
+      puts "Nested items: #{nested_item_count}"
+      puts "Total time: #{total_time}s"
+    end
+
+    desc "Export a small test subset of datasets in flat NDJSON format"
+    task export_flat_test_bundle: :environment do
+      output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports").to_s)
+
+      timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
+      run_dir = File.join(output_root, "dataset_flat_test_#{timestamp}")
+      FileUtils.mkdir_p(run_dir)
+
+      bundle_file = "legacy_datasets.ndjson"
+      bundle_path = File.join(run_dir, bundle_file)
+      checksum_path = "#{bundle_path}.sha256"
+      manifest_path = File.join(run_dir, "manifest.json")
+
+      # Find datasets with interesting nested items for testing
+      scope = Dataset.includes(:creators, :contributors, :funders, :related_materials, :datafiles, :notes)
+                     .where(is_test: false)
+                     .order(:id)
+
+      test_keys = []
+      scope.find_each do |dataset|
+        datafiles = dataset.datafiles
+        has_nested = datafiles.any? { |df| df.nested_items.any? }
+        
+        if has_nested
+          nested_count = datafiles.map { |df| df.nested_items.count }.sum
+          test_keys << dataset.key
+          puts "Including #{dataset.key}: #{nested_count} nested items"
+          break if test_keys.length >= 3
+        end
+      end
+
+      # If not enough datasets with nested items, just take first 3
+      if test_keys.length < 3
+        test_keys = scope.limit(3).pluck(:key)
+      end
+
+      scope = scope.where(key: test_keys)
+
+      puts "Exporting #{test_keys.length} test datasets in flat format..."
+
+      digest = Digest::SHA256.new
+      dataset_count = 0
+      datafile_count = 0
+      nested_item_count = 0
+
+      File.open(bundle_path, "w") do |file|
+        scope.find_each do |dataset|
+          dataset_record = Migration::Legacy::FlatExportSerializer.serialize_dataset(dataset)
+          line = JSON.generate(dataset_record)
+          file.write(line)
+          file.write("\n")
+          digest.update(line)
+          digest.update("\n")
+          dataset_count += 1
+
+          dataset.datafiles.each do |datafile|
+            datafile_record = Migration::Legacy::FlatExportSerializer.serialize_datafile(dataset, datafile)
+            line = JSON.generate(datafile_record)
+            file.write(line)
+            file.write("\n")
+            digest.update(line)
+            digest.update("\n")
+            datafile_count += 1
+
+            Migration::Legacy::FlatExportSerializer.serialize_nested_items(dataset, datafile) do |item_record|
+              line = JSON.generate(item_record)
+              file.write(line)
+              file.write("\n")
+              digest.update(line)
+              digest.update("\n")
+              nested_item_count += 1
+            end
+          end
+
+          puts "✓ #{dataset.key}: #{datafile_count} datafiles, #{nested_item_count} items"
+        end
+      end
+
+      checksum = digest.hexdigest
+      File.write(checksum_path, "#{checksum}  #{bundle_file}\n")
+
+      manifest = {
+        generated_at: Time.current.utc.iso8601,
+        bundle_file: bundle_file,
+        format_version: 2,
+        format_type: "flat",
+        test_bundle: true,
+        record_counts: {
+          datasets: dataset_count,
+          datafiles: datafile_count,
+          nested_items: nested_item_count
+        },
+        sha256: checksum
+      }
+      File.write(manifest_path, JSON.pretty_generate(manifest))
+
+      puts "\n✓ Flat test bundle created!"
+      puts "Bundle: #{bundle_path}"
+      puts "Checksum: #{checksum_path}"
+      puts "Manifest: #{manifest_path}"
+      puts "Datasets: #{dataset_count}"
+      puts "Datafiles: #{datafile_count}"
+      puts "Nested items: #{nested_item_count}"
+    end
   end
-end
