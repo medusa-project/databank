@@ -14,7 +14,7 @@ module Migration::Legacy; end
 #
 # Or export individually:
 #   RAILS_ENV=demo bin/rails migration:legacy:export_users_bundle OUTPUT_ROOT=/tmp/databank_exports
-#   RAILS_ENV=demo bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   RAILS_ENV=demo bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports (exports datasets with nested_items in flat NDJSON format)
 #   RAILS_ENV=demo bin/rails migration:legacy:export_permissions_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   RAILS_ENV=demo bin/rails migration:legacy:export_dataset_access_grants_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   RAILS_ENV=demo bin/rails migration:legacy:export_guides_bundle OUTPUT_ROOT=/tmp/databank_exports
@@ -30,16 +30,23 @@ module Migration::Legacy; end
 #   INCLUDE_TESTS=true (dataset and download metrics exports)
 #   ACTIVE_ONLY=true (featured researcher export)
 #
-# Dataset exports now include archive content hierarchy (nested_items) extracted from:
+# Dataset exports now use flat NDJSON format with separate records for datasets, datafiles, and nested_items.
+# Nested items are extracted from archive content hierarchy:
 #   - ZIP files (bsdiff, bzip2, gzip, xz formats)
 #   - TAR archives and compressed variants
 #   - RAR and 7z archives
-#   Nested items preserve parent-child relationships for directory structure.
+#   Nested items preserve parent-child relationships using item_id/parent_item_id references (format: "ni-{id}").
+#
+# Flat format benefits:
+#   - Memory-efficient streaming import (no large nested JSON trees)
+#   - Batch processing of records
+#   - Easier relationship reconstruction
+#   - Suitable for very large datasets with thousands of nested items
 #
 # Each export task creates a timestamped subdirectory with:
-#   <bundle>.ndjson (NDJSON records, may be large for dataset exports with archives)
+#   <bundle>.ndjson (NDJSON records, one per line, memory-efficient for large exports)
 #   <bundle>.ndjson.sha256 (SHA256 checksum for integrity verification)
-#   manifest.json (metadata about the export including record count and format version)
+#   manifest.json (metadata about the export including record count and format_version: 2 for flat format)
 
 class Migration::Legacy::ExportSerializer
   def initialize(dataset)
@@ -1545,12 +1552,13 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
         # Yield each nested item record with parent relationship
         items_by_parent = datafile.nested_items.order(:id).group_by(&:parent_id)
         
-        def serialize_items_recursive(dataset_id, datafile_id, parent_id, items_by_parent)
+        # Use a lambda to handle recursive traversal
+        serialize_items_recursive = lambda do |parent_id|
           (items_by_parent[parent_id] || []).each do |item|
             yield({
               type: "nested_item",
-              dataset_id: dataset_id,
-              datafile_id: datafile_id,
+              dataset_id: dataset.key,
+              datafile_id: datafile.web_id,
               item_id: "ni-#{item.id}",
               parent_item_id: item.parent_id.present? ? "ni-#{item.parent_id}" : nil,
               item_name: item.item_name,
@@ -1563,11 +1571,11 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
             })
             
             # Recursively yield children
-            serialize_items_recursive(dataset_id, datafile_id, item.id, items_by_parent) { |record| yield(record) }
+            serialize_items_recursive.call(item.id)
           end
         end
 
-        serialize_items_recursive(dataset.key, datafile.web_id, nil, items_by_parent) { |record| yield(record) }
+        serialize_items_recursive.call(nil)
       end
 
       private
@@ -1627,7 +1635,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
     end
 
     desc "Export legacy datasets in flat NDJSON format (memory-efficient)"
-    task export_flat_bundle: :environment do # rubocop:disable Metrics/BlockLength
+    task export_bundle: :environment do # rubocop:disable Metrics/BlockLength
       output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports").to_s)
       include_tests = ENV.fetch("INCLUDE_TESTS", "false").casecmp("true").zero?
       since_raw = ENV["SINCE"]
@@ -1734,7 +1742,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
     end
 
     desc "Export a small test subset of datasets in flat NDJSON format"
-    task export_flat_test_bundle: :environment do
+    task export_test_bundle: :environment do
       output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports").to_s)
 
       timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
@@ -1838,3 +1846,5 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       puts "Nested items: #{nested_item_count}"
     end
   end
+end
+
