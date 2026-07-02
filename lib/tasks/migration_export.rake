@@ -1443,9 +1443,9 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
           nested_updated_at: dataset.nested_updated_at,
           created_at: dataset.created_at,
           updated_at: dataset.updated_at,
-          creators: serialize_people(dataset.creators),
-          contributors: serialize_people(dataset.contributors),
-          funders: serialize_people(dataset.funders),
+          creators: serialize_creators_contributors(dataset.creators),
+          contributors: serialize_creators_contributors(dataset.contributors),
+          funders: serialize_funders(dataset.funders),
           related_materials: serialize_related_materials(dataset.related_materials),
           notes: serialize_notes(dataset.notes),
           token: serialize_token(dataset)
@@ -1509,28 +1509,61 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
         "legacy:#{dataset.depositor_email}" if dataset.depositor_email.present?
       end
 
-      def self.serialize_people(people)
-        people.order(
-          Arel.sql("COALESCE(row_position, position) ASC, id ASC")
-        ).map do |person|
+      def self.serialize_creators_contributors(people)
+        people.order(Arel.sql("row_position ASC NULLS LAST, id ASC")).map do |person|
+          is_contact = if person.respond_to?(:is_contact)
+                         person.is_contact
+                       elsif person.respond_to?(:contact)
+                         person.contact
+                       else
+                         false
+                       end
+
           {
-            name: person.name,
+            name: person.institution_name.presence ||
+                  [person.given_name, person.family_name].compact.join(" ").strip.presence ||
+                  person.email,
+            family_name: person.family_name,
+            given_name: person.given_name,
+            institution_name: person.institution_name,
             email: person.email,
-            orcid: person.orcid,
-            position: person.position,
-            affiliation: person.affiliation
+            identifier: person.identifier,
+            identifier_scheme: person.identifier_scheme,
+            is_contact: is_contact,
+            row_position: person.row_position
+          }
+        end
+      end
+
+      def self.serialize_funders(funders)
+        funders.order(:id).map do |funder|
+          {
+            name: funder.name,
+            identifier: funder.identifier,
+            identifier_scheme: funder.identifier_scheme,
+            grant: funder.grant
           }
         end
       end
 
       def self.serialize_related_materials(materials)
-        materials.order(
-          Arel.sql("COALESCE(row_position, position) ASC, id ASC")
-        ).map do |material|
+        materials.order(:id).map do |material|
+          relation_types = if material.respond_to?(:relationship_arr)
+                             material.relationship_arr
+                           else
+                             material.datacite_list.to_s.split(",").map(&:strip).reject(&:blank?)
+                           end
           {
-            title: material.title,
-            url: material.url,
-            material_type: material.material_type
+            title: material.citation.presence || material.link.presence || material.uri.presence || material.material_type.presence || "material",
+            citation: material.citation,
+            link: material.link,
+            uri: material.uri,
+            uri_type: material.uri_type,
+            material_type: material.material_type,
+            selected_type: material.selected_type,
+            availability: material.availability,
+            note: material.note,
+            datacite_list: relation_types.join(",")
           }
         end
       end
@@ -1667,6 +1700,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
     desc "Export a small test subset of datasets in flat NDJSON format"
     task export_test_bundle: :environment do
       output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports").to_s)
+      explicit_keys = ENV["KEYS"].presence&.split(",")&.map(&:strip)
 
       timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
       run_dir = File.join(output_root, "dataset_flat_test_#{timestamp}")
@@ -1677,30 +1711,38 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       checksum_path = "#{bundle_path}.sha256"
       manifest_path = File.join(run_dir, "manifest.json")
 
-      # Find datasets with interesting nested items for testing
-      scope = Dataset.includes(:creators, :contributors, :funders, :related_materials, :datafiles, :notes)
-                     .where(is_test: false)
-                     .order(:id)
-
-      test_keys = []
-      scope.find_each do |dataset|
-        datafiles = dataset.datafiles
-        has_nested = datafiles.any? { |df| df.nested_items.any? }
-        
-        if has_nested
-          nested_count = datafiles.map { |df| df.nested_items.count }.sum
-          test_keys << dataset.key
-          puts "Including #{dataset.key}: #{nested_count} nested items"
-          break if test_keys.length >= 3
+      # Allow explicit keys via env (covers seed records which have is_test: true)
+      if explicit_keys.present?
+        test_keys = explicit_keys
+        puts "Using explicit KEYS: #{test_keys.join(', ')}"
+      else
+        # Find non-test datasets with nested items; fall back to seed keys if present
+        seed_keys = %w[TESTIDB-MIGRATE1 TESTIDB-MIGRATE2 TESTIDB-MIGRATE3]
+        seed_datasets = Dataset.where(key: seed_keys).order(:key)
+        if seed_datasets.count == seed_keys.size
+          test_keys = seed_keys
+          puts "Using seed migration test datasets: #{test_keys.join(', ')}"
+        else
+          scope = Dataset.includes(:creators, :contributors, :funders, :related_materials, :datafiles, :notes)
+                         .where(is_test: false)
+                         .order(:id)
+          test_keys = []
+          scope.find_each do |dataset|
+            has_nested = dataset.datafiles.any? { |df| df.nested_items.any? }
+            if has_nested
+              nested_count = dataset.datafiles.sum { |df| df.nested_items.count }
+              test_keys << dataset.key
+              puts "Including #{dataset.key}: #{nested_count} nested items"
+              break if test_keys.length >= 3
+            end
+          end
+          test_keys = scope.limit(3).pluck(:key) if test_keys.length < 3
         end
       end
 
-      # If not enough datasets with nested items, just take first 3
-      if test_keys.length < 3
-        test_keys = scope.limit(3).pluck(:key)
-      end
-
-      scope = scope.where(key: test_keys)
+      scope = Dataset.includes(:creators, :contributors, :funders, :related_materials, :datafiles, :notes)
+                     .where(key: test_keys)
+                     .order(:id)
 
       puts "Exporting #{test_keys.length} test datasets in flat format..."
 

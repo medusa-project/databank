@@ -80,6 +80,7 @@ yarn-debug.log*
 /public/uploads
 
 # Ignore local files.
+databank.code-workspace
 core
 *.core
 qemu_chrome_*.core

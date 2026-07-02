@@ -59,6 +59,16 @@ ORCiD
    rails db:seed
    ```
 
+### Using the Databank Dev Container with databank-2
+
+If you keep `databank` and `databank-2` as sibling folders in one parent directory, you can run both from the dev container configuration in this repository.
+
+1. Open a multi-root workspace where `databank` is the first folder and `databank-2` is the second folder.
+2. In VS Code, run **Dev Containers: Reopen in Container**.
+3. VS Code will use `.devcontainer/devcontainer.json` from `databank` and start the compose services defined for local development.
+
+The provided workspace file `lib/tasks/databank.code-workspace` is an example that includes both repositories when they are laid out as siblings.
+
 ### Running the Application
 
 Start the Rails server:
@@ -107,6 +117,9 @@ Optional params:
 - `UNTIL=2026-02-01T00:00:00Z` (export records with `updated_at < UNTIL`)
 - `INCLUDE_TESTS=true` (default excludes test datasets)
 
+If you need test datasets available after migration (for internal testing or
+server-side exploration), run production export with `INCLUDE_TESTS=true`.
+
 Each run writes three artifacts in a timestamped directory:
 
 - `legacy_datasets.ndjson` (one dataset record per line)
@@ -115,6 +128,44 @@ Each run writes three artifacts in a timestamped directory:
 
 The NDJSON payload includes sensitive depositor/owner fields intended for secure
 migration into databank-2.
+
+### Sequential Local Migration Handoff (One Repo at a Time)
+
+For local migration rehearsal, run `databank` and `databank-2` work in sequence.
+Do not run migration commands in both repos at the same time.
+
+1. In `databank`, create deterministic seed datasets:
+
+```sh
+bin/rails testing:seed_migration_test_data RESET=true
+```
+
+2. In `databank`, export a flat test bundle for those seeded keys:
+
+```sh
+OUTPUT_ROOT=/tmp/databank_exports \
+KEYS=TESTIDB-MIGRATE1,TESTIDB-MIGRATE2,TESTIDB-MIGRATE3 \
+bin/rails migration:legacy:export_test_bundle
+```
+
+3. Stop working in `databank` and switch to `databank-2`.
+
+4. In `databank-2`, run dry-run import first, then real import from the exported directory:
+
+```sh
+DIR=/tmp/databank_exports/dataset_flat_test_<timestamp> \
+bin/rails migration:flat_bundle:import_from_dir DRY_RUN=true
+
+DIR=/tmp/databank_exports/dataset_flat_test_<timestamp> \
+bin/rails migration:flat_bundle:import_from_dir
+```
+
+5. In `databank-2`, run reconciliation/smoke checks:
+
+```sh
+bin/rails cutover:reconcile
+bin/rails cutover:smoke
+```
 
 ### Deployment
 
