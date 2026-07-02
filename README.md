@@ -148,6 +148,20 @@ KEYS=TESTIDB-MIGRATE1,TESTIDB-MIGRATE2,TESTIDB-MIGRATE3 \
 bin/rails migration:legacy:export_test_bundle
 ```
 
+Optional: seed additional realistic legacy-style values locally from the
+old-style dataset bundle in `databank-2` (one-off helper, not an ongoing workflow):
+
+```sh
+bin/rails testing:seed_from_old_bundle_values \
+   SOURCE_BUNDLE=/workspaces/databank-2/test_bundle/dataset_20260626T185934Z/legacy_datasets.ndjson \
+   LIMIT=12 \
+   KEY_PREFIX=LEGACYBUNDLE- \
+   RESET=true
+```
+
+This imports sample dataset values and nested associations into local `databank`
+records with prefixed keys.
+
 3. Stop working in `databank` and switch to `databank-2`.
 
 4. In `databank-2`, run dry-run import first, then real import from the exported directory:

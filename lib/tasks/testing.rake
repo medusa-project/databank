@@ -282,6 +282,236 @@ namespace :testing do
 
   end
 
+  # Import sample datasets from an old-style legacy_datasets.ndjson bundle.
+  # This is intended for local testing only, to quickly load realistic values.
+  #
+  # Usage:
+  #   bin/rails testing:seed_from_old_bundle_values
+  #   bin/rails testing:seed_from_old_bundle_values SOURCE_BUNDLE=/path/to/legacy_datasets.ndjson LIMIT=12
+  #   bin/rails testing:seed_from_old_bundle_values RESET=true KEY_PREFIX=LEGACYBUNDLE-
+  desc "Seed local legacy DB from old-style bundle dataset values (one-off local testing helper)"
+  task seed_from_old_bundle_values: :environment do
+    source_bundle = ENV.fetch(
+      "SOURCE_BUNDLE",
+      "/workspaces/databank-2/test_bundle/dataset_20260626T185934Z/legacy_datasets.ndjson"
+    )
+    limit = ENV.fetch("LIMIT", "12").to_i
+    reset = ENV.fetch("RESET", "false").casecmp("true").zero?
+    key_prefix = ENV.fetch("KEY_PREFIX", "LEGACYBUNDLE-")
+
+    raise ArgumentError, "LIMIT must be > 0" if limit <= 0
+    raise ArgumentError, "source bundle not found: #{source_bundle}" unless File.file?(source_bundle)
+
+    imported_keys = []
+    total_seen = 0
+    total_created = 0
+    total_updated = 0
+
+    File.foreach(source_bundle) do |line|
+      break if imported_keys.size >= limit
+      next if line.strip.empty?
+
+      payload = JSON.parse(line)
+      total_seen += 1
+
+      source_key = payload["key"].to_s
+      next if source_key.blank?
+
+      target_key = key_prefix.present? ? "#{key_prefix}#{source_key}" : source_key
+
+      existing = Dataset.find_by(key: target_key)
+      if existing.present? && !reset
+        imported_keys << target_key
+        next
+      end
+
+      if existing.present? && reset
+        NestedItem.where(datafile_id: existing.datafiles.pluck(:id)).delete_all
+        existing.datafiles.delete_all
+        existing.creators.delete_all
+        existing.contributors.delete_all
+        existing.funders.delete_all
+        existing.related_materials.delete_all
+        existing.notes.delete_all
+        Token.where(dataset_key: existing.key).delete_all
+      end
+
+      dataset = existing || Dataset.new(key: target_key)
+
+      dataset_attributes = {
+        title: payload["title"],
+        identifier: payload["identifier"],
+        publisher: payload["publisher"],
+        description: payload["description"],
+        license: payload["license"],
+        corresponding_creator_name: payload["corresponding_creator_name"],
+        depositor_name: payload["depositor_name"],
+        depositor_email: payload["depositor_email"],
+        owner_uid: payload["owner_uid"],
+        subject: payload["subject"],
+        keywords: payload["keywords"],
+        publication_state: payload["publication_state"],
+        hold_state: payload["hold_state"],
+        release_date: payload["release_date"],
+        embargo: payload["embargo"],
+        is_test: payload["is_test"],
+        is_import: payload["is_import"],
+        tombstone_date: payload["tombstone_date"],
+        dataset_version: payload["dataset_version"],
+        nested_updated_at: payload["nested_updated_at"]
+      }
+      dataset.assign_attributes(dataset_attributes.select { |k, _v| dataset.has_attribute?(k) })
+      dataset.save!
+
+      dataset.creators.delete_all
+      (payload["creators"] || []).each do |attrs|
+        creator = dataset.creators.new
+        creator_attrs = {
+          family_name: attrs["family_name"],
+          given_name: attrs["given_name"],
+          institution_name: attrs["institution_name"],
+          name: attrs["name"],
+          email: attrs["email"],
+          identifier: attrs["identifier"],
+          identifier_scheme: attrs["identifier_scheme"],
+          is_contact: attrs["is_contact"],
+          row_position: attrs["row_position"],
+          type_of: attrs["type_of"]
+        }
+        creator.assign_attributes(creator_attrs.select { |k, _v| creator.has_attribute?(k) })
+        creator.save!
+      end
+
+      dataset.contributors.delete_all
+      (payload["contributors"] || []).each do |attrs|
+        contributor = dataset.contributors.new
+        contributor_attrs = {
+          family_name: attrs["family_name"],
+          given_name: attrs["given_name"],
+          institution_name: attrs["institution_name"],
+          name: attrs["name"],
+          email: attrs["email"],
+          identifier: attrs["identifier"],
+          identifier_scheme: attrs["identifier_scheme"],
+          row_position: attrs["row_position"],
+          type_of: attrs["type_of"]
+        }
+        contributor.assign_attributes(contributor_attrs.select { |k, _v| contributor.has_attribute?(k) })
+        contributor.save!
+      end
+
+      dataset.funders.delete_all
+      (payload["funders"] || []).each do |attrs|
+        funder = dataset.funders.new
+        funder_attrs = {
+          name: attrs["name"],
+          identifier: attrs["identifier"],
+          identifier_scheme: attrs["identifier_scheme"],
+          grant: attrs["grant"]
+        }
+        funder.assign_attributes(funder_attrs.select { |k, _v| funder.has_attribute?(k) })
+        funder.save!
+      end
+
+      dataset.related_materials.delete_all
+      (payload["related_materials"] || []).each do |attrs|
+        material = dataset.related_materials.new
+        material_attrs = {
+          material_type: attrs["material_type"],
+          selected_type: attrs["selected_type"],
+          availability: attrs["availability"],
+          link: attrs["link"],
+          uri: attrs["uri"],
+          uri_type: attrs["uri_type"],
+          citation: attrs["citation"],
+          note: attrs["note"],
+          datacite_list: attrs["datacite_list"],
+          relation_type: attrs["relation_type"],
+          row_position: attrs["row_position"]
+        }
+        material.assign_attributes(material_attrs.select { |k, _v| material.has_attribute?(k) })
+        material.save!
+      end
+
+      dataset.notes.delete_all
+      (payload["notes"] || []).each do |attrs|
+        note = dataset.notes.new
+        note_attrs = {
+          author: attrs["author"],
+          body: attrs["body"]
+        }
+        note.assign_attributes(note_attrs.select { |k, _v| note.has_attribute?(k) })
+        note.save!
+      end
+
+      Token.where(dataset_key: dataset.key).delete_all
+      if payload["token"].present?
+        token = Token.new(dataset_key: dataset.key)
+        token_attrs = {
+          identifier: payload["token"]["identifier"],
+          expires: payload["token"]["expires"]
+        }
+        token.assign_attributes(token_attrs.select { |k, _v| token.has_attribute?(k) })
+        token.save!
+      end
+
+      NestedItem.where(datafile_id: dataset.datafiles.pluck(:id)).delete_all
+      dataset.datafiles.delete_all
+
+      datafile_by_source_id = {}
+      (payload["datafiles"] || []).each do |attrs|
+        datafile = dataset.datafiles.new
+        datafile_attrs = {
+          web_id: attrs["web_id"],
+          binary_name: attrs["binary_name"],
+          binary_size: attrs["binary_size"],
+          medusa_id: attrs["medusa_id"],
+          storage_root: attrs["storage_root"],
+          storage_key: attrs["storage_key"],
+          description: attrs["description"],
+          peek_type: attrs["peek_type"],
+          peek_text: attrs["peek_text"]
+        }
+        datafile.assign_attributes(datafile_attrs.select { |k, _v| datafile.has_attribute?(k) })
+        datafile.save!
+
+        datafile_by_source_id[attrs["web_id"]] = datafile
+
+        nested_lookup = {}
+        (attrs["nested_items"] || []).sort_by { |item| item["id"].to_i }.each do |item|
+          source_parent_id = item["parent_id"]
+          parent = source_parent_id.present? ? nested_lookup[source_parent_id] : nil
+
+          nested = NestedItem.new(datafile_id: datafile.id)
+          nested_attrs = {
+            parent_id: parent&.id,
+            item_name: item["item_name"],
+            item_path: item["item_path"],
+            is_directory: item["is_directory"],
+            media_type: item["media_type"],
+            size: item["size"]
+          }
+          nested.assign_attributes(nested_attrs.select { |k, _v| nested.has_attribute?(k) })
+          nested.save!
+          nested_lookup[item["id"]] = nested if item["id"].present?
+        end
+      end
+
+      imported_keys << target_key
+      if existing.present?
+        total_updated += 1
+      else
+        total_created += 1
+      end
+    end
+
+    puts "Source bundle: #{source_bundle}"
+    puts "Datasets scanned: #{total_seen}"
+    puts "Imported keys (#{imported_keys.size}/#{limit}):"
+    imported_keys.each { |key| puts "  - #{key}" }
+    puts "Created: #{total_created}, Updated: #{total_updated}"
+  end
+
   desc "send a RabbitMQ message"
   task send_msg: :environment do
     puts "sending message"
