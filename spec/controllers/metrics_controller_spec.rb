@@ -1,7 +1,35 @@
 require 'rails_helper'
 require 'rake'
+require 'fileutils'
 
 RSpec.describe MetricsController, type: :controller do
+  def metric_output_paths
+    METRICS_CONFIG.values.filter_map do |config|
+      config[:relative_path] if config.is_a?(Hash) && config[:relative_path].present?
+    end
+  end
+
+  def metric_artifact_paths
+    metric_output_paths + metric_output_paths.map { |path| "#{path}.lock" }
+  end
+
+  def snapshot_metric_artifacts
+    metric_artifact_paths.to_h do |path|
+      [path, File.exist?(path) ? File.binread(path) : nil]
+    end
+  end
+
+  def restore_metric_artifacts!(snapshots)
+    snapshots.each do |path, contents|
+      if contents.nil?
+        File.delete(path) if File.exist?(path)
+      else
+        FileUtils.mkdir_p(File.dirname(path))
+        File.binwrite(path, contents)
+      end
+    end
+  end
+
   def ensure_metrics_static_files!
     required_paths = [
       Rails.root.join('public/dataset_downloads.json').to_s,
@@ -17,7 +45,12 @@ RSpec.describe MetricsController, type: :controller do
   end
 
   before(:all) do
+    @metric_artifact_snapshots = snapshot_metric_artifacts
     ensure_metrics_static_files!
+  end
+
+  after(:all) do
+    restore_metric_artifacts!(@metric_artifact_snapshots)
   end
 
   describe 'GET #index' do
