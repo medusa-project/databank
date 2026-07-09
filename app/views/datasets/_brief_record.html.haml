@@ -84,13 +84,11 @@
   -if dataset.keywords && dataset.keywords != ""
     .keyword_display
       keywords:
-      %em
-        =dataset.keywords
+      =dataset.keywords
   -if dataset.identifier.present?
     .identifier_display
       DOI:
-      %em
-        =dataset.identifier
+      =dataset.identifier
   -if(can? :manage, dataset)
     .depositor_display
       %span(class="metadata-label" ) Depositor:
