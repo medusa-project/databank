@@ -3,24 +3,24 @@ require 'rails_helper'
 RSpec.describe MetricRefreshJob, type: :job do
   describe '#initialize' do
     it 'accepts a metric key and converts to symbol' do
-      job = MetricRefreshJob.new('dataset_downloads_json')
-      expect(job.instance_variable_get(:@metric_key)).to eq(:dataset_downloads_json)
+      job = MetricRefreshJob.new('dataset_downloads_csv')
+      expect(job.instance_variable_get(:@metric_key)).to eq(:dataset_downloads_csv)
     end
 
     it 'handles symbol input' do
-      job = MetricRefreshJob.new(:datafile_downloads_json)
-      expect(job.instance_variable_get(:@metric_key)).to eq(:datafile_downloads_json)
+      job = MetricRefreshJob.new(:datafile_downloads_csv)
+      expect(job.instance_variable_get(:@metric_key)).to eq(:datafile_downloads_csv)
     end
   end
 
   describe '#perform' do
-    let(:metric_key) { :dataset_downloads_json }
+    let(:metric_key) { :dataset_downloads_csv }
     let(:job) { MetricRefreshJob.new(metric_key) }
 
     it 'calls the corresponding Metric method' do
-      allow(Metric).to receive(:write_dataset_downloads_json)
+      allow(Metric).to receive(:write_dataset_downloads_csv)
       job.perform
-      expect(Metric).to have_received(:write_dataset_downloads_json)
+      expect(Metric).to have_received(:write_dataset_downloads_csv)
     end
 
     it 'raises ArgumentError for unknown metric key' do
@@ -30,8 +30,8 @@ RSpec.describe MetricRefreshJob, type: :job do
 
     it 'maps all known metric keys correctly' do
       mappings = {
-        dataset_downloads_json: :write_dataset_downloads_json,
-        datafile_downloads_json: :write_datafile_downloads_json,
+        dataset_downloads_csv: :write_dataset_downloads_csv,
+        datafile_downloads_csv: :write_datafile_downloads_csv,
         datasets_tsv: :write_datasets_tsv,
         datafiles_csv: :write_datafiles_csv,
         container_contents_csv: :write_container_contents_csv,
@@ -49,7 +49,7 @@ RSpec.describe MetricRefreshJob, type: :job do
   end
 
   describe '#success' do
-    let(:job) { MetricRefreshJob.new(:dataset_downloads_json) }
+    let(:job) { MetricRefreshJob.new(:dataset_downloads_csv) }
     let(:delayed_job) { instance_double(Delayed::Job) }
 
     it 'logs success message' do
@@ -60,7 +60,7 @@ RSpec.describe MetricRefreshJob, type: :job do
   end
 
   describe '#error' do
-    let(:job) { MetricRefreshJob.new(:dataset_downloads_json) }
+    let(:job) { MetricRefreshJob.new(:dataset_downloads_csv) }
     let(:delayed_job) { instance_double(Delayed::Job) }
     let(:exception) { StandardError.new('Test error') }
 
@@ -74,12 +74,12 @@ RSpec.describe MetricRefreshJob, type: :job do
       allow(Rails.logger).to receive(:error)
       allow(Metric).to receive(:clear_in_progress)
       job.error(delayed_job, exception)
-      expect(Metric).to have_received(:clear_in_progress).with(:dataset_downloads_json)
+      expect(Metric).to have_received(:clear_in_progress).with(:dataset_downloads_csv)
     end
   end
 
   describe '#failure' do
-    let(:job) { MetricRefreshJob.new(:dataset_downloads_json) }
+    let(:job) { MetricRefreshJob.new(:dataset_downloads_csv) }
     let(:delayed_job) { instance_double(Delayed::Job) }
 
     it 'logs permanent failure message' do
@@ -92,7 +92,7 @@ RSpec.describe MetricRefreshJob, type: :job do
       allow(Rails.logger).to receive(:error)
       allow(Metric).to receive(:clear_in_progress)
       job.failure(delayed_job)
-      expect(Metric).to have_received(:clear_in_progress).with(:dataset_downloads_json)
+      expect(Metric).to have_received(:clear_in_progress).with(:dataset_downloads_csv)
     end
   end
 end

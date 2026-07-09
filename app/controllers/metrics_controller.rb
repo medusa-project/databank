@@ -13,22 +13,23 @@ class MetricsController < ApplicationController
 
   def admin_metrics
     authorize! :manage, :all
-    # @modified_times = Metric.modified_times
-    # @refresh_status = Metric.refresh_status
-    @title = "Admin metrics"
+    @metric_definitions = Metric.admin_definitions
+    @modified_times = Metric.modified_times
+    @refresh_status = Metric.refresh_status
+    @title = "Curator Metrics"
   rescue CanCan::AccessDenied
     redirect_to IDB_CONFIG[:root_url_text],
                 alert: "You are not authorized to access the requested resource."
   end
 
-  # Responds to `GET /metrics/dataset_downloads`
-  def dataset_downloads
-    serve_metrics_file(Rails.root.join("public/dataset_downloads.json"), type: "application/json")
+  # Responds to `GET /metrics/dataset_downloads_csv`
+  def dataset_downloads_csv
+    serve_metrics_file(METRICS_CONFIG[:dataset_downloads_csv][:relative_path], type: "text/csv")
   end
 
-  # Responds to `GET /metrics/file_downloads`
-  def file_downloads
-    serve_metrics_file(Rails.root.join("public/datafile_downloads.json"), type: "application/json")
+  # Responds to `GET /metrics/datafile_downloads_csv`
+  def datafile_downloads_csv
+    serve_metrics_file(METRICS_CONFIG[:datafile_downloads_csv][:relative_path], type: "text/csv")
   end
 
   # Responds to `GET /metrics/datafiles`
@@ -64,14 +65,14 @@ class MetricsController < ApplicationController
     serve_metrics_file(METRICS_CONFIG[:related_materials_csv][:relative_path], type: "text/csv")
   end
 
-  # Responds to `GET /metrics/refresh_dataset_downloads`
-  def refresh_dataset_downloads
-    enqueue_metric_refresh(:dataset_downloads_json, "Dataset downloads JSON")
+  # Responds to `GET /metrics/refresh_dataset_downloads_csv`
+  def refresh_dataset_downloads_csv
+    enqueue_metric_refresh(:dataset_downloads_csv, "Dataset downloads CSV")
   end
 
-  # Responds to `GET /metrics/refresh_datafile_downloads`
-  def refresh_datafile_downloads
-    enqueue_metric_refresh(:datafile_downloads_json, "Datafile downloads JSON")
+  # Responds to `GET /metrics/refresh_datafile_downloads_csv`
+  def refresh_datafile_downloads_csv
+    enqueue_metric_refresh(:datafile_downloads_csv, "Datafile downloads CSV")
   end
 
   # Responds to `GET /metrics/refresh_datasets_tsv`

@@ -3,8 +3,7 @@
 namespace :metrics do
   desc "generate metric.rb docs"
   task generate_docs: :environment do
-    Metric.refresh_all
-    puts "temporarily disabled"
+    Metric.refresh_metrics
   end
 
   desc "generate dataset report files"

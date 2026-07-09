@@ -36,10 +36,11 @@
           %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
           Regenerate Dataset downloads json
   .indent
-    %p
-      A json string detailing downloads calculated per
-      %strong dataset
-      per day.
+    -# MIGRATED: dataset_downloads_json prose now comes from config/metrics.yml :description_blocks
+    -# %p
+    -#   A json string detailing downloads calculated per
+    -#   %strong dataset
+    -#   per day.
 -# .metrics-border
 -#   %h3
 -#     -link = '<a href="/datafile_downloads.json">Datafile downloads json</a>'.html_safe
@@ -103,43 +104,44 @@
           %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
           Regenerate Datasets TSV
   .indent
-    %p
-      Button triggers a tab-separated-values (TSV) file download of select dataset features.
-      %em (datasets)
+    -# MIGRATED: datasets_tsv prose/columns now come from config/metrics.yml
+    -# %p
+    -#   Button triggers a tab-separated-values (TSV) file download of select dataset features.
+    -#   %em (datasets)
 
-    %strong Column Headings
-    %ul
-      %li
-        %strong doi:
-        DOI that identifies this dataset
-      %li
-        %strong ingest_date:
-        Date this dataset was deposited into Illinois Data Bank.
-      %li
-        %strong release_date:
-        Date the files in this dataset were first available for download
-      %li
-        %strong num_files:
-        Total number of datafiles in this dataset
-      %li
-        %strong num_bytes:
-        Combined total size for all files in this dataset, in bytes
-      %li
-        %strong total_downloads:
-        Number of downloads for this dataset, calculated as described in our metrics help section:
-        %a(href="https://databank.illinois.edu/guides#metrics") https://databank.illinois.edu/guides#metrics
-      %li
-        %strong num_relationships:
-        Number of related materials, excluding other versions of this dataset
-      %li
-        %strong num_creators:
-        Number of creators of this dataset
-      %li
-        %strong subject:
-        Subject Area of this dataset
-      %li
-        %strong citation_text:
-        Plain text citation of this dataset as displayed in Illinois Data Bank
+    -# %strong Column Headings
+    -# %ul
+    -#   %li
+    -#     %strong doi:
+    -#     DOI that identifies this dataset
+    -#   %li
+    -#     %strong ingest_date:
+    -#     Date this dataset was deposited into Illinois Data Bank.
+    -#   %li
+    -#     %strong release_date:
+    -#     Date the files in this dataset were first available for download
+    -#   %li
+    -#     %strong num_files:
+    -#     Total number of datafiles in this dataset
+    -#   %li
+    -#     %strong num_bytes:
+    -#     Combined total size for all files in this dataset, in bytes
+    -#   %li
+    -#     %strong total_downloads:
+    -#     Number of downloads for this dataset, calculated as described in our metrics help section:
+    -#     %a(href="https://databank.illinois.edu/guides#metrics") https://databank.illinois.edu/guides#metrics
+    -#   %li
+    -#     %strong num_relationships:
+    -#     Number of related materials, excluding other versions of this dataset
+    -#   %li
+    -#     %strong num_creators:
+    -#     Number of creators of this dataset
+    -#   %li
+    -#     %strong subject:
+    -#     Subject Area of this dataset
+    -#   %li
+    -#     %strong citation_text:
+    -#     Plain text citation of this dataset as displayed in Illinois Data Bank
 
 -# .metrics-border
 -#   %h3
