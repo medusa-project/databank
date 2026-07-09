@@ -6,18 +6,19 @@ require "tempfile"
 # Encapsulates handling reports offered on the metrics page.
 
 class Metric
-  LOCK_KEYS = %i[dataset_downloads_json datafile_downloads_json datasets_tsv datafiles_csv container_contents_csv funders_csv related_materials_csv].freeze
-  MIMETYPE_DEFAULT = "application/octet-stream".freeze
+  LOCK_KEYS = [:dataset_downloads_json, :datafile_downloads_json, :datasets_tsv, :datafiles_csv,
+               :container_contents_csv, :funders_csv, :related_materials_csv].freeze
+  MIMETYPE_DEFAULT = "application/octet-stream"
 
   class << self
     ##
     # refresh all the metrics
     def refresh_all
       Metric.write_dataset_downloads_json
-      Metric.write_datafile_downloads_json
-      Metric.write_datafiles_csv
+      # Metric.write_datafile_downloads_json
+      # Metric.write_datafiles_csv
       Metric.write_datasets_tsv
-      Metric.write_container_contents_csv
+      # Metric.write_container_contents_csv
       Metric.write_funders_csv
       Metric.write_related_materials_csv
     end
@@ -39,15 +40,15 @@ class Metric
     ##
     # @return [Hash] map of metric_key => Boolean indicating in-progress state for each metric
     def refresh_status
-      LOCK_KEYS.each_with_object({}) do |key, hash|
-        hash[key] = in_progress?(key)
+      LOCK_KEYS.index_with do |key|
+        in_progress?(key)
       end
     end
 
     ##
     # Create the lock file for the given metric key.
     # @param metric_key [Symbol]
-    def set_in_progress(metric_key)
+    def mark_in_progress(metric_key)
       FileUtils.touch(lock_path(metric_key))
     end
 
@@ -63,25 +64,40 @@ class Metric
     # @return [Hash] the modified times of the metrics
     def modified_times
       write_dataset_downloads_json unless File.exist?(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
-      raise StandardError.new("unable to create dataset downloads json") unless File.exist?(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
+      unless File.exist?(METRICS_CONFIG[:dataset_downloads_json][:relative_path])
+        raise StandardError.new("unable to create dataset downloads json")
+      end
 
       write_datafile_downloads_json unless File.exist?(METRICS_CONFIG[:datafile_downloads_json][:relative_path])
-      raise StandardError.new("unable to create datafile downloads json") unless File.exist?(METRICS_CONFIG[:datafile_downloads_json][:relative_path])
+      unless File.exist?(METRICS_CONFIG[:datafile_downloads_json][:relative_path])
+        raise StandardError.new("unable to create datafile downloads json")
+      end
 
       write_datafiles_csv unless File.exist?(METRICS_CONFIG[:datafiles_csv][:relative_path])
-      raise StandardError.new("unable to create datafiles csv") unless File.exist?(METRICS_CONFIG[:datafiles_csv][:relative_path])
+      unless File.exist?(METRICS_CONFIG[:datafiles_csv][:relative_path])
+        raise StandardError.new("unable to create datafiles csv")
+      end
 
       write_datasets_tsv unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
-      raise StandardError.new("unable to create datasets tsv") unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
+      unless File.exist?(METRICS_CONFIG[:datasets_tsv][:relative_path])
+        raise StandardError.new("unable to create datasets tsv")
+      end
 
       write_container_contents_csv unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
-      raise StandardError.new("unable to create container contents csv") unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
+      unless File.exist?(METRICS_CONFIG[:container_contents_csv][:relative_path])
+        raise StandardError.new("unable to create container contents csv")
+      end
 
       write_funders_csv unless File.exist?(METRICS_CONFIG[:funders_csv][:relative_path])
-      raise StandardError.new("unable to create funders csv") unless File.exist?(METRICS_CONFIG[:funders_csv][:relative_path])
+      unless File.exist?(METRICS_CONFIG[:funders_csv][:relative_path])
+        raise StandardError.new("unable to create funders csv")
+      end
 
       write_related_materials_csv unless File.exist?(METRICS_CONFIG[:related_materials_csv][:relative_path])
-      raise StandardError.new("unable to create related materials csv") unless File.exist?(METRICS_CONFIG[:related_materials_csv][:relative_path])
+      unless File.exist?(METRICS_CONFIG[:related_materials_csv][:relative_path])
+        raise StandardError.new("unable to create related materials csv")
+      end
+
       # wait a second to ensure the files are written
       # This is necessary because the file system may not update the modified time immediately
 
@@ -95,13 +111,67 @@ class Metric
       funders_csv_time = File.mtime(METRICS_CONFIG[:funders_csv][:relative_path])
       related_materials_csv_time = File.mtime(METRICS_CONFIG[:related_materials_csv][:relative_path])
 
-      { dataset_downloads_json: dataset_downloads_time.to_formatted_s(:long),
-        datafile_downloads_json: datafile_downloads_time.to_formatted_s(:long),
-        datafiles_csv: datafiles_csv_time.to_formatted_s(:long),
-        datasets_tsv: datasets_tsv_time.to_formatted_s(:long),
-        container_contents_csv: container_csv_time.to_formatted_s(:long),
-        funders_csv: funders_csv_time.to_formatted_s(:long),
-        related_materials_csv: related_materials_csv_time.to_formatted_s(:long) }
+      {dataset_downloads_json:  dataset_downloads_time.to_formatted_s(:long),
+       datafile_downloads_json: datafile_downloads_time.to_formatted_s(:long),
+       datafiles_csv:           datafiles_csv_time.to_formatted_s(:long),
+       datasets_tsv:            datasets_tsv_time.to_formatted_s(:long),
+       container_contents_csv:  container_csv_time.to_formatted_s(:long),
+       funders_csv:             funders_csv_time.to_formatted_s(:long),
+       related_materials_csv:   related_materials_csv_time.to_formatted_s(:long)}
+    end
+
+    ##
+    # write the dataset downloads json
+    # Processes tallies in batches to limit memory usage.
+    # Each record is written on its own line for line-by-line processability.
+    def write_dataset_downloads_json
+      metric_key = :dataset_downloads_json
+      mark_in_progress(metric_key)
+      begin
+        batch_size = IDB_CONFIG[:batch_size] || 500
+        target_path = METRICS_CONFIG[metric_key][:relative_path]
+        totals_path = "#{target_path.split('.json').first}_totals.csv"
+        doi_totals_hash = {}
+        write_metric_files_atomically(target_path, totals_path) do |temp_paths|
+          File.open(temp_paths[target_path], "w") do |f|
+            write_json_array_rows(f, "dataset_downloads", DatasetDownloadTally, batch_size: batch_size) do |row|
+              doi_totals_hash[row.doi] = doi_totals_hash.fetch(row.doi, 0) + row.tally
+              {doi: row.doi, date: row.download_date, tally: row.tally}
+            end
+          end
+
+          File.open(temp_paths[totals_path], "w") do |f|
+            f.puts "doi,tally"
+            doi_totals_hash.each do |doi, tally|
+              f.puts "#{doi},#{tally}"
+            end
+          end
+        end
+      ensure
+        clear_in_progress(metric_key)
+      end
+    end
+
+    ##
+    # write the datafile downloads json
+    # Processes tallies in batches to limit memory usage.
+    # Each record is written on its own line for line-by-line processability.
+    def write_datafile_downloads_json
+      metric_key = :datafile_downloads_json
+      mark_in_progress(metric_key)
+      begin
+        batch_size = IDB_CONFIG[:batch_size] || 500
+        target_path = METRICS_CONFIG[metric_key][:relative_path]
+        write_metric_files_atomically(target_path) do |temp_paths|
+          File.open(temp_paths[target_path], "w") do |f|
+            write_json_array_rows(f, "datafile_downloads", FileDownloadTally, batch_size: batch_size) do |row|
+              {doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally}
+            end
+          end
+        end
+      ensure
+        clear_in_progress(metric_key)
+      end
     end
 
     ##
@@ -110,12 +180,12 @@ class Metric
     # @return [void]
     def write_datasets_tsv
       metric_key = :datasets_tsv
-      set_in_progress(metric_key)
+      mark_in_progress(metric_key)
       begin
         batch_size = IDB_CONFIG[:batch_size] || 500
         target_path = METRICS_CONFIG[metric_key][:relative_path]
-        headings = %w[doi ingest_date release_date num_files num_bytes total_downloads
-                      num_relationships num_creators subject citation_text]
+        headings = ["doi", "ingest_date", "release_date", "num_files", "num_bytes", "total_downloads",
+                    "num_relationships", "num_creators", "subject", "citation_text"]
         write_metric_files_atomically(target_path) do |temp_paths|
           File.open(temp_paths[target_path], "w") do |f|
             f.puts headings.join("\t")
@@ -143,66 +213,12 @@ class Metric
     end
 
     ##
-    # write the dataset downloads json
-    # Processes tallies in batches to limit memory usage.
-    # Each record is written on its own line for line-by-line processability.
-    def write_dataset_downloads_json
-      metric_key = :dataset_downloads_json
-      set_in_progress(metric_key)
-      begin
-        batch_size = IDB_CONFIG[:batch_size] || 500
-        target_path = METRICS_CONFIG[metric_key][:relative_path]
-        totals_path = target_path.split(".json").first + "_totals.csv"
-        doi_totals_hash = {}
-        write_metric_files_atomically(target_path, totals_path) do |temp_paths|
-          File.open(temp_paths[target_path], "w") do |f|
-            write_json_array_rows(f, "dataset_downloads", DatasetDownloadTally, batch_size: batch_size) do |row|
-              doi_totals_hash[row.doi] = doi_totals_hash.fetch(row.doi, 0) + row.tally
-              { doi: row.doi, date: row.download_date, tally: row.tally }
-            end
-          end
-
-          File.open(temp_paths[totals_path], "w") do |f|
-            f.puts "doi,tally"
-            doi_totals_hash.each do |doi, tally|
-              f.puts "#{doi},#{tally}"
-            end
-          end
-        end
-      ensure
-        clear_in_progress(metric_key)
-      end
-    end
-
-    ##
-    # write the datafile downloads json
-    # Processes tallies in batches to limit memory usage.
-    # Each record is written on its own line for line-by-line processability.
-    def write_datafile_downloads_json
-      metric_key = :datafile_downloads_json
-      set_in_progress(metric_key)
-      begin
-        batch_size = IDB_CONFIG[:batch_size] || 500
-        target_path = METRICS_CONFIG[metric_key][:relative_path]
-        write_metric_files_atomically(target_path) do |temp_paths|
-          File.open(temp_paths[target_path], "w") do |f|
-            write_json_array_rows(f, "datafile_downloads", FileDownloadTally, batch_size: batch_size) do |row|
-              { doi: row.doi, file: row.filename, date: row.download_date, tally: row.tally }
-            end
-          end
-        end
-      ensure
-        clear_in_progress(metric_key)
-      end
-    end
-
-    ##
     # write the datafiles csv
     # Processes datasets one at a time via find_each; datafiles in batches per dataset.
     # @return [void]
     def write_datafiles_csv
       metric_key = :datafiles_csv
-      set_in_progress(metric_key)
+      mark_in_progress(metric_key)
       begin
         content_type_manifest = MedusaInfo.content_type_manifest
         unless content_type_manifest && content_type_manifest["records"]
@@ -259,7 +275,7 @@ class Metric
     # @return [void]
     def write_container_contents_csv
       metric_key = :container_contents_csv
-      set_in_progress(metric_key)
+      mark_in_progress(metric_key)
       begin
         batch_size = IDB_CONFIG[:batch_size] || 500
         target_path = METRICS_CONFIG[metric_key][:relative_path]
@@ -292,7 +308,7 @@ class Metric
     # @return [void]
     def write_funders_csv
       metric_key = :funders_csv
-      set_in_progress(metric_key)
+      mark_in_progress(metric_key)
       begin
         batch_size = IDB_CONFIG[:batch_size] || 500
         target_path = METRICS_CONFIG[metric_key][:relative_path]
@@ -319,7 +335,7 @@ class Metric
     # @return [void]
     def write_related_materials_csv
       metric_key = :related_materials_csv
-      set_in_progress(metric_key)
+      mark_in_progress(metric_key)
       begin
         batch_size = IDB_CONFIG[:batch_size] || 500
         target_path = METRICS_CONFIG[metric_key][:relative_path]
@@ -334,7 +350,8 @@ class Metric
                 datacite_arr.each do |relationship|
                   next if ["IsPreviousVersionOf", "IsNewVersionOf"].include?(relationship)
 
-                  report << [dataset.identifier.to_s, relationship.to_s, material.uri_type.to_s, material.uri.to_s, material.selected_type.to_s]
+                  report << [dataset.identifier.to_s, relationship.to_s, material.uri_type.to_s, material.uri.to_s,
+                             material.selected_type.to_s]
                 end
               end
             end
@@ -413,7 +430,7 @@ class Metric
                 dataset.key,
                 dataset.identifier,
                 dataset.release_date.iso8601.to_s,
-                dataset.funders.any? ? dataset.funders.map { |f| "#{f.name} (#{f.grant})" }.join("; ") : nil,
+                dataset.funders.any? ? dataset.funders.map {|f| "#{f.name} (#{f.grant})" }.join("; ") : nil,
                 dataset.title,
                 dataset.keywords,
                 "#{dataset.corresponding_creator_name} | #{dataset.corresponding_creator_email}",

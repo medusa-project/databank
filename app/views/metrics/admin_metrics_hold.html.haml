@@ -40,42 +40,43 @@
       A json string detailing downloads calculated per
       %strong dataset
       per day.
-.metrics-border
-  %h3
-    -link = '<a href="/datafile_downloads.json">Datafile downloads json</a>'.html_safe
-    = modified_times[:datafile_downloads_json] == "not found" ? "Datafile downloads json not currently available" : link
-  -if refresh_status[:datafile_downloads_json]
-    %p.alert.alert-info{"role" => "status"}
-      %strong Refresh in progress.
-      Please refresh this page manually to check for an updated status.
-  %p.inline-block
-    Modified:
-    = modified_times[:datafile_downloads_json]
-  -if current_user && current_user.role == 'admin'
-    .curator-only.inline-block
-      -if refresh_status[:datafile_downloads_json]
-        %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
-          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
-          Regenerate Datafile downloads json
-      -else
-        %a{href: "/metrics/refresh_datafile_downloads", class: "btn btn-success btn-sm idb"}
-          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
-          Regenerate Datafile downloads json
-  .indent
-    %p
-      A json string detailing downloads calculated per
-      %strong datafile
-      per day.
-.metrics-border
-  %h3
-    %a(href="/metrics/datafiles_simple_list") Datafiles listing
-  .indent
-    %p A listing of datafiles with associated links to their respective datasets.
+-# .metrics-border
+-#   %h3
+-#     -link = '<a href="/datafile_downloads.json">Datafile downloads json</a>'.html_safe
+-#     = modified_times[:datafile_downloads_json] == "not found" ? "Datafile downloads json not currently available" : link
+-#   -if refresh_status[:datafile_downloads_json]
+-#     %p.alert.alert-info{"role" => "status"}
+-#       %strong Refresh in progress.
+-#       Please refresh this page manually to check for an updated status.
+-#   %p.inline-block
+-#     Modified:
+-#     = modified_times[:datafile_downloads_json]
+-#   -if current_user && current_user.role == 'admin'
+-#     .curator-only.inline-block
+-#       -if refresh_status[:datafile_downloads_json]
+-#         %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
+-#           %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+-#           Regenerate Datafile downloads json
+-#       -else
+-#         %a{href: "/metrics/refresh_datafile_downloads", class: "btn btn-success btn-sm idb"}
+-#           %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+-#           Regenerate Datafile downloads json
+-#   .indent
+-#     %p
+-#       A json string detailing downloads calculated per
+-#       %strong datafile
+-#       per day.
+
+-# .metrics-border
+-#   %h3
+-#     %a(href="/metrics/datafiles_simple_list") Datafiles listing
+-#   .indent
+-#     %p A listing of datafiles with associated links to their respective datasets.
 
 .metrics-border
   %h3
     -if modified_times[:datasets_tsv] == "not found"
-      Datafiles listing not found
+      Datasets listing not found
     -elsif refresh_status[:datasets_tsv]
       %span.btn.btn-primary.idb{"aria-disabled" => "true", "tabindex" => "-1", style: "opacity:0.65;cursor:not-allowed;", title: "Refresh in progress"}
         %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
@@ -140,115 +141,115 @@
         %strong citation_text:
         Plain text citation of this dataset as displayed in Illinois Data Bank
 
-.metrics-border
-  %h3
-    -if modified_times[:datafiles_csv] == "not found"
-      Datafiles CSV not available
-    -elsif refresh_status[:datafiles_csv]
-      %span.btn.btn-primary.idb{"aria-disabled" => "true", "tabindex" => "-1", style: "opacity:0.65;cursor:not-allowed;", title: "Refresh in progress"}
-        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
-        Datafiles CSV
-    -else
-      %a(href="/datafiles.csv" class="btn btn-primary idb" )
-        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
-        Datafiles CSV
-  -if refresh_status[:datafiles_csv]
-    %p.alert.alert-info{"role" => "status"}
-      %strong Refresh in progress.
-      Please refresh this page manually to check for an updated status.
-  %p.inline-block
-    modified:
-    = modified_times[:datafiles_csv]
-  -if current_user && current_user.role == 'admin'
-    .curator-only.inline-block
-      -if refresh_status[:datafiles_csv]
-        %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
-          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
-          Regenerate Datafiles CSV
-      -else
-        %a(href="/metrics/refresh_datafiles_csv" class="btn btn-success btn-sm idb" )
-          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
-          Regenerate Datafiles CSV
-  .indent
-    %p
-      Button triggers a csv file download of datafile details.
-      %em (data files)
+-# .metrics-border
+-#   %h3
+-#     -if modified_times[:datafiles_csv] == "not found"
+-#       Datafiles CSV not available
+-#     -elsif refresh_status[:datafiles_csv]
+-#       %span.btn.btn-primary.idb{"aria-disabled" => "true", "tabindex" => "-1", style: "opacity:0.65;cursor:not-allowed;", title: "Refresh in progress"}
+-#         %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+-#         Datafiles CSV
+-#     -else
+-#       %a(href="/datafiles.csv" class="btn btn-primary idb" )
+-#         %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+-#         Datafiles CSV
+-#   -if refresh_status[:datafiles_csv]
+-#     %p.alert.alert-info{"role" => "status"}
+-#       %strong Refresh in progress.
+-#       Please refresh this page manually to check for an updated status.
+-#   %p.inline-block
+-#     modified:
+-#     = modified_times[:datafiles_csv]
+-#   -if current_user && current_user.role == 'admin'
+-#     .curator-only.inline-block
+-#       -if refresh_status[:datafiles_csv]
+-#         %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
+-#           %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+-#           Regenerate Datafiles CSV
+-#       -else
+-#         %a(href="/metrics/refresh_datafiles_csv" class="btn btn-success btn-sm idb" )
+-#           %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+-#           Regenerate Datafiles CSV
+-#   .indent
+-#     %p
+-#       Button triggers a csv file download of datafile details.
+-#       %em (data files)
 
-    %strong Column Headings
-    %ul
-      %li
-        %strong doi:
-        DOI that identifies the dataset this file is part of
-      %li
-        %strong pub_date:
-        Date this file was first made available for download
-      %li
-        %strong filename:
-        Name of the file, with extension
-      %li
-        %strong file_format:
-        Mime type (file format from the left column in the Medusa “statistics” view)
-      %li
-        %strong num_bytes:
-        Size of this files, in bytes
-      %li
-        %strong total_downloads:
-        Number of downloads for this file, calculated as described in our metrics help section:
-        %a{href: "https://databank.illinois.edu/guides#metrics"}
-          https://databank.illinois.edu/guides#metrics
+-#     %strong Column Headings
+-#     %ul
+-#       %li
+-#         %strong doi:
+-#         DOI that identifies the dataset this file is part of
+-#       %li
+-#         %strong pub_date:
+-#         Date this file was first made available for download
+-#       %li
+-#         %strong filename:
+-#         Name of the file, with extension
+-#       %li
+-#         %strong file_format:
+-#         Mime type (file format from the left column in the Medusa “statistics” view)
+-#       %li
+-#         %strong num_bytes:
+-#         Size of this files, in bytes
+-#       %li
+-#         %strong total_downloads:
+-#         Number of downloads for this file, calculated as described in our metrics help section:
+-#         %a{href: "https://databank.illinois.edu/guides#metrics"}
+-#           https://databank.illinois.edu/guides#metrics
 
-.metrics-border
-  %h3
-    -if modified_times[:container_contents_csv] == "not found"
-      Container Contents CSV not available
-    -elsif refresh_status[:container_contents_csv]
-      %span.btn.btn-primary.idb{"aria-disabled" => "true", "tabindex" => "-1", style: "opacity:0.65;cursor:not-allowed;", title: "Refresh in progress"}
-        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
-        Container File Contents (zip) CSV
-    -else
-      %a{href: "/archive_file_contents.csv", class: "btn btn-primary idb"}
-        %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
-        Container File Contents (zip) CSV
-  -if refresh_status[:container_contents_csv]
-    %p.alert.alert-info{"role" => "status"}
-      %strong Refresh in progress.
-      Please refresh this page manually to check for an updated status.
-  %p.inline-block
-    modified:
-    = modified_times[:container_contents_csv]
-  -if current_user && current_user.role == 'admin'
-    .curator-only.inline-block
-      -if refresh_status[:container_contents_csv]
-        %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
-          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
-          Regenerate Container File Contents CSV
-      -else
-        %a{href: "/metrics/refresh_container_contents_csv", class: "btn btn-success btn-sm idb"}
-          %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
-          Regenerate Container File Contents CSV
-  .indent
-    %p
-      Button triggers a csv file download of contents details for files in complex container formats (.zip, .tar.gz, .7z).
+-# .metrics-border
+-#   %h3
+-#     -if modified_times[:container_contents_csv] == "not found"
+-#       Container Contents CSV not available
+-#     -elsif refresh_status[:container_contents_csv]
+-#       %span.btn.btn-primary.idb{"aria-disabled" => "true", "tabindex" => "-1", style: "opacity:0.65;cursor:not-allowed;", title: "Refresh in progress"}
+-#         %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+-#         Container File Contents (zip) CSV
+-#     -else
+-#       %a{href: "/archive_file_contents.csv", class: "btn btn-primary idb"}
+-#         %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+-#         Container File Contents (zip) CSV
+-#   -if refresh_status[:container_contents_csv]
+-#     %p.alert.alert-info{"role" => "status"}
+-#       %strong Refresh in progress.
+-#       Please refresh this page manually to check for an updated status.
+-#   %p.inline-block
+-#     modified:
+-#     = modified_times[:container_contents_csv]
+-#   -if current_user && current_user.role == 'admin'
+-#     .curator-only.inline-block
+-#       -if refresh_status[:container_contents_csv]
+-#         %a{"aria-disabled" => "true", "tabindex" => "-1", class: "btn btn-success btn-sm idb disabled", title: "Refresh already in progress"}
+-#           %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+-#           Regenerate Container File Contents CSV
+-#       -else
+-#         %a{href: "/metrics/refresh_container_contents_csv", class: "btn btn-success btn-sm idb"}
+-#           %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
+-#           Regenerate Container File Contents CSV
+-#   .indent
+-#     %p
+-#       Button triggers a csv file download of contents details for files in complex container formats (.zip, .tar.gz, .7z).
 
-    %strong Column Headings
-    %ul
-      %li
-        %strong doi:
-        DOI that identifies the dataset this file is part of
-      %li
-        %strong container_filename:
-        Filename of the container file
-      %li
-        %strong content_filepath:
-        Full path of the file, in the context of the container file
-      %li
-        %strong content_filename:
-        Filename of content file within the archive file
-        %br
-        %em Duplicate filenames from different branches may be present.
-      %li
-        %strong file_format:
-        Mime type of the content file
+-#     %strong Column Headings
+-#     %ul
+-#       %li
+-#         %strong doi:
+-#         DOI that identifies the dataset this file is part of
+-#       %li
+-#         %strong container_filename:
+-#         Filename of the container file
+-#       %li
+-#         %strong content_filepath:
+-#         Full path of the file, in the context of the container file
+-#       %li
+-#         %strong content_filename:
+-#         Filename of content file within the archive file
+-#         %br
+-#         %em Duplicate filenames from different branches may be present.
+-#       %li
+-#         %strong file_format:
+-#         Mime type of the content file
 
 .metrics-border
   %h3
