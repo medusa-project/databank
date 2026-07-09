@@ -86,7 +86,11 @@
       keywords:
       %em
         =dataset.keywords
-
+  -if dataset.identifier.present?
+    .identifier_display
+      DOI:
+      %em
+        =dataset.identifier
   -if(can? :manage, dataset)
     .depositor_display
       %span(class="metadata-label" ) Depositor:
