@@ -1,20 +1,165 @@
-:dataset_downloads_json:
-  :relative_path: <%= Rails.root.join("public/dataset_downloads.json") %>
-:datafile_downloads_json:
-  :relative_path: <%= Rails.root.join("public/datafile_downloads.json") %>
+:dataset_downloads_csv:
+  :label: Dataset downloads CSV
+  :relative_path: <%= Rails.root.join("public/dataset_downloads.csv") %>
+  :download_path: /dataset_downloads.csv
+  :content_type: text/csv
+  :refreshable: false
+  :show_in_admin: false
+  :summary: Daily download tallies grouped at the dataset level.
+  :description_blocks:
+    - A csv export detailing downloads calculated per dataset per day.
+  :columns:
+    - :name: doi
+      :description: DOI that identifies the dataset.
+    - :name: date
+      :description: Download date for the tally row.
+    - :name: tally
+      :description: Number of downloads counted on that date for the dataset DOI.
+:datafile_downloads_csv:
+  :label: Datafile downloads CSV
+  :relative_path: <%= Rails.root.join("public/datafile_downloads.csv") %>
+  :download_path: /datafile_downloads.csv
+  :content_type: text/csv
+  :refreshable: false
+  :show_in_admin: false
+  :summary: Daily download tallies grouped at the datafile level.
+  :description_blocks:
+    - A csv export detailing downloads calculated per datafile per day.
+  :columns:
+    - :name: doi
+      :description: DOI that identifies the dataset containing the datafile.
+    - :name: file
+      :description: Datafile name.
+    - :name: date
+      :description: Download date for the tally row.
+    - :name: tally
+      :description: Number of downloads counted on that date for the datafile.
 :datafiles_csv:
+  :label: Datafiles CSV
   :relative_path: <%= Rails.root.join("public/datafiles.csv") %>
+  :download_path: /datafiles.csv
+  :content_type: text/csv
+  :refreshable: true
+  :show_in_admin: true
+  :summary: File-level details including format and size.
+  :description_blocks:
+    - Button triggers a csv file download of datafile details (data files).
+  :columns:
+    - :name: doi
+      :description: DOI that identifies the dataset this file is part of.
+    - :name: pub_date
+      :description: Date this file was first made available for download.
+    - :name: filename
+      :description: Name of the file, with extension.
+    - :name: file_format
+      :description: Mime type (file format from the left column in the Medusa statistics view).
+    - :name: num_bytes
+      :description: Size of this file in bytes.
 :container_contents_csv:
+  :label: Container contents CSV
   :relative_path: <%= Rails.root.join("public/archive_file_contents.csv") %>
+  :download_path: /archive_file_contents.csv
+  :content_type: text/csv
+  :refreshable: false
+  :show_in_admin: false
+  :summary: Contents extracted from complex container files such as zip archives.
+  :description_blocks:
+    - Button triggers a csv file download of contents details for files in complex container formats (.zip, .tar.gz, .7z).
+  :columns:
+    - :name: doi
+      :description: DOI that identifies the dataset this file is part of.
+    - :name: container_filename
+      :description: Filename of the container file.
+    - :name: content_filepath
+      :description: Full path of the file, in the context of the container file.
+    - :name: content_filename
+      :description: Filename of content file within the archive file. Duplicate filenames from different branches may be present.
+    - :name: file_format
+      :description: Mime type of the content file.
 :datasets_tsv:
+  :label: Datasets TSV
   :relative_path: <%= Rails.root.join("public/datasets.tsv") %>
+  :download_path: /datasets.tsv
+  :content_type: text/tab-separated-values
+  :refreshable: true
+  :show_in_admin: true
+  :summary: Dataset-level export with core descriptive and usage fields.
+  :description_blocks:
+    - Button triggers a tab-separated-values (TSV) file download of select dataset features (datasets).
+  :columns:
+    - :name: doi
+      :description: DOI that identifies this dataset.
+    - :name: ingest_date
+      :description: Date this dataset was deposited into Illinois Data Bank.
+    - :name: release_date
+      :description: Date the files in this dataset were first available for download.
+    - :name: num_files
+      :description: Total number of datafiles in this dataset.
+    - :name: num_bytes
+      :description: Combined total size for all files in this dataset in bytes.
+    - :name: total_downloads
+      :description: Number of downloads for this dataset.
+    - :name: num_relationships
+      :description: Number of related materials excluding version relationships.
+    - :name: num_creators
+      :description: Number of creators listed for this dataset.
+    - :name: subject
+      :description: Subject area for this dataset.
+    - :name: citation_text
+      :description: Plain text citation displayed for this dataset.
 :related_materials_csv:
+  :label: Related materials CSV
   :relative_path: <%= Rails.root.join("public/related_materials.csv") %>
+  :download_path: /related_materials.csv
+  :content_type: text/csv
+  :refreshable: true
+  :show_in_admin: true
+  :summary: Related material identifiers and relationship types by dataset.
+  :description_blocks:
+    - Button triggers a csv file download (related materials).
+  :columns:
+    - :name: doi
+      :description: The DOI that identifies this dataset in Illinois Data Bank.
+    - :name: datacite_relationship
+      :description: The relationship registered with DataCite.
+    - :name: material_id_type
+      :description: The related material identifier type (for example, DOI or URL).
+    - :name: material_id
+      :description: The related material identifier.
+    - :name: material_type
+      :description: Type of related material (for example, article or thesis).
 :funders_csv:
+  :label: Funders CSV
   :relative_path: <%= Rails.root.join("public/funders.csv") %>
+  :download_path: /funders.csv
+  :content_type: text/csv
+  :refreshable: true
+  :show_in_admin: true
+  :summary: Dataset funding organization and grant references.
+  :description_blocks:
+    - Button triggers a csv file download (funder and grant info).
+  :columns:
+    - :name: doi
+      :description: The DOI that identifies this dataset in Illinois Data Bank.
+    - :name: funder
+      :description: The funder name.
+    - :name: grant
+      :description: The grant identifier.
 :dataset_report_csv:
+  :label: Dataset report CSV
   :relative_path: <%= Rails.root.join("public/dataset_report.csv") %>
+  :content_type: text/csv
+  :refreshable: false
+  :show_in_admin: false
 :dataset_report_text:
+  :label: Dataset report text
   :relative_path: <%= Rails.root.join("public/dataset_report.txt") %>
+  :content_type: text/plain
+  :refreshable: false
+  :show_in_admin: false
 file_audit_report_csv:
+  :label: File audit report CSV
   :relative_path: <%= Rails.root.join("tmp/file_audit_report.csv") %>
+  :content_type: text/csv
+  :refreshable: false
+  :show_in_admin: false

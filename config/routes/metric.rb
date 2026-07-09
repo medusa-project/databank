@@ -5,11 +5,11 @@ resources :metrics do
     get 'archived_content_csv'
     get 'datafiles_csv'
     get 'datafiles_simple_list'
-    get 'dataset_downloads', defaults: {format: 'json'}
-    get 'file_downloads', defaults: {format: 'json'}
+    get 'dataset_downloads_csv'
+    get 'datafile_downloads_csv'
     get 'funders_csv'
-    get 'refresh_dataset_downloads'
-    get 'refresh_datafile_downloads'
+    get 'refresh_dataset_downloads_csv'
+    get 'refresh_datafile_downloads_csv'
     get 'refresh_datafiles_csv'
     get 'refresh_container_csv'
     get 'related_materials_csv'

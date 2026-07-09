@@ -32,8 +32,8 @@ RSpec.describe MetricsController, type: :controller do
 
   def ensure_metrics_static_files!
     required_paths = [
-      Rails.root.join('public/dataset_downloads.json').to_s,
-      Rails.root.join('public/datafile_downloads.json').to_s,
+      Rails.root.join('public/dataset_downloads.csv').to_s,
+      Rails.root.join('public/datafile_downloads.csv').to_s,
       Rails.root.join('public/archive_file_contents.csv').to_s
     ]
 
@@ -84,33 +84,53 @@ RSpec.describe MetricsController, type: :controller do
       expect(response).to redirect_to(IDB_CONFIG[:root_url_text])
       expect(flash[:alert]).to eq('You are not authorized to access the requested resource.')
     end
+
+    it 'assigns definitions and status data when authorized' do
+      definition = Metric::Definition.new(key: :dataset_downloads_csv,
+                                          config: {label: 'Dataset downloads CSV', relative_path: '/tmp/x'})
+      allow(controller).to receive(:authorize!).with(:manage, :all)
+      allow(Metric).to receive(:admin_definitions).and_return([definition])
+      allow(Metric).to receive(:modified_times).and_return({dataset_downloads_csv: 'July 09, 2026 18:00'})
+      allow(Metric).to receive(:refresh_status).and_return({dataset_downloads_csv: false})
+
+      get :admin_metrics
+
+      expect(response).to be_successful
+      expect(assigns(:metric_definitions)).to eq([definition])
+      expect(assigns(:modified_times)).to include(:dataset_downloads_csv)
+      expect(assigns(:refresh_status)).to include(:dataset_downloads_csv)
+    end
   end
 
-  describe 'GET #dataset_downloads' do
-    it 'returns dataset downloads json content' do
-      get :dataset_downloads, format: :json
+  describe 'GET #dataset_downloads_csv' do
+    it 'returns dataset downloads csv content' do
+      get :dataset_downloads_csv
 
       expect(response).to have_http_status(:ok)
-      expect(response.content_type).to eq('application/json')
+      expect(response.content_type).to include('text/csv')
     end
 
-    it 'returns not_found when dataset downloads file is missing' do
-      path = Rails.root.join('public/dataset_downloads.json').to_s
+    it 'returns not_found when dataset downloads csv is missing' do
+      path = METRICS_CONFIG[:dataset_downloads_csv][:relative_path]
       allow(File).to receive(:file?).and_call_original
       allow(File).to receive(:file?).with(path).and_return(false)
 
-      get :dataset_downloads, format: :json
+      get :dataset_downloads_csv
 
       expect(response).to have_http_status(:not_found)
     end
   end
 
-  describe 'GET #file_downloads' do
-    it 'returns datafile downloads json content' do
-      get :file_downloads, format: :json
+  describe 'GET #datafile_downloads_csv' do
+    it 'returns datafile downloads csv content' do
+      path = METRICS_CONFIG[:datafile_downloads_csv][:relative_path]
+      FileUtils.mkdir_p(File.dirname(path))
+      File.write(path, "doi,file,date,tally\n") unless File.exist?(path)
+
+      get :datafile_downloads_csv
 
       expect(response).to have_http_status(:ok)
-      expect(response.content_type).to eq('application/json')
+      expect(response.content_type).to include('text/csv')
     end
   end
 
@@ -137,6 +157,10 @@ RSpec.describe MetricsController, type: :controller do
 
   describe 'GET #datafiles_csv' do
     it 'returns datafiles csv content' do
+      path = METRICS_CONFIG[:datafiles_csv][:relative_path]
+      FileUtils.mkdir_p(File.dirname(path))
+      File.write(path, "doi,pub_date\n") unless File.exist?(path)
+
       get :datafiles_csv
 
       expect(response).to have_http_status(:ok)
@@ -162,40 +186,40 @@ RSpec.describe MetricsController, type: :controller do
     end
   end
 
-  describe 'GET #refresh_dataset_downloads' do
+  describe 'GET #refresh_dataset_downloads_csv' do
     it 'initiates refresh and redirects to metrics index' do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
-      allow(Metric).to receive(:in_progress?).with(:dataset_downloads_json).and_return(false)
-      allow(Metric).to receive(:mark_in_progress).with(:dataset_downloads_json)
-      allow(MetricRefreshJob).to receive(:new).with(:dataset_downloads_json).and_return(job)
+      allow(Metric).to receive(:in_progress?).with(:dataset_downloads_csv).and_return(false)
+      allow(Metric).to receive(:mark_in_progress).with(:dataset_downloads_csv)
+      allow(MetricRefreshJob).to receive(:new).with(:dataset_downloads_csv).and_return(job)
       allow(job).to receive(:delay).and_return(delayed)
       allow(delayed).to receive(:perform)
 
-      get :refresh_dataset_downloads
+      get :refresh_dataset_downloads_csv
 
       expect(response).to redirect_to(metrics_path)
       expect(flash[:notice]).to include('refresh started')
-      expect(Metric).to have_received(:mark_in_progress).with(:dataset_downloads_json)
-      expect(MetricRefreshJob).to have_received(:new).with(:dataset_downloads_json)
+      expect(Metric).to have_received(:mark_in_progress).with(:dataset_downloads_csv)
+      expect(MetricRefreshJob).to have_received(:new).with(:dataset_downloads_csv)
     end
   end
 
-  describe 'GET #refresh_datafile_downloads' do
+  describe 'GET #refresh_datafile_downloads_csv' do
     it 'initiates refresh and redirects to metrics index' do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
-      allow(Metric).to receive(:in_progress?).with(:datafile_downloads_json).and_return(false)
-      allow(Metric).to receive(:mark_in_progress).with(:datafile_downloads_json)
-      allow(MetricRefreshJob).to receive(:new).with(:datafile_downloads_json).and_return(job)
+      allow(Metric).to receive(:in_progress?).with(:datafile_downloads_csv).and_return(false)
+      allow(Metric).to receive(:mark_in_progress).with(:datafile_downloads_csv)
+      allow(MetricRefreshJob).to receive(:new).with(:datafile_downloads_csv).and_return(job)
       allow(job).to receive(:delay).and_return(delayed)
       allow(delayed).to receive(:perform)
 
-      get :refresh_datafile_downloads
+      get :refresh_datafile_downloads_csv
 
       expect(response).to redirect_to(metrics_path)
       expect(flash[:notice]).to include('refresh started')
-      expect(MetricRefreshJob).to have_received(:new).with(:datafile_downloads_json)
+      expect(MetricRefreshJob).to have_received(:new).with(:datafile_downloads_csv)
     end
   end
 
