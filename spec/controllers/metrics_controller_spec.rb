@@ -1,7 +1,35 @@
 require 'rails_helper'
 require 'rake'
+require 'fileutils'
 
 RSpec.describe MetricsController, type: :controller do
+  def metric_output_paths
+    METRICS_CONFIG.values.filter_map do |config|
+      config[:relative_path] if config.is_a?(Hash) && config[:relative_path].present?
+    end
+  end
+
+  def metric_artifact_paths
+    metric_output_paths + metric_output_paths.map { |path| "#{path}.lock" }
+  end
+
+  def snapshot_metric_artifacts
+    metric_artifact_paths.to_h do |path|
+      [path, File.exist?(path) ? File.binread(path) : nil]
+    end
+  end
+
+  def restore_metric_artifacts!(snapshots)
+    snapshots.each do |path, contents|
+      if contents.nil?
+        File.delete(path) if File.exist?(path)
+      else
+        FileUtils.mkdir_p(File.dirname(path))
+        File.binwrite(path, contents)
+      end
+    end
+  end
+
   def ensure_metrics_static_files!
     required_paths = [
       Rails.root.join('public/dataset_downloads.json').to_s,
@@ -17,7 +45,12 @@ RSpec.describe MetricsController, type: :controller do
   end
 
   before(:all) do
+    @metric_artifact_snapshots = snapshot_metric_artifacts
     ensure_metrics_static_files!
+  end
+
+  after(:all) do
+    restore_metric_artifacts!(@metric_artifact_snapshots)
   end
 
   describe 'GET #index' do
@@ -134,7 +167,7 @@ RSpec.describe MetricsController, type: :controller do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:dataset_downloads_json).and_return(false)
-      allow(Metric).to receive(:set_in_progress).with(:dataset_downloads_json)
+      allow(Metric).to receive(:mark_in_progress).with(:dataset_downloads_json)
       allow(MetricRefreshJob).to receive(:new).with(:dataset_downloads_json).and_return(job)
       allow(job).to receive(:delay).and_return(delayed)
       allow(delayed).to receive(:perform)
@@ -143,7 +176,7 @@ RSpec.describe MetricsController, type: :controller do
 
       expect(response).to redirect_to(metrics_path)
       expect(flash[:notice]).to include('refresh started')
-      expect(Metric).to have_received(:set_in_progress).with(:dataset_downloads_json)
+      expect(Metric).to have_received(:mark_in_progress).with(:dataset_downloads_json)
       expect(MetricRefreshJob).to have_received(:new).with(:dataset_downloads_json)
     end
   end
@@ -153,7 +186,7 @@ RSpec.describe MetricsController, type: :controller do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:datafile_downloads_json).and_return(false)
-      allow(Metric).to receive(:set_in_progress).with(:datafile_downloads_json)
+      allow(Metric).to receive(:mark_in_progress).with(:datafile_downloads_json)
       allow(MetricRefreshJob).to receive(:new).with(:datafile_downloads_json).and_return(job)
       allow(job).to receive(:delay).and_return(delayed)
       allow(delayed).to receive(:perform)
@@ -171,7 +204,7 @@ RSpec.describe MetricsController, type: :controller do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:datasets_tsv).and_return(false)
-      allow(Metric).to receive(:set_in_progress).with(:datasets_tsv)
+      allow(Metric).to receive(:mark_in_progress).with(:datasets_tsv)
       allow(MetricRefreshJob).to receive(:new).with(:datasets_tsv).and_return(job)
       allow(job).to receive(:delay).and_return(delayed)
       allow(delayed).to receive(:perform)
@@ -189,7 +222,7 @@ RSpec.describe MetricsController, type: :controller do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:datafiles_csv).and_return(false)
-      allow(Metric).to receive(:set_in_progress).with(:datafiles_csv)
+      allow(Metric).to receive(:mark_in_progress).with(:datafiles_csv)
       allow(MetricRefreshJob).to receive(:new).with(:datafiles_csv).and_return(job)
       allow(job).to receive(:delay).and_return(delayed)
       allow(delayed).to receive(:perform)
@@ -207,7 +240,7 @@ RSpec.describe MetricsController, type: :controller do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:container_contents_csv).and_return(false)
-      allow(Metric).to receive(:set_in_progress).with(:container_contents_csv)
+      allow(Metric).to receive(:mark_in_progress).with(:container_contents_csv)
       allow(MetricRefreshJob).to receive(:new).with(:container_contents_csv).and_return(job)
       allow(job).to receive(:delay).and_return(delayed)
       allow(delayed).to receive(:perform)
@@ -225,7 +258,7 @@ RSpec.describe MetricsController, type: :controller do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:funders_csv).and_return(false)
-      allow(Metric).to receive(:set_in_progress).with(:funders_csv)
+      allow(Metric).to receive(:mark_in_progress).with(:funders_csv)
       allow(MetricRefreshJob).to receive(:new).with(:funders_csv).and_return(job)
       allow(job).to receive(:delay).and_return(delayed)
       allow(delayed).to receive(:perform)
@@ -243,7 +276,7 @@ RSpec.describe MetricsController, type: :controller do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:related_materials_csv).and_return(false)
-      allow(Metric).to receive(:set_in_progress).with(:related_materials_csv)
+      allow(Metric).to receive(:mark_in_progress).with(:related_materials_csv)
       allow(MetricRefreshJob).to receive(:new).with(:related_materials_csv).and_return(job)
       allow(job).to receive(:delay).and_return(delayed)
       allow(delayed).to receive(:perform)
@@ -261,7 +294,7 @@ RSpec.describe MetricsController, type: :controller do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:container_contents_csv).and_return(false)
-      allow(Metric).to receive(:set_in_progress).with(:container_contents_csv)
+      allow(Metric).to receive(:mark_in_progress).with(:container_contents_csv)
       allow(MetricRefreshJob).to receive(:new).with(:container_contents_csv).and_return(job)
       allow(job).to receive(:delay).and_return(delayed)
       allow(delayed).to receive(:perform)

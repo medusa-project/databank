@@ -37,6 +37,34 @@ class MedusaInfo
     end
   end
 
+  def self.mimetype_from_path(path:, manifest:)
+    return nil unless manifest && manifest["records"]
+
+    type_records = manifest["records"]
+    type_records.each do |type_record|
+      return type_record["content_type_name"] if type_record["cfs_file_relative_path"] == path
+    end
+    nil
+  end
+
+  def self.mimetype_batch(paths:, manifest:)
+    return {} unless manifest && manifest["records"]
+
+    type_records = manifest["records"]
+    return_hash = {}
+
+    paths.each do |path|
+      type_records.each do |type_record|
+        if type_record["cfs_file_relative_path"] == path
+          return_hash[path] = type_record["content_type_name"]
+          break
+        end
+      end
+    end
+
+    return_hash
+  end
+
   ##
   # @return [Hash] the doi, filename, and mimetype
   def self.doi_filename_mimetype

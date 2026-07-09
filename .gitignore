@@ -30,6 +30,33 @@ pickle-email-*.html
 !/tmp/.keep
 *.log
 
+# Ignore generated Metrics files
+/public/dataset_downloads.json
+/public/datafile_downloads.json
+/public/datafiles.csv
+/public/archive_file_contents.csv
+/public/datasets.tsv
+/public/related_materials.csv
+/public/funders.csv
+/public/dataset_report.csv
+/public/dataset_report.txt
+/tmp/file_audit_report.csv
+
+# Ignore generated Metrics files in the tmp directory per Metric.rb
+/tmp/dataset_downloads.json
+/tmp/datafile_downloads.json
+/tmp/datafiles.csv
+/tmp/archive_file_contents.csv
+/tmp/datasets.tsv
+/tmp/related_materials.csv
+/tmp/funders.csv
+/tmp/dataset_report.csv
+/tmp/dataset_report.txt
+
+#Ignore Metrics lock files
+/public/*.lock
+
+
 # Ignore deprecated files
 *_deprecated.*
 
@@ -80,6 +107,7 @@ yarn-debug.log*
 /public/uploads
 
 # Ignore local files.
+databank.code-workspace
 core
 *.core
 qemu_chrome_*.core

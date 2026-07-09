@@ -3,6 +3,13 @@ require 'tmpdir'
 require 'csv'
 
 RSpec.describe Metric, type: :model do
+  before do
+    allow(Sunspot).to receive(:remove_all!)
+    allow(Sunspot).to receive(:index)
+    allow(Sunspot).to receive(:index!)
+    allow(Sunspot).to receive(:commit)
+  end
+
   def metrics_config_for(dir)
     {
       dataset_downloads_json: { relative_path: File.join(dir, 'dataset_downloads.json') },
@@ -70,7 +77,7 @@ RSpec.describe Metric, type: :model do
   end
 
   describe '.write_datafile_csv_datafile_batch' do
-    it 'appends rows and downcases doi+filename key for mimetype lookups' do
+    it 'appends rows through the provided CSV writer and falls back to the default mimetype' do
       Dir.mktmpdir('metric-datafile-csv') do |dir|
         target_path = File.join(dir, 'datafiles.csv')
         File.write(target_path, "doi,pub_date,filename,file_format,num_bytes,total_downloads\n")
@@ -79,19 +86,33 @@ RSpec.describe Metric, type: :model do
           identifier: '10.13012/B2IDB-ABC_V1',
           release_date: Date.new(2026, 5, 4)
         )
-        datafile1 = double(bytestream_name: 'FileA.TXT', bytestream_size: 123, total_downloads: 8)
-        datafile2 = double(bytestream_name: 'FileB.bin', bytestream_size: 321, total_downloads: 2)
-        map = {
-          '10.13012/b2idb-abc_v1_filea.txt' => 'text/plain'
+        datafile1 = double(medusa_path: 'path/to/FileA.TXT', bytestream_name: 'FileA.TXT', bytestream_size: 123, total_downloads: 8)
+        datafile2 = double(medusa_path: 'path/to/FileB.bin', bytestream_name: 'FileB.bin', bytestream_size: 321, total_downloads: 2)
+        manifest = {
+          'records' => [
+            { 'cfs_file_relative_path' => 'path/to/FileA.TXT', 'content_type_name' => 'text/plain' }
+          ]
         }
 
-        Metric.write_datafile_csv_datafile_batch(target_path, dataset, [datafile1, datafile2], map)
+        CSV.open(target_path, 'a') do |report|
+          Metric.write_datafile_csv_datafile_batch(report, dataset, [datafile1, datafile2], manifest)
+        end
 
         rows = CSV.read(target_path)
         expect(rows.length).to eq(3)
         expect(rows[1]).to eq(['10.13012/B2IDB-ABC_V1', '2026-05-04', 'FileA.TXT', 'text/plain', '123', '8'])
-        expect(rows[2]).to eq(['10.13012/B2IDB-ABC_V1', '2026-05-04', 'FileB.bin', '', '321', '2'])
+        expect(rows[2]).to eq(['10.13012/B2IDB-ABC_V1', '2026-05-04', 'FileB.bin', Metric::MIMETYPE_DEFAULT, '321', '2'])
       end
+    end
+
+    it 'returns early for an empty batch' do
+      report = instance_double(CSV)
+      dataset = double(identifier: '10.13012/B2IDB-ABC_V1', release_date: Date.new(2026, 5, 4))
+
+      expect(MedusaInfo).not_to receive(:mimetype_batch)
+      expect(report).not_to receive(:<<)
+
+      Metric.write_datafile_csv_datafile_batch(report, dataset, [], { 'records' => [] })
     end
   end
 
@@ -108,7 +129,7 @@ RSpec.describe Metric, type: :model do
           selected_type: 'JournalArticle'
         )
         dataset = double(identifier: '10.13012/B2IDB-XYZ_V1', related_materials: [material], metadata_public?: true)
-        allow(Dataset).to receive(:find_each).and_yield(dataset)
+        expect(Dataset).to receive(:find_each).with(batch_size: 500).and_yield(dataset)
 
         Metric.write_related_materials_csv
 
@@ -140,6 +161,22 @@ RSpec.describe Metric, type: :model do
         expect(totals_rows).to include(['10.13012/B2IDB-AAA_V1', '5'])
       end
     end
+
+    it 'does not replace published files when generation fails' do
+      Dir.mktmpdir('metric-dataset-downloads-failure') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        target_path = METRICS_CONFIG[:dataset_downloads_json][:relative_path]
+        totals_path = target_path.split('.json').first + '_totals.csv'
+        File.write(target_path, "old json\n")
+        File.write(totals_path, "old totals\n")
+
+        allow(DatasetDownloadTally).to receive(:find_in_batches).with(batch_size: 500).and_raise(StandardError, 'boom')
+
+        expect { Metric.write_dataset_downloads_json }.to raise_error(StandardError, 'boom')
+        expect(File.read(target_path)).to eq("old json\n")
+        expect(File.read(totals_path)).to eq("old totals\n")
+      end
+    end
   end
 
   describe '.write_datafile_downloads_json' do
@@ -160,6 +197,19 @@ RSpec.describe Metric, type: :model do
         expect(json['datafile_downloads'].length).to eq(1)
         expect(json['datafile_downloads'][0]['file']).to eq('sample.csv')
         expect(json['datafile_downloads'][0]['tally']).to eq(7)
+      end
+    end
+
+    it 'does not replace the published json when generation fails' do
+      Dir.mktmpdir('metric-datafile-downloads-failure') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        target_path = METRICS_CONFIG[:datafile_downloads_json][:relative_path]
+        File.write(target_path, "old json\n")
+
+        allow(FileDownloadTally).to receive(:find_in_batches).with(batch_size: 500).and_raise(StandardError, 'boom')
+
+        expect { Metric.write_datafile_downloads_json }.to raise_error(StandardError, 'boom')
+        expect(File.read(target_path)).to eq("old json\n")
       end
     end
   end
@@ -185,7 +235,7 @@ RSpec.describe Metric, type: :model do
           plain_text_citation: 'Citation text'
         )
         allow(dataset).to receive(:handle_related_materials)
-        allow(Dataset).to receive(:find_each).and_yield(dataset)
+        expect(Dataset).to receive(:find_each).with(batch_size: 500).and_yield(dataset)
 
         Metric.write_datasets_tsv
 
@@ -198,33 +248,129 @@ RSpec.describe Metric, type: :model do
   end
 
   describe '.write_datafiles_csv' do
-    it 'processes datafiles in batches of 500' do
+    it 'processes dataset datafiles through relation batches and publishes the completed CSV atomically' do
       Dir.mktmpdir('metric-write-datafiles-csv') do |dir|
         stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        target_path = METRICS_CONFIG[:datafiles_csv][:relative_path]
+        File.write(target_path, "old contents\n")
 
-        dataset = instance_double(Dataset, metadata_public?: true, datafiles: Array.new(501) { instance_double(Datafile) })
-        allow(Dataset).to receive(:find_each).and_yield(dataset)
-        allow(MedusaInfo).to receive(:doi_filename_mimetype).and_return({})
-        allow(Metric).to receive(:write_datafile_csv_datafile_batch)
+        datafile_relation = instance_double(ActiveRecord::Relation)
+        datafile1 = instance_double(Datafile,
+                                    medusa_path: 'path/to/file-1.csv',
+                                    bytestream_name: 'file-1.csv',
+                                    bytestream_size: 10,
+                                    total_downloads: 2)
+        datafile2 = instance_double(Datafile,
+                                    medusa_path: 'path/to/file-2.csv',
+                                    bytestream_name: 'file-2.csv',
+                                    bytestream_size: 20,
+                                    total_downloads: 4)
+        dataset = instance_double(Dataset,
+                                  identifier: '10.13012/B2IDB-ABC_V1',
+                                  release_date: Date.new(2026, 5, 4),
+                                  metadata_public?: true,
+                                  datafiles: datafile_relation)
+        expect(Dataset).to receive(:find_each).with(batch_size: 500).and_yield(dataset)
+        allow(datafile_relation).to receive(:reorder).with(nil).and_return(datafile_relation)
+        expect(datafile_relation).to receive(:find_in_batches).with(batch_size: 500).and_yield([datafile1]).and_yield([datafile2])
+        allow(MedusaInfo).to receive(:content_type_manifest).and_return(
+          'records' => [
+            { 'cfs_file_relative_path' => 'path/to/file-1.csv', 'content_type_name' => 'text/csv' },
+            { 'cfs_file_relative_path' => 'path/to/file-2.csv', 'content_type_name' => 'text/plain' }
+          ]
+        )
+        allow(Metric).to receive(:write_datafile_csv_datafile_batch).and_wrap_original do |original, report, *args|
+          expect(File.read(target_path)).to eq("old contents\n")
+          original.call(report, *args)
+        end
 
         Metric.write_datafiles_csv
 
         expect(Metric).to have_received(:write_datafile_csv_datafile_batch).twice
+        rows = CSV.read(target_path)
+        expect(rows).to eq([
+          ['doi', 'pub_date', 'filename', 'file_format', 'num_bytes', 'total_downloads'],
+          ['10.13012/B2IDB-ABC_V1', '2026-05-04', 'file-1.csv', 'text/csv', '10', '2'],
+          ['10.13012/B2IDB-ABC_V1', '2026-05-04', 'file-2.csv', 'text/plain', '20', '4']
+        ])
+      end
+    end
+
+    it 'does not replace the published CSV when generation fails' do
+      Dir.mktmpdir('metric-write-datafiles-csv-failure') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        target_path = METRICS_CONFIG[:datafiles_csv][:relative_path]
+        File.write(target_path, "old contents\n")
+
+        datafile_relation = instance_double(ActiveRecord::Relation)
+        dataset = instance_double(Dataset, metadata_public?: true, datafiles: datafile_relation)
+        expect(Dataset).to receive(:find_each).with(batch_size: 500).and_yield(dataset)
+        allow(datafile_relation).to receive(:reorder).with(nil).and_return(datafile_relation)
+        allow(datafile_relation).to receive(:find_in_batches).with(batch_size: 500).and_yield([instance_double(Datafile)])
+        allow(MedusaInfo).to receive(:content_type_manifest).and_return('records' => [{}])
+        allow(Metric).to receive(:write_datafile_csv_datafile_batch).and_raise(StandardError, 'boom')
+
+        expect { Metric.write_datafiles_csv }.to raise_error(StandardError, 'boom')
+        expect(File.read(target_path)).to eq("old contents\n")
+        expect(Dir.glob(File.join(dir, 'datafiles*.csv'))).to eq([target_path])
+      end
+    end
+
+    it 'logs and exits without publishing when the content type manifest is invalid' do
+      Dir.mktmpdir('metric-write-datafiles-csv-invalid-manifest') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        target_path = METRICS_CONFIG[:datafiles_csv][:relative_path]
+        lock_path = Metric.lock_path(:datafiles_csv)
+        logger = instance_double(ActiveSupport::Logger)
+        File.write(target_path, "old contents\n")
+
+        allow(MedusaInfo).to receive(:content_type_manifest).and_return(nil)
+        allow(Rails).to receive(:logger).and_return(logger)
+        expect(logger).to receive(:error).with('Unable to write datafiles csv: content type manifest is missing or invalid')
+        expect(Dataset).not_to receive(:find_each)
+        expect(Metric).not_to receive(:write_metric_files_atomically)
+
+        Metric.write_datafiles_csv
+
+        expect(File.read(target_path)).to eq("old contents\n")
+        expect(File).not_to exist(lock_path)
+        expect(Dir.glob(File.join(dir, 'datafiles*.csv'))).to eq([target_path])
+      end
+    end
+
+    it 'clears the lock when content type manifest loading raises' do
+      Dir.mktmpdir('metric-write-datafiles-csv-manifest-error') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        target_path = METRICS_CONFIG[:datafiles_csv][:relative_path]
+        lock_path = Metric.lock_path(:datafiles_csv)
+        File.write(target_path, "old contents\n")
+
+        allow(MedusaInfo).to receive(:content_type_manifest).and_raise(StandardError, 'boom')
+
+        expect { Metric.write_datafiles_csv }.to raise_error(StandardError, 'boom')
+        expect(File.read(target_path)).to eq("old contents\n")
+        expect(File).not_to exist(lock_path)
+        expect(Dir.glob(File.join(dir, 'datafiles*.csv'))).to eq([target_path])
       end
     end
   end
 
   describe '.write_container_contents_csv' do
-    it 'writes nested item rows only for archive datafiles' do
+    it 'writes nested item rows only for archive datafiles from batched relations' do
       Dir.mktmpdir('metric-container-contents-csv') do |dir|
         stub_const('METRICS_CONFIG', metrics_config_for(dir))
         target_path = METRICS_CONFIG[:container_contents_csv][:relative_path]
 
+        datafile_relation = instance_double(ActiveRecord::Relation)
+        archive_relation = instance_double(ActiveRecord::Relation)
         nested_item = instance_double(NestedItem, item_path: 'folder/a.txt', item_name: 'a.txt', media_type: 'text/plain')
-        archive_datafile = instance_double(Datafile, archive?: true, bytestream_name: 'files.zip', nested_items: [nested_item])
-        regular_datafile = instance_double(Datafile, archive?: false, bytestream_name: 'plain.txt', nested_items: [])
-        dataset = instance_double(Dataset, identifier: '10.13012/B2IDB-CONT_V1', metadata_public?: true, datafiles: [archive_datafile, regular_datafile])
-        allow(Dataset).to receive(:find_each).and_yield(dataset)
+        archive_datafile = instance_double(Datafile, bytestream_name: 'files.zip', nested_items: [nested_item])
+        dataset = instance_double(Dataset, identifier: '10.13012/B2IDB-CONT_V1', metadata_public?: true, datafiles: datafile_relation)
+        expect(Dataset).to receive(:find_each).with(batch_size: 500).and_yield(dataset)
+        allow(datafile_relation).to receive(:where).with(peek_type: Databank::PeekType::LISTING).and_return(archive_relation)
+        allow(archive_relation).to receive(:includes).with(:nested_items).and_return(archive_relation)
+        allow(archive_relation).to receive(:reorder).with(nil).and_return(archive_relation)
+        expect(archive_relation).to receive(:find_each).with(batch_size: 500).and_yield(archive_datafile)
 
         Metric.write_container_contents_csv
 
@@ -243,7 +389,7 @@ RSpec.describe Metric, type: :model do
 
         dataset = create(:dataset, identifier: '10.13012/B2IDB-FUND_V1')
         funder = create(:funder, dataset: dataset, name: 'NSF', grant: 'NSF-42')
-        allow(Dataset).to receive(:find_each).and_yield(dataset)
+        expect(Dataset).to receive(:find_each).with(batch_size: 500).and_yield(dataset)
         allow(dataset).to receive(:metadata_public?).and_return(true)
 
         Metric.write_funders_csv
@@ -280,7 +426,7 @@ RSpec.describe Metric, type: :model do
         )
         hidden_dataset = instance_double(Dataset, metadata_public?: false, is_most_recent_version: true)
 
-        allow(Dataset).to receive(:find_each).and_yield(visible_dataset).and_yield(hidden_dataset)
+        expect(Dataset).to receive(:find_each).with(batch_size: 500).and_yield(visible_dataset).and_yield(hidden_dataset)
 
         Metric.generate_datasets_reports
 
@@ -291,6 +437,22 @@ RSpec.describe Metric, type: :model do
         text_body = File.read(text_path)
         expect(text_body).to include('Key: IDB-ABC1234')
         expect(text_body).to include('Description: Visible description')
+      end
+    end
+
+    it 'does not replace published dataset reports when generation fails' do
+      Dir.mktmpdir('metric-generate-reports-failure') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        csv_path = METRICS_CONFIG[:dataset_report_csv][:relative_path]
+        text_path = METRICS_CONFIG[:dataset_report_text][:relative_path]
+        File.write(csv_path, "old csv\n")
+        File.write(text_path, "old text\n")
+
+        expect(Dataset).to receive(:find_each).with(batch_size: 500).and_raise(StandardError, 'boom')
+
+        expect { Metric.generate_datasets_reports }.to raise_error(StandardError, 'boom')
+        expect(File.read(csv_path)).to eq("old csv\n")
+        expect(File.read(text_path)).to eq("old text\n")
       end
     end
   end

@@ -13,8 +13,8 @@ class MetricsController < ApplicationController
 
   def admin_metrics
     authorize! :manage, :all
-    @modified_times = Metric.modified_times
-    @refresh_status = Metric.refresh_status
+    # @modified_times = Metric.modified_times
+    # @refresh_status = Metric.refresh_status
     @title = "Admin metrics"
   rescue CanCan::AccessDenied
     redirect_to IDB_CONFIG[:root_url_text],
@@ -108,7 +108,7 @@ class MetricsController < ApplicationController
       redirect_to metrics_path, alert: "#{label} refresh is already in progress. Please refresh the page to check status."
     else
       begin
-        Metric.set_in_progress(metric_key)
+        Metric.mark_in_progress(metric_key)
         MetricRefreshJob.new(metric_key).delay.perform
         redirect_to metrics_path, notice: "#{label} refresh started. Please refresh this page manually to check for an updated status."
       rescue StandardError => e
