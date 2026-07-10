@@ -226,6 +226,19 @@ class Metric
       raise StandardError, "unable to create #{definition.display_name}"
     end
 
+    def ensure_fresh_metrics
+      current_modified_times = modified_times
+      # if any metric is more than a day old, refresh it
+      refreshable_definitions.each do |definition|
+        next unless definition.refreshable?
+
+        modified_time = current_modified_times[definition.key]
+        next unless modified_time
+
+        public_send(writer_method_for(definition.key)) if Time.zone.parse(modified_time) < 1.day.ago
+      end
+    end
+
     ##
     # write the dataset downloads csv
     # Processes tallies in batches to limit memory usage.
