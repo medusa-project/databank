@@ -106,16 +106,16 @@ class MetricsController < ApplicationController
 
   def enqueue_metric_refresh(metric_key, label)
     if Metric.in_progress?(metric_key)
-      redirect_to metrics_path, alert: "#{label} refresh is already in progress. Please refresh the page to check status."
+      redirect_to admin_metrics_path, alert: "#{label} refresh in progress. Refresh the page to check status."
     else
       begin
         Metric.mark_in_progress(metric_key)
         MetricRefreshJob.new(metric_key).delay.perform
-        redirect_to metrics_path, notice: "#{label} refresh started. Please refresh this page manually to check for an updated status."
+        redirect_to admin_metrics_path, notice: "#{label} refresh started. Refresh the page to check updated status."
       rescue StandardError => e
         Metric.clear_in_progress(metric_key)
         Rails.logger.error("Unable to enqueue metric refresh for #{metric_key}: #{e.message}")
-        redirect_to metrics_path, alert: "Unable to start #{label} refresh right now. Please try again."
+        redirect_to admin_metrics_path, alert: "Unable to start #{label} refresh right now. Please try again."
       end
     end
   end
