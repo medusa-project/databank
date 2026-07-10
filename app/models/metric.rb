@@ -150,7 +150,9 @@ class Metric
     ##
     # @return [Hash] map of metric_key => Boolean indicating in-progress state for each metric
     def refresh_status
-      refreshable_definitions.index_with(&:in_progress?)
+      refreshable_definitions.each_with_object({}) do |definition, statuses|
+        statuses[definition.key] = definition.in_progress?
+      end
     end
 
     ##

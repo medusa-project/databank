@@ -30,11 +30,12 @@
   - columns = definition.columns || []
   - description_blocks = definition.description_blocks || []
 
-  .metrics-border
+  .metrics-border{data: {testid: "metric-card-#{metric_key}"}}
     %h3
       = metric_label
       - if !refresh_in_progress && download_path.present?
         %a.btn.btn-primary.btn-sm.idb{href: download_path,
+                                      data: {testid: "metric-download-#{metric_key}"},
                                       "aria-label" => "Download #{metric_label}",
                                       title: "Download #{metric_label}",
                                       download: (is_json_metric ? download_filename : nil)}
@@ -48,11 +49,11 @@
     - if current_user && current_user.role == "admin" && definition.refreshable? && refresh_path.present?
       .curator-only.inline-block
         - if refresh_in_progress
-          %p.alert.alert-info{role: "status"}
-            %strong Refresh in progress.
+          %p.alert.alert-info{role: "status", data: {testid: "metric-refresh-status-#{metric_key}"}}
+            %strong= "#{metric_label} refresh in progress."
             Please refresh this page manually to check for an updated status.
         -else  
-          %a.btn.btn-success.btn-sm.idb{href: refresh_path}
+          %a.btn.btn-success.btn-sm.idb{href: refresh_path, data: {testid: "metric-refresh-#{metric_key}"}}
             %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
             = "Regenerate #{metric_label}"
 
