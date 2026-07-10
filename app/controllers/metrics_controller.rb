@@ -4,7 +4,6 @@ require "csv"
 require "tempfile"
 
 class MetricsController < ApplicationController
-
   # Responds to `GET /metrics`
   def index
     @title = "Metrics"

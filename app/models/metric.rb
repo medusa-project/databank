@@ -177,7 +177,7 @@ class Metric
       end
 
       refreshable_definitions.each_with_object({}) do |definition, hash|
-        hash[definition.key] = File.mtime(definition.relative_path).to_formatted_s(:long)
+        hash[definition.key] = File.mtime(definition.relative_path).strftime("%B %d, %Y %I:%M %P %Z")
       end
     end
 
