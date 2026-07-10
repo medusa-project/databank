@@ -33,18 +33,13 @@
   .metrics-border
     %h3
       = metric_label
-      - if download_path.present?
+      - if !refresh_in_progress && download_path.present?
         %a.btn.btn-primary.btn-sm.idb{href: download_path,
                                       "aria-label" => "Download #{metric_label}",
                                       title: "Download #{metric_label}",
                                       download: (is_json_metric ? download_filename : nil)}
           %span.glyphicon.glyphicon-download-alt{"aria-hidden" => "true"}
           %span.sr-only= "Download #{metric_label}"
-
-    - if refresh_in_progress
-      %p.alert.alert-info{role: "status"}
-        %strong Refresh in progress.
-        Please refresh this page manually to check for an updated status.
 
     %p.inline-block
       Modified:
@@ -53,10 +48,10 @@
     - if current_user && current_user.role == "admin" && definition.refreshable? && refresh_path.present?
       .curator-only.inline-block
         - if refresh_in_progress
-          %a.btn.btn-success.btn-sm.idb.disabled{"aria-disabled" => "true", tabindex: "-1", title: "Refresh already in progress"}
-            %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
-            = "Regenerate #{metric_label}"
-        - else
+          %p.alert.alert-info{role: "status"}
+            %strong Refresh in progress.
+            Please refresh this page manually to check for an updated status.
+        -else  
           %a.btn.btn-success.btn-sm.idb{href: refresh_path}
             %span.glyphicon.glyphicon-refresh{"aria-hidden" => "true"}
             = "Regenerate #{metric_label}"
