@@ -150,7 +150,9 @@ class Metric
     ##
     # @return [Hash] map of metric_key => Boolean indicating in-progress state for each metric
     def refresh_status
-      refreshable_definitions.index_with(&:in_progress?)
+      refreshable_definitions.each_with_object({}) do |definition, statuses|
+        statuses[definition.key] = definition.in_progress?
+      end
     end
 
     ##
@@ -175,7 +177,7 @@ class Metric
       end
 
       refreshable_definitions.each_with_object({}) do |definition, hash|
-        hash[definition.key] = File.mtime(definition.relative_path).to_formatted_s(:long)
+        hash[definition.key] = File.mtime(definition.relative_path).strftime("%B %d, %Y %I:%M %P %Z")
       end
     end
 
@@ -222,6 +224,19 @@ class Metric
       return if File.exist?(definition.relative_path)
 
       raise StandardError, "unable to create #{definition.display_name}"
+    end
+
+    def ensure_fresh_metrics
+      current_modified_times = modified_times
+      # if any metric is more than a day old, refresh it
+      refreshable_definitions.each do |definition|
+        next unless definition.refreshable?
+
+        modified_time = current_modified_times[definition.key]
+        next unless modified_time
+
+        public_send(writer_method_for(definition.key)) if Time.zone.parse(modified_time) < 1.day.ago
+      end
     end
 
     ##

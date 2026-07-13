@@ -82,6 +82,24 @@ RSpec.describe Metric, type: :model do
     end
   end
 
+  describe '.refresh_status' do
+    it 'returns in-progress state keyed by metric symbol' do
+      Dir.mktmpdir('metric-refresh-status') do |dir|
+        stub_const('METRICS_CONFIG', metrics_config_for(dir))
+        definition = Metric.definition_for(:funders_csv)
+        FileUtils.touch(definition.lock_path)
+
+        result = Metric.refresh_status
+
+        expect(result).to include(:funders_csv)
+        expect(result[:funders_csv]).to be(true)
+        expect(result.keys).to all(be_a(Symbol))
+      ensure
+        File.delete(definition.lock_path) if definition && File.exist?(definition.lock_path)
+      end
+    end
+  end
+
   describe '.definitions' do
     it 'builds definition objects from config entries' do
       Dir.mktmpdir('metric-definitions') do |dir|
