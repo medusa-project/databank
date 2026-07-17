@@ -45,10 +45,16 @@ module Migration::Legacy; end
 #   - Suitable for very large datasets with thousands of nested items
 #
 # Preferred two-phase protocol for large cutovers:
+#   NOTE: This only changes how dataset records are exported.
+#   Users, permissions, grants, guides, spotlights, medusa ingests, download metrics,
+#   and audits are still exported as separate bundles and are still required for cutover.
 #   1) Export structure records without nested items:
 #      RAILS_ENV=demo SEPARATE_NESTED_ITEMS_BUNDLE=true bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   2) Export nested items as a separate pipeline artifact:
 #      RAILS_ENV=demo SEPARATE_NESTED_ITEMS_BUNDLE=true bin/rails migration:legacy:export_nested_items_bundle OUTPUT_ROOT=/tmp/databank_exports
+#
+# Simplest full export command (includes nested-items bundle plus all other bundles):
+#   RAILS_ENV=demo SEPARATE_NESTED_ITEMS_BUNDLE=true bin/rails migration:legacy:export_all OUTPUT_ROOT=/tmp/databank_exports
 #
 # Runbook (export side):
 #   1) Export users bundle
