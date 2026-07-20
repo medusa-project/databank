@@ -15,6 +15,7 @@ module Migration::Legacy; end
 # Or export individually:
 #   RAILS_ENV=demo bin/rails migration:legacy:export_users_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   RAILS_ENV=demo bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports (exports datasets with nested_items in flat NDJSON format)
+#   RAILS_ENV=demo bin/rails migration:legacy:export_nested_items_bundle OUTPUT_ROOT=/tmp/databank_exports (optional dedicated nested_items export)
 #   RAILS_ENV=demo bin/rails migration:legacy:export_permissions_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   RAILS_ENV=demo bin/rails migration:legacy:export_dataset_access_grants_bundle OUTPUT_ROOT=/tmp/databank_exports
 #   RAILS_ENV=demo bin/rails migration:legacy:export_guides_bundle OUTPUT_ROOT=/tmp/databank_exports
@@ -42,6 +43,36 @@ module Migration::Legacy; end
 #   - Batch processing of records
 #   - Easier relationship reconstruction
 #   - Suitable for very large datasets with thousands of nested items
+#
+# Preferred two-phase protocol for large cutovers:
+#   NOTE: This only changes how dataset records are exported.
+#   Users, permissions, grants, guides, spotlights, medusa ingests, download metrics,
+#   and audits are still exported as separate bundles and are still required for cutover.
+#   The two individual commands below are shown for reference (e.g. re-running a failed step).
+#   For a full export, use export_all with the flag instead — it runs both automatically.
+#   1) Export structure records without nested items (datasets + datafiles only):
+#      RAILS_ENV=demo SEPARATE_NESTED_ITEMS_BUNDLE=true bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   2) Export nested items as a separate bundle (nested_items only):
+#      RAILS_ENV=demo SEPARATE_NESTED_ITEMS_BUNDLE=true bin/rails migration:legacy:export_nested_items_bundle OUTPUT_ROOT=/tmp/databank_exports
+#
+# Recommended full export command (runs all bundles including both dataset steps above):
+#   RAILS_ENV=demo SEPARATE_NESTED_ITEMS_BUNDLE=true bin/rails migration:legacy:export_all OUTPUT_ROOT=/tmp/databank_exports
+#
+# Runbook (export side):
+#   1) Export users bundle
+#      RAILS_ENV=demo bin/rails migration:legacy:export_users_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   2) Export structure bundle (datasets + datafiles)
+#      RAILS_ENV=demo SEPARATE_NESTED_ITEMS_BUNDLE=true bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   3) Export nested-items bundle
+#      RAILS_ENV=demo SEPARATE_NESTED_ITEMS_BUNDLE=true bin/rails migration:legacy:export_nested_items_bundle OUTPUT_ROOT=/tmp/databank_exports
+#   4) Export remaining bundles
+#      RAILS_ENV=demo bin/rails migration:legacy:export_permissions_bundle OUTPUT_ROOT=/tmp/databank_exports
+#      RAILS_ENV=demo bin/rails migration:legacy:export_dataset_access_grants_bundle OUTPUT_ROOT=/tmp/databank_exports
+#      RAILS_ENV=demo bin/rails migration:legacy:export_guides_bundle OUTPUT_ROOT=/tmp/databank_exports
+#      RAILS_ENV=demo bin/rails migration:legacy:export_featured_researchers_bundle OUTPUT_ROOT=/tmp/databank_exports
+#      RAILS_ENV=demo bin/rails migration:legacy:export_medusa_ingests_bundle OUTPUT_ROOT=/tmp/databank_exports
+#      RAILS_ENV=demo bin/rails migration:legacy:export_download_metrics_bundle OUTPUT_ROOT=/tmp/databank_exports
+#      RAILS_ENV=demo bin/rails migration:legacy:export_audits_bundle OUTPUT_ROOT=/tmp/databank_exports
 #
 # Each export task creates a timestamped subdirectory with:
 #   <bundle>.ndjson (NDJSON records, one per line, memory-efficient for large exports)
@@ -709,6 +740,10 @@ end
 
 namespace :migration do # rubocop:disable Metrics/BlockLength
   namespace :legacy do # rubocop:disable Metrics/BlockLength
+    def separate_nested_items_bundle?
+      ENV.fetch("SEPARATE_NESTED_ITEMS_BUNDLE", "false").casecmp("true").zero?
+    end
+
     desc "Export legacy users to NDJSON with SHA256 artifacts"
     task export_users_bundle: :environment do
       output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports_users").to_s)
@@ -781,7 +816,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
 
     desc "Export all legacy migration bundles in required order"
     task export_all: :environment do
-      %w[
+      task_names = %w[
         migration:legacy:export_users_bundle
         migration:legacy:export_bundle
         migration:legacy:export_permissions_bundle
@@ -791,7 +826,10 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
         migration:legacy:export_medusa_ingests_bundle
         migration:legacy:export_download_metrics_bundle
         migration:legacy:export_audits_bundle
-      ].each do |task_name|
+      ]
+      task_names.insert(2, "migration:legacy:export_nested_items_bundle") if separate_nested_items_bundle?
+
+      task_names.each do |task_name|
         puts "Running #{task_name}"
         task = Rake::Task[task_name]
         task.reenable
@@ -1594,6 +1632,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
     task export_bundle: :environment do # rubocop:disable Metrics/BlockLength
       output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports").to_s)
       include_tests = ENV.fetch("INCLUDE_TESTS", "false").casecmp("true").zero?
+      export_nested_inline = !separate_nested_items_bundle?
       since_raw = ENV["SINCE"]
       until_raw = ENV["UNTIL"]
 
@@ -1617,6 +1656,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
 
       total_datasets = scope.count
       puts "Exporting #{total_datasets} datasets in flat format..."
+      puts "Nested item export mode: #{export_nested_inline ? 'inline' : 'separate bundle'}"
 
       digest = Digest::SHA256.new
       dataset_count = 0
@@ -1645,14 +1685,16 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
             digest.update("\n")
             datafile_count += 1
 
-            # Write nested item records (streaming)
-            Migration::Legacy::FlatExportSerializer.serialize_nested_items(dataset, datafile) do |item_record|
-              line = JSON.generate(item_record)
-              file.write(line)
-              file.write("\n")
-              digest.update(line)
-              digest.update("\n")
-              nested_item_count += 1
+            if export_nested_inline
+              # Write nested item records (streaming)
+              Migration::Legacy::FlatExportSerializer.serialize_nested_items(dataset, datafile) do |item_record|
+                line = JSON.generate(item_record)
+                file.write(line)
+                file.write("\n")
+                digest.update(line)
+                digest.update("\n")
+                nested_item_count += 1
+              end
             end
           end
 
@@ -1679,6 +1721,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
           datafiles: datafile_count,
           nested_items: nested_item_count
         },
+        nested_items_exported_separately: !export_nested_inline,
         sha256: checksum,
         include_tests: include_tests,
         since: since_time&.iso8601,
@@ -1693,6 +1736,80 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       puts "Manifest: #{manifest_path}"
       puts "Datasets: #{dataset_count}"
       puts "Datafiles: #{datafile_count}"
+      puts "Nested items: #{nested_item_count}"
+      puts "Total time: #{total_time}s"
+    end
+
+    desc "Export only nested_item records in flat NDJSON format for two-phase imports"
+    task export_nested_items_bundle: :environment do # rubocop:disable Metrics/BlockLength
+      output_root = ENV.fetch("OUTPUT_ROOT", Rails.root.join("tmp/migration_exports").to_s)
+      include_tests = ENV.fetch("INCLUDE_TESTS", "false").casecmp("true").zero?
+      since_raw = ENV["SINCE"]
+      until_raw = ENV["UNTIL"]
+
+      since_time = since_raw.present? ? Time.zone.parse(since_raw) : nil
+      until_time = until_raw.present? ? Time.zone.parse(until_raw) : nil
+
+      timestamp = Time.current.utc.strftime("%Y%m%dT%H%M%SZ")
+      run_dir = File.join(output_root, "dataset_nested_items_#{timestamp}")
+      FileUtils.mkdir_p(run_dir)
+
+      bundle_file = "legacy_nested_items.ndjson"
+      bundle_path = File.join(run_dir, bundle_file)
+      checksum_path = "#{bundle_path}.sha256"
+      manifest_path = File.join(run_dir, "manifest.json")
+
+      scope = Dataset.includes(:datafiles)
+      scope = scope.where(is_test: false) unless include_tests
+      scope = scope.where("updated_at >= ?", since_time) if since_time
+      scope = scope.where("updated_at < ?", until_time) if until_time
+      scope = scope.order(:id)
+
+      total_datasets = scope.count
+      puts "Exporting nested_items for #{total_datasets} datasets in separate bundle..."
+
+      digest = Digest::SHA256.new
+      nested_item_count = 0
+      start_time = Time.current
+
+      File.open(bundle_path, "w") do |file|
+        scope.find_each(batch_size: 50) do |dataset|
+          dataset.datafiles.each do |datafile|
+            Migration::Legacy::FlatExportSerializer.serialize_nested_items(dataset, datafile) do |item_record|
+              line = JSON.generate(item_record)
+              file.write(line)
+              file.write("\n")
+              digest.update(line)
+              digest.update("\n")
+              nested_item_count += 1
+            end
+          end
+        end
+      end
+
+      checksum = digest.hexdigest
+      File.write(checksum_path, "#{checksum}  #{bundle_file}\n")
+
+      manifest = {
+        generated_at: Time.current.utc.iso8601,
+        bundle_file: bundle_file,
+        format_version: 2,
+        format_type: "flat_nested_items",
+        record_counts: {
+          nested_items: nested_item_count
+        },
+        sha256: checksum,
+        include_tests: include_tests,
+        since: since_time&.iso8601,
+        until: until_time&.iso8601
+      }
+      File.write(manifest_path, JSON.pretty_generate(manifest))
+
+      total_time = (Time.current - start_time).to_i
+      puts "\n✓ Nested items export complete!"
+      puts "Bundle: #{bundle_path}"
+      puts "Checksum: #{checksum_path}"
+      puts "Manifest: #{manifest_path}"
       puts "Nested items: #{nested_item_count}"
       puts "Total time: #{total_time}s"
     end

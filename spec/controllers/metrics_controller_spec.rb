@@ -31,17 +31,24 @@ RSpec.describe MetricsController, type: :controller do
   end
 
   def ensure_metrics_static_files!
-    required_paths = [
-      Rails.root.join('public/dataset_downloads.csv').to_s,
-      Rails.root.join('public/datafile_downloads.csv').to_s,
-      Rails.root.join('public/archive_file_contents.csv').to_s
-    ]
+    required_files = {
+      Rails.root.join('public/dataset_downloads.csv').to_s => "doi,date,tally\n",
+      Rails.root.join('public/datafile_downloads.csv').to_s => "doi,file,date,tally\n",
+      Rails.root.join('public/archive_file_contents.csv').to_s => "doi,container_filename,content_filepath,content_filename,file_format\n"
+    }
 
-    return if required_paths.all? { |path| File.exist?(path) }
+    return if required_files.keys.all? { |path| File.exist?(path) }
 
     Rails.application.load_tasks unless Rake::Task.task_defined?('metrics:generate_docs')
     Rake::Task['metrics:generate_docs'].reenable
     Rake::Task['metrics:generate_docs'].invoke
+
+    required_files.each do |path, header|
+      next if File.exist?(path)
+
+      FileUtils.mkdir_p(File.dirname(path))
+      File.write(path, header)
+    end
   end
 
   before(:all) do
@@ -187,7 +194,7 @@ RSpec.describe MetricsController, type: :controller do
   end
 
   describe 'GET #refresh_dataset_downloads_csv' do
-    it 'initiates refresh and redirects to metrics index' do
+    it 'initiates refresh and redirects to admin metrics' do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:dataset_downloads_csv).and_return(false)
@@ -198,7 +205,7 @@ RSpec.describe MetricsController, type: :controller do
 
       get :refresh_dataset_downloads_csv
 
-      expect(response).to redirect_to(metrics_path)
+      expect(response).to redirect_to(admin_metrics_path)
       expect(flash[:notice]).to include('refresh started')
       expect(Metric).to have_received(:mark_in_progress).with(:dataset_downloads_csv)
       expect(MetricRefreshJob).to have_received(:new).with(:dataset_downloads_csv)
@@ -206,7 +213,7 @@ RSpec.describe MetricsController, type: :controller do
   end
 
   describe 'GET #refresh_datafile_downloads_csv' do
-    it 'initiates refresh and redirects to metrics index' do
+    it 'initiates refresh and redirects to admin metrics' do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:datafile_downloads_csv).and_return(false)
@@ -217,14 +224,14 @@ RSpec.describe MetricsController, type: :controller do
 
       get :refresh_datafile_downloads_csv
 
-      expect(response).to redirect_to(metrics_path)
+      expect(response).to redirect_to(admin_metrics_path)
       expect(flash[:notice]).to include('refresh started')
       expect(MetricRefreshJob).to have_received(:new).with(:datafile_downloads_csv)
     end
   end
 
   describe 'GET #refresh_datasets_tsv' do
-    it 'initiates refresh and redirects to metrics index' do
+    it 'initiates refresh and redirects to admin metrics' do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:datasets_tsv).and_return(false)
@@ -235,14 +242,14 @@ RSpec.describe MetricsController, type: :controller do
 
       get :refresh_datasets_tsv
 
-      expect(response).to redirect_to(metrics_path)
+      expect(response).to redirect_to(admin_metrics_path)
       expect(flash[:notice]).to include('refresh started')
       expect(MetricRefreshJob).to have_received(:new).with(:datasets_tsv)
     end
   end
 
   describe 'GET #refresh_datafiles_csv' do
-    it 'initiates refresh and redirects to metrics index' do
+    it 'initiates refresh and redirects to admin metrics' do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:datafiles_csv).and_return(false)
@@ -253,14 +260,14 @@ RSpec.describe MetricsController, type: :controller do
 
       get :refresh_datafiles_csv
 
-      expect(response).to redirect_to(metrics_path)
+      expect(response).to redirect_to(admin_metrics_path)
       expect(flash[:notice]).to include('refresh started')
       expect(MetricRefreshJob).to have_received(:new).with(:datafiles_csv)
     end
   end
 
   describe 'GET #refresh_container_csv' do
-    it 'initiates refresh and redirects to metrics index' do
+    it 'initiates refresh and redirects to admin metrics' do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:container_contents_csv).and_return(false)
@@ -271,14 +278,14 @@ RSpec.describe MetricsController, type: :controller do
 
       get :refresh_container_csv
 
-      expect(response).to redirect_to(metrics_path)
+      expect(response).to redirect_to(admin_metrics_path)
       expect(flash[:notice]).to include('refresh started')
       expect(MetricRefreshJob).to have_received(:new).with(:container_contents_csv)
     end
   end
 
   describe 'GET #refresh_funders_csv' do
-    it 'initiates refresh and redirects to metrics index' do
+    it 'initiates refresh and redirects to admin metrics' do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:funders_csv).and_return(false)
@@ -289,14 +296,14 @@ RSpec.describe MetricsController, type: :controller do
 
       get :refresh_funders_csv
 
-      expect(response).to redirect_to(metrics_path)
+      expect(response).to redirect_to(admin_metrics_path)
       expect(flash[:notice]).to include('refresh started')
       expect(MetricRefreshJob).to have_received(:new).with(:funders_csv)
     end
   end
 
   describe 'GET #refresh_related_materials_csv' do
-    it 'initiates refresh and redirects to metrics index' do
+    it 'initiates refresh and redirects to admin metrics' do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:related_materials_csv).and_return(false)
@@ -307,14 +314,14 @@ RSpec.describe MetricsController, type: :controller do
 
       get :refresh_related_materials_csv
 
-      expect(response).to redirect_to(metrics_path)
+      expect(response).to redirect_to(admin_metrics_path)
       expect(flash[:notice]).to include('refresh started')
       expect(MetricRefreshJob).to have_received(:new).with(:related_materials_csv)
     end
   end
 
   describe 'GET #refresh_container_contents_csv' do
-    it 'initiates refresh and redirects to metrics index' do
+    it 'initiates refresh and redirects to admin metrics' do
       job = instance_double(MetricRefreshJob)
       delayed = double('DelayedProxy')
       allow(Metric).to receive(:in_progress?).with(:container_contents_csv).and_return(false)
@@ -325,7 +332,7 @@ RSpec.describe MetricsController, type: :controller do
 
       get :refresh_container_contents_csv
 
-      expect(response).to redirect_to(metrics_path)
+      expect(response).to redirect_to(admin_metrics_path)
       expect(flash[:notice]).to include('refresh started')
       expect(MetricRefreshJob).to have_received(:new).with(:container_contents_csv)
     end

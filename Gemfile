@@ -118,6 +118,7 @@ gem "jwt", "~> 2.10", ">= 2.10.3"
 gem "rack", ">= 3.2.6"
 gem "rack-session", ">= 2.1.2"
 gem "websocket-driver", ">= 0.8.2"
+gem "rails-html-sanitizer", ">= 1.7.1"
 
 # use sunspot for searching
 gem "progress_bar"
