@@ -48,12 +48,14 @@ module Migration::Legacy; end
 #   NOTE: This only changes how dataset records are exported.
 #   Users, permissions, grants, guides, spotlights, medusa ingests, download metrics,
 #   and audits are still exported as separate bundles and are still required for cutover.
-#   1) Export structure records without nested items:
+#   The two individual commands below are shown for reference (e.g. re-running a failed step).
+#   For a full export, use export_all with the flag instead — it runs both automatically.
+#   1) Export structure records without nested items (datasets + datafiles only):
 #      RAILS_ENV=demo SEPARATE_NESTED_ITEMS_BUNDLE=true bin/rails migration:legacy:export_bundle OUTPUT_ROOT=/tmp/databank_exports
-#   2) Export nested items as a separate pipeline artifact:
+#   2) Export nested items as a separate bundle (nested_items only):
 #      RAILS_ENV=demo SEPARATE_NESTED_ITEMS_BUNDLE=true bin/rails migration:legacy:export_nested_items_bundle OUTPUT_ROOT=/tmp/databank_exports
 #
-# Simplest full export command (includes nested-items bundle plus all other bundles):
+# Recommended full export command (runs all bundles including both dataset steps above):
 #   RAILS_ENV=demo SEPARATE_NESTED_ITEMS_BUNDLE=true bin/rails migration:legacy:export_all OUTPUT_ROOT=/tmp/databank_exports
 #
 # Runbook (export side):
