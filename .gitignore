@@ -29,6 +29,7 @@ pickle-email-*.html
 !/log/.keep
 !/tmp/.keep
 *.log
+/working
 
 # Ignore generated Metrics files
 /public/dataset_downloads.csv
