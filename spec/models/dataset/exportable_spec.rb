@@ -70,10 +70,12 @@ RSpec.describe Dataset::Exportable, type: :model do
         '<person><organisationalUnit uuid="unit-123"/><period><startDate>2021-04-05</startDate></period></person>'
       )
 
-      allow(IllinoisExpertsClient).to receive(:person_xml_doc).and_return(nil)
-      allow(IllinoisExpertsClient).to receive(:person_xml_doc)
-        .with(internal_creator.email)
-        .and_return(internal_person_doc)
+      allow(IllinoisExpertsClient).to receive(:prefetch_person_xml_docs).and_return(
+        {
+          internal_creator.email => internal_person_doc,
+          illinois_external_creator.email => nil
+        }
+      )
 
       xml = Dataset.to_illinois_experts
 

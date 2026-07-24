@@ -19,6 +19,12 @@ module Dataset::Exportable
 
       return nil unless datasets.count.positive?
 
+      dataset_creators = datasets.each_with_object({}) do |dataset, creators_by_dataset|
+        creators_by_dataset[dataset] = dataset.individual_creators
+      end
+      creator_emails = dataset_creators.values.flatten.map(&:email)
+      person_docs_by_email = IllinoisExpertsClient.prefetch_person_xml_docs(creator_emails)
+
       root_string = %(<v1:datasets xmlns:v1="v1.dataset.pure.atira.dk" xmlns:v3="v3.commons.pure.atira.dk"></datasets>)
       doc = Nokogiri::XML::Document.parse(root_string)
       datasets_node = doc.first_element_child
@@ -42,10 +48,11 @@ module Dataset::Exportable
 
         dataset_release_date = dataset.release_date || Time.zone.today
 
-        dataset.individual_creators.each do |creator|
+        dataset_creators[dataset].each do |creator|
           next if creator.email.strip == ""
 
-          person_xml_doc = IllinoisExpertsClient.person_xml_doc(creator.email)
+          normalized_email = creator.email.to_s.strip.downcase
+          person_xml_doc = person_docs_by_email[normalized_email]
           person_node = if !person_xml_doc.nil?
                           internal_expert(doc, creator, person_xml_doc, dataset_release_date)
                         elsif creator.at_illinois?
