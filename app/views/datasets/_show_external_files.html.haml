@@ -9,11 +9,7 @@
         
         .panel-body
           - if dataset.external_files_note.present?
-            = sanitize(
-              dataset.external_files_note,
-              tags: %w[p br ul ol li a strong em b i u blockquote code pre h3 h4 h5 h6],
-              attributes: %w[href title target rel]
-            )
+            = sanitize(dataset.external_files_note, tags: %w[p br ul ol li a strong em b i u blockquote code pre h3 h4 h5 h6], attributes: %w[href title target rel])
           - else
             %p No external files note is available.
           
