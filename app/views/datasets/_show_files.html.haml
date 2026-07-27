@@ -8,10 +8,10 @@
         %a(role="button" data-toggle="collapse" data-parent="#files" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="accordion-toggle")
           -# Label section Files - Partial if there are external files, otherwise just Files
           - if dataset.external_files?
-            %h2#files-label.panel-title.metadata-label Files - Partial
+            %h2.panel-title.metadata-label Files - Partial
           - else
-            %h2#files-label.panel-title.metadata-label Files
-      %div(class="panel-collapse.collapse.in" id="collapseOne" aria-labelledby="headingOne")
+            %h2.panel-title.metadata-label Files
+      .panel-collapse.collapse.in(id="collapseOne" aria-labelledby="headingOne")
         .panel-body
           =render partial: 'file_restriction_alert', locals: {dataset: dataset}
           - if dataset.publication_state == Databank::PublicationState::RELEASED && globus_only && !@globus_downloadable
