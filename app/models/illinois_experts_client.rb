@@ -260,7 +260,9 @@ class IllinoisExpertsClient
   def self.association_start_date(associations)
     associations.each do |association|
       start_date = association.dig("period", "startDate")
-      return start_date if start_date.present?
+      next if start_date.blank?
+
+      return start_date.to_s.split("T").first
     end
 
     nil
