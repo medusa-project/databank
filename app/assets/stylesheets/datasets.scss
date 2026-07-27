@@ -458,7 +458,7 @@ a {
   border-left: 3px solid $color__light-grey;
 
 }
-.selected-version{
+.selected-version, .external-files-alert {
   background-color: $color__yellow-background !important;
   font-weight: bold;
 }

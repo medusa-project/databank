@@ -153,6 +153,7 @@ class Dataset < ApplicationRecord
     string :publication_state
     boolean :is_test
     boolean :is_most_recent_version
+    boolean :external_files
     time :ingest_datetime
     time :release_date
     time :created_at
@@ -234,8 +235,11 @@ class Dataset < ApplicationRecord
   # The criteria for this is at least one of the following is true:
   # - the dataset has external files not that is not nill, empty, or ""
   def external_files?
-    no_external_files = external_files_note.blank? || external_files_note == ""
-    !no_external_files
+    external_files_note.present? || external_files_link.present?
+  end
+
+  def external_files
+    external_files?
   end
 
   ##

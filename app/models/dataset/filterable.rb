@@ -39,6 +39,7 @@ module Dataset::Filterable
         facets = admin_facets(params: params)
         list = list_with_facet(list: list, search_get_facets: facets, facet: :visibility_code)
         list = list_with_facet(list: list, search_get_facets: facets, facet: :depositor)
+        list = list_with_facet(list: list, search_get_facets: facets, facet: :external_files)
       when Databank::UserRole::DEPOSITOR
         raise ArgumentError.new("net_id required for depositor role") if user.nil?
 
@@ -99,6 +100,14 @@ module Dataset::Filterable
           end
         end
 
+        if params.has_key?("external_files") && params["external_files"].present?
+          any_of do
+            params["external_files"].each do |external_files_value|
+              with :external_files, ActiveModel::Type::Boolean.new.cast(external_files_value)
+            end
+          end
+        end
+
         if params.has_key?("publication_years")
           any_of do
             params["publication_years"].each do |publication_year|
@@ -137,6 +146,7 @@ module Dataset::Filterable
         facet(:depositor)
         facet(:subject_text)
         facet(:visibility_code)
+        facet(:external_files)
         facet(:hold_state)
         facet(:datafile_extensions)
         facet(:publication_year)
@@ -365,6 +375,7 @@ module Dataset::Filterable
         facet(:depositor)
         facet(:subject_text)
         facet(:visibility_code)
+        facet(:external_files)
         facet(:hold_state)
         facet(:datafile_extensions)
         facet(:publication_year)

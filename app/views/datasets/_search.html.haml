@@ -141,6 +141,19 @@
                 -else
                   %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" id="vis_#{row.value}" name="visibility_codes[]" value="#{row.value}" checked=false)
                     =label_tag "vis_#{row.value}", "#{Dataset.visibility_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
+        -# External Files facet for admin users, external files is a boolean value. Check box to filter datasets with external files
+        -if current_user && current_user.role == 'admin'
+          %fieldset.search-facet
+            %legend(class="panel-title")
+              %h3.filter-heading External Files
+            -for row in @search.facet(:external_files).rows
+              .facet
+                -if params.has_key?('external_files') && params['external_files'].include?(row.value)
+                  %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" id="ext_#{row.value}" name="external_files[]" value="#{row.value}" checked=true)
+                    =label_tag "ext_#{row.value}", "#{Dataset.external_files_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
+                -else
+                  %input(type="checkbox" class="checkFacet checkFacetGroup publication_state_facet" id="ext_#{row.value}" name="external_files[]" value="#{row.value}" checked=false)
+                    =label_tag "ext_#{row.value}", "#{Dataset.external_files_name_from_code(row.value)} (#{row.count})", class: 'facet_label'
 
     .col-md-8
       %title
