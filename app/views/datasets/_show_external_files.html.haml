@@ -1,16 +1,22 @@
 .dataset-files
   .panel-group(id="externalFiles")
     .panel.panel-default
-      .panel-heading(id="headingExternalFiles")
-        .panel-title
-          %a(role="button" data-toggle="collapse" data-parent="#externalFles" href="#collapseExternalFiles" aria-expanded="true" aria-controls="collapseExternalFiles" class="accordion-toggle")
-            %span(class="metadata-label" id="external-files-label") Accessing Externally Stored Files
-      %div(class="panel-collapse.collapse.in" id="collapseExternalFiles" aria-labelledby="headingExternalFiles")
+      .panel-heading(id="headingExternalFiles")   
+        %a(role="button" data-toggle="collapse" data-parent="#externalFiles" href="#collapseExternalFiles" aria-expanded="true" aria-controls="collapseExternalFiles" class="accordion-toggle")
+          %h2.panel-title.metadata-label Files - External Link
+      .panel-collapse.collapse.in(id="collapseExternalFiles" aria-labelledby="headingExternalFiles")
+        
         .panel-body
-          %p
-            = dataset.external_files_note 
-          -if dataset.external_files_link
+          - if dataset.external_files_note.present?
+            = sanitize(dataset.external_files_note, tags: %w[p br ul ol li a strong em b i u blockquote code pre h3 h4 h5 h6], attributes: %w[href title target rel])
+          - else
+            %p No external files note is available.
+          
+          -if dataset.external_files_link.present?
             .row
               .col-md-4.col-md-offset-8
                 =link_to "Access Associated Large Files", "#{dataset.external_files_link}", target: "_blank", class: "btn btn-primary idb"
-              
+          -else
+            .row
+              .col-md-4.col-md-offset-8
+                %p No associated large files are available yet.

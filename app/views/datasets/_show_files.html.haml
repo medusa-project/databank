@@ -1,10 +1,17 @@
+
 .dataset-files
+  -if dataset.external_files?
+    =render partial: 'show_external_files', locals: {dataset: dataset}
   .panel-group(id="files")
     .panel.panel-default
       .panel-heading(id="headingOne")
         %a(role="button" data-toggle="collapse" data-parent="#files" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="accordion-toggle")
-          %h2#files-label.panel-title.metadata-label Files
-      %div(class="panel-collapse.collapse.in" id="collapseOne" aria-labelledby="headingOne")
+          -# Label section Files - Partial if there are external files, otherwise just Files
+          - if dataset.external_files?
+            %h2.panel-title.metadata-label Files - Partial
+          - else
+            %h2.panel-title.metadata-label Files
+      .panel-collapse.collapse.in(id="collapseOne" aria-labelledby="headingOne")
         .panel-body
           =render partial: 'file_restriction_alert', locals: {dataset: dataset}
           - if dataset.publication_state == Databank::PublicationState::RELEASED && globus_only && !@globus_downloadable
@@ -98,5 +105,3 @@
                 -elsif dataset.datafiles.count.zero?
                   %jumbotron
                     No files found
-      -if dataset.external_files?
-        =render partial: 'show_external_files', locals: {dataset: dataset}

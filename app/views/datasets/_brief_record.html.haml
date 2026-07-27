@@ -34,6 +34,9 @@
       .label.label-default
         = pluralize(dataset.notes.count, 'note')
       &nbsp;
+      - if dataset.external_files?
+        .label.label-danger
+          ="external files"
   - if dataset.hold_state == Databank::PublicationState::TempSuppress::VERSION
     .label.label-danger
       version candidate under review

@@ -37,6 +37,12 @@
       <a href="<%= @dataset.version_group.latest_published_version.databank_url %>">View the latest version.</a>
     </div>
   <% end %>
+  <% if @dataset.external_files? %>
+    <div class="external-files-alert boxed-alert">
+      This dataset includes some large files stored in a linked location.
+      Details in the Description and in the <em>Files - External Link</em> section
+    </div>
+  <% end %>
   <% if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION &&
     @dataset.hold_state == Databank::PublicationState::TempSuppress::NONE && (can? :update, @dataset) %>
     <div class="selected-version boxed-alert">
