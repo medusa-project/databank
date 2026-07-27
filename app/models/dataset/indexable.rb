@@ -63,6 +63,11 @@ module Dataset::Indexable
       end
     end
 
+    def external_files_name_from_code(code)
+      bool_value = ActiveModel::Type::Boolean.new.cast(code)
+      bool_value ? "Has External Files" : "No External Files"
+    end
+
     def pubstate_name_from_code(code)
       case code
       when Databank
