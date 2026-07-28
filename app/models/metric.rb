@@ -20,7 +20,7 @@ class Metric
   DATASET_REPORT_CSV_HEADINGS = ["key", "doi", "release_date", "funders", "title", "keywords",
                                  "corresponding_creator", "subject"].freeze
   FIRST_DOWNLOAD_CALENDAR_YEAR = 2016
-  FIRST_DOWNLOAD_FISCAL_YEAR = 16
+  FIRST_DOWNLOAD_FISCAL_YEAR = 15
   FISCAL_YEAR_START_MONTH = 7
   DATASET_DOWNLOADS_CSV_HEADINGS = ["dataset_key", "doi", "download_date", "tally"].freeze
   DATAFILE_DOWNLOADS_CSV_HEADINGS = ["file_web_id", "dataset_key", "doi", "download_date", "tally"].freeze
@@ -195,7 +195,7 @@ class Metric
 
       [:dataset_downloads, :datafile_downloads].each do |metric_type|
         # Check prior calendar years
-        (FIRST_DOWNLOAD_YEAR...current_cal_year).each do |year|
+        (FIRST_DOWNLOAD_CALENDAR_YEAR...current_cal_year).each do |year|
           content = retrieve_archived_metric_from_storage(metric_type, year, :calendar)
           missing_metrics << "#{metric_type}_#{year}_calendar" if content.nil?
         end
