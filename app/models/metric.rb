@@ -465,7 +465,7 @@ class Metric
             
             query = DatasetDownloadTally.all
             query = if slice_type == :calendar
-                      query.where("YEAR(download_date) = ?", year)
+                      query.where("EXTRACT(YEAR FROM download_date) = ?", year)
                     else
                       start_date, end_date = date_range_for_fiscal_year(year)
                       query.where("download_date >= ? AND download_date <= ?", start_date, end_date)
@@ -504,7 +504,7 @@ class Metric
             
             query = FileDownloadTally.all
             query = if slice_type == :calendar
-                      query.where("YEAR(download_date) = ?", year)
+                      query.where("EXTRACT(YEAR FROM download_date) = ?", year)
                     else
                       start_date, end_date = date_range_for_fiscal_year(year)
                       query.where("download_date >= ? AND download_date <= ?", start_date, end_date)
