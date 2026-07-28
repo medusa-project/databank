@@ -168,14 +168,15 @@ class Metric
 
             # Create if missing or refresh if older than 1 day
             if !File.exist?(path) || (File.mtime(path) < 1.day.ago)
-              writer_method = "write_#{metric_type}_downloads_csv_by_year"
+              writer_method = "write_#{metric_type}_csv_by_year"
               public_send(writer_method, year, slice_type)
             end
           end
         end
 
-        # Verify prior year metrics exist in S3 storage
-        verify_prior_year_metrics_exist(current_cal_year, current_fis_year)
+        # Verify prior year metrics exist in S3 storage (production only)
+        # In development/test environments, S3 may not be fully configured
+        verify_prior_year_metrics_exist(current_cal_year, current_fis_year) if Rails.env.production?
       rescue StandardError => e
         error_message = "Error in ensure_download_metrics: #{e.message}\n#{e.backtrace.join("\n")}"
         Rails.logger.error(error_message)
@@ -192,18 +193,19 @@ class Metric
     # @return [void]
     def verify_prior_year_metrics_exist(current_cal_year, current_fis_year)
       missing_metrics = []
+      report_root = StorageManager.instance.report_root
 
       [:dataset_downloads, :datafile_downloads].each do |metric_type|
         # Check prior calendar years
         (FIRST_DOWNLOAD_CALENDAR_YEAR...current_cal_year).each do |year|
-          content = retrieve_archived_metric_from_storage(metric_type, year, :calendar)
-          missing_metrics << "#{metric_type}_#{year}_calendar" if content.nil?
+          storage_key = storage_key_for_archived_metric(metric_type, year, :calendar)
+          missing_metrics << "#{metric_type}_#{year}_calendar" unless report_root.exist?(storage_key)
         end
 
         # Check prior fiscal years (FY16 onwards)
         (FIRST_DOWNLOAD_FISCAL_YEAR...current_fis_year).each do |fy|
-          content = retrieve_archived_metric_from_storage(metric_type, fy, :fiscal)
-          missing_metrics << "#{metric_type}_FY#{format('%02d', fy)}_fiscal" if content.nil?
+          storage_key = storage_key_for_archived_metric(metric_type, fy, :fiscal)
+          missing_metrics << "#{metric_type}_FY#{format('%02d', fy)}_fiscal" unless report_root.exist?(storage_key)
         end
       end
 
@@ -589,12 +591,28 @@ class Metric
 
       # Read file content and upload to storage
       file_content = File.read(file_path)
-      report_root.write(key: storage_key, content: file_content)
+      file_size = File.size(file_path)
+      report_root.copy_io_to(storage_key, StringIO.new(file_content), nil, file_size)
 
       # Delete local file after successful upload
       File.delete(file_path)
 
       storage_key
+    end
+
+    ##
+    # Check if an archived metric exists in S3 storage
+    # @param metric_type [Symbol] :dataset_downloads or :datafile_downloads
+    # @param year [Integer] calendar year (4-digit) or fiscal year (2-digit)
+    # @param slice_type [Symbol] :calendar or :fiscal
+    # @return [Boolean] true if the metric file exists in storage
+    def archived_metric_exists?(metric_type, year, slice_type)
+      storage_key = storage_key_for_archived_metric(metric_type, year, slice_type)
+      report_root = StorageManager.instance.report_root
+      report_root.exist?(storage_key)
+    rescue => e
+      Rails.logger.error("Error checking archived metric #{storage_key}: #{e.message}")
+      false
     end
 
     ##
@@ -607,10 +625,15 @@ class Metric
       storage_key = storage_key_for_archived_metric(metric_type, year, slice_type)
       report_root = StorageManager.instance.report_root
 
-      report_root.read(key: storage_key)
-    rescue => e
-      Rails.logger.error("Error retrieving archived metric #{storage_key}: #{e.message}")
-      nil
+      # Use AWS SDK to retrieve file from S3 (same as datafiles and curator reports)
+      begin
+        expanded_key = "#{report_root.prefix}#{storage_key}"
+        object = Application.aws_client.get_object(bucket: report_root.bucket, key: expanded_key)
+        object.body.read
+      rescue => e
+        Rails.logger.error("Error retrieving archived metric #{storage_key}: #{e.message}")
+        nil
+      end
     end
 
     ##
@@ -633,6 +656,76 @@ class Metric
     end
 
     # ========== END ARCHIVE/STORAGE LOGIC ==========
+
+    ##
+    # Generate all historical download metrics (calendar and fiscal years)
+    # Generates dataset and datafile downloads for all years back to FIRST_DOWNLOAD_CALENDAR_YEAR
+    # Prior year files are automatically archived to S3 during generation
+    # @return [void]
+    def generate_all_historical_downloads
+      current_cal_year = current_calendar_year
+      current_fis_year = current_fiscal_year
+
+      %i[dataset_downloads datafile_downloads].each do |metric_type|
+        Rails.logger.info("Generating #{metric_type}...")
+
+        # Generate calendar year metrics
+        (FIRST_DOWNLOAD_CALENDAR_YEAR...current_cal_year).each do |year|
+          Rails.logger.info("  Generating #{metric_type} for calendar year #{year}...")
+          public_send("write_#{metric_type}_csv_by_year", year, :calendar)
+        end
+
+        # Generate fiscal year metrics (FY16 onwards)
+        (FIRST_DOWNLOAD_FISCAL_YEAR...current_fis_year).each do |fy|
+          Rails.logger.info("  Generating #{metric_type} for fiscal year FY#{format('%02d', fy)}...")
+          public_send("write_#{metric_type}_csv_by_year", fy, :fiscal)
+        end
+      end
+    end
+
+    ##
+    # Archive prior year download metrics from public/ to S3 storage
+    # Moves non-current year files to S3 and deletes them from public/
+    # @return [void]
+    def archive_prior_year_downloads_to_storage
+      current_cal_year = current_calendar_year
+      current_fis_year = current_fiscal_year
+
+      %i[dataset_downloads datafile_downloads].each do |metric_type|
+        # Archive old calendar year files
+        previous_cal_year = current_cal_year - 1
+        loop do
+          filename = filename_for_year_metric(metric_type, previous_cal_year, :calendar)
+          file_path = File.join(Rails.root, "public", filename)
+
+          break unless File.exist?(file_path)
+
+          Rails.logger.info("Archiving #{filename}...")
+          storage_key = archive_metric_to_storage(file_path, metric_type, previous_cal_year, :calendar)
+          Rails.logger.info("  → Stored as: #{storage_key}")
+
+          previous_cal_year -= 1
+          break if previous_cal_year < FIRST_DOWNLOAD_CALENDAR_YEAR
+        end
+
+        # Archive old fiscal year files
+        previous_fis_year = current_fis_year - 1
+        loop do
+          break if previous_fis_year < FIRST_DOWNLOAD_FISCAL_YEAR
+
+          filename = filename_for_year_metric(metric_type, previous_fis_year, :fiscal)
+          file_path = File.join(Rails.root, "public", filename)
+
+          break unless File.exist?(file_path)
+
+          Rails.logger.info("Archiving #{filename}...")
+          storage_key = archive_metric_to_storage(file_path, metric_type, previous_fis_year, :fiscal)
+          Rails.logger.info("  → Stored as: #{storage_key}")
+
+          previous_fis_year -= 1
+        end
+      end
+    end
 
     ##
     # write the datasets tsv

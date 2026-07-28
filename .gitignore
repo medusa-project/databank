@@ -42,6 +42,7 @@ pickle-email-*.html
 /public/dataset_report.csv
 /public/dataset_report.txt
 /tmp/file_audit_report.csv
+/public/data*
 
 # Ignore generated Metrics files in the tmp directory per Metric.rb
 /tmp/dataset_downloads.csv
