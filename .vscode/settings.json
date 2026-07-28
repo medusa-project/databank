@@ -46,5 +46,8 @@
   "testing.countBadge": "failed",
   "testing.followRunningTest": true,
   "npm.packageManager": "npm",
-  "testing.automaticallyOpenTestResults": "neverOpen"
+  "testing.automaticallyOpenTestResults": "neverOpen",
+  "[yaml]": {
+    "yaml.validate": false
+  }
 }
