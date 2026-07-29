@@ -39,8 +39,10 @@
   <% end %>
   <% if @dataset.external_files? %>
     <div class="external-files-alert boxed-alert">
-      This dataset includes some large files stored in a linked location.
-      Details in the Description and in the <em>Files - External Link</em> section
+      <span class="glyphicon glyphicon-warning-sign"></span>
+      This is a very large dataset. Details in
+      <a href="#files-all">Files - All</a>
+      below.
     </div>
   <% end %>
   <% if @dataset.publication_state == Databank::PublicationState::TempSuppress::VERSION &&
