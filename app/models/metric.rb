@@ -24,6 +24,7 @@ class Metric
   FISCAL_YEAR_START_MONTH = 7
   DATASET_DOWNLOADS_CSV_HEADINGS = ["dataset_key", "doi", "download_date", "tally"].freeze
   DATAFILE_DOWNLOADS_CSV_HEADINGS = ["file_web_id", "dataset_key", "doi", "download_date", "tally"].freeze
+  DOWNLOAD_ZIP_GROUPS = %i[dataset_calendar dataset_fiscal datafile_calendar datafile_fiscal].freeze
 
   Definition = Struct.new(:key, :config, keyword_init: true) do
     def label
@@ -656,6 +657,41 @@ class Metric
     end
 
     # ========== END ARCHIVE/STORAGE LOGIC ==========
+
+    ##
+    # Build an in-memory zip containing every CSV for the given group.
+    # Current-year file is read from public/; prior years are fetched from S3.
+    # @param group [Symbol] one of DOWNLOAD_ZIP_GROUPS
+    # @return [String] raw zip binary
+    def build_zip_for_group(group)
+      raise ArgumentError, "Invalid group: #{group}" unless DOWNLOAD_ZIP_GROUPS.include?(group.to_sym)
+
+      metric_type, slice_type = group.to_s.split("_").then { |m, s| ["#{m}_downloads".to_sym, s.to_sym] }
+      current_year = slice_type == :fiscal ? current_fiscal_year : current_calendar_year
+      first_year   = slice_type == :fiscal ? FIRST_DOWNLOAD_FISCAL_YEAR : FIRST_DOWNLOAD_CALENDAR_YEAR
+
+      require "zip"
+      buffer = Zip::OutputStream.write_buffer do |zip|
+        # Current year from public/
+        current_filename = filename_for_year_metric(metric_type, current_year, slice_type)
+        current_path = Rails.root.join("public", current_filename)
+        if File.exist?(current_path)
+          zip.put_next_entry(current_filename)
+          zip.write(File.read(current_path))
+        end
+
+        # Prior years from S3
+        prior_range = slice_type == :fiscal ? (first_year...current_year).to_a : (first_year...current_year).to_a
+        prior_range.reverse_each do |year|
+          content = retrieve_archived_metric_from_storage(metric_type, year, slice_type)
+          next unless content.present?
+
+          zip.put_next_entry(filename_for_year_metric(metric_type, year, slice_type))
+          zip.write(content)
+        end
+      end
+      buffer.string
+    end
 
     ##
     # Generate all historical download metrics (calendar and fiscal years)

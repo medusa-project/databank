@@ -24,6 +24,14 @@
         %strong tally:
         Number of downloads counted on that date for the dataset.
 
+  .metrics-zip-actions
+    %a.btn.btn-default.btn-sm.idb{href: "/metrics/download_zip/dataset_calendar", "aria-label" => "Download all dataset calendar year CSVs as zip"}
+      %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+      Download All Calendar Year CSVs (zip)
+    %a.btn.btn-default.btn-sm.idb{href: "/metrics/download_zip/dataset_fiscal", "aria-label" => "Download all dataset fiscal year CSVs as zip"}
+      %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+      Download All Fiscal Year CSVs (zip)
+
   %p
     %strong Current Year Files:
   %ul
@@ -65,6 +73,14 @@
 
 .metrics-section
   %h3 Datafile Downloads
+
+  .metrics-zip-actions
+    %a.btn.btn-default.btn-sm.idb{href: "/metrics/download_zip/datafile_calendar", "aria-label" => "Download all datafile calendar year CSVs as zip"}
+      %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+      Download All Calendar Year CSVs (zip)
+    %a.btn.btn-default.btn-sm.idb{href: "/metrics/download_zip/datafile_fiscal", "aria-label" => "Download all datafile fiscal year CSVs as zip"}
+      %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+      Download All Fiscal Year CSVs (zip)
 
   .indent
     %p Daily download tallies grouped at the datafile level.

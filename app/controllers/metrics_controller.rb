@@ -142,6 +142,20 @@ class MetricsController < ApplicationController
     head :internal_server_error
   end
 
+  def download_zip
+    authorize! :manage, :all
+    group = params[:group].to_sym
+    return head :bad_request unless Metric::DOWNLOAD_ZIP_GROUPS.include?(group)
+
+    zip_data = Metric.build_zip_for_group(group)
+    send_data zip_data, type: "application/zip", filename: "#{group}_downloads.zip", disposition: "attachment"
+  rescue ArgumentError
+    head :bad_request
+  rescue StandardError => e
+    Rails.logger.error("Error building zip for group #{group}: #{e.message}")
+    head :internal_server_error
+  end
+
   private
 
   def enqueue_metric_refresh(metric_key, label)
