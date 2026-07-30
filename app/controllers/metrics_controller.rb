@@ -21,6 +21,15 @@ class MetricsController < ApplicationController
                 alert: "You are not authorized to access the requested resource."
   end
 
+  def download_metrics
+    authorize! :manage, :all
+    Metric.ensure_download_metrics
+    @title = "Download Metrics"
+  rescue CanCan::AccessDenied
+    redirect_to IDB_CONFIG[:root_url_text],
+                alert: "You are not authorized to access the requested resource."
+  end
+
   # Responds to `GET /metrics/dataset_downloads_csv`
   def dataset_downloads_csv
     serve_metrics_file(METRICS_CONFIG[:dataset_downloads_csv][:relative_path], type: "text/csv")
@@ -99,6 +108,52 @@ class MetricsController < ApplicationController
 
   def refresh_container_contents_csv
     enqueue_metric_refresh(:container_contents_csv, "Container contents CSV")
+  end
+
+  # Responds to `GET /metrics/archived/:metric_type/:year/:slice_type`
+  # Retrieves archived download metrics from storage
+  # @param metric_type [String] 'dataset_downloads' or 'datafile_downloads'
+  # @param year [String] calendar year (4-digit) or fiscal year (2-digit with leading 0)
+  # @param slice_type [String] 'calendar' or 'fiscal'
+  def archived_download_metric
+    metric_type = params[:metric_type]&.to_sym
+    raw_year = params[:year].to_s
+    slice_type = params[:slice_type]&.to_sym
+
+    # Fiscal year params arrive as "FY25"; strip prefix before converting
+    year = raw_year.start_with?("FY") ? raw_year.delete_prefix("FY").to_i : raw_year.to_i
+
+    # Validate parameters
+    return head :bad_request unless metric_type.in?([:dataset_downloads, :datafile_downloads])
+    return head :bad_request unless slice_type.in?([:calendar, :fiscal])
+    return head :bad_request unless year > 1 && year < 2100
+
+    # Retrieve metric content from storage
+    content = Metric.retrieve_archived_metric_from_storage(metric_type, year, slice_type)
+    return head :not_found unless content.present?
+
+    # Determine content type and filename
+    content_type = "text/csv"
+    filename = Metric.filename_for_year_metric(metric_type, year, slice_type)
+
+    send_data content, type: content_type, filename: filename, disposition: "inline"
+  rescue StandardError => e
+    Rails.logger.error("Error retrieving archived metric #{metric_type}/#{year}/#{slice_type}: #{e.message}")
+    head :internal_server_error
+  end
+
+  def download_zip
+    authorize! :manage, :all
+    group = params[:group].to_sym
+    return head :bad_request unless Metric::DOWNLOAD_ZIP_GROUPS.include?(group)
+
+    zip_data = Metric.build_zip_for_group(group)
+    send_data zip_data, type: "application/zip", filename: "#{group}_downloads.zip", disposition: "attachment"
+  rescue ArgumentError
+    head :bad_request
+  rescue StandardError => e
+    Rails.logger.error("Error building zip for group #{group}: #{e.message}")
+    head :internal_server_error
   end
 
   private

@@ -1,36 +1,96 @@
-:dataset_downloads_csv:
-  :label: Dataset downloads CSV
-  :relative_path: <%= Rails.root.join("public/dataset_downloads.csv") %>
-  :download_path: /dataset_downloads.csv
+# yaml-language-server: disable
+---
+# This file uses ERB templating mixed with YAML.
+# The YAML linter doesn't understand ERB syntax, but Rails processes ERB
+# before YAML parsing at runtime. This works correctly in production.
+<%
+  # Helper to calculate current fiscal year (2-digit format)
+  now = Time.zone.now
+  current_fy = (now.month >= 7) ? (now.year % 100) : ((now.year - 1) % 100)
+  current_fy_str = sprintf('%02d', current_fy)
+%>
+
+:dataset_downloads_csv_cal:
+  :label: Dataset downloads CSV (Calendar Year)
+  :relative_path: <%= Rails.root.join("public/dataset_downloads_#{Time.zone.now.year}.csv") %>
+  :download_path: /dataset_downloads_<%= Time.zone.now.year %>.csv
   :content_type: text/csv
-  :refreshable: false
+  :refreshable: true
   :show_in_admin: false
-  :summary: Daily download tallies grouped at the dataset level.
+  :write_method: write_dataset_downloads_csv_orchestrator
+  :summary: Daily download tallies grouped at the dataset level by calendar year.
   :description_blocks:
-    - A csv export detailing downloads calculated per dataset per day.
+    - A csv export detailing downloads calculated per dataset per day for the current calendar year.
   :columns:
+    - :name: dataset_key
+      :description: Unique key that identifies the dataset.
     - :name: doi
       :description: DOI that identifies the dataset.
-    - :name: date
+    - :name: download_date
       :description: Download date for the tally row.
     - :name: tally
-      :description: Number of downloads counted on that date for the dataset DOI.
-:datafile_downloads_csv:
-  :label: Datafile downloads CSV
-  :relative_path: <%= Rails.root.join("public/datafile_downloads.csv") %>
-  :download_path: /datafile_downloads.csv
+      :description: Number of downloads counted on that date for the dataset.
+:dataset_downloads_csv_fis:
+  :label: Dataset downloads CSV (Fiscal Year)
+  :relative_path: <%= Rails.root.join("public/dataset_downloads_FY#{current_fy_str}.csv") %>
+  :download_path: /dataset_downloads_FY<%= current_fy_str %>.csv
   :content_type: text/csv
-  :refreshable: false
+  :refreshable: true
   :show_in_admin: false
-  :summary: Daily download tallies grouped at the datafile level.
+  :write_method: write_dataset_downloads_csv_orchestrator
+  :summary: Daily download tallies grouped at the dataset level by fiscal year.
   :description_blocks:
-    - A csv export detailing downloads calculated per datafile per day.
+    - A csv export detailing downloads calculated per dataset per day for the current fiscal year (July - June).
   :columns:
+    - :name: dataset_key
+      :description: Unique key that identifies the dataset.
     - :name: doi
-      :description: DOI that identifies the dataset containing the datafile.
-    - :name: file
-      :description: Datafile name.
-    - :name: date
+      :description: DOI that identifies the dataset.
+    - :name: download_date
+      :description: Download date for the tally row.
+    - :name: tally
+      :description: Number of downloads counted on that date for the dataset.
+:datafile_downloads_csv_cal:
+  :label: Datafile downloads CSV (Calendar Year)
+  :relative_path: <%= Rails.root.join("public/datafile_downloads_#{Time.zone.now.year}.csv") %>
+  :download_path: /datafile_downloads_<%= Time.zone.now.year %>.csv
+  :content_type: text/csv
+  :refreshable: true
+  :show_in_admin: false
+  :write_method: write_datafile_downloads_csv_orchestrator
+  :summary: Daily download tallies grouped at the datafile level by calendar year.
+  :description_blocks:
+    - A csv export detailing downloads calculated per datafile per day for the current calendar year.
+  :columns:
+    - :name: file_web_id
+      :description: Unique identifier for the datafile.
+    - :name: dataset_key
+      :description: Unique key that identifies the dataset containing the datafile.
+    - :name: doi
+      :description: DOI that identifies the dataset.
+    - :name: download_date
+      :description: Download date for the tally row.
+    - :name: tally
+      :description: Number of downloads counted on that date for the datafile.
+:datafile_downloads_csv_fis:
+  :label: Datafile downloads CSV (Fiscal Year)
+  :relative_path: <%= Rails.root.join("public/datafile_downloads_FY#{current_fy_str}.csv") %>
+  :download_path: /datafile_downloads_FY<%= current_fy_str %>.csv
+  :content_type: text/csv
+  :refreshable: true
+  :show_in_admin: false
+  :write_method: write_datafile_downloads_csv_orchestrator
+  :summary: Daily download tallies grouped at the datafile level by fiscal year.
+  :description_blocks:
+    - A csv export detailing downloads calculated per datafile per day for the current fiscal year (July - June).
+  :columns:
+    - :name: file_web_id
+      :description: Unique identifier for the datafile.
+    - :name: dataset_key
+      :description: Unique key that identifies the dataset containing the datafile.
+    - :name: doi
+      :description: DOI that identifies the dataset.
+    - :name: download_date
       :description: Download date for the tally row.
     - :name: tally
       :description: Number of downloads counted on that date for the datafile.

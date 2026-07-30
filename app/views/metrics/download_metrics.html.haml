@@ -1,0 +1,142 @@
+%h2 Download Metrics
+
+%a.btn.btn-primary.btn-sm.idb{href: "/admin_metrics.html", data: {testid: "admin-metric-page-link"}}
+  %span.glyphicon.glyphicon-arrow-left{"aria-hidden" => "true"}
+  = "Back to Curator Metrics Page"
+
+.metrics-section
+  %h3 Dataset Downloads
+
+  .indent
+    %p Daily download tallies grouped at the dataset level.
+    %strong Field Definitions
+    %ul
+      %li
+        %strong dataset_key:
+        Unique key that identifies the dataset.
+      %li
+        %strong doi:
+        DOI that identifies the dataset.
+      %li
+        %strong download_date:
+        Download date for the tally row.
+      %li
+        %strong tally:
+        Number of downloads counted on that date for the dataset.
+
+  .metrics-zip-actions
+    %a.btn.btn-primary.btn-sm.idb{href: "/metrics/download_zip/dataset_calendar", "aria-label" => "Download all dataset calendar year CSVs as zip"}
+      %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+      Download All Calendar Year CSVs (zip)
+    %a.btn.btn-primary.btn-sm.idb{href: "/metrics/download_zip/dataset_fiscal", "aria-label" => "Download all dataset fiscal year CSVs as zip"}
+      %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+      Download All Fiscal Year CSVs (zip)
+
+  %p
+    %strong Current Year Files:
+  %ul
+    %li
+      %a{href: "/public/dataset_downloads_2026.csv",
+          data: {testid: "metric-download-dataset-2026-calendar"},
+          "aria-label" => "Download Dataset Downloads 2026 (Calendar Year)",
+          title: "Download Dataset Downloads 2026 (Calendar Year)",
+          download: "dataset_downloads_2026.csv"}
+        Dataset Downloads 2026 (Calendar Year)
+    %li
+      %a{href: "/public/dataset_downloads_FY26.csv",
+          data: {testid: "metric-download-dataset-FY26-fiscal"},
+          "aria-label" => "Download Dataset Downloads FY26 (Fiscal Year)",
+          title: "Download Dataset Downloads FY26 (Fiscal Year)",
+          download: "dataset_downloads_FY26.csv"}
+        Dataset Downloads FY26 (Fiscal Year)
+
+  %p
+    %strong Prior Year Files — Calendar Year:
+  %ul
+    - (2016..2025).reverse_each do |year|
+      %li
+        %a{href: "/metrics/archived/dataset_downloads/#{year}/calendar",
+            data: {testid: "metric-download-dataset-#{year}-calendar"},
+            download: "dataset_downloads_#{year}.csv"}
+          Dataset Downloads #{year} (Calendar Year)
+
+  %p
+    %strong Prior Year Files — Fiscal Year:
+  %ul
+    - (15..25).reverse_each do |fy|
+      - fy_label = "FY#{fy.to_s.rjust(2, '0')}"
+      %li
+        %a{href: "/metrics/archived/dataset_downloads/#{fy_label}/fiscal",
+            data: {testid: "metric-download-dataset-#{fy_label}-fiscal"},
+            download: "dataset_downloads_#{fy_label}.csv"}
+          Dataset Downloads #{fy_label} (Fiscal Year)
+
+.metrics-section
+  %h3 Datafile Downloads
+
+  .metrics-zip-actions
+    %a.btn.btn-primary.btn-sm.idb{href: "/metrics/download_zip/datafile_calendar", "aria-label" => "Download all datafile calendar year CSVs as zip"}
+      %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+      Download All Calendar Year CSVs (zip)
+    %a.btn.btn-primary.btn-sm.idb{href: "/metrics/download_zip/datafile_fiscal", "aria-label" => "Download all datafile fiscal year CSVs as zip"}
+      %span.glyphicon.glyphicon-download{"aria-hidden" => "true"}
+      Download All Fiscal Year CSVs (zip)
+
+  .indent
+    %p Daily download tallies grouped at the datafile level.
+    %strong Field Definitions
+    %ul
+      %li
+        %strong file_web_id:
+        Unique identifier for the datafile.
+      %li
+        %strong dataset_key:
+        Unique key that identifies the dataset containing the datafile.
+      %li
+        %strong doi:
+        DOI that identifies the dataset.
+      %li
+        %strong download_date:
+        Download date for the tally row.
+      %li
+        %strong tally:
+        Number of downloads counted on that date for the datafile.
+
+  %p
+    %strong Current Year Files:
+  %ul
+    %li
+      %a{href: "/public/datafile_downloads_2026.csv",
+          data: {testid: "metric-download-datafile-2026-calendar"},
+          "aria-label" => "Download Datafile Downloads 2026 (Calendar Year)",
+          title: "Download Datafile Downloads 2026 (Calendar Year)",
+          download: "datafile_downloads_2026.csv"}
+        Datafile Downloads 2026 (Calendar Year)
+    %li
+      %a{href: "/public/datafile_downloads_FY26.csv",
+          data: {testid: "metric-download-datafile-FY26-fiscal"},
+          "aria-label" => "Download Datafile Downloads FY26 (Fiscal Year)",
+          title: "Download Datafile Downloads FY26 (Fiscal Year)",
+          download: "datafile_downloads_FY26.csv"}
+        Datafile Downloads FY26 (Fiscal Year)
+
+  %p
+    %strong Prior Year Files — Calendar Year:
+  %ul
+    - (2016..2025).reverse_each do |year|
+      %li
+        %a{href: "/metrics/archived/datafile_downloads/#{year}/calendar",
+            data: {testid: "metric-download-datafile-#{year}-calendar"},
+            download: "datafile_downloads_#{year}.csv"}
+          Datafile Downloads #{year} (Calendar Year)
+
+  %p
+    %strong Prior Year Files — Fiscal Year:
+  %ul
+    - (15..25).reverse_each do |fy|
+      - fy_label = "FY#{fy.to_s.rjust(2, '0')}"
+      %li
+        %a{href: "/metrics/archived/datafile_downloads/#{fy_label}/fiscal",
+            data: {testid: "metric-download-datafile-#{fy_label}-fiscal"},
+            download: "datafile_downloads_#{fy_label}.csv"}
+          Datafile Downloads #{fy_label} (Fiscal Year)
