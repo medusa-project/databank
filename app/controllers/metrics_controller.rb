@@ -117,13 +117,16 @@ class MetricsController < ApplicationController
   # @param slice_type [String] 'calendar' or 'fiscal'
   def archived_download_metric
     metric_type = params[:metric_type]&.to_sym
-    year = params[:year].to_i
+    raw_year = params[:year].to_s
     slice_type = params[:slice_type]&.to_sym
+
+    # Fiscal year params arrive as "FY25"; strip prefix before converting
+    year = raw_year.start_with?("FY") ? raw_year.delete_prefix("FY").to_i : raw_year.to_i
 
     # Validate parameters
     return head :bad_request unless metric_type.in?([:dataset_downloads, :datafile_downloads])
     return head :bad_request unless slice_type.in?([:calendar, :fiscal])
-    return head :bad_request unless year > 1900 && year < 2100
+    return head :bad_request unless year > 1 && year < 2100
 
     # Retrieve metric content from storage
     content = Metric.retrieve_archived_metric_from_storage(metric_type, year, slice_type)
