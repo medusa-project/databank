@@ -22,112 +22,25 @@
         Dataset Downloads FY26 (Fiscal Year)
 
   %p
-    %strong Prior Year Files:
+    %strong Prior Year Files — Calendar Year:
   %ul
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/2025/calendar",
-          data: {testid: "metric-download-dataset-2025-calendar"},
-          "aria-label" => "Download Dataset Downloads 2025 (Calendar Year)",
-          title: "Download Dataset Downloads 2025 (Calendar Year)",
-          download: "dataset_downloads_2025.csv"}
-        Dataset Downloads 2025 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/FY25/fiscal",
-          data: {testid: "metric-download-dataset-FY25-fiscal"},
-          "aria-label" => "Download Dataset Downloads FY25 (Fiscal Year)",
-          title: "Download Dataset Downloads FY25 (Fiscal Year)",
-          download: "dataset_downloads_FY25.csv"}
-        Dataset Downloads FY25 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/2024/calendar",
-          data: {testid: "metric-download-dataset-2024-calendar"},
-          download: "dataset_downloads_2024.csv"}
-        Dataset Downloads 2024 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/FY24/fiscal",
-          data: {testid: "metric-download-dataset-FY24-fiscal"},
-          download: "dataset_downloads_FY24.csv"}
-        Dataset Downloads FY24 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/2023/calendar",
-          data: {testid: "metric-download-dataset-2023-calendar"},
-          download: "dataset_downloads_2023.csv"}
-        Dataset Downloads 2023 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/FY23/fiscal",
-          data: {testid: "metric-download-dataset-FY23-fiscal"},
-          download: "dataset_downloads_FY23.csv"}
-        Dataset Downloads FY23 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/2022/calendar",
-          data: {testid: "metric-download-dataset-2022-calendar"},
-          download: "dataset_downloads_2022.csv"}
-        Dataset Downloads 2022 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/FY22/fiscal",
-          data: {testid: "metric-download-dataset-FY22-fiscal"},
-          download: "dataset_downloads_FY22.csv"}
-        Dataset Downloads FY22 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/2021/calendar",
-          data: {testid: "metric-download-dataset-2021-calendar"},
-          download: "dataset_downloads_2021.csv"}
-        Dataset Downloads 2021 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/FY21/fiscal",
-          data: {testid: "metric-download-dataset-FY21-fiscal"},
-          download: "dataset_downloads_FY21.csv"}
-        Dataset Downloads FY21 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/2020/calendar",
-          data: {testid: "metric-download-dataset-2020-calendar"},
-          download: "dataset_downloads_2020.csv"}
-        Dataset Downloads 2020 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/FY20/fiscal",
-          data: {testid: "metric-download-dataset-FY20-fiscal"},
-          download: "dataset_downloads_FY20.csv"}
-        Dataset Downloads FY20 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/2019/calendar",
-          data: {testid: "metric-download-dataset-2019-calendar"},
-          download: "dataset_downloads_2019.csv"}
-        Dataset Downloads 2019 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/FY19/fiscal",
-          data: {testid: "metric-download-dataset-FY19-fiscal"},
-          download: "dataset_downloads_FY19.csv"}
-        Dataset Downloads FY19 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/2018/calendar",
-          data: {testid: "metric-download-dataset-2018-calendar"},
-          download: "dataset_downloads_2018.csv"}
-        Dataset Downloads 2018 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/FY18/fiscal",
-          data: {testid: "metric-download-dataset-FY18-fiscal"},
-          download: "dataset_downloads_FY18.csv"}
-        Dataset Downloads FY18 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/2017/calendar",
-          data: {testid: "metric-download-dataset-2017-calendar"},
-          download: "dataset_downloads_2017.csv"}
-        Dataset Downloads 2017 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/FY17/fiscal",
-          data: {testid: "metric-download-dataset-FY17-fiscal"},
-          download: "dataset_downloads_FY17.csv"}
-        Dataset Downloads FY17 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/2016/calendar",
-          data: {testid: "metric-download-dataset-2016-calendar"},
-          download: "dataset_downloads_2016.csv"}
-        Dataset Downloads 2016 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/dataset_downloads/FY16/fiscal",
-          data: {testid: "metric-download-dataset-FY16-fiscal"},
-          download: "dataset_downloads_FY16.csv"}
-        Dataset Downloads FY16 (Fiscal Year)
+    - (2016..2025).reverse_each do |year|
+      %li
+        %a{href: "/metrics/archived/dataset_downloads/#{year}/calendar",
+            data: {testid: "metric-download-dataset-#{year}-calendar"},
+            download: "dataset_downloads_#{year}.csv"}
+          Dataset Downloads #{year} (Calendar Year)
+
+  %p
+    %strong Prior Year Files — Fiscal Year:
+  %ul
+    - (15..25).reverse_each do |fy|
+      - fy_label = "FY#{fy.to_s.rjust(2, '0')}"
+      %li
+        %a{href: "/metrics/archived/dataset_downloads/#{fy_label}/fiscal",
+            data: {testid: "metric-download-dataset-#{fy_label}-fiscal"},
+            download: "dataset_downloads_#{fy_label}.csv"}
+          Dataset Downloads #{fy_label} (Fiscal Year)
 
 .metrics-section
   %h3 Datafile Downloads
@@ -151,109 +64,22 @@
         Datafile Downloads FY26 (Fiscal Year)
 
   %p
-    %strong Prior Year Files:
+    %strong Prior Year Files — Calendar Year:
   %ul
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/2025/calendar",
-          data: {testid: "metric-download-datafile-2025-calendar"},
-          "aria-label" => "Download Datafile Downloads 2025 (Calendar Year)",
-          title: "Download Datafile Downloads 2025 (Calendar Year)",
-          download: "datafile_downloads_2025.csv"}
-        Datafile Downloads 2025 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/FY25/fiscal",
-          data: {testid: "metric-download-datafile-FY25-fiscal"},
-          "aria-label" => "Download Datafile Downloads FY25 (Fiscal Year)",
-          title: "Download Datafile Downloads FY25 (Fiscal Year)",
-          download: "datafile_downloads_FY25.csv"}
-        Datafile Downloads FY25 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/2024/calendar",
-          data: {testid: "metric-download-datafile-2024-calendar"},
-          download: "datafile_downloads_2024.csv"}
-        Datafile Downloads 2024 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/FY24/fiscal",
-          data: {testid: "metric-download-datafile-FY24-fiscal"},
-          download: "datafile_downloads_FY24.csv"}
-        Datafile Downloads FY24 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/2023/calendar",
-          data: {testid: "metric-download-datafile-2023-calendar"},
-          download: "datafile_downloads_2023.csv"}
-        Datafile Downloads 2023 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/FY23/fiscal",
-          data: {testid: "metric-download-datafile-FY23-fiscal"},
-          download: "datafile_downloads_FY23.csv"}
-        Datafile Downloads FY23 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/2022/calendar",
-          data: {testid: "metric-download-datafile-2022-calendar"},
-          download: "datafile_downloads_2022.csv"}
-        Datafile Downloads 2022 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/FY22/fiscal",
-          data: {testid: "metric-download-datafile-FY22-fiscal"},
-          download: "datafile_downloads_FY22.csv"}
-        Datafile Downloads FY22 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/2021/calendar",
-          data: {testid: "metric-download-datafile-2021-calendar"},
-          download: "datafile_downloads_2021.csv"}
-        Datafile Downloads 2021 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/FY21/fiscal",
-          data: {testid: "metric-download-datafile-FY21-fiscal"},
-          download: "datafile_downloads_FY21.csv"}
-        Datafile Downloads FY21 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/2020/calendar",
-          data: {testid: "metric-download-datafile-2020-calendar"},
-          download: "datafile_downloads_2020.csv"}
-        Datafile Downloads 2020 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/FY20/fiscal",
-          data: {testid: "metric-download-datafile-FY20-fiscal"},
-          download: "datafile_downloads_FY20.csv"}
-        Datafile Downloads FY20 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/2019/calendar",
-          data: {testid: "metric-download-datafile-2019-calendar"},
-          download: "datafile_downloads_2019.csv"}
-        Datafile Downloads 2019 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/FY19/fiscal",
-          data: {testid: "metric-download-datafile-FY19-fiscal"},
-          download: "datafile_downloads_FY19.csv"}
-        Datafile Downloads FY19 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/2018/calendar",
-          data: {testid: "metric-download-datafile-2018-calendar"},
-          download: "datafile_downloads_2018.csv"}
-        Datafile Downloads 2018 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/FY18/fiscal",
-          data: {testid: "metric-download-datafile-FY18-fiscal"},
-          download: "datafile_downloads_FY18.csv"}
-        Datafile Downloads FY18 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/2017/calendar",
-          data: {testid: "metric-download-datafile-2017-calendar"},
-          download: "datafile_downloads_2017.csv"}
-        Datafile Downloads 2017 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/FY17/fiscal",
-          data: {testid: "metric-download-datafile-FY17-fiscal"},
-          download: "datafile_downloads_FY17.csv"}
-        Datafile Downloads FY17 (Fiscal Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/2016/calendar",
-          data: {testid: "metric-download-datafile-2016-calendar"},
-          download: "datafile_downloads_2016.csv"}
-        Datafile Downloads 2016 (Calendar Year)
-    %li
-      %a{href: "/metrics/archived/datafile_downloads/FY16/fiscal",
-          data: {testid: "metric-download-datafile-FY16-fiscal"},
-          download: "datafile_downloads_FY16.csv"}
-        Datafile Downloads FY16 (Fiscal Year)
+    - (2016..2025).reverse_each do |year|
+      %li
+        %a{href: "/metrics/archived/datafile_downloads/#{year}/calendar",
+            data: {testid: "metric-download-datafile-#{year}-calendar"},
+            download: "datafile_downloads_#{year}.csv"}
+          Datafile Downloads #{year} (Calendar Year)
+
+  %p
+    %strong Prior Year Files — Fiscal Year:
+  %ul
+    - (15..25).reverse_each do |fy|
+      - fy_label = "FY#{fy.to_s.rjust(2, '0')}"
+      %li
+        %a{href: "/metrics/archived/datafile_downloads/#{fy_label}/fiscal",
+            data: {testid: "metric-download-datafile-#{fy_label}-fiscal"},
+            download: "datafile_downloads_#{fy_label}.csv"}
+          Datafile Downloads #{fy_label} (Fiscal Year)
