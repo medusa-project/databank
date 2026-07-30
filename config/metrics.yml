@@ -16,7 +16,7 @@
   :download_path: /dataset_downloads_<%= Time.zone.now.year %>.csv
   :content_type: text/csv
   :refreshable: true
-  :show_in_admin: true
+  :show_in_admin: false
   :write_method: write_dataset_downloads_csv_orchestrator
   :summary: Daily download tallies grouped at the dataset level by calendar year.
   :description_blocks:
@@ -36,7 +36,7 @@
   :download_path: /dataset_downloads_FY<%= current_fy_str %>.csv
   :content_type: text/csv
   :refreshable: true
-  :show_in_admin: true
+  :show_in_admin: false
   :write_method: write_dataset_downloads_csv_orchestrator
   :summary: Daily download tallies grouped at the dataset level by fiscal year.
   :description_blocks:
@@ -56,7 +56,7 @@
   :download_path: /datafile_downloads_<%= Time.zone.now.year %>.csv
   :content_type: text/csv
   :refreshable: true
-  :show_in_admin: true
+  :show_in_admin: false
   :write_method: write_datafile_downloads_csv_orchestrator
   :summary: Daily download tallies grouped at the datafile level by calendar year.
   :description_blocks:
@@ -78,7 +78,7 @@
   :download_path: /datafile_downloads_FY<%= current_fy_str %>.csv
   :content_type: text/csv
   :refreshable: true
-  :show_in_admin: true
+  :show_in_admin: false
   :write_method: write_datafile_downloads_csv_orchestrator
   :summary: Daily download tallies grouped at the datafile level by fiscal year.
   :description_blocks:

@@ -12,6 +12,9 @@
 
 %h2 Curator Metrics
 
+%a.btn.btn-primary.btn-sm.idb{href: "/download_metrics.html", data: {testid: "metric-download-page-link"}}
+  = "Go to Download Metrics Page"
+
 - if metric_definitions.empty?
   .alert.alert-warning
     %p.alert-message
