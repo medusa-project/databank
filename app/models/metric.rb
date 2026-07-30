@@ -465,8 +465,9 @@ class Metric
         write_metric_files_atomically(target_path) do |temp_paths|
           CSV.open(temp_paths[target_path], "w") do |report|
             report << DATASET_DOWNLOADS_CSV_HEADINGS
-            
-            query = DatasetDownloadTally.all
+
+            public_keys = metadata_public_dataset_keys
+            query = DatasetDownloadTally.where(dataset_key: public_keys)
             query = if slice_type == :calendar
                       query.where("EXTRACT(YEAR FROM download_date) = ?", year)
                     else
@@ -504,8 +505,9 @@ class Metric
         write_metric_files_atomically(target_path) do |temp_paths|
           CSV.open(temp_paths[target_path], "w") do |report|
             report << DATAFILE_DOWNLOADS_CSV_HEADINGS
-            
-            query = FileDownloadTally.all
+
+            public_keys = metadata_public_dataset_keys
+            query = FileDownloadTally.where(dataset_key: public_keys)
             query = if slice_type == :calendar
                       query.where("EXTRACT(YEAR FROM download_date) = ?", year)
                     else
@@ -800,6 +802,23 @@ class Metric
        dataset.creators.count,
        dataset.subject.to_s,
        dataset.plain_text_citation]
+    end
+
+    # Returns dataset keys matching the same criteria as metadata_public? — used to
+    # filter download tallies so they align with the datasets.tsv export.
+    def metadata_public_dataset_keys
+      public_states = [Databank::PublicationState::RELEASED,
+                       Databank::PublicationState::Embargo::FILE,
+                       Databank::PublicationState::TempSuppress::FILE,
+                       Databank::PublicationState::PermSuppress::FILE]
+      ok_hold_states = [nil,
+                        Databank::PublicationState::TempSuppress::NONE,
+                        Databank::PublicationState::TempSuppress::FILE,
+                        Databank::PublicationState::PermSuppress::FILE]
+      Dataset.where(is_test: false,
+                    publication_state: public_states,
+                    hold_state: ok_hold_states)
+             .pluck(:key)
     end
 
     ##
