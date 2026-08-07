@@ -3,6 +3,8 @@ require 'tmpdir'
 require 'csv'
 
 RSpec.describe Metric, type: :model do
+  include ActiveSupport::Testing::TimeHelpers
+
   before do
     allow(Sunspot).to receive(:remove_all!)
     allow(Sunspot).to receive(:index)
@@ -159,6 +161,31 @@ RSpec.describe Metric, type: :model do
 
         expect(Metric.writer_method_for(:dataset_downloads_csv)).to eq(:write_related_materials_csv)
       end
+    end
+  end
+
+  describe '.current_fiscal_year' do
+    it 'uses the fiscal year ending year for dates on or after July 1' do
+      travel_to(Time.zone.parse('2026-07-15 12:00:00')) do
+        expect(Metric.current_fiscal_year).to eq(27)
+      end
+
+      travel_to(Time.zone.parse('2026-06-15 12:00:00')) do
+        expect(Metric.current_fiscal_year).to eq(26)
+      end
+    end
+  end
+
+  describe '.year_slices_for_date' do
+    it 'maps fiscal years by their ending year' do
+      expect(Metric.year_slices_for_date(Date.new(2026, 7, 1))).to eq(calendar_year: 2026, fiscal_year: 27)
+      expect(Metric.year_slices_for_date(Date.new(2026, 6, 30))).to eq(calendar_year: 2026, fiscal_year: 26)
+    end
+  end
+
+  describe '.date_range_for_fiscal_year' do
+    it 'returns the July-through-June range for the named fiscal year' do
+      expect(Metric.date_range_for_fiscal_year(27)).to eq([Date.new(2026, 7, 1), Date.new(2027, 6, 30)])
     end
   end
 

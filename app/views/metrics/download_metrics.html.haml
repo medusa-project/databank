@@ -1,5 +1,11 @@
 %h2 Download Metrics
 
+- current_calendar_year = Metric.current_calendar_year
+- current_fiscal_year = Metric.current_fiscal_year
+- current_fiscal_label = "FY#{current_fiscal_year.to_s.rjust(2, '0')}"
+- first_calendar_year = Metric::FIRST_DOWNLOAD_CALENDAR_YEAR
+- first_fiscal_year = Metric::FIRST_DOWNLOAD_FISCAL_YEAR
+
 %a.btn.btn-primary.btn-sm.idb{href: "/admin_metrics.html", data: {testid: "admin-metric-page-link"}}
   %span.glyphicon.glyphicon-arrow-left{"aria-hidden" => "true"}
   = "Back to Curator Metrics Page"
@@ -36,24 +42,26 @@
     %strong Current Year Files:
   %ul
     %li
-      %a{href: "/public/dataset_downloads_2026.csv",
-          data: {testid: "metric-download-dataset-2026-calendar"},
-          "aria-label" => "Download Dataset Downloads 2026 (Calendar Year)",
-          title: "Download Dataset Downloads 2026 (Calendar Year)",
-          download: "dataset_downloads_2026.csv"}
-        Dataset Downloads 2026 (Calendar Year)
+      - current_dataset_calendar = Metric.filename_for_year_metric(:dataset_downloads, current_calendar_year, :calendar)
+      %a{href: "/public/#{current_dataset_calendar}",
+          data: {testid: "metric-download-dataset-#{current_calendar_year}-calendar"},
+          "aria-label" => "Download Dataset Downloads #{current_calendar_year} (Calendar Year)",
+          title: "Download Dataset Downloads #{current_calendar_year} (Calendar Year)",
+          download: current_dataset_calendar}
+        Dataset Downloads #{current_calendar_year} (Calendar Year)
     %li
-      %a{href: "/public/dataset_downloads_FY26.csv",
-          data: {testid: "metric-download-dataset-FY26-fiscal"},
-          "aria-label" => "Download Dataset Downloads FY26 (Fiscal Year)",
-          title: "Download Dataset Downloads FY26 (Fiscal Year)",
-          download: "dataset_downloads_FY26.csv"}
-        Dataset Downloads FY26 (Fiscal Year)
+      - current_dataset_fiscal = Metric.filename_for_year_metric(:dataset_downloads, current_fiscal_year, :fiscal)
+      %a{href: "/public/#{current_dataset_fiscal}",
+          data: {testid: "metric-download-dataset-#{current_fiscal_label}-fiscal"},
+          "aria-label" => "Download Dataset Downloads #{current_fiscal_label} (Fiscal Year)",
+          title: "Download Dataset Downloads #{current_fiscal_label} (Fiscal Year)",
+          download: current_dataset_fiscal}
+        Dataset Downloads #{current_fiscal_label} (Fiscal Year)
 
   %p
     %strong Prior Year Files — Calendar Year:
   %ul
-    - (2016..2025).reverse_each do |year|
+    - (first_calendar_year...current_calendar_year).to_a.reverse_each do |year|
       %li
         %a{href: "/metrics/archived/dataset_downloads/#{year}/calendar",
             data: {testid: "metric-download-dataset-#{year}-calendar"},
@@ -63,7 +71,7 @@
   %p
     %strong Prior Year Files — Fiscal Year:
   %ul
-    - (15..25).reverse_each do |fy|
+    - (first_fiscal_year...current_fiscal_year).to_a.reverse_each do |fy|
       - fy_label = "FY#{fy.to_s.rjust(2, '0')}"
       %li
         %a{href: "/metrics/archived/dataset_downloads/#{fy_label}/fiscal",
@@ -106,24 +114,26 @@
     %strong Current Year Files:
   %ul
     %li
-      %a{href: "/public/datafile_downloads_2026.csv",
-          data: {testid: "metric-download-datafile-2026-calendar"},
-          "aria-label" => "Download Datafile Downloads 2026 (Calendar Year)",
-          title: "Download Datafile Downloads 2026 (Calendar Year)",
-          download: "datafile_downloads_2026.csv"}
-        Datafile Downloads 2026 (Calendar Year)
+      - current_datafile_calendar = Metric.filename_for_year_metric(:datafile_downloads, current_calendar_year, :calendar)
+      %a{href: "/public/#{current_datafile_calendar}",
+          data: {testid: "metric-download-datafile-#{current_calendar_year}-calendar"},
+          "aria-label" => "Download Datafile Downloads #{current_calendar_year} (Calendar Year)",
+          title: "Download Datafile Downloads #{current_calendar_year} (Calendar Year)",
+          download: current_datafile_calendar}
+        Datafile Downloads #{current_calendar_year} (Calendar Year)
     %li
-      %a{href: "/public/datafile_downloads_FY26.csv",
-          data: {testid: "metric-download-datafile-FY26-fiscal"},
-          "aria-label" => "Download Datafile Downloads FY26 (Fiscal Year)",
-          title: "Download Datafile Downloads FY26 (Fiscal Year)",
-          download: "datafile_downloads_FY26.csv"}
-        Datafile Downloads FY26 (Fiscal Year)
+      - current_datafile_fiscal = Metric.filename_for_year_metric(:datafile_downloads, current_fiscal_year, :fiscal)
+      %a{href: "/public/#{current_datafile_fiscal}",
+          data: {testid: "metric-download-datafile-#{current_fiscal_label}-fiscal"},
+          "aria-label" => "Download Datafile Downloads #{current_fiscal_label} (Fiscal Year)",
+          title: "Download Datafile Downloads #{current_fiscal_label} (Fiscal Year)",
+          download: current_datafile_fiscal}
+        Datafile Downloads #{current_fiscal_label} (Fiscal Year)
 
   %p
     %strong Prior Year Files — Calendar Year:
   %ul
-    - (2016..2025).reverse_each do |year|
+    - (first_calendar_year...current_calendar_year).to_a.reverse_each do |year|
       %li
         %a{href: "/metrics/archived/datafile_downloads/#{year}/calendar",
             data: {testid: "metric-download-datafile-#{year}-calendar"},
@@ -133,7 +143,7 @@
   %p
     %strong Prior Year Files — Fiscal Year:
   %ul
-    - (15..25).reverse_each do |fy|
+    - (first_fiscal_year...current_fiscal_year).to_a.reverse_each do |fy|
       - fy_label = "FY#{fy.to_s.rjust(2, '0')}"
       %li
         %a{href: "/metrics/archived/datafile_downloads/#{fy_label}/fiscal",
