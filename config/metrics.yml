@@ -4,9 +4,8 @@
 # The YAML linter doesn't understand ERB syntax, but Rails processes ERB
 # before YAML parsing at runtime. This works correctly in production.
 <%
-  # Helper to calculate current fiscal year (2-digit format)
   now = Time.zone.now
-  current_fy = (now.month >= 7) ? (now.year % 100) : ((now.year - 1) % 100)
+  current_fy = (now.month >= 7) ? ((now.year + 1) % 100) : (now.year % 100)
   current_fy_str = sprintf('%02d', current_fy)
 %>
 
