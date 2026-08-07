@@ -20,7 +20,7 @@ class Metric
   DATASET_REPORT_CSV_HEADINGS = ["key", "doi", "release_date", "funders", "title", "keywords",
                                  "corresponding_creator", "subject"].freeze
   FIRST_DOWNLOAD_CALENDAR_YEAR = 2016
-  FIRST_DOWNLOAD_FISCAL_YEAR = 15
+  FIRST_DOWNLOAD_FISCAL_YEAR = 16
   FISCAL_YEAR_START_MONTH = 7
   DATASET_DOWNLOADS_CSV_HEADINGS = ["dataset_key", "doi", "download_date", "tally"].freeze
   DATAFILE_DOWNLOADS_CSV_HEADINGS = ["file_web_id", "dataset_key", "doi", "download_date", "tally"].freeze
@@ -222,19 +222,19 @@ class Metric
     end
 
     ##
-    # @return [Integer] current fiscal year (FY format: last 2 digits of fiscal year)
+    # @return [Integer] current fiscal year (FY format: last 2 digits of fiscal year end)
     # Fiscal year starts on FISCAL_YEAR_START_MONTH (July)
-    # Example: If today is 2026-07-28, FY is 26 (July 2026 - June 2027)
-    #          If today is 2026-06-28, FY is 25 (July 2025 - June 2026)
+    # Example: If today is 2026-07-28, FY is 27 (July 2026 - June 2027)
+    #          If today is 2026-06-28, FY is 26 (July 2025 - June 2026)
     # This method crosses the calendar year boundary on July 1:
-    #   - June 30, 2026 at 23:59 → FY is 25
-    #   - July 1, 2026 at 00:00 → FY is 26
+    #   - June 30, 2026 at 23:59 → FY is 26
+    #   - July 1, 2026 at 00:00 → FY is 27
     def current_fiscal_year
       now = Time.zone.now
       if now.month >= FISCAL_YEAR_START_MONTH
-        now.year % 100
+        (now.year + 1) % 100
       else
-        (now.year - 1) % 100
+        now.year % 100
       end
     end
 
@@ -244,9 +244,9 @@ class Metric
     def year_slices_for_date(download_date)
       cal_year = download_date.year
       fis_year = if download_date.month >= FISCAL_YEAR_START_MONTH
-                   download_date.year % 100
+                   (download_date.year + 1) % 100
                  else
-                   (download_date.year - 1) % 100
+                   download_date.year % 100
                  end
       { calendar_year: cal_year, fiscal_year: fis_year }
     end
@@ -287,12 +287,12 @@ class Metric
     end
 
     ##
-    # @param fiscal_year [Integer] 2-digit fiscal year (e.g., 26 for FY26)
+    # @param fiscal_year [Integer] 2-digit fiscal year end (e.g., 27 for FY27)
     # @return [Array<Date>] [start_date, end_date] for the fiscal year
-    # FY26 = July 2026 - June 2027
+    # FY27 = July 2026 - June 2027
     def date_range_for_fiscal_year(fiscal_year)
       # Assume 21st century
-      start_year = 2000 + fiscal_year
+      start_year = 2000 + fiscal_year - 1
       start_date = Date.new(start_year, FISCAL_YEAR_START_MONTH, 1)
       end_date = Date.new(start_year + 1, FISCAL_YEAR_START_MONTH, 1) - 1.day
       [start_date, end_date]
