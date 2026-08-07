@@ -43,7 +43,7 @@
   %ul
     %li
       - current_dataset_calendar = Metric.filename_for_year_metric(:dataset_downloads, current_calendar_year, :calendar)
-      %a{href: "/public/#{current_dataset_calendar}",
+      %a{href: "/#{current_dataset_calendar}",
           data: {testid: "metric-download-dataset-#{current_calendar_year}-calendar"},
           "aria-label" => "Download Dataset Downloads #{current_calendar_year} (Calendar Year)",
           title: "Download Dataset Downloads #{current_calendar_year} (Calendar Year)",
@@ -51,7 +51,7 @@
         Dataset Downloads #{current_calendar_year} (Calendar Year)
     %li
       - current_dataset_fiscal = Metric.filename_for_year_metric(:dataset_downloads, current_fiscal_year, :fiscal)
-      %a{href: "/public/#{current_dataset_fiscal}",
+      %a{href: "/#{current_dataset_fiscal}",
           data: {testid: "metric-download-dataset-#{current_fiscal_label}-fiscal"},
           "aria-label" => "Download Dataset Downloads #{current_fiscal_label} (Fiscal Year)",
           title: "Download Dataset Downloads #{current_fiscal_label} (Fiscal Year)",
@@ -115,7 +115,7 @@
   %ul
     %li
       - current_datafile_calendar = Metric.filename_for_year_metric(:datafile_downloads, current_calendar_year, :calendar)
-      %a{href: "/public/#{current_datafile_calendar}",
+      %a{href: "/#{current_datafile_calendar}",
           data: {testid: "metric-download-datafile-#{current_calendar_year}-calendar"},
           "aria-label" => "Download Datafile Downloads #{current_calendar_year} (Calendar Year)",
           title: "Download Datafile Downloads #{current_calendar_year} (Calendar Year)",
@@ -123,7 +123,7 @@
         Datafile Downloads #{current_calendar_year} (Calendar Year)
     %li
       - current_datafile_fiscal = Metric.filename_for_year_metric(:datafile_downloads, current_fiscal_year, :fiscal)
-      %a{href: "/public/#{current_datafile_fiscal}",
+      %a{href: "/#{current_datafile_fiscal}",
           data: {testid: "metric-download-datafile-#{current_fiscal_label}-fiscal"},
           "aria-label" => "Download Datafile Downloads #{current_fiscal_label} (Fiscal Year)",
           title: "Download Datafile Downloads #{current_fiscal_label} (Fiscal Year)",
