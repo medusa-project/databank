@@ -992,14 +992,14 @@ collaborators to access the data files while the dataset is not public.</li>
     render json: {"citation" => @dataset.plain_text_citation}
   end
 
-  # Responds to `Get /datasets/:id/serialization`
-  def serialization
-    @serialization_json = recovery_serialization.to_json
-    respond_to do |format|
-      format.html
-      format.json
-    end
-  end
+  # Route removed: no internal callers; MedusaIngest calls recovery_serialization directly on the model.
+  # def serialization
+  #   @serialization_json = @dataset.recovery_serialization.to_json
+  #   respond_to do |format|
+  #     format.html
+  #     format.json
+  #   end
+  # end
 
   # Responds to `Get /datasets/:id/download_metrics`
   def download_metrics

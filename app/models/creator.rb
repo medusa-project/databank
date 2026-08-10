@@ -137,8 +137,10 @@ class Creator < ApplicationRecord
   def display_name
     if type_of == Databank::CreatorType::INSTITUTION
       institution_name.to_s
-    else
+    elsif given_name.present? || family_name.present?
       "#{given_name || ''} #{family_name || ''}"
+    else
+      "Unnamed Author"
     end
   end
 

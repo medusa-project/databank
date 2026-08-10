@@ -16,6 +16,20 @@ module Dataset::Authorable
   end
 
   ##
+  # @return Hash of email and display name for creators
+  # key is email address
+  # value is display name
+  def creators_contact_info
+    return_hash = {}
+    creators.each do |creator|
+      next if creator.email.blank?
+
+      return_hash[creator.email.downcase] = creator.display_name
+    end
+    return_hash
+  end
+
+  ##
   # Invalid name
   # This method returns whether the name is invalid, used for creators and contributors
   # @param [Hash] attributes the attributes of the name
@@ -26,7 +40,6 @@ module Dataset::Authorable
       attributes["given_name"].blank? &&
       attributes["institution_name"].blank?
   end
-
 
   ##
   # Sets the primary contact for the dataset
