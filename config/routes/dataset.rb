@@ -33,7 +33,6 @@ resources :datasets do
     get 'review_requests'
     post 'send_publication_notice'
     post 'send_to_medusa', defaults: { format: 'json' }
-    get "serialization", defaults: {format: 'json'}
     get 'share'
     get 'suppress_changelog'
     get 'suppress_review'
