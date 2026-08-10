@@ -37,12 +37,22 @@ RSpec.describe DatabankMailer, type: :mailer do
   end
 
   describe '#acknowledge_request_version' do
-    it 'emails depositor and copies curator contact' do
-      mail = described_class.acknowledge_request_version(dataset_key: dataset_key)
+    it 'emails depositor and requestor (deduped) and copies curator contact' do
+      mail = described_class.acknowledge_request_version(dataset_key:        dataset_key,
+                                                         current_user_name:  'Requester Name',
+                                                         current_user_email: 'requester@example.org')
 
-      expect(mail.to).to eq(['depositor@example.org'])
+      expect(mail.to).to include('depositor@example.org', 'requester@example.org')
       expect(mail.cc).to eq([IDB_CONFIG[:admin][:contact_email]])
       expect(mail.subject).to include('Version Request Acknowledgement')
+    end
+
+    it 'dedupes recipient when requestor is the depositor' do
+      mail = described_class.acknowledge_request_version(dataset_key:        dataset_key,
+                                                         current_user_name:  'Depositor Name',
+                                                         current_user_email: 'depositor@example.org')
+
+      expect(mail.to).to eq(['depositor@example.org'])
     end
   end
 

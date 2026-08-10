@@ -163,11 +163,13 @@ module Dataset::Versionable
       next_idb_dataset.nil?
   end
 
-  def send_version_request_emails
+  def send_version_request_emails(current_user_name:, current_user_email:)
     begin
       request_version_email = DatabankMailer.request_version(dataset_key: key)
       request_version_email.deliver_now
-      acknowledge_v_request_email = DatabankMailer.acknowledge_request_version(dataset_key: key)
+      acknowledge_v_request_email = DatabankMailer.acknowledge_request_version(dataset_key:        key,
+                                                                               current_user_name:  current_user_name,
+                                                                               current_user_email: current_user_email)
       acknowledge_v_request_email.deliver_now
     rescue Net::SMTPSyntaxError => e
       Rails.logger.warn(e.message)
