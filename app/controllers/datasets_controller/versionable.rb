@@ -71,7 +71,8 @@ module DatasetsController::Versionable
     authorize! :update, @dataset
     respond_to do |format|
       if @dataset.update(dataset_params)
-        @dataset.send_version_request_emails
+        @dataset.send_version_request_emails(current_user_name:  current_user.name,
+                                               current_user_email: current_user.email)
         format.html { redirect_to dataset_path(@dataset.key), notice: "version requested" }
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else

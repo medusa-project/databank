@@ -1,0 +1,19 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body
+    Deposited by: #{@dataset.depositor_name},
+    %a{:href => "mailto:#{@dataset.depositor_email}"}
+      = @dataset.depositor_email
+    %br/
+    Review requested by: #{@current_user_name},
+    %a{:href => "mailto:#{@current_user_email}"}
+      = @current_user_email
+    %br/
+    Topic: Dataset Consultation
+    %br/
+    Dataset:
+    %a{:href => @dataset.databank_url}
+      = @dataset.databank_url
+    %hr/

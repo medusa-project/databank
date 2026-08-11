@@ -664,12 +664,6 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def request_review
     authorize! :update, @dataset
-    params = {}
-    params["help-name"] = @dataset.depositor_name
-    params["help-email"] = @dataset.depositor_email
-    params["help-topic"] = "Dataset Consultation"
-    params["help-dataset"] = "#{request.base_url}#{dataset_path(@dataset.key)}"
-    params["help-message"] = "Pre-deposit review request"
     shoulder = if @dataset.is_test?
                  IDB_CONFIG[:datacite_test_shoulder]
                else
@@ -677,8 +671,9 @@ collaborators to access the data files while the dataset is not public.</li>
                end
     @dataset.identifier = "#{shoulder}#{@dataset.key}_V1" if !@dataset.identifier || @dataset.identifier == ""
     ReviewRequest.create(dataset_key: @dataset.key, requested_at: Time.zone.now)
-    help_request = DatabankMailer.contact_help(params)
-    help_request.deliver_now
+    DatabankMailer.request_review(dataset_key:        @dataset.key,
+                                  current_user_name:  current_user.name,
+                                  current_user_email: current_user.email).deliver_now
     respond_to do |format|
       if @dataset.save
         format.html { render :confirm_review }

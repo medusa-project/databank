@@ -275,7 +275,7 @@ RSpec.describe Dataset::Versionable, type: :model do
       expect(logger).to receive(:warn).with('bad address')
       expect(logger).to receive(:warn).with(/could not version request mail/)
 
-      expect { dataset.send_version_request_emails }.not_to raise_error
+      expect { dataset.send_version_request_emails(current_user_name: 'Test User', current_user_email: 'test@example.org') }.not_to raise_error
     end
 
     it 're-raises unexpected errors after logging them' do
@@ -288,7 +288,7 @@ RSpec.describe Dataset::Versionable, type: :model do
       allow(Rails).to receive(:logger).and_return(logger)
       expect(logger).to receive(:warn).with('error while trying to send version_request_emails boom')
 
-      expect { dataset.send_version_request_emails }.to raise_error(StandardError, 'boom')
+      expect { dataset.send_version_request_emails(current_user_name: 'Test User', current_user_email: 'test@example.org') }.to raise_error(StandardError, 'boom')
     end
   end
 
