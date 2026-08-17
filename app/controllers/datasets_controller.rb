@@ -810,6 +810,11 @@ collaborators to access the data files while the dataset is not public.</li>
         return_hash["error"] = "no web_ids after split"
         render(json: return_hash.to_json, content_type: request.format, layout: false)
       end
+
+      # at this point web_ids responds to :count and web_ids.count is 1 or more
+      # strip each element of the array web_ids
+      # DEBUG
+      Rails.logger.warn "web_ids class: #{web_ids.class}"
       web_ids.each(&:strip!)
       parametrized_doi = @dataset.identifier.parameterize
       download_hash = DownloaderClient.datafiles_download_hash(dataset:  @dataset,
