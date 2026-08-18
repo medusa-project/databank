@@ -25,7 +25,6 @@ resources :datasets do
     get 'permanently_suppress_metadata'
     get 'permissions'
     get 'publish'
-    get 'record_text'
     delete 'remove_sharing_link'
     get "request_review", defaults: {format: 'html'}
     get 'reserve_doi', defaults: {format: 'json'}

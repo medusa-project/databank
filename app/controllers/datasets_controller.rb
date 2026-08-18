@@ -805,12 +805,19 @@ collaborators to access the data files while the dataset is not public.</li>
     if params.has_key?("web_ids")
       web_ids_str = params["web_ids"]
       web_ids = web_ids_str.split("~")
+      # keep only values that can be stripped, convert them to stripped strings, and remove empties
+      # after the next block, web_ids should be empty or an array of non-empty stripped strings
+      web_ids = web_ids.filter_map do |web_id|
+        next unless web_id.respond_to?(:strip)
+
+        stripped = web_id.strip
+        stripped unless stripped.empty?
+      end
       if !web_ids.respond_to?(:count) || web_ids.count < 1
         return_hash["status"] = "error"
         return_hash["error"] = "no web_ids after split"
         render(json: return_hash.to_json, content_type: request.format, layout: false)
       end
-      web_ids.each(&:strip!)
       parametrized_doi = @dataset.identifier.parameterize
       download_hash = DownloaderClient.datafiles_download_hash(dataset:  @dataset,
                                                                web_ids:  web_ids,
@@ -985,25 +992,6 @@ collaborators to access the data files while the dataset is not public.</li>
   # Responds to `Get /datasets/:id/citation_text`
   def citation_text
     render json: {"citation" => @dataset.plain_text_citation}
-  end
-
-  # Route removed: no internal callers; MedusaIngest calls recovery_serialization directly on the model.
-  # def serialization
-  #   @serialization_json = @dataset.recovery_serialization.to_json
-  #   respond_to do |format|
-  #     format.html
-  #     format.json
-  #   end
-  # end
-
-  # Responds to `Get /datasets/:id/download_metrics`
-  def download_metrics
-    head :not_implemented
-  end
-
-  # Responds to `Get /datasets/:id/record_text`
-  def record_text
-    render "recordtext"
   end
 
   # Responds to `Get /datasets/:id/confirm_review`

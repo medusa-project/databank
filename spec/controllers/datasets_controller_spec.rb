@@ -666,15 +666,6 @@ RSpec.describe DatasetsController, type: :controller do
 
       expect(response).to have_http_status(:not_implemented)
     end
-  end
-
-  describe 'GET #record_text' do
-    it 'returns a successful response' do
-      get :record_text, params: { id: dataset.to_param }
-
-      expect(response).to be_successful
-    end
-  end
 
   describe 'GET #confirm_review' do
     it 'returns a successful response' do
