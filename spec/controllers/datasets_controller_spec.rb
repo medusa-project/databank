@@ -660,13 +660,6 @@ RSpec.describe DatasetsController, type: :controller do
     end
   end
 
-  describe 'GET #download_metrics' do
-    it 'returns not_implemented for unimplemented handler' do
-      get :download_metrics, params: { id: dataset.to_param }
-
-      expect(response).to have_http_status(:not_implemented)
-    end
-
   describe 'GET #confirm_review' do
     it 'returns a successful response' do
       get :confirm_review, params: { id: dataset.to_param }

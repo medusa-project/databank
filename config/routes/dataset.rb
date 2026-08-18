@@ -9,7 +9,6 @@ resources :datasets do
     get 'download_box_file/:box_file_id', to: 'datasets#download_box_file'
     get 'download_endNote_XML'
     get "download_link", defaults: {format: 'json'}
-    get "download_metrics", defaults: {format: 'json'}
     get 'download_plaintext_citation'
     get 'download_RIS'
     get 'draft_to_version'
