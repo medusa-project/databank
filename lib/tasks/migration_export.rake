@@ -174,6 +174,7 @@ class Migration::Legacy::ExportSerializer
   def serialized_funders
     dataset.funders.order(:id).map do |funder|
       {
+        code:              funder.code,
         name:              funder.name,
         identifier:        funder.identifier,
         identifier_scheme: funder.identifier_scheme,
