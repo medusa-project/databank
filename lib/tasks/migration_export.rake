@@ -1577,6 +1577,7 @@ namespace :migration do # rubocop:disable Metrics/BlockLength
       def self.serialize_funders(funders)
         funders.order(:id).map do |funder|
           {
+            code: funder.code,
             name: funder.name,
             identifier: funder.identifier,
             identifier_scheme: funder.identifier_scheme,
