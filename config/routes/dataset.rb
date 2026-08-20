@@ -9,7 +9,6 @@ resources :datasets do
     get 'download_box_file/:box_file_id', to: 'datasets#download_box_file'
     get 'download_endNote_XML'
     get "download_link", defaults: {format: 'json'}
-    get "download_metrics", defaults: {format: 'json'}
     get 'download_plaintext_citation'
     get 'download_RIS'
     get 'draft_to_version'
@@ -25,7 +24,6 @@ resources :datasets do
     get 'permanently_suppress_metadata'
     get 'permissions'
     get 'publish'
-    get 'record_text'
     delete 'remove_sharing_link'
     get "request_review", defaults: {format: 'html'}
     get 'reserve_doi', defaults: {format: 'json'}
