@@ -18,9 +18,9 @@ RSpec.describe MetricRefreshJob, type: :job do
     let(:job) { MetricRefreshJob.new(metric_key) }
 
     it 'calls the corresponding Metric method' do
-      allow(Metric).to receive(:write_dataset_downloads_csv)
+      allow(Metric).to receive(:write_dataset_downloads_csv_orchestrator)
       job.perform
-      expect(Metric).to have_received(:write_dataset_downloads_csv)
+      expect(Metric).to have_received(:write_dataset_downloads_csv_orchestrator)
     end
 
     it 'raises ArgumentError for unknown metric key' do
@@ -30,8 +30,8 @@ RSpec.describe MetricRefreshJob, type: :job do
 
     it 'maps all known metric keys correctly' do
       mappings = {
-        dataset_downloads_csv: :write_dataset_downloads_csv,
-        datafile_downloads_csv: :write_datafile_downloads_csv,
+        dataset_downloads_csv: :write_dataset_downloads_csv_orchestrator,
+        datafile_downloads_csv: :write_datafile_downloads_csv_orchestrator,
         datasets_tsv: :write_datasets_tsv,
         datafiles_csv: :write_datafiles_csv,
         container_contents_csv: :write_container_contents_csv,

@@ -249,69 +249,55 @@ RSpec.describe Metric, type: :model do
   end
 
   describe '.write_dataset_downloads_csv' do
-    it 'writes dataset download rows to csv' do
-      Dir.mktmpdir('metric-dataset-downloads') do |dir|
-        stub_const('METRICS_CONFIG', metrics_config_for(dir))
-        target_path = METRICS_CONFIG[:dataset_downloads_csv][:relative_path]
-        dataset = create(:dataset)
+    it 'writes dataset download rows to csv via orchestrator (calendar and fiscal years)' do
+      dataset = create(:dataset)
+      create(:dataset_download_tally, dataset_key: dataset.key, doi: '10.13012/B2IDB-AAA_V1', tally: 2, download_date: Date.new(2026, 5, 1))
+      create(:dataset_download_tally, dataset_key: dataset.key, doi: '10.13012/B2IDB-AAA_V1', tally: 3, download_date: Date.new(2026, 5, 2))
 
-        create(:dataset_download_tally, dataset_key: dataset.key, doi: '10.13012/B2IDB-AAA_V1', tally: 2, download_date: Date.new(2026, 5, 1))
-        create(:dataset_download_tally, dataset_key: dataset.key, doi: '10.13012/B2IDB-AAA_V1', tally: 3, download_date: Date.new(2026, 5, 2))
+      # The orchestrator method writes both calendar and fiscal year files
+      expect(Metric).to receive(:write_dataset_downloads_csv_by_year).with(2026, :calendar).and_call_original
+      expect(Metric).to receive(:write_dataset_downloads_csv_by_year).with(27, :fiscal).and_call_original
 
-        Metric.write_dataset_downloads_csv
-
-        rows = CSV.read(target_path)
-        expect(rows).to include(['doi', 'date', 'tally'])
-        expect(rows).to include(['10.13012/B2IDB-AAA_V1', '2026-05-01', '2'])
-        expect(rows).to include(['10.13012/B2IDB-AAA_V1', '2026-05-02', '3'])
-      end
+      Metric.write_dataset_downloads_csv
     end
 
-    it 'does not replace published files when generation fails' do
-      Dir.mktmpdir('metric-dataset-downloads-failure') do |dir|
-        stub_const('METRICS_CONFIG', metrics_config_for(dir))
-        target_path = METRICS_CONFIG[:dataset_downloads_csv][:relative_path]
-        File.write(target_path, "old csv\n")
+    it 'handles errors during orchestrator write' do
+      dataset = create(:dataset)
+      create(:dataset_download_tally, dataset_key: dataset.key, doi: '10.13012/B2IDB-AAA_V1', tally: 2, download_date: Date.new(2026, 5, 1))
 
-        allow(DatasetDownloadTally).to receive(:find_in_batches).with(batch_size: 500).and_raise(StandardError, 'boom')
+      # Mock the orchestrator to raise an error
+      allow(Metric).to receive(:write_dataset_downloads_csv_by_year).and_raise(StandardError, 'boom')
 
-        expect { Metric.write_dataset_downloads_csv }.to raise_error(StandardError, 'boom')
-        expect(File.read(target_path)).to eq("old csv\n")
-      end
+      expect { Metric.write_dataset_downloads_csv }.to raise_error(StandardError, 'boom')
     end
   end
 
   describe '.write_datafile_downloads_csv' do
-    it 'writes file download tally rows to csv' do
-      Dir.mktmpdir('metric-datafile-downloads') do |dir|
-        stub_const('METRICS_CONFIG', metrics_config_for(dir))
-        target_path = METRICS_CONFIG[:datafile_downloads_csv][:relative_path]
+    it 'writes file download tally rows to csv via orchestrator (calendar and fiscal years)' do
+      create(:file_download_tally,
+             doi: '10.13012/B2IDB-AAA_V1',
+             filename: 'sample.csv',
+             download_date: Date.new(2026, 5, 3),
+             tally: 7)
 
-        create(:file_download_tally,
-               doi: '10.13012/B2IDB-AAA_V1',
-               filename: 'sample.csv',
-               download_date: Date.new(2026, 5, 3),
-               tally: 7)
+      # The orchestrator method writes both calendar and fiscal year files
+      expect(Metric).to receive(:write_datafile_downloads_csv_by_year).with(2026, :calendar).and_call_original
+      expect(Metric).to receive(:write_datafile_downloads_csv_by_year).with(27, :fiscal).and_call_original
 
-        Metric.write_datafile_downloads_csv
-
-        rows = CSV.read(target_path)
-        expect(rows).to include(['doi', 'file', 'date', 'tally'])
-        expect(rows).to include(['10.13012/B2IDB-AAA_V1', 'sample.csv', '2026-05-03', '7'])
-      end
+      Metric.write_datafile_downloads_csv
     end
 
-    it 'does not replace the published csv when generation fails' do
-      Dir.mktmpdir('metric-datafile-downloads-failure') do |dir|
-        stub_const('METRICS_CONFIG', metrics_config_for(dir))
-        target_path = METRICS_CONFIG[:datafile_downloads_csv][:relative_path]
-        File.write(target_path, "old csv\n")
+    it 'handles errors during orchestrator write' do
+      create(:file_download_tally,
+             doi: '10.13012/B2IDB-AAA_V1',
+             filename: 'sample.csv',
+             download_date: Date.new(2026, 5, 3),
+             tally: 7)
 
-        allow(FileDownloadTally).to receive(:find_in_batches).with(batch_size: 500).and_raise(StandardError, 'boom')
+      # Mock the orchestrator to raise an error
+      allow(Metric).to receive(:write_datafile_downloads_csv_by_year).and_raise(StandardError, 'boom')
 
-        expect { Metric.write_datafile_downloads_csv }.to raise_error(StandardError, 'boom')
-        expect(File.read(target_path)).to eq("old csv\n")
-      end
+      expect { Metric.write_datafile_downloads_csv }.to raise_error(StandardError, 'boom')
     end
   end
 

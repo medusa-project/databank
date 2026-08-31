@@ -110,6 +110,8 @@ class Creator < ApplicationRecord
   ##
   # Add this creator as an editor to the dataset this creator belongs to
   def add_editor
+    return if email.blank?
+
     UserAbility.add_to_editors(dataset: dataset, email: email)
     Sunspot.index! [dataset]
   end
@@ -117,6 +119,8 @@ class Creator < ApplicationRecord
   ##
   # Remove this creator as an editor from the dataset this creator belongs to
   def remove_editor
+    return if email.blank?
+
     UserAbility.remove_from_editors(dataset: dataset, email: email)
     Sunspot.index! [dataset]
   end

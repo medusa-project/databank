@@ -16,6 +16,22 @@ module Dataset::Authorable
   end
 
   ##
+  # @return Array of hashes with name and email for creators with emails (unique by email)
+  def creator_editors
+    reload if persisted?
+    seen_emails = Set.new
+    creators.filter_map do |creator|
+      next if creator.email.blank?
+
+      email = creator.email.downcase
+      next if seen_emails.include?(email)
+
+      seen_emails.add(email)
+      { name: creator.display_name, email: email }
+    end
+  end
+
+  ##
   # @return Hash of email and display name for creators
   # key is email address
   # value is display name
