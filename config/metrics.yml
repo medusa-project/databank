@@ -93,6 +93,48 @@
       :description: Download date for the tally row.
     - :name: tally
       :description: Number of downloads counted on that date for the datafile.
+:dataset_downloads_csv:
+  :label: Dataset downloads CSV
+  :relative_path: <%= Rails.root.join("public/dataset_downloads_#{Time.zone.now.year}.csv") %>
+  :download_path: /dataset_downloads_<%= Time.zone.now.year %>.csv
+  :content_type: text/csv
+  :refreshable: true
+  :show_in_admin: false
+  :write_method: write_dataset_downloads_csv_orchestrator
+  :summary: Daily download tallies grouped at the dataset level by calendar year.
+  :description_blocks:
+    - A csv export detailing downloads calculated per dataset per day for the current calendar year.
+  :columns:
+    - :name: dataset_key
+      :description: Unique key that identifies the dataset.
+    - :name: doi
+      :description: DOI that identifies the dataset.
+    - :name: download_date
+      :description: Download date for the tally row.
+    - :name: tally
+      :description: Number of downloads counted on that date for the dataset.
+:datafile_downloads_csv:
+  :label: Datafile downloads CSV
+  :relative_path: <%= Rails.root.join("public/datafile_downloads_#{Time.zone.now.year}.csv") %>
+  :download_path: /datafile_downloads_<%= Time.zone.now.year %>.csv
+  :content_type: text/csv
+  :refreshable: true
+  :show_in_admin: false
+  :write_method: write_datafile_downloads_csv_orchestrator
+  :summary: Daily download tallies grouped at the datafile level by calendar year.
+  :description_blocks:
+    - A csv export detailing downloads calculated per datafile per day for the current calendar year.
+  :columns:
+    - :name: file_web_id
+      :description: Unique identifier for the datafile.
+    - :name: dataset_key
+      :description: Unique key that identifies the dataset containing the datafile.
+    - :name: doi
+      :description: DOI that identifies the dataset.
+    - :name: download_date
+      :description: Download date for the tally row.
+    - :name: tally
+      :description: Number of downloads counted on that date for the datafile.
 :datafiles_csv:
   :label: Datafiles CSV
   :relative_path: <%= Rails.root.join("public/datafiles.csv") %>

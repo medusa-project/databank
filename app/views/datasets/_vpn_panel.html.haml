@@ -1,0 +1,15 @@
+.panel-group(id="vpn")
+  .panel.panel-default
+    .panel-heading(id="vpnHeading")
+      %h2.panel-title
+        %a( role="button" data-toggle="collapse" data-parent="#vpn" href="#vpnPanel" aria-expanded="false" aria-controls="vpnPanel" class="accordion-toggle collapsed" )
+          Use VPN in Tunnel All mode to use the file upload API from off campus. (click to expand)
+    .panel-collapse.collapse(id="vpnPanel" aria-labelledby="vpnHeading" )
+      .panel-body
+        %p
+          To use the file upload API from off campus (i.e., when you are not connected to the University of Illinois Urbana-Champaign network),
+          you need to connect to the
+          = link_to "University of Illinois VPN", "https://www.techservices.illinois.edu/services/vpn-essentials/"
+          in
+          %strong Tunnel All
+          mode.
