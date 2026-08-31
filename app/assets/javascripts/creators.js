@@ -328,11 +328,10 @@ function set_creator_orcid_from_search_modal() {
   let creator_index = jQuery("#creator-index").val();
   let selected = jQuery(
     "input[type='radio'][name='orcid-search-select']:checked",
-  ).val();
-  let select_split = selected.split("~");
-  let selected_id = select_split[0];
-  let selected_family = select_split[1];
-  let selected_given = select_split[2];
+  );
+  let selected_id = selected.data("orcid");
+  let selected_family = selected.data("family-name");
+  let selected_given = selected.data("given-name");
 
   jQuery("#dataset_creators_attributes_" + creator_index + "_identifier").val(
     selected_id,
@@ -418,24 +417,27 @@ function search_creator_orcid() {
             let given_name = orcidPerson["given_names"];
             let family_name = orcidPerson["family_name"];
             let affiliation = orcidPerson["affiliation"];
+            let selection = jQuery("<input>", {
+              type: "radio",
+              name: "orcid-search-select",
+            }).data({
+              orcid: orcid,
+              "family-name": family_name,
+              "given-name": given_name,
+            });
+            let row = jQuery("<tr>", { class: "row" }).append(
+              jQuery("<td>").append(
+                jQuery("<a>", {
+                  href: orcid_uri,
+                  target: "_blank",
+                  text: family_name + ", " + given_name + ": " + orcid,
+                }),
+              ),
+              jQuery("<td>").text(affiliation),
+              jQuery("<td>").append(selection),
+            );
             jQuery("#orcid-search-results-table > tbody:last-child").append(
-              "<tr class='row'><td><a href='" +
-                orcid_uri +
-                "' target='_blank'>" +
-                family_name +
-                ", " +
-                given_name +
-                ": " +
-                orcid +
-                "</a></td><td>" +
-                affiliation +
-                "</td><td><input type='radio' name='orcid-search-select' value='" +
-                orcid +
-                "~" +
-                family_name +
-                "~" +
-                given_name +
-                "'/></td></tr>",
+              row,
             );
           }
         } else {
