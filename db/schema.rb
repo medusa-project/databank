@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_24_233755) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -170,6 +170,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_24_233755) do
     t.text "external_files_note"
     t.boolean "all_medusa"
     t.boolean "all_globus"
+    t.integer "ticket_id"
     t.index ["key"], name: "index_datasets_on_key", unique: true
   end
 

@@ -58,6 +58,14 @@ downloader:
   :publisher_id: <%= Rails.application.credentials[:illinois_experts][:publisher_id] %>
   :illinois_external_org_id: <%= Rails.application.credentials[:illinois_experts][:illinois_external_org_id] %>
 
+:tdx:
+  :base_url: <%= Rails.application.credentials&.dig(:tdx, :base_url) %>
+  :username: <%= Rails.application.credentials&.dig(:tdx, :username) %>
+  :password: <%= Rails.application.credentials&.dig(:tdx, :password) %>
+  :app_id: <%= Rails.application.credentials&.dig(:tdx, :app_id) %>
+  :form_id: <%= Rails.application.credentials&.dig(:tdx, :form_id) %>
+  :noreply_requestor_uid: <%= Rails.application.credentials&.dig(:tdx, :noreply_requestor_uid) %>
+
 :key_prefix: <%= Rails.application.credentials[:key_prefix] %>
 
 :max_datafiles: 500

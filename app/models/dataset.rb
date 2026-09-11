@@ -71,6 +71,7 @@ class Dataset < ApplicationRecord
   include Dataset::Sharable
   include Dataset::Stringable
   include Dataset::Storable
+  include Dataset::Ticketable
   include Dataset::Uploadable
   include Dataset::Versionable
 

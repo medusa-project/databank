@@ -168,6 +168,7 @@ node_modules
 /30-*/*
 /40-*/*
 /databank-2.code-workspace
+/.copilot
 # Ignore lock files
 /public/*.lock
 
