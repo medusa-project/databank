@@ -676,6 +676,7 @@ collaborators to access the data files while the dataset is not public.</li>
                                   current_user_email: current_user.email).deliver_now
     respond_to do |format|
       if @dataset.save
+        @dataset.ticket_review_request(msg: "Review requested by: #{current_user.name}, #{current_user.email}")
         format.html { render :confirm_review }
         format.json { render json: {status: :ok}, content_type: request.format, layout: false }
       else

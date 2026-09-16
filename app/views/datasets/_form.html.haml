@@ -162,6 +162,17 @@
 
                 .curator-only
                   .row
+                    .col-md-3
+                      %h3 Ticket connection
+                      %a(href="https://help.uillinois.edu/TDWorkManagement" target="_blank") TeamDynamix tickets 
+                    .col-md-3
+                      - if @dataset.ticket_id.present?
+                        %a(href=@dataset.ticket_url target="_blank")
+                          View Ticket
+                          @dataset.ticket_id
+                      - else
+                        No ticket available.
+                  .row
                     .col-md-6.form-group
                       = f.label :identifier, "Specified DOI for version OR import -- just the 10.xx part", :class => "control-label"
                       - if @dataset.publication_state == Databank::PublicationState::DRAFT

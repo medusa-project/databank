@@ -9,18 +9,20 @@ class TdxClient
   include Singleton
 
   BASE_URL = IDB_CONFIG[:tdx][:base_url]
+  API_BASE_URL = BASE_URL.to_s.end_with?("/api") ? BASE_URL.to_s.chomp("/") : "#{BASE_URL.to_s.chomp("/")}/api"
   USERNAME = IDB_CONFIG[:tdx][:username]
   PASSWORD = IDB_CONFIG[:tdx][:password]
   APP_ID = IDB_CONFIG[:tdx][:app_id]
   FORM_ID = IDB_CONFIG[:tdx][:form_id]
   NOREPLY_REQUESTOR_UID = IDB_CONFIG[:tdx][:noreply_requestor_uid]
   TOKEN_REFRESH_BUFFER_SECONDS = 60
-  AUTH_ENDPOINT = "#{BASE_URL}/auth".freeze
-  TICKETS_ENDPOINT = "#{BASE_URL}/#{APP_ID}/tickets".freeze
+  AUTH_ENDPOINT = "#{API_BASE_URL}/auth".freeze
+  TICKETS_ENDPOINT = "#{API_BASE_URL}/#{APP_ID}/tickets".freeze
+  GLOBAL_TICKETS_ENDPOINT = "#{API_BASE_URL}/tickets".freeze
 
-  private_constant :BASE_URL, :USERNAME, :PASSWORD, :APP_ID, :FORM_ID,
-                   :NOREPLY_REQUESTOR_UID, :TOKEN_REFRESH_BUFFER_SECONDS,
-                   :AUTH_ENDPOINT, :TICKETS_ENDPOINT
+  private_constant :BASE_URL, :API_BASE_URL, :USERNAME, :PASSWORD, :APP_ID,
+                   :TOKEN_REFRESH_BUFFER_SECONDS, :AUTH_ENDPOINT,
+                   :TICKETS_ENDPOINT, :GLOBAL_TICKETS_ENDPOINT
 
   def initialize
     @token = nil
@@ -39,43 +41,47 @@ class TdxClient
   end
 
   def create_ticket(title:, description:, requestor_uid: NOREPLY_REQUESTOR_UID, form_id: FORM_ID)
-    response = connection.post(TICKETS_ENDPOINT) do |request|
-      request.headers["Content-Type"] = "application/json"
-      request.headers["Authorization"] = "Bearer #{current_token}"
-      request.body = {
-        title: title,
-        description: description,
-        requestorUid: requestor_uid,
-        formId: form_id
-      }.to_json
-    end
+    post_json(TICKETS_ENDPOINT, {
+                Title: title,
+                Description: description,
+                RequestorUid: requestor_uid,
+                FormID: form_id
+              }, "TeamDynamix ticket creation failed")
+  end
 
-    if response.status == 401
-      @token = nil
-      @token_expires_at = nil
-      response = connection.post(TICKETS_ENDPOINT) do |request|
-        request.headers["Content-Type"] = "application/json"
+  def find_ticket_by_id(ticket_id)
+    response = authenticated_request do
+      connection.get("#{GLOBAL_TICKETS_ENDPOINT}/#{ticket_id}") do |request|
         request.headers["Authorization"] = "Bearer #{current_token}"
-        request.body = {
-          title: title,
-          description: description,
-          requestorUid: requestor_uid,
-          formId: form_id
-        }.to_json
       end
     end
 
-    return JSON.parse(response.body) if response.status.between?(200, 299)
+    return nil if response.status == 404
+    return parse_response_body(response.body) if response.status.between?(200, 299)
 
-    raise "TeamDynamix ticket creation failed (#{response.status}): #{response.body}"
-  rescue JSON::ParserError
-    response.body
+    raise "TeamDynamix ticket lookup failed (#{response.status}): #{response.body}"
+  end
+
+  def find_ticket_by_title(title)
+    tickets = post_json(TICKETS_ENDPOINT + "/search", { SearchText: title }, "TeamDynamix ticket search failed")
+    return unless tickets.is_a?(Array)
+
+    tickets.find { |ticket| ticket["Title"] == title || ticket["title"] == title }
+  end
+
+  def update_ticket(ticket_id:, title:, description:, requestor_uid: NOREPLY_REQUESTOR_UID, form_id: FORM_ID)
+    patch_json("#{TICKETS_ENDPOINT}/#{ticket_id}", [
+                 { op: "replace", path: "/Title", value: title },
+                 { op: "replace", path: "/Description", value: description },
+                 { op: "replace", path: "/RequestorUid", value: requestor_uid },
+                 { op: "replace", path: "/FormID", value: form_id }
+               ], "TeamDynamix ticket update failed")
   end
 
   private
 
   def connection
-    @connection ||= Faraday.new(url: BASE_URL) do |faraday|
+    @connection ||= Faraday.new(url: API_BASE_URL) do |faraday|
       faraday.request :json
       faraday.response :json, content_type: /json/
       faraday.adapter Faraday.default_adapter
@@ -107,5 +113,51 @@ class TdxClient
     raise "TeamDynamix authentication failed: missing exp claim" if @token_expires_at.zero?
 
     @token
+  end
+
+  def post_json(url, body, error_message)
+    response = authenticated_request do
+      connection.post(url) do |request|
+        request.headers["Content-Type"] = "application/json"
+        request.headers["Authorization"] = "Bearer #{current_token}"
+        request.body = body.to_json
+      end
+    end
+
+    return parse_response_body(response.body) if response.status.between?(200, 299)
+
+    raise "#{error_message} (#{response.status}): #{response.body}"
+  end
+
+  def patch_json(url, body, error_message)
+    response = authenticated_request do
+      connection.patch(url) do |request|
+        request.headers["Content-Type"] = "application/json-patch+json"
+        request.headers["Authorization"] = "Bearer #{current_token}"
+        request.body = body.to_json
+      end
+    end
+
+    return parse_response_body(response.body) if response.status.between?(200, 299)
+
+    raise "#{error_message} (#{response.status}): #{response.body}"
+  end
+
+  def authenticated_request
+    response = yield
+    return response unless response.status == 401
+
+    @token = nil
+    @token_expires_at = nil
+    yield
+  end
+
+  def parse_response_body(body)
+    return body if body.is_a?(Hash) || body.is_a?(Array)
+    return nil if body.blank?
+
+    JSON.parse(body)
+  rescue JSON::ParserError
+    body
   end
 end

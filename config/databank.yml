@@ -65,6 +65,7 @@ downloader:
   :app_id: <%= Rails.application.credentials&.dig(:tdx, :app_id) %>
   :form_id: <%= Rails.application.credentials&.dig(:tdx, :form_id) %>
   :noreply_requestor_uid: <%= Rails.application.credentials&.dig(:tdx, :noreply_requestor_uid) %>
+  :ticket_url_base: <%= "https://help.uillinois.edu/TDNext/Apps/#{Rails.application.credentials&.dig(:tdx, :app_id)}/Tickets/TicketDet?TicketID=" %>
 
 :key_prefix: <%= Rails.application.credentials[:key_prefix] %>
 
