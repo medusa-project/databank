@@ -162,18 +162,24 @@
 
                 .curator-only
                   .row
-                    .col-md-3
-                      %h3 Ticket connection
+                    .col-md-12
+                      %h4 Ticket Connection
                       %a(href="https://help.uillinois.edu/TDWorkManagement" target="_blank") TeamDynamix tickets 
-                    .col-md-3
-                      - if @dataset.ticket_id.present?
-                        %a(href=@dataset.ticket_url target="_blank")
-                          View Ticket
-                          @dataset.ticket_id
-                      - else
-                        No ticket available.
+                    - if @dataset.ticket_id.present?
+                      %a(href="#{@dataset.ticket_url}" target="_blank")
+                        View in TeamDynamix
+                        = @dataset.ticket_id
+                    - else
+                      No ticket available.
+                    .col-md-6
+                      %h4 Medusa Connection 
+                      .form-group
+                        =f.label :medusa_dataset_dir, "View in Medusa (relative to #{IDB_CONFIG['medusa']['datasets_url_base']} )", class: "control-label"
+                        %br
+                        =f.text_field :medusa_dataset_dir, class: "form-control dataset", :placeholder => '/cfs_directories/number'
                   .row
                     .col-md-6.form-group
+                     %h4 DOI Control
                       = f.label :identifier, "Specified DOI for version OR import -- just the 10.xx part", :class => "control-label"
                       - if @dataset.publication_state == Databank::PublicationState::DRAFT
                         = f.text_field :identifier, :class => "dataset form-control", :placeholder => "Leave blank for auto-generate."
@@ -188,35 +194,26 @@
                         =f.check_box :is_test, :class => "dataset"
                       -else
                         =f.check_box :is_test, class: "dataset", readonly: true
-                      Test DOI
-                        
+                      Test DOI    
                   .row
-                    %span(class="col-md-1" )
+                    .col-md-1"
                       .form-group
                         =f.label :dataset_version, "Version", class: "control-label"
                         %br
                         =f.text_field :dataset_version, class: "form-control dataset"
-                    %span(class="col-md-3" )
 
-                    %span(class="col-md-11" )
+                    .col-md-11
                       .form-group
                         =f.label :version_comment, "Version Comment", class: "control-label"
                         %br
                         =f.text_area :version_comment, :rows => 1, class: "form-control dataset"
                   .row
-                    %span.col-md-6
+                    .col-md-12
+                      %h4 External Files
                       .form-group
                         =f.label :external_files_link, "Link to Externally Stored Files", class: "control-label"
                         %br
                         =f.text_field :external_files_link, class: "form-control dataset", :placeholder => 'https://granite.example.edu/1234567890'
-                    %span(class="col-md-6" )
-                      .form-group
-                        =f.label :medusa_dataset_dir, "URL in Medusa (relative to #{IDB_CONFIG['medusa']['datasets_url_base']} )", class: "control-label"
-                        %br
-                        =f.text_field :medusa_dataset_dir, class: "form-control dataset", :placeholder => '/cfs_directories/number'
-                  .row
-                    %span.col-md-12
-                      .form-group
                         =f.label :external_files_note, "Access Notes for Externally Stored Files", class: "control-label"
                         %br
                         =f.text_area :external_files_note, :rows => 4, class: "form-control dataset"
