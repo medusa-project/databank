@@ -179,7 +179,7 @@
                         =f.text_field :medusa_dataset_dir, class: "form-control dataset", :placeholder => '/cfs_directories/number'
                   .row
                     .col-md-6.form-group
-                     %h4 DOI Control
+                      %h4 DOI Control
                       = f.label :identifier, "Specified DOI for version OR import -- just the 10.xx part", :class => "control-label"
                       - if @dataset.publication_state == Databank::PublicationState::DRAFT
                         = f.text_field :identifier, :class => "dataset form-control", :placeholder => "Leave blank for auto-generate."
