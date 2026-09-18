@@ -159,33 +159,16 @@
               =f.hidden_field :identifier
 
               - if can? :manage, @dataset
-
+                %h3 Curation 
                 .curator-only
-                  .row
-                    .col-md-12
-                      %h4 Ticket Connection
-                      %a(href="https://help.uillinois.edu/TDWorkManagement" target="_blank") TeamDynamix tickets 
-                    - if @dataset.ticket_id.present?
-                      %a(href="#{@dataset.ticket_url}" target="_blank")
-                        View in TeamDynamix
-                        = @dataset.ticket_id
-                    - else
-                      No ticket available.
-                    .col-md-6
-                      %h4 Medusa Connection 
-                      .form-group
-                        =f.label :medusa_dataset_dir, "View in Medusa (relative to #{IDB_CONFIG['medusa']['datasets_url_base']} )", class: "control-label"
-                        %br
-                        =f.text_field :medusa_dataset_dir, class: "form-control dataset", :placeholder => '/cfs_directories/number'
+                  %h4 DOI Control
                   .row
                     .col-md-6.form-group
-                      %h4 DOI Control
                       = f.label :identifier, "Specified DOI for version OR import -- just the 10.xx part", :class => "control-label"
                       - if @dataset.publication_state == Databank::PublicationState::DRAFT
                         = f.text_field :identifier, :class => "dataset form-control", :placeholder => "Leave blank for auto-generate."
                       -else
                         = f.text_field :identifier, :class => "dataset form-control", readonly: true
-
                     .col-md-3
                       =f.check_box :is_import, :class => "dataset"
                       Imported DOI
@@ -195,21 +178,21 @@
                       -else
                         =f.check_box :is_test, class: "dataset", readonly: true
                       Test DOI    
+                  %h4 Version Information
                   .row
                     .col-md-1
                       .form-group
                         =f.label :dataset_version, "Version", class: "control-label"
                         %br
                         =f.text_field :dataset_version, class: "form-control dataset"
-
                     .col-md-11
                       .form-group
                         =f.label :version_comment, "Version Comment", class: "control-label"
                         %br
                         =f.text_area :version_comment, :rows => 1, class: "form-control dataset"
+                  %h4 External Files
                   .row
                     .col-md-12
-                      %h4 External Files
                       .form-group
                         =f.label :external_files_link, "Link to Externally Stored Files", class: "control-label"
                         %br

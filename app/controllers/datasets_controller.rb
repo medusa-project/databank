@@ -43,6 +43,7 @@ class DatasetsController < ApplicationController
                                      :share,
                                      :remove_sharing_link,
                                      :suppression_controls,
+                                     :ticket,
                                      :tracking,
                                      :review_requests,
                                      :permissions,
@@ -687,6 +688,11 @@ collaborators to access the data files while the dataset is not public.</li>
         format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
+  end
+
+  def ticket
+    authorize! :manage, @dataset
+    @existing_ticket = @dataset.find_existing_ticket
   end
 
   # publishing in IDB means interacting with DataCite and Medusa

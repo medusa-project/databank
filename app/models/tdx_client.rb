@@ -14,6 +14,7 @@ class TdxClient
   PASSWORD = IDB_CONFIG[:tdx][:password]
   APP_ID = IDB_CONFIG[:tdx][:app_id]
   FORM_ID = IDB_CONFIG[:tdx][:form_id]
+  GROUP_ID = IDB_CONFIG[:tdx][:group_id]
   NOREPLY_REQUESTOR_UID = IDB_CONFIG[:tdx][:noreply_requestor_uid]
   TOKEN_REFRESH_BUFFER_SECONDS = 60
   AUTH_ENDPOINT = "#{API_BASE_URL}/auth".freeze
@@ -22,7 +23,7 @@ class TdxClient
 
   private_constant :BASE_URL, :API_BASE_URL, :USERNAME, :PASSWORD, :APP_ID,
                    :TOKEN_REFRESH_BUFFER_SECONDS, :AUTH_ENDPOINT,
-                   :TICKETS_ENDPOINT, :GLOBAL_TICKETS_ENDPOINT
+                   :TICKETS_ENDPOINT, :GLOBAL_TICKETS_ENDPOINT, :GROUP_ID
 
   def initialize
     @token = nil
@@ -40,22 +41,24 @@ class TdxClient
     end
   end
 
-  def create_ticket(title:, description:, requestor_uid: NOREPLY_REQUESTOR_UID, form_id: FORM_ID)
+  def create_ticket(title:, description:)
     post_json(TICKETS_ENDPOINT, {
                 Title: title,
                 Description: description,
-                RequestorUid: requestor_uid,
-                FormID: form_id
+                RequestorUid: NOREPLY_REQUESTOR_UID,
+                FormID: FORM_ID,
+                ResponsibleGroupID: GROUP_ID
               }, "TeamDynamix ticket creation failed")
   end
 
   def find_ticket_by_id(ticket_id)
-    response = authenticated_request do
+    response = authenticated_request do |token|
       connection.get("#{GLOBAL_TICKETS_ENDPOINT}/#{ticket_id}") do |request|
-        request.headers["Authorization"] = "Bearer #{current_token}"
+        request.headers["Authorization"] = "Bearer #{token}"
       end
     end
 
+    return nil unless response
     return nil if response.status == 404
     return parse_response_body(response.body) if response.status.between?(200, 299)
 
@@ -69,13 +72,15 @@ class TdxClient
     tickets.find { |ticket| ticket["Title"] == title || ticket["title"] == title }
   end
 
-  def update_ticket(ticket_id:, title:, description:, requestor_uid: NOREPLY_REQUESTOR_UID, form_id: FORM_ID)
+  def update_ticket(ticket_id:, title:, description:)
     patch_json("#{TICKETS_ENDPOINT}/#{ticket_id}", [
                  { op: "replace", path: "/Title", value: title },
                  { op: "replace", path: "/Description", value: description },
-                 { op: "replace", path: "/RequestorUid", value: requestor_uid },
-                 { op: "replace", path: "/FormID", value: form_id }
                ], "TeamDynamix ticket update failed")
+  end
+
+  def add_comment(ticket_id:, comment:)
+    post_json("#{TICKETS_ENDPOINT}/#{ticket_id}/feed", { Comments: comment }, "TeamDynamix add comment failed")
   end
 
   private
@@ -103,53 +108,70 @@ class TdxClient
       }.to_json
     end
 
-    raise "TeamDynamix authentication failed (#{response.status}): #{response.body}" unless response.status == 200
+    return log_authentication_failure("unexpected status #{response.status}: #{response.body}") unless response.status == 200
 
     @token = response.body.to_s.strip
-    raise "TeamDynamix authentication failed: empty token" if @token.blank?
+    return log_authentication_failure("empty token") if @token.blank?
 
     payload, = JWT.decode(@token, nil, false)
     @token_expires_at = payload["exp"].to_i
-    raise "TeamDynamix authentication failed: missing exp claim" if @token_expires_at.zero?
+    return log_authentication_failure("missing exp claim") if @token_expires_at.zero?
 
     @token
+  rescue Faraday::Error, JWT::DecodeError => e
+    log_authentication_failure("#{e.class}: #{e.message}")
   end
 
   def post_json(url, body, error_message)
-    response = authenticated_request do
+    response = authenticated_request do |token|
       connection.post(url) do |request|
         request.headers["Content-Type"] = "application/json"
-        request.headers["Authorization"] = "Bearer #{current_token}"
+        request.headers["Authorization"] = "Bearer #{token}"
         request.body = body.to_json
       end
     end
 
+    return nil unless response
     return parse_response_body(response.body) if response.status.between?(200, 299)
 
     raise "#{error_message} (#{response.status}): #{response.body}"
   end
 
   def patch_json(url, body, error_message)
-    response = authenticated_request do
+    response = authenticated_request do |token|
       connection.patch(url) do |request|
         request.headers["Content-Type"] = "application/json-patch+json"
-        request.headers["Authorization"] = "Bearer #{current_token}"
+        request.headers["Authorization"] = "Bearer #{token}"
         request.body = body.to_json
       end
     end
 
+    return nil unless response
     return parse_response_body(response.body) if response.status.between?(200, 299)
 
     raise "#{error_message} (#{response.status}): #{response.body}"
   end
 
   def authenticated_request
-    response = yield
+    token = current_token
+    return nil if token.blank?
+
+    response = yield(token)
     return response unless response.status == 401
 
     @token = nil
     @token_expires_at = nil
-    yield
+    token = current_token
+    return nil if token.blank?
+
+    yield(token)
+  end
+
+  def log_authentication_failure(message)
+    @token = nil
+    @token_expires_at = nil
+    Rails.logger.error("TeamDynamix authentication failed: #{message}")
+    nil
   end
 
   def parse_response_body(body)

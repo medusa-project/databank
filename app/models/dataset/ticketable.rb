@@ -4,29 +4,26 @@
 module Dataset::Ticketable
   extend ActiveSupport::Concern
 
-  def ticket_review_request(msg:, requestor_uid: TdxClient::NOREPLY_REQUESTOR_UID, form_id: TdxClient::FORM_ID)
+  def ticket_review_request(msg:)
     existing_ticket = find_existing_ticket
     if existing_ticket
-      update_ticket(ticket_id: ticket_id_from(existing_ticket) || ticket_id,
-                    requestor_uid: requestor_uid,
-                    form_id: form_id,
-                    msg: msg)
+      update_ticket(ticket_id: ticket_id, msg: msg)
     else
-      create_ticket(requestor_uid: requestor_uid, form_id: form_id, msg: msg)
+      create_ticket(msg: msg)
     end
   end
 
-  def create_ticket(requestor_uid: TdxClient::NOREPLY_REQUESTOR_UID, form_id: TdxClient::FORM_ID, msg:)
+  def create_ticket(msg:)
     title = "[Dataset] #{key}"
     description = "Dataset: #{databank_url}\n\nMessage: #{msg}"
     response = TdxClient.instance.create_ticket(
-      title:         title,
-      description:   description,
-      requestor_uid: requestor_uid,
-      form_id:       form_id
+      title:       title,
+      description: description
     )
 
     ticket_id = ticket_id_from(response)
+    return nil if ticket_id.blank? && response.nil?
+
     raise "TeamDynamix ticket creation response did not include an ID" if ticket_id.blank?
 
     update!(ticket_id: ticket_id)
@@ -40,17 +37,17 @@ module Dataset::Ticketable
     "#{IDB_CONFIG[:tdx][:ticket_url_base]}#{ticket_id}"
   end
 
-  private
+  def record_change(change:)
+    TdxClient.instance.add_comment(ticket_id: ticket_id, comment: change) if ticket_id.present?
+  end
 
-  def update_ticket(ticket_id:, requestor_uid: TdxClient::NOREPLY_REQUESTOR_UID, form_id: TdxClient::FORM_ID, msg:)
+  def update_ticket(ticket_id:, msg:)
     title = "[Dataset] #{key}"
     description = "Dataset: #{databank_url}\n\nMessage: #{msg}"
     TdxClient.instance.update_ticket(
-      ticket_id:     ticket_id,
-      title:         title,
-      description:   description,
-      requestor_uid: requestor_uid,
-      form_id:       form_id
+      ticket_id:   ticket_id,
+      title:       title,
+      description: description
     )
   end
 

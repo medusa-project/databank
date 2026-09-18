@@ -15,6 +15,7 @@
   <%= render partial: 'confirm_deposit_modal' %>
   <div class="curator-only">
     <h2>Curator Control Links</h2>
+
     <%= link_to("Permissions", "/datasets/#{@dataset.key}/permissions") %>
     &nbsp;|&nbsp;
     <%= link_to("Review Requests", "/datasets/#{@dataset.key}/review_requests") %>
@@ -26,6 +27,9 @@
     <%= link_to("Medusa Details", "/datasets/#{@dataset.key}/medusa_details")%>
     &nbsp;|&nbsp;
     <%= link_to("Incomplete Uploads", "/datasets/#{@dataset.key}/incomplete_uploads") %>
+    &nbsp;|&nbsp;
+    <%= link_to("Ticket", "/datasets/#{@dataset.key}/ticket")%>
+
   </div>
 <% end %>
 
