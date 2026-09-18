@@ -1,10 +1,19 @@
-%h4 Ticket
-%a(href="https://help.uillinois.edu/TDWorkManagement" target="_blank") TeamDynamix tickets 
-- if @dataset.ticket_id.present?
-  %a(href="#{@dataset.ticket_url}" target="_blank")
-    View in TeamDynamix
-    = @dataset.ticket_id
-- else
-  %p No ticket available.
+= render 'datasets/brief_record', dataset: @dataset
 
-= @existing_ticket.to_yaml if @existing_ticket.present?
+%h2 Ticket
+.row
+  %a(href="https://help.uillinois.edu/TDWorkManagement" target="_blank") TeamDynamix Dashboard
+.row
+  - if @existing_ticket.present?
+    %h3
+      = link_to "View Ticket #{@dataset.ticket_id} in TeamDynamix", @dataset.ticket_url, target: "_blank", rel: "noopener"
+    %h3 Ticket Description
+    %p
+      = @existing_ticket.description
+    - if @ticket_comments.present?
+      %h3 Ticket Comments
+      - @ticket_comments.each do |comment|
+        %p
+          = comment.body
+  - else
+    %p No ticket available for this dataset.

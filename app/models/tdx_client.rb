@@ -79,6 +79,20 @@ class TdxClient
                ], "TeamDynamix ticket update failed")
   end
 
+  def comments(ticket_id: )
+    response = authenticated_request do |token|
+      connection.get("#{TICKETS_ENDPOINT}/#{ticket_id}/feed") do |request|
+        request.headers["Authorization"] = "Bearer #{token}"
+      end
+    end
+
+    return nil unless response
+    return nil if response.status == 404
+    return parse_response_body(response.body) if response.status.between?(200, 299)
+
+    raise "TeamDynamix ticket comments lookup failed (#{response.status}): #{response.body}"
+  end
+
   def add_comment(ticket_id:, comment:)
     post_json("#{TICKETS_ENDPOINT}/#{ticket_id}/feed", { Comments: comment }, "TeamDynamix add comment failed")
   end

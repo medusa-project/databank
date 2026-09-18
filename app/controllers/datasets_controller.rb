@@ -693,6 +693,7 @@ collaborators to access the data files while the dataset is not public.</li>
   def ticket
     authorize! :manage, @dataset
     @existing_ticket = @dataset.find_existing_ticket
+    @ticket_comments = @dataset.ticket_comments if @existing_ticket.present?
   end
 
   # publishing in IDB means interacting with DataCite and Medusa
