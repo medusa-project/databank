@@ -1,4 +1,4 @@
-class RecreateRecordfileTable < ActiveRecord::Migration
+class RecreateRecordfileTable < ActiveRecord::Migration[4.2]
   # Somehow there is a schema that does not have this table. I think it happened during a tricky revert-and-branch
   # So, since this feature has not been implemented in production yet, I am just going to drop the table if it exists
   # and then create the table all over again.

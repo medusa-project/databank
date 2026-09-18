@@ -1,4 +1,4 @@
-class CreateDefinitions < ActiveRecord::Migration
+class CreateDefinitions < ActiveRecord::Migration[4.2]
   def change
     create_table :definitions do |t|
       t.string :term

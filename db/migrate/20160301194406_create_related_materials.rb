@@ -1,4 +1,4 @@
-class CreateRelatedMaterials < ActiveRecord::Migration
+class CreateRelatedMaterials < ActiveRecord::Migration[4.2]
   def change
     create_table :related_materials do |t|
       t.string :materialType

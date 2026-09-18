@@ -1,4 +1,4 @@
-class CreateDatasetDownloadTallies < ActiveRecord::Migration
+class CreateDatasetDownloadTallies < ActiveRecord::Migration[4.2]
   def change
     create_table :dataset_download_tallies do |t|
       t.string :dataset_key

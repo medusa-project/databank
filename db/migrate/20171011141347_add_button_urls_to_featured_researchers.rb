@@ -1,4 +1,4 @@
-class AddButtonUrlsToFeaturedResearchers < ActiveRecord::Migration
+class AddButtonUrlsToFeaturedResearchers < ActiveRecord::Migration[4.2]
   def change
     add_column :featured_researchers, :dataset_url, :string
     add_column :featured_researchers, :article_url, :string

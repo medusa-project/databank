@@ -1,4 +1,4 @@
-class AddMedusaToDatafile < ActiveRecord::Migration
+class AddMedusaToDatafile < ActiveRecord::Migration[4.2]
   def change
     add_column :datafiles, :medusa_path, :string
     add_column :datafiles, :binary_name, :string

@@ -1,4 +1,4 @@
-class CreateNestedItems < ActiveRecord::Migration
+class CreateNestedItems < ActiveRecord::Migration[4.2]
   def change
     create_table :nested_items do |t|
       t.integer :datafile_id

@@ -1,4 +1,4 @@
-class CreateRecordfiles < ActiveRecord::Migration
+class CreateRecordfiles < ActiveRecord::Migration[4.2]
   def change
     create_table :recordfiles do |t|
       t.integer :dataset_id

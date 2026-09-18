@@ -1,4 +1,4 @@
-class AddActivationToIdentities < ActiveRecord::Migration
+class AddActivationToIdentities < ActiveRecord::Migration[4.2]
   def change
     add_column :identities, :activation_digest, :string
     add_column :identities, :activated, :boolean, default: false

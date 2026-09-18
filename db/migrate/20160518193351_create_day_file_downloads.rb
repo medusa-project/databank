@@ -1,4 +1,4 @@
-class CreateDayFileDownloads < ActiveRecord::Migration
+class CreateDayFileDownloads < ActiveRecord::Migration[4.2]
   def change
     create_table :day_file_downloads do |t|
       t.string :ip_address

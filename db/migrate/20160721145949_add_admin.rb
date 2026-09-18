@@ -1,4 +1,4 @@
-class AddAdmin < ActiveRecord::Migration
+class AddAdmin < ActiveRecord::Migration[4.2]
   def change
     create_table :admin do |t|
       t.text :read_only_alert

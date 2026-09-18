@@ -1,4 +1,4 @@
-class CreateRestorationIdMaps < ActiveRecord::Migration
+class CreateRestorationIdMaps < ActiveRecord::Migration[4.2]
   def change
     create_table :restoration_id_maps do |t|
       t.string :id_class

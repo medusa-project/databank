@@ -1,4 +1,4 @@
-class RenameLicenseToLicenseInfo < ActiveRecord::Migration
+class RenameLicenseToLicenseInfo < ActiveRecord::Migration[4.2]
   def change
     rename_table :licenses, :license_infos
   end

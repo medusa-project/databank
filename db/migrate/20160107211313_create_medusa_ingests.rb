@@ -1,4 +1,4 @@
-class CreateMedusaIngests < ActiveRecord::Migration
+class CreateMedusaIngests < ActiveRecord::Migration[4.2]
   def change
     create_table :medusa_ingests do |t|
       t.string :idb_class

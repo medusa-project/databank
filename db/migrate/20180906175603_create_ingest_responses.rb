@@ -1,4 +1,4 @@
-class CreateIngestResponses < ActiveRecord::Migration
+class CreateIngestResponses < ActiveRecord::Migration[4.2]
   def change
     create_table :ingest_responses do |t|
       t.text :as_text

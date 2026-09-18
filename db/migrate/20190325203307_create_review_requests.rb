@@ -1,4 +1,4 @@
-class CreateReviewRequests < ActiveRecord::Migration
+class CreateReviewRequests < ActiveRecord::Migration[4.2]
   def change
     create_table :review_requests do |t|
       t.string :dataset_key

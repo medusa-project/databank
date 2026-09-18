@@ -1,4 +1,4 @@
-class CreateDatafiles < ActiveRecord::Migration
+class CreateDatafiles < ActiveRecord::Migration[4.2]
   def change
     create_table :datafiles do |t|
       t.string :description

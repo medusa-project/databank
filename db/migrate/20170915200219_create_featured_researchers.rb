@@ -1,4 +1,4 @@
-class CreateFeaturedResearchers < ActiveRecord::Migration
+class CreateFeaturedResearchers < ActiveRecord::Migration[4.2]
   def change
     create_table :featured_researchers do |t|
       t.string :name
