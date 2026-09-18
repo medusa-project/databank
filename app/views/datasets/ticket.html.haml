@@ -9,7 +9,7 @@
       = link_to "View Ticket #{@dataset.ticket_id} in TeamDynamix", @dataset.ticket_url, target: "_blank", rel: "noopener"
     %h3 Ticket Description
     %p
-      = @existing_ticket.description
+      =debug(@existing_ticket)
     -if @dataset.notes.any?
       %a(href="#{@dataset.notes_url}" target="_blank") This dataset has notes.
       %h3 Notes
