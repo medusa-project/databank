@@ -10,6 +10,12 @@
     %h3 Ticket Description
     %p
       = @existing_ticket.description
+    -if @dataset.notes.any?
+      %a(href="#{@dataset.notes_url}" target="_blank") This dataset has notes.
+      %h3 Notes
+      - @dataset.notes.each do |note|
+        %p
+          = note.body
     - if @ticket_comments.present?
       %h3 Ticket Comments
       - @ticket_comments.each do |comment|
