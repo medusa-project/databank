@@ -1,9 +1,9 @@
 = render 'datasets/brief_record', dataset: @dataset
 
 %h2 Ticket
-.row
+.indent
   %a(href="https://help.uillinois.edu/TDWorkManagement" target="_blank") TeamDynamix Dashboard
-.row
+.indent
   - if @existing_ticket.present?
     %h3
       = link_to "View Ticket #{@dataset.ticket_id} in TeamDynamix", @dataset.ticket_url, target: "_blank", rel: "noopener"
