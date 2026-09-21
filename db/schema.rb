@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_18_194000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -38,7 +38,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "comment"
     t.string "remote_address"
     t.string "request_uuid"
-    t.datetime "created_at"
+    t.datetime "created_at", precision: nil
     t.index ["associated_type", "associated_id"], name: "associated_index"
     t.index ["auditable_type", "auditable_id"], name: "auditable_index"
     t.index ["created_at"], name: "index_audits_on_created_at"
@@ -57,8 +57,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "email"
     t.integer "row_position"
     t.string "identifier_scheme"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "creators", id: :serial, force: :cascade do |t|
@@ -69,8 +69,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "identifier"
     t.integer "type_of"
     t.integer "row_order"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "email"
     t.boolean "is_contact", default: false, null: false
     t.integer "row_position"
@@ -91,8 +91,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
   create_table "databank_tasks", id: :serial, force: :cascade do |t|
     t.integer "task_id"
     t.text "status"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "datafiles", id: :serial, force: :cascade do |t|
@@ -100,8 +100,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "binary"
     t.string "web_id"
     t.integer "dataset_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "job_id"
     t.string "box_filename"
     t.string "box_filesize_display"
@@ -126,8 +126,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "doi"
     t.date "download_date"
     t.integer "tally"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["dataset_key"], name: "index_dataset_download_tallies_on_dataset_key"
   end
 
@@ -144,8 +144,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.boolean "complete"
     t.string "corresponding_creator_name"
     t.string "corresponding_creator_email"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "keywords"
     t.string "publication_state", default: "draft"
     t.boolean "curator_hold", default: false
@@ -181,15 +181,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "dataset_key"
     t.string "doi"
     t.date "download_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "definitions", id: :serial, force: :cascade do |t|
     t.string "term"
     t.string "meaning"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "delayed_jobs", id: :serial, force: :cascade do |t|
@@ -197,13 +197,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.integer "attempts", default: 0, null: false
     t.text "handler", null: false
     t.text "last_error"
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
+    t.datetime "run_at", precision: nil
+    t.datetime "locked_at", precision: nil
+    t.datetime "failed_at", precision: nil
     t.string "locked_by"
     t.string "queue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "progress_stage"
     t.integer "progress_current", default: 0
     t.integer "progress_max", default: 0
@@ -230,11 +230,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
 
   create_table "extractor_tasks", force: :cascade do |t|
     t.string "web_id"
-    t.datetime "response_at"
+    t.datetime "response_at", precision: nil
     t.string "raw_response"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "sent_at"
+    t.datetime "sent_at", precision: nil
   end
 
   create_table "featured_researchers", id: :serial, force: :cascade do |t|
@@ -243,8 +243,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.text "bio"
     t.text "testimonial"
     t.string "binary"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "photo_url"
     t.string "dataset_url"
     t.string "article_url"
@@ -258,8 +258,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "doi"
     t.date "download_date"
     t.integer "tally"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["dataset_key"], name: "index_file_download_tallies_on_dataset_key"
     t.index ["file_web_id"], name: "index_file_download_tallies_on_file_web_id"
   end
@@ -270,8 +270,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "identifier_scheme"
     t.string "grant"
     t.integer "dataset_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "code"
   end
 
@@ -314,33 +314,33 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "name"
     t.string "email"
     t.string "password_digest"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "activation_digest"
     t.boolean "activated", default: false
-    t.datetime "activated_at"
+    t.datetime "activated_at", precision: nil
     t.string "reset_digest"
     t.integer "invitee_id"
-    t.datetime "reset_sent_at"
+    t.datetime "reset_sent_at", precision: nil
   end
 
   create_table "ingest_responses", id: :serial, force: :cascade do |t|
     t.text "as_text"
     t.string "status"
-    t.datetime "response_time"
+    t.datetime "response_time", precision: nil
     t.string "staging_key"
     t.string "medusa_key"
     t.string "uuid"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "invitees", id: :serial, force: :cascade do |t|
     t.string "email"
     t.string "role"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "expires_at"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.datetime "expires_at", precision: nil
   end
 
   create_table "medusa_ingests", id: :serial, force: :cascade do |t|
@@ -350,10 +350,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "request_status"
     t.string "medusa_path"
     t.string "medusa_uuid"
-    t.datetime "response_time"
+    t.datetime "response_time", precision: nil
     t.string "error_text"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "medusa_dataset_dir"
     t.string "staging_key"
     t.string "target_key"
@@ -365,8 +365,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "item_name"
     t.string "media_type"
     t.bigint "size"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "item_path"
     t.boolean "is_directory"
   end
@@ -387,8 +387,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "uri_type"
     t.text "citation"
     t.integer "dataset_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "selected_type"
     t.string "datacite_list"
     t.text "note"
@@ -397,8 +397,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
 
   create_table "restoration_events", id: :serial, force: :cascade do |t|
     t.text "note"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "restoration_id_maps", id: :serial, force: :cascade do |t|
@@ -406,30 +406,30 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.integer "old_id"
     t.integer "new_id"
     t.integer "restoration_event_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "review_requests", id: :serial, force: :cascade do |t|
     t.string "dataset_key"
-    t.datetime "requested_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "requested_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.boolean "modified", default: false
   end
 
   create_table "robots", id: :serial, force: :cascade do |t|
     t.string "source"
     t.string "address"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "sessions", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
@@ -446,22 +446,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "storage_root"
     t.string "storage_key"
     t.string "file_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "tokens", id: :serial, force: :cascade do |t|
     t.string "dataset_key"
     t.string "identifier"
-    t.datetime "expires"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "expires", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "user_abilities", id: :serial, force: :cascade do |t|
     t.string "ability"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "user_provider"
     t.string "user_uid"
     t.string "resource_type"
@@ -474,8 +474,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.string "name"
     t.string "email"
     t.string "role"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "username"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["uid"], name: "index_users_on_uid", unique: true
@@ -492,6 +492,5 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_120000) do
     t.index ["dataset_id"], name: "index_version_files_on_dataset_id"
   end
 
-  add_foreign_key "dataset_download_tallies", "datasets", column: "dataset_key", primary_key: "key"
   add_foreign_key "version_files", "datasets"
 end
