@@ -15,11 +15,10 @@
       - @dataset.notes.each do |note|
         %p
           = note.body
-    =debug(@ticket_comments)
-    -# - if @ticket_comments.present?
-    -#   %h3 Ticket Comments
-    -#   - @ticket_comments.each do |comment|
-    -#     %p
-    -#       = comment.body
+    - if @ticket_comments.present?
+      %h3 Ticket Comments
+      - @ticket_comments.each do |comment|
+        %p
+          = sanitize(comment["Body"])
   - else
     %p No ticket available for this dataset.
