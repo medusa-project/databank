@@ -1,0 +1,14 @@
+:base_url: <%= Rails.application.credentials&.dig(:tdx, :base_url) %>
+:username: <%= Rails.application.credentials&.dig(:tdx, :username) %>
+:password: <%= Rails.application.credentials&.dig(:tdx, :password) %>
+:app_id: <%= Rails.application.credentials&.dig(:tdx, :app_id) %>
+:form_id: <%= Rails.application.credentials&.dig(:tdx, :form_id) %>
+:noreply_requestor_uid: <%= Rails.application.credentials&.dig(:tdx, :noreply_requestor_uid) %>
+:ticket_url_base: <%= "https://help.uillinois.edu/TDNext/Apps/#{Rails.application.credentials&.dig(:tdx, :app_id)}/Tickets/TicketDet?TicketID=" %>
+:group_id: 563
+:current_assignee_path: <%= Rails.root.join('public', 'ticket_current_assignee.txt') %>
+
+# :assignees is intentionally omitted here; it is merged in from encrypted
+# credentials (tdx.assignees) in config/environments/{demo,production}.rb so
+# netids/UIDs are not stored in plaintext.
+:assignees: []

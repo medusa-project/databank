@@ -209,6 +209,8 @@ cp amqp-ci.yml amqp-test.yml
 cp amqp-ci.yml amqp-development.yml
 cp databank-ci.yml databank-development.yml
 cp databank-ci.yml databank-test.yml
+cp ticket-ci.yml ticket-test.yml
+cp ticket-ci.yml ticket-development.yml
 cp medusa-storage-ci.yml medusa-storage-development.yml
 cp medusa-storage-ci.yml medusa-storage-test.yml
 ```

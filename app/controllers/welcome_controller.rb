@@ -56,6 +56,20 @@ class WelcomeController < ApplicationController
   # Responds to `GET /on_failed_registration`
   def on_failed_registration; end
 
+  # Responds to `POST /update_ticket_config`
+  def update_ticket_config
+    authorize! :update_ticket_config, :welcome
+    respond_to do |format|
+      if TdxClient.update_config(params["ticket_config"])
+        format.html {redirect_to "/admin", notice: "Ticket configuration was successfully updated."}
+        format.json {render :index, status: :ok}
+      else
+        format.html {render :index, notice: "unexpected error"}
+        format.json {render json: {}, status: :unprocessable_content}
+      end
+    end
+  end
+
   # Responds to `POST /update_read_only_message`
   def update_read_only_message
     authorize! :update_read_only_message, :welcome

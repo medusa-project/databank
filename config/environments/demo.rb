@@ -1,5 +1,7 @@
 IDB_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config","databank.yml"))).result)
 STORAGE_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config","medusa-storage.yml"))).result)[Rails.env]
+TICKET_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, "config","ticket.yml"))).result)
+TICKET_CONFIG[:assignees] = Rails.application.credentials.dig(:tdx, :assignees) || TICKET_CONFIG[:assignees]
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.

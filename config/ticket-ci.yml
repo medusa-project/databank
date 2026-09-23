@@ -1,0 +1,27 @@
+:base_url: https://teamdynamix.example.test
+:username: username
+:password: password
+:app_id: 0
+:form_id: 123
+:noreply_requestor_uid: noreply-uid
+:ticket_url_base: "https://teamdynamix.example.test/TDNext/Apps/0/Tickets/TicketDet?TicketID="
+:group_id: 456
+:current_assignee_path: <%= Rails.root.join('public', 'ticket_current_assignee.txt') %>
+
+:assignees:
+  - curator1:
+      email: curator1@illinois.edu
+      name: "Curator One"
+      UID: curator1-test
+  - curator2:
+      email: curator2@illinois.edu
+      name: "Curator Two"
+      UID: curator2-test
+  - curator3:
+      email: curator3@illinois.edu
+      name: "Curator Three"
+      UID: curator3-test
+  - curator4:
+      email: curator4@illinois.edu
+      name: "Curator Four"
+      UID: curator4-test

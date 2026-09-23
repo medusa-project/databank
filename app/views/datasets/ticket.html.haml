@@ -2,7 +2,7 @@
 
 %h2 Ticket
 .indent
-  %a(href="https://help.uillinois.edu/TDWorkManagement" target="_blank") TeamDynamix Dashboard
+  %a(href="https://help.uillinois.edu/TDWorkManagement" target="_blank", rel="noopener") TeamDynamix Dashboard
 .indent
   - if @existing_ticket.present?
     %h3
@@ -10,7 +10,7 @@
     %h3 Ticket Description
     = simple_format(@existing_ticket["Description"])
     -if @dataset.notes.any?
-      %a(href="#{@dataset.notes_url}" target="_blank") This dataset has notes.
+      %a(href="#{@dataset.notes_url}" target="_blank", rel="noopener") This dataset has notes.
       %h3 Notes
       - @dataset.notes.each do |note|
         %p

@@ -157,6 +157,8 @@ config/initializers/secret_token.rb
 /config/amqp-local.yml
 /config/amqp-test.yml
 /config/amqp-development.yml
+/config/ticket-test.yml
+/config/ticket-development.yml
 node_modules
 .java-version
 /config/credentials/dev_colleen.key

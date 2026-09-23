@@ -8,14 +8,14 @@ require "singleton"
 class TdxClient
   include Singleton
 
-  BASE_URL = IDB_CONFIG[:tdx][:base_url]
+  BASE_URL = TICKET_CONFIG[:base_url]
   API_BASE_URL = BASE_URL.to_s.end_with?("/api") ? BASE_URL.to_s.chomp("/") : "#{BASE_URL.to_s.chomp("/")}/api"
-  USERNAME = IDB_CONFIG[:tdx][:username]
-  PASSWORD = IDB_CONFIG[:tdx][:password]
-  APP_ID = IDB_CONFIG[:tdx][:app_id]
-  FORM_ID = IDB_CONFIG[:tdx][:form_id]
-  GROUP_ID = IDB_CONFIG[:tdx][:group_id]
-  NOREPLY_REQUESTOR_UID = IDB_CONFIG[:tdx][:noreply_requestor_uid]
+  USERNAME = TICKET_CONFIG[:username]
+  PASSWORD = TICKET_CONFIG[:password]
+  APP_ID = TICKET_CONFIG[:app_id]
+  FORM_ID = TICKET_CONFIG[:form_id]
+  GROUP_ID = TICKET_CONFIG[:group_id]
+  NOREPLY_REQUESTOR_UID = TICKET_CONFIG[:noreply_requestor_uid]
   TOKEN_REFRESH_BUFFER_SECONDS = 60
   AUTH_ENDPOINT = "#{API_BASE_URL}/auth".freeze
   TICKETS_ENDPOINT = "#{API_BASE_URL}/#{APP_ID}/tickets".freeze
@@ -24,6 +24,52 @@ class TdxClient
   private_constant :BASE_URL, :API_BASE_URL, :USERNAME, :PASSWORD, :APP_ID,
                    :TOKEN_REFRESH_BUFFER_SECONDS, :AUTH_ENDPOINT,
                    :TICKETS_ENDPOINT, :GLOBAL_TICKETS_ENDPOINT, :GROUP_ID
+
+  # @return [Array<Hash>] configured assignees, normalized to {netid:, name:, email:, uid:}
+  def self.assignees
+    (TICKET_CONFIG[:assignees] || []).map do |entry|
+      netid, attrs = entry.first
+      attrs = (attrs || {}).stringify_keys
+      { netid: netid.to_s, name: attrs["name"], email: attrs["email"], uid: attrs["UID"] }
+    end
+  end
+
+  # @return [Hash] the first configured assignee, used when none has been selected
+  def self.default_assignee
+    assignees.first
+  end
+
+  # @return [String, nil] the persisted netid of the currently selected assignee
+  def self.current_assignee_netid
+    path = TICKET_CONFIG[:current_assignee_path]
+    return nil unless path.present? && File.file?(path)
+
+    netid = File.read(path).strip
+    netid.presence
+  end
+
+  # @return [Hash, nil] the currently selected assignee, falling back to the default
+  def self.current_assignee
+    assignees.find { |assignee| assignee[:netid] == current_assignee_netid } || default_assignee
+  end
+
+  # @param config [Hash] expects "current_assignee_netid" identifying a configured assignee
+  # @return [Boolean] whether the update was persisted
+  def self.update_config(config)
+    netid = config && config["current_assignee_netid"]
+    return false if netid.blank?
+    return false unless assignees.any? { |assignee| assignee[:netid] == netid }
+
+    path = TICKET_CONFIG[:current_assignee_path]
+    return false if path.blank?
+
+    worked = false
+    File.open(path, "w") do |file|
+      bytes_written = file.write(netid)
+      worked = bytes_written.positive?
+    end
+    worked
+  end
 
   def initialize
     @token = nil
@@ -41,11 +87,12 @@ class TdxClient
     end
   end
 
-  def create_ticket(title:, description:)
+  def create_ticket(title:, description:, assignee_netid: TdxClient.current_assignee[:netid])
     post_json(TICKETS_ENDPOINT, {
                 Title: title,
                 Description: description,
                 RequestorUid: NOREPLY_REQUESTOR_UID,
+                ResponsibleUID: assignee_netid,
                 FormID: FORM_ID,
                 ResponsibleGroupID: GROUP_ID
               }, "TeamDynamix ticket creation failed")
@@ -72,10 +119,11 @@ class TdxClient
     tickets.find { |ticket| ticket["Title"] == title || ticket["title"] == title }
   end
 
-  def update_ticket(ticket_id:, title:, description:)
+  def update_ticket(ticket_id:, title:, description:, assignee_netid: TdxClient.current_assignee[:netid])
     patch_json("#{TICKETS_ENDPOINT}/#{ticket_id}", [
                  { op: "replace", path: "/Title", value: title },
                  { op: "replace", path: "/Description", value: description },
+                 { op: "replace", path: "/ResponsibleUID", value: assignee_netid }
                ], "TeamDynamix ticket update failed")
   end
 

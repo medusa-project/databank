@@ -34,7 +34,7 @@ module Dataset::Ticketable
   def ticket_url
     return nil if ticket_id.blank?
 
-    "#{IDB_CONFIG[:tdx][:ticket_url_base]}#{ticket_id}"
+    "#{TICKET_CONFIG[:ticket_url_base]}#{ticket_id}"
   end
 
   def record_change(change:)

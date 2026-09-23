@@ -1,0 +1,18 @@
+=form_tag("/welcome/update_ticket_config") do
+  .field
+    .form-group
+      %label(class="control-label" for="ticket_config_current_assignee_netid") Current Ticket Assignee:
+      %br
+      %p New TeamDynamix support tickets will be assigned to the selected person.
+      %select(class="form-control" name="ticket_config[current_assignee_netid]" id="ticket_config_current_assignee_netid")
+        - TdxClient.assignees.each do |assignee|
+          %option(value="#{assignee[:netid]}" selected=(assignee[:netid] == TdxClient.current_assignee[:netid]))="#{assignee[:name]} (#{assignee[:netid]})"
+  .actions
+    .row
+      .col-md-2.col-md-offset-10
+        %button(type="submit" class="btn btn-block btn-primary" ) Update
+      %p
+
+%strong Current assignee:
+.alert.alert-info
+  ="#{TdxClient.current_assignee[:name]} (#{TdxClient.current_assignee[:email]})"

@@ -22,6 +22,7 @@ WORKDIR app
 COPY . ./
 
 RUN cp config/databank-ci.yml config/databank-test.yml
+RUN cp config/ticket-ci.yml config/ticket-test.yml
 RUN cp config/medusa-storage-ci.yml config/medusa-storage-test.yml
 RUN cp config/database-ci.yml config/database.yml
 RUN cp config/amqp-ci.yml config/amqp-test.yml
