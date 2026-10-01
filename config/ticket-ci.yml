@@ -3,10 +3,12 @@
 :password: password
 :app_id: 0
 :form_id: 123
+:consult_form_id: 789
+:consult_attribute_id: 10000
 :noreply_requestor_uid: noreply-uid
 :ticket_url_base: "https://teamdynamix.example.test/TDNext/Apps/0/Tickets/TicketDet?TicketID="
 :group_id: 456
-:current_assignee_path: <%= Rails.root.join('public', 'ticket_current_assignee.txt') %>
+:current_assignee_path: /tmp/ticket_current_assignee.txt
 
 :assignees:
   - curator1:

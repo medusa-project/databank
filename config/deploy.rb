@@ -22,7 +22,7 @@ set :passenger_restart_with_touch, true
 # set :pty, true
 
 # Default value for linked_dirs is []
-set :linked_dirs, fetch(:linked_dirs, []).push('log', 'scripts', 'config/serializations', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'tmp/uploads', 'tmp/sessions')
+set :linked_dirs, fetch(:linked_dirs, []).push('log', 'scripts', 'config/serializations', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'tmp/uploads', 'tmp/sessions', 'tmp/ticket_config')
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
@@ -57,6 +57,17 @@ end
 
 namespace :databank do
 
+  desc "Preserve the previously selected ticket assignee across releases"
+  task :migrate_ticket_assignee do
+    on roles(:app) do
+      previous_file = "#{current_path}/public/ticket_current_assignee.txt"
+      shared_file = "#{shared_path}/tmp/ticket_config/current_assignee.txt"
+      if test("[ -f #{previous_file} ]") && !test("[ -e #{shared_file} ]")
+        execute :cp, previous_file, shared_file
+      end
+    end
+  end
+
   desc "Clear rails cache"
   task :clear_rails_cache do
     execute_rake "databank:rails_cache:clear"
@@ -88,4 +99,5 @@ namespace :databank do
   end
 end
 
+before "deploy:publishing", "databank:migrate_ticket_assignee"
 before "deploy:publishing", "databank:clear_metric_locks"

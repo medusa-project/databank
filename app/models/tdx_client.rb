@@ -4,6 +4,7 @@ require "faraday"
 require "json"
 require "jwt"
 require "singleton"
+require "fileutils"
 
 class TdxClient
   include Singleton
@@ -14,24 +15,33 @@ class TdxClient
   PASSWORD = TICKET_CONFIG[:password]
   APP_ID = TICKET_CONFIG[:app_id]
   FORM_ID = TICKET_CONFIG[:form_id]
+  CONSULT_FORM_ID = TICKET_CONFIG[:consult_form_id]
+  CONSULT_ATTRIBUTE_ID = TICKET_CONFIG[:consult_attribute_id]
   GROUP_ID = TICKET_CONFIG[:group_id]
   NOREPLY_REQUESTOR_UID = TICKET_CONFIG[:noreply_requestor_uid]
   TOKEN_REFRESH_BUFFER_SECONDS = 60
   AUTH_ENDPOINT = "#{API_BASE_URL}/auth".freeze
+  PEOPLE_ENDPOINT = "#{API_BASE_URL}/people".freeze
   TICKETS_ENDPOINT = "#{API_BASE_URL}/#{APP_ID}/tickets".freeze
   GLOBAL_TICKETS_ENDPOINT = "#{API_BASE_URL}/tickets".freeze
 
   private_constant :BASE_URL, :API_BASE_URL, :USERNAME, :PASSWORD, :APP_ID,
-                   :TOKEN_REFRESH_BUFFER_SECONDS, :AUTH_ENDPOINT,
-                   :TICKETS_ENDPOINT, :GLOBAL_TICKETS_ENDPOINT, :GROUP_ID
+                   :TOKEN_REFRESH_BUFFER_SECONDS, :AUTH_ENDPOINT, :PEOPLE_ENDPOINT,
+                   :TICKETS_ENDPOINT, :GLOBAL_TICKETS_ENDPOINT, :GROUP_ID,
+                   :CONSULT_FORM_ID, :CONSULT_ATTRIBUTE_ID
 
   # @return [Array<Hash>] configured assignees, normalized to {netid:, name:, email:, uid:}
   def self.assignees
-    (TICKET_CONFIG[:assignees] || []).map do |entry|
+    @assignees ||= (TICKET_CONFIG[:assignees] || []).map do |entry|
       netid, attrs = entry.first
       attrs = (attrs || {}).stringify_keys
       { netid: netid.to_s, name: attrs["name"], email: attrs["email"], uid: attrs["UID"] }
     end
+  end
+
+  def assignee_uid_from(netid:)
+    assignee = self.class.assignees.find { |a| a[:netid] == netid.to_s }
+    assignee ? assignee[:uid] : nil
   end
 
   # @return [Hash] the first configured assignee, used when none has been selected
@@ -53,6 +63,11 @@ class TdxClient
     assignees.find { |assignee| assignee[:netid] == current_assignee_netid } || default_assignee
   end
 
+  def assign_ticket(ticket_id:, assignee_uid: TdxClient.current_assignee[:uid])
+    update_ticket(ticket_id: ticket_id, error_message: "Assigning ticket to #{assignee_uid}",
+                  assignee_uid: assignee_uid, notify_new_responsible: true)
+  end
+
   # @param config [Hash] expects "current_assignee_netid" identifying a configured assignee
   # @return [Boolean] whether the update was persisted
   def self.update_config(config)
@@ -63,6 +78,7 @@ class TdxClient
     path = TICKET_CONFIG[:current_assignee_path]
     return false if path.blank?
 
+    FileUtils.mkdir_p(File.dirname(path))
     worked = false
     File.open(path, "w") do |file|
       bytes_written = file.write(netid)
@@ -87,15 +103,26 @@ class TdxClient
     end
   end
 
-  def create_ticket(title:, description:, assignee_netid: TdxClient.current_assignee[:netid])
-    post_json(TICKETS_ENDPOINT, {
-                Title: title,
-                Description: description,
-                RequestorUid: NOREPLY_REQUESTOR_UID,
-                ResponsibleUID: assignee_netid,
-                FormID: FORM_ID,
-                ResponsibleGroupID: GROUP_ID
-              }, "TeamDynamix ticket creation failed")
+  # returns the ID of the created ticket if successful, or nil if response is unexpected
+  # could raise an exception if ticket creation fails
+  def create_ticket(title:, description:, requestor_uid: nil, form_id: FORM_ID, attributes: nil, assignee_uid: TdxClient.current_assignee[:uid])
+    requestor_uid ||= NOREPLY_REQUESTOR_UID
+    if form_id == CONSULT_FORM_ID && !attributes.is_a?(Array)
+      raise ArgumentError, "Consult tickets require attributes to be an array"
+    end
+
+    payload = {
+      Title: title,
+      Description: description,
+      RequestorUid: requestor_uid,
+      ResponsibleUID: assignee_uid,
+      FormID: form_id,
+      ResponsibleGroupID: GROUP_ID
+    }
+    payload[:Attributes] = attributes if form_id == CONSULT_FORM_ID
+
+    response = post_json(url: TICKETS_ENDPOINT, body: payload, error_message: "TeamDynamix ticket creation failed")
+    response["ID"] if response.is_a?(Hash)
   end
 
   def find_ticket_by_id(ticket_id)
@@ -113,18 +140,27 @@ class TdxClient
   end
 
   def find_ticket_by_title(title)
-    tickets = post_json(TICKETS_ENDPOINT + "/search", { SearchText: title }, "TeamDynamix ticket search failed")
+    tickets = post_json(url: TICKETS_ENDPOINT + "/search", body: { SearchText: title },
+                        error_message: "TeamDynamix ticket search failed")
     return unless tickets.is_a?(Array)
 
     tickets.find { |ticket| ticket["Title"] == title || ticket["title"] == title }
   end
 
-  def update_ticket(ticket_id:, title:, description:, assignee_netid: TdxClient.current_assignee[:netid])
-    patch_json("#{TICKETS_ENDPOINT}/#{ticket_id}", [
-                 { op: "replace", path: "/Title", value: title },
-                 { op: "replace", path: "/Description", value: description },
-                 { op: "replace", path: "/ResponsibleUID", value: assignee_netid }
-               ], "TeamDynamix ticket update failed")
+  def update_ticket(ticket_id:, title: nil, description: nil, assignee_uid: nil,
+                    notify_new_responsible: false, error_message: "TeamDynamix ticket update failed")
+    body = []
+    body << { op: "replace", path: "/Title", value: title } unless title.nil?
+    body << { op: "replace", path: "/Description", value: description } unless description.nil?
+    body << { op: "replace", path: "/ResponsibleUID", value: assignee_uid } unless assignee_uid.nil?
+    return nil if body.empty?
+
+    patch_json(
+      url: "#{TICKETS_ENDPOINT}/#{ticket_id}",
+      body: body,
+      error_message: error_message,
+      notify_new_responsible: notify_new_responsible
+    )
   end
 
   def comments(ticket_id: )
@@ -141,8 +177,50 @@ class TdxClient
     raise "TeamDynamix ticket comments lookup failed (#{response.status}): #{response.body}"
   end
 
-  def add_comment(ticket_id:, comment:)
-    post_json("#{TICKETS_ENDPOINT}/#{ticket_id}/feed", { Comments: comment }, "TeamDynamix add comment failed")
+  def add_comment(ticket_id:, comment:, notify: [])
+    # require notify to be an array, empty or containing only strings
+    notify = [notify] if notify.is_a?(String)
+    # if notify is not a string or nil or array of strings, set it to an empty array
+    notify = [] unless notify.is_a?(Array) && notify.all? { |n| n.is_a?(String) }
+
+    post_json(url: "#{TICKETS_ENDPOINT}/#{ticket_id}/feed", body: { Comments: comment, Notify: notify },
+              error_message: "TeamDynamix add comment failed")
+    ticket_id
+  end
+
+  def contacts(ticket_id:)
+    response = authenticated_request do |token|
+      connection.get("#{TICKETS_ENDPOINT}/#{ticket_id}/contacts") do |request|
+        request.headers["Authorization"] = "Bearer #{token}"
+      end
+    end
+
+    return nil unless response
+    return nil if response.status == 404
+    return parse_response_body(response.body) if response.status.between?(200, 299)
+
+    raise "TeamDynamix ticket contacts lookup failed (#{response.status}): #{response.body}"
+  end
+
+  def add_contact(ticket_id:, person_uid:)
+    contact_request(ticket_id: ticket_id, contact_uid: person_uid, action: "add")
+  end
+
+  def remove_contact(ticket_id:, person_uid:)
+    contact_request(ticket_id: ticket_id, contact_uid: person_uid, action: "remove")
+  end
+
+  def person_uid_from_email(email:)
+    response = authenticated_request do |token|
+      connection.get("#{PEOPLE_ENDPOINT}/email/#{ERB::Util.url_encode(email)}") do |request|
+        request.headers["Authorization"] = "Bearer #{token}"
+      end
+    end
+
+    return nil unless response&.status&.between?(200, 299)
+
+    person = parse_response_body(response.body)
+    person["UID"] if person.is_a?(Hash)
   end
 
   private
@@ -184,7 +262,7 @@ class TdxClient
     log_authentication_failure("#{e.class}: #{e.message}")
   end
 
-  def post_json(url, body, error_message)
+  def post_json(url:, body:, error_message:)
     response = authenticated_request do |token|
       connection.post(url) do |request|
         request.headers["Content-Type"] = "application/json"
@@ -199,9 +277,10 @@ class TdxClient
     raise "#{error_message} (#{response.status}): #{response.body}"
   end
 
-  def patch_json(url, body, error_message)
+  def patch_json(url:, body:, error_message:, notify_new_responsible: false)
     response = authenticated_request do |token|
       connection.patch(url) do |request|
+        request.params["notifyNewResponsible"] = true if notify_new_responsible
         request.headers["Content-Type"] = "application/json-patch+json"
         request.headers["Authorization"] = "Bearer #{token}"
         request.body = body.to_json
@@ -212,6 +291,21 @@ class TdxClient
     return parse_response_body(response.body) if response.status.between?(200, 299)
 
     raise "#{error_message} (#{response.status}): #{response.body}"
+  end
+
+  def contact_request(ticket_id:, contact_uid:, action:)
+    response = authenticated_request do |token|
+      connection.public_send(action == "add" ? :post : :delete,
+                             "#{TICKETS_ENDPOINT}/#{ticket_id}/contacts/#{ERB::Util.url_encode(contact_uid.to_s)}") do |request|
+        request.headers["Content-Type"] = "application/json"
+        request.headers["Authorization"] = "Bearer #{token}"
+      end
+    end
+
+    return nil unless response
+    return parse_response_body(response.body) if response.status.between?(200, 299)
+
+    raise "TeamDynamix #{action} contact failed (#{response.status}): #{response.body}"
   end
 
   def authenticated_request
