@@ -13,15 +13,21 @@ class DatafilesController < ApplicationController
                                       :bucket_and_key,
                                       :view, :viewtext, :filepath, :iiif_filepath, :refresh_preview]
 
-  before_action :set_dataset, only: [:index, :show, :edit, :new, :add, :create, :destroy, :upload, :do_upload]
+  before_action :set_dataset, only: [:index, :show, :edit, :new, :add,
+                                     :create, :destroy, :upload, :do_upload]
 
-  # before destroy, send an email to curators if the dataset is under pre-publication review
-  before_action -> { send_prepub_filechange_email(Databank::FileChangeType::DELETED) }, only: [:destroy], if: -> { @dataset.in_pre_publication_review? }
+  # Report file changes while the dataset is under pre-publication review.
+  before_action -> { report_prepub_change(Databank::FileChangeType::DELETED) }, only: [:destroy], if: -> { @dataset.in_pre_publication_review? }
 
-  after_action -> { send_prepub_filechange_email(Databank::FileChangeType::ADDED) }, only: [:create], if: -> { @dataset.in_pre_publication_review? && @datafile&.persisted? }
+  after_action -> { report_prepub_change(Databank::FileChangeType::ADDED) }, only: [:create], if: -> { @dataset.in_pre_publication_review? && @datafile&.persisted? }
 
-  def send_prepub_filechange_email(change_type)
-    DatabankMailer.prepub_filechange(@datafile.web_id, change_type).deliver_now
+  def report_prepub_change(change_type)
+    ticket_id = @dataset.ticket_id
+    note = "ticket_id missing for dataset #{@dataset.key} in pre-publication review " \
+           "and a change of type #{change_type} occurred in datafile #{@datafile.web_id}"
+    return @dataset.handle_missing_ticket(note: note) if ticket_id.blank?
+
+    @dataset.handle_prepub_change(ticket_id: ticket_id, datafile: @datafile, change_type: change_type)
   end
 
   # Responds to `GET /datafiles`

@@ -1,0 +1,12 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body
+    Topic: Missing Ticket
+    %br/
+    Dataset:
+    %a{:href => @dataset.databank_url}
+      = @dataset.databank_url
+    %hr/
+    ="Something went wrong when attempting to find to create a ticket for this dataset\nNote: #{@note}"

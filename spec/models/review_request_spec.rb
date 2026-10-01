@@ -12,6 +12,7 @@ RSpec.describe ReviewRequest, type: :model do
 
   describe "#next_review_request" do
     it "returns the next request for the same dataset key" do
+      allow_any_instance_of(described_class).to receive(:create_ticket_review_request)
       key = "TEST-KEY"
       current = described_class.create!(dataset_key: key, requested_at: 2.hours.ago)
       _other_dataset = described_class.create!(dataset_key: "OTHER", requested_at: 1.hour.ago)

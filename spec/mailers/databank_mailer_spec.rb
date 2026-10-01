@@ -270,14 +270,13 @@ RSpec.describe DatabankMailer, type: :mailer do
     end
   end
 
-  describe '#prepub_filechange' do
-    it 'emails curator contact for file changes under review' do
-      datafile = create(:datafile, dataset: dataset)
-
-      mail = described_class.prepub_filechange(datafile.web_id, 'deleted')
+  describe '#missing_ticket' do
+    it 'emails curator contact when a ticket is missing' do
+      mail = described_class.missing_ticket(dataset_key: dataset_key, note: 'Ticket ID missing')
 
       expect(mail.to).to eq([IDB_CONFIG[:admin][:contact_email]])
-      expect(mail.subject).to include('File change in dataset under pre-publication review')
+      expect(mail.subject).to include('Missing Ticket for Dataset')
+      expect(mail.body.encoded).to include('Ticket ID missing')
     end
   end
 

@@ -13,6 +13,42 @@ RSpec.describe DatafilesController, type: :controller do
     allow(controller).to receive(:authorize!).and_return(true)
   end
 
+  describe "#report_prepub_change" do
+    let(:reported_dataset) { instance_double(Dataset, key: "dataset-key", ticket_id: ticket_id) }
+    let(:reported_datafile) { instance_double(Datafile, web_id: "file-id") }
+
+    before do
+      controller.instance_variable_set(:@dataset, reported_dataset)
+      controller.instance_variable_set(:@datafile, reported_datafile)
+    end
+
+    context "when a ticket exists" do
+      let(:ticket_id) { 123 }
+
+      it "records the change on the dataset ticket" do
+        expect(reported_dataset).to receive(:handle_prepub_change).with(
+          ticket_id: 123, datafile: reported_datafile, change_type: Databank::FileChangeType::ADDED
+        )
+
+        controller.report_prepub_change(Databank::FileChangeType::ADDED)
+      end
+    end
+
+    context "when the ticket is missing" do
+      let(:ticket_id) { nil }
+
+      it "notifies staff instead of attempting to update a ticket" do
+        expect(reported_dataset).to receive(:handle_missing_ticket).with(
+          note: "ticket_id missing for dataset dataset-key in pre-publication review " \
+                "and a change of type deleted occurred in datafile file-id"
+        )
+        expect(reported_dataset).not_to receive(:handle_prepub_change)
+
+        controller.report_prepub_change(Databank::FileChangeType::DELETED)
+      end
+    end
+  end
+
   describe "GET #index" do
     it "returns a success response" do
       get :index, params: { dataset_id: dataset.key }

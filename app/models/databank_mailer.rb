@@ -9,6 +9,15 @@ require "open_uri_redirections"
 class DatabankMailer < ActionMailer::Base
   default from: IDB_CONFIG[:admin][:contact_email]
 
+  def missing_ticket(dataset_key:, note: "No ticket found for this dataset")
+    @dataset = Dataset.find_by(key: dataset_key)
+    @note = note
+    subject_base = "Illinois Data Bank] Missing Ticket for Dataset"
+    subject = prepend_system_code(subject_base)
+    mail(to: IDB_CONFIG[:admin][:contact_email],
+         subject: subject)
+  end
+
   ##
   # Sends an email to the depositor and the curators for use when a new version is approved.
   # The email is sent to the depositor and the admin.
@@ -231,19 +240,6 @@ because dataset not found for key: #{dataset_key}."
     subject = prepend_system_code(subject_base)
     recipients = [IDB_CONFIG[:admin][:contact_email], @current_user_email, @dataset.depositor_email].uniq
     mail(to: recipients, subject: subject)
-  end
-
-  ##
-  # Sends an email to the admin when a file change is made in a dataset under pre
-  # publication review.
-  # @param datafile_web_id [String] the web ID of the datafile that was changed
-  def prepub_filechange(datafile_web_id, change_type)
-    @datafile = Datafile.find_by(web_id: datafile_web_id)
-    @change_type = change_type
-    @dataset = @datafile.dataset
-    subject_base = "Illinois Data Bank] File change in dataset under pre-publication review"
-    subject = prepend_system_code(subject_base)
-    mail(to: IDB_CONFIG[:admin][:contact_email], subject: subject)
   end
 
   ##

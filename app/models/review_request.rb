@@ -11,6 +11,8 @@
 # * +requested_at+ - the time the review request was made
 
 class ReviewRequest < ApplicationRecord
+  after_create :create_ticket_review_request
+
   ##
   # dataset
   # Returns the dataset associated with the review request
@@ -41,5 +43,22 @@ class ReviewRequest < ApplicationRecord
       audited_changes: audit.audited_changes,
       created_at: audit.created_at}
     end
+  end
+
+  private
+
+  # ticket creation automatically notifies the Research Data Service and requester.
+  # Add a comment to the ticket if the requestor is not the dataset depositor, so that the depositor is notified
+  def create_ticket_review_request
+    ticket_id = dataset.ticket_review_request(requestor_email: requestor_email, msg: "Review requested by: #{requestor_name}, #{requestor_email}")
+
+    if ticket_id.blank?
+      dataset.handle_missing_ticket
+      return
+    end
+
+    return if requestor_email == dataset.depositor_email
+
+    TdxClient.instance.add_comment(ticket_id: ticket_id, comment: "Review requested by: #{requestor_name}, #{requestor_email}", notify: ["#{dataset.depositor_email}"])
   end
 end

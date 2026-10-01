@@ -2,6 +2,21 @@ require "csv"
 
 namespace :fix do
 
+  desc "create tickets for legacy datasets"
+  task create_tickets_for_legacy: :environment do
+    # filter all datasets in a draft-like publication_state that have at least one ReviewRequest but are missing ticket_id and create tickets for them
+    # draft-like states are defined by Databank::PublicationState::DRAFT_ARRAY
+    # at least one ReviewRequest can be determined by in_pre_publication_review? on the dataset instance
+    # missing ticket_id can be checked by ticket_id.blank?
+    Dataset.all.find_each do |dataset|
+      next unless Databank::PublicationState::DRAFT_ARRAY.include?(dataset.publication_state) &&
+         dataset.in_pre_publication_review? &&
+         dataset.ticket_id.blank?
+
+      dataset.create_ticket_for_legacy
+    end
+  end
+
   desc "populate all_medusa field of datasets"
   task check_medusa: :environment do 
     datasets = Dataset.select(&:files_public?)
