@@ -354,6 +354,10 @@ class Dataset < ApplicationRecord
     {status: "error", error_text: message}
   end
 
+  def notes_url
+    "#{IDB_CONFIG[:root_url_text]}/datasets/#{key}/notes"
+  end
+
   private
 
   def most_recent_updated_date
