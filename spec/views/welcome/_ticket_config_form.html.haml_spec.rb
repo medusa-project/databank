@@ -16,5 +16,8 @@ RSpec.describe 'welcome/_ticket_config_form', type: :view do
     expect(options.map { |option| option['value'] }).to eq(%w[curator1 curator2])
     expect(options.select { |option| option.key?('selected') }.map { |option| option['value'] }).to eq(['curator2'])
     expect(options.last.text.strip).to eq('Curator Two (curator2)')
+    group = page.at_css('#ticket_config_current_assignee_netid').parent
+    expect(group['class']).to eq('input-group')
+    expect(group.at_css('.input-group-btn button[type="submit"]').text.strip).to eq('Update')
   end
 end
