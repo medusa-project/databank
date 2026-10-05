@@ -22,3 +22,22 @@
           = sanitize(comment["Body"])
   - else
     %p No ticket available for this dataset.
+    = form_with url: associate_ticket_dataset_path(@dataset), scope: :dataset, method: :patch, local: true do |form|
+      .form-group
+        = form.label :ticket_id, "TeamDynamix ticket ID", for: "dataset_ticket_id"
+        %p#ticket-id-help Enter the ID of an existing TeamDynamix ticket to associate it with this dataset.
+        - if @ticket_association_error.present?
+          %p#ticket-id-error.alert.alert-danger(role="alert")
+            = @ticket_association_error
+        = form.text_field :ticket_id, id: "dataset_ticket_id", value: @ticket_id_input || @dataset.ticket_id, class: "form-control", required: true, inputmode: "numeric", pattern: "[1-9][0-9]*", autofocus: @ticket_association_error.present?, aria: { describedby: @ticket_association_error.present? ? "ticket-id-help ticket-id-error" : "ticket-id-help", invalid: @ticket_association_error.present? ? "true" : nil }
+      = form.submit "Associate ticket", class: "btn btn-primary"
+    %h3 Create a new ticket
+    = form_with url: create_ticket_dataset_path(@dataset), scope: :ticket, method: :post, local: true do |form|
+      .form-group
+        = form.label :description, "Custom description (optional)", for: "ticket_description"
+        %p#ticket-description-help Your description will be included with the dataset link. Leave it blank to use the default message.
+        - if @ticket_creation_error.present?
+          %p#ticket-creation-error.alert.alert-danger(role="alert")
+            = @ticket_creation_error
+        = form.text_area :description, id: "ticket_description", value: @ticket_description, class: "form-control", rows: 4, autofocus: @ticket_creation_error.present?, aria: { describedby: @ticket_creation_error.present? ? "ticket-description-help ticket-creation-error" : "ticket-description-help" }
+      = form.submit "create ticket", class: "btn btn-primary", data: { disable_with: "Creating ticket..." }

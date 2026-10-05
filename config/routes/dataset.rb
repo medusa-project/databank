@@ -39,6 +39,8 @@ resources :datasets do
     get 'temporarily_suppress_files'
     get 'temporarily_suppress_metadata'
     get 'ticket'
+    patch 'associate_ticket'
+    post 'create_ticket'
     get 'tombstone'
     post 'update_permissions'
     get 'unsuppress_changelog'

@@ -44,6 +44,8 @@ class DatasetsController < ApplicationController
                                      :remove_sharing_link,
                                      :suppression_controls,
                                      :ticket,
+                                     :associate_ticket,
+                                     :create_ticket,
                                      :tracking,
                                      :review_requests,
                                      :permissions,
@@ -698,6 +700,41 @@ collaborators to access the data files while the dataset is not public.</li>
     authorize! :manage, @dataset
     @existing_ticket = @dataset.find_existing_ticket
     @ticket_comments = (TdxClient.instance.comments(ticket_id: @dataset.ticket_id) if @existing_ticket.present?)
+  end
+
+  def associate_ticket
+    authorize! :manage, @dataset
+    @ticket_id_input = params.require(:dataset).permit(:ticket_id)[:ticket_id].to_s.strip
+
+    if !@ticket_id_input.match?(/\A[1-9][0-9]*\z/) || @ticket_id_input.to_i > 2_147_483_647
+      @ticket_association_error = "Enter a valid positive ticket ID."
+    elsif TdxClient.instance.find_ticket_by_id(@ticket_id_input.to_i).blank?
+      @ticket_association_error = "The ticket could not be found or verified. Check the ID and try again."
+    elsif @dataset.update(ticket_id: @ticket_id_input.to_i)
+      redirect_to ticket_dataset_path(@dataset), notice: "Ticket was successfully associated with this dataset."
+      return
+    else
+      @ticket_association_error = @dataset.errors.full_messages.to_sentence
+    end
+
+    render :ticket, status: :unprocessable_content
+  end
+
+  def create_ticket
+    authorize! :manage, @dataset
+    if @dataset.find_existing_ticket.present?
+      redirect_to ticket_dataset_path(@dataset), alert: "A ticket already exists for this dataset."
+      return
+    end
+
+    @ticket_description = params.permit(ticket: [:description]).dig(:ticket, :description).to_s
+    message = @ticket_description.presence || "Ticket created for this dataset."
+    if @dataset.create_non_consult_ticket(msg: message).present?
+      redirect_to ticket_dataset_path(@dataset), notice: "Ticket was successfully created for this dataset."
+    else
+      @ticket_creation_error = "The ticket could not be created. Please try again or contact Research Data Service staff."
+      render :ticket, status: :unprocessable_content
+    end
   end
 
   # publishing in IDB means interacting with DataCite and Medusa
