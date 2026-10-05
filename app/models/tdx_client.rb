@@ -27,8 +27,7 @@ class TdxClient
 
   private_constant :BASE_URL, :API_BASE_URL, :USERNAME, :PASSWORD, :APP_ID,
                    :TOKEN_REFRESH_BUFFER_SECONDS, :AUTH_ENDPOINT, :PEOPLE_ENDPOINT,
-                   :TICKETS_ENDPOINT, :GLOBAL_TICKETS_ENDPOINT, :GROUP_ID,
-                   :CONSULT_FORM_ID, :CONSULT_ATTRIBUTE_ID
+                   :TICKETS_ENDPOINT, :GLOBAL_TICKETS_ENDPOINT, :GROUP_ID
 
   # @return [Array<Hash>] configured assignees, normalized to {netid:, name:, email:, uid:}
   def self.assignees
