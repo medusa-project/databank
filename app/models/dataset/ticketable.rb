@@ -89,10 +89,6 @@ module Dataset::Ticketable
     "#{TICKET_CONFIG[:ticket_url_base]}#{ticket_id}"
   end
 
-  def record_change(change:)
-    TdxClient.instance.add_comment(ticket_id: ticket_id, comment: change) if ticket_id.present?
-  end
-
   def update_ticket(ticket_id:, msg:)
     title = "[Dataset] #{key}"
     description = "Dataset: #{databank_url}\n\nMessage: #{msg}"
@@ -123,7 +119,9 @@ module Dataset::Ticketable
   end
 
   def handle_prepub_change(ticket_id:, datafile:, change_type:)
-    change = "Pre-publication change of type #{change_type} occurred for datafile #{datafile.web_id}"
+    change = "Pre-publication change of type #{change_type} occurred " \
+             "for datafile #{datafile.web_id}: #{datafile.binary_name} " \
+             "in dataset #{databank_url}"
     TdxClient.instance.add_comment(ticket_id: ticket_id, comment: change)
   end
 
