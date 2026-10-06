@@ -317,7 +317,8 @@ collaborators to access the data files while the dataset is not public.</li>
 
     respond_to do |format|
       if @dataset.update(dataset_params)
-        handle_prepub_metadata_update(old_publication_state)
+        changes = @dataset.saved_changes.except("updated_at", "nested_updated_at")
+        handle_prepub_metadata_update(old_publication_state, changes)
         return if switch_creator_type(old_creator_state, format)
 
         respond_to_update_context(format, old_publication_state)
@@ -954,15 +955,16 @@ collaborators to access the data files while the dataset is not public.</li>
 
   private
 
-  def handle_prepub_metadata_update(old_publication_state)
-    return unless Databank::PublicationState::DRAFT_ARRAY.include?(old_publication_state)
+  def handle_prepub_metadata_update(old_publication_state, changes)
+    return unless @dataset.in_pre_publication_review?
 
-    @under_review = @dataset.in_pre_publication_review?
-    return unless @under_review == true
+    return if changes.blank?
+
+    return unless Databank::PublicationState::DRAFT_ARRAY.include?(old_publication_state)
 
     @dataset.handle_prepub_metadata_change(
       change_type: "metadata",
-      details: "Metadata was modified. #{dataset_params.inspect}"
+      details: "Dataset under pre-publication review was modified. #{changes.inspect}"
     )
     @has_unmodified_review = @dataset.has_unmodified_review?
     return unless @has_unmodified_review == true
