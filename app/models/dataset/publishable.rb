@@ -13,8 +13,13 @@ module Dataset::Publishable
 
   def send_publication_notice
     begin
-      notification = DatabankMailer.confirm_deposit(key)
-      notification.deliver_now
+      recipient_array = []
+      recipient_array << depositor_email
+      creators.each do |creator|
+        recipient_array << creator.email
+      end
+      comment = "Dataset published.\nDOI: (#{dataset.identifier})"
+      add_comment(change: comment, notify: recipient_array)
       return true
     rescue StandardError => e
       notification = DatabankMailer.confirmation_not_sent(key, e)
@@ -162,8 +167,8 @@ module Dataset::Publishable
                 error_text: "Failed to save dataset after failed publication attempt. Dataset: #{key} in invalid state."}
       end
       Rails.logger.warn(datacite_attempt.to_yaml)
-      notification = DatabankMailer.error("Error in publishing dataset #{key}: #{datacite_attempt.to_yaml}")
-      notification.deliver_now
+      comment = "Error in publishing dataset #{key}: #{datacite_attempt.to_yaml}"
+      add_comment(change: comment)
       {status: "error", error_text: "Failed to publish dataset #{key}: see logs for details"}
     end
   end
