@@ -123,7 +123,7 @@ module Dataset::Ticketable
 
     create_consult_ticket if ticket_id.blank?
     handle_missing_ticket if ticket_id.blank?
-    change = "Pre-publication change of type #{change_type} occurred with details: #{details}."
+    change = "Change of type #{change_type} occurred: #{details}."
     add_comment(change: change)
   end
 
@@ -132,8 +132,8 @@ module Dataset::Ticketable
 
     create_consult_ticket if ticket_id.blank?
     handle_missing_ticket if ticket_id.blank?
-    change = "Pre-publication change of type #{change_type} occurred " \
-             "for datafile #{datafile.web_id}: #{datafile.binary_name}."
+    change = "Datafile #{change_type}" \
+             "web_id #{datafile.web_id}, name: #{datafile.binary_name}."
     add_comment(change: change)
   end
 

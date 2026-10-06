@@ -964,7 +964,7 @@ collaborators to access the data files while the dataset is not public.</li>
 
     @dataset.handle_prepub_metadata_change(
       change_type: "metadata",
-      details: "Dataset under pre-publication review was modified. #{changes.inspect}"
+      details: changes.inspect
     )
     @has_unmodified_review = @dataset.has_unmodified_review?
     return unless @has_unmodified_review == true
