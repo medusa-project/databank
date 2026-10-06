@@ -12,20 +12,18 @@ module Dataset::Publishable
   end
 
   def send_publication_notice
-    begin
-      recipient_array = []
-      recipient_array << depositor_email
-      creators.each do |creator|
-        recipient_array << creator.email
-      end
-      comment = "Dataset published.\nDOI: (#{dataset.identifier})"
-      add_comment(change: comment, notify: recipient_array)
-      return true
-    rescue StandardError => e
-      notification = DatabankMailer.confirmation_not_sent(key, e)
-      notification.deliver_now
-      return false
-    end
+    raise "Cannot send publication notice without a ticket" if ticket_id.blank?
+
+    recipient_array = ([depositor_email] + creators.map(&:email)).reject(&:blank?).uniq
+    comment = "Dataset published.\nDOI: (#{identifier})"
+    add_comment(change: comment, notify: recipient_array)
+    true
+  rescue StandardError => e
+    Rails.logger.error(
+      "Publication notice failed for dataset #{key}, ticket #{ticket_id.inspect}: " \
+      "#{e.class}: #{e.message}\n#{Array(e.backtrace).first(5).join("\n")}"
+    )
+    DatabankMailer.confirmation_not_sent(key, e).deliver_now
     false
   end
 

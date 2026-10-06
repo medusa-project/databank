@@ -114,8 +114,8 @@ module Dataset::Ticketable
     ticket.id if ticket.respond_to?(:id)
   end
 
-  def add_comment(change:)
-    TdxClient.instance.add_comment(ticket_id: ticket_id, comment: change) if ticket_id.present?
+  def add_comment(change:, notify: [])
+    TdxClient.instance.add_comment(ticket_id: ticket_id, comment: change, notify: notify) if ticket_id.present?
   end
 
   def handle_prepub_metadata_change(change_type:, details:)

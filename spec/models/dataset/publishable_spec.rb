@@ -88,19 +88,51 @@ RSpec.describe Dataset::Publishable, type: :model do
   end
 
   describe '#send_publication_notice' do
-    it 'returns true when confirmation mail sends successfully' do
-      notification = double
-      allow(notification).to receive(:deliver_now)
-      allow(DatabankMailer).to receive(:confirm_deposit).with(dataset.key).and_return(notification)
+    before do
+      dataset.ticket_id = 123
+      dataset.identifier = '10.1234/example'
+    end
+
+    it 'posts the publication notice to the ticket and notifies depositors and creators' do
+      allow(dataset).to receive(:creators).and_return([
+        instance_double(Creator, email: dataset.depositor_email),
+        instance_double(Creator, email: 'creator@example.org'),
+        instance_double(Creator, email: nil),
+        instance_double(Creator, email: '')
+      ])
+      expect(TdxClient.instance).to receive(:add_comment).with(
+        ticket_id: 123,
+        comment: "Dataset published.\nDOI: (10.1234/example)",
+        notify: [dataset.depositor_email, 'creator@example.org']
+      ).and_return(123)
 
       expect(dataset.send_publication_notice).to be true
     end
 
-    it 'returns false and sends fallback notice when confirm_deposit fails' do
-      allow(DatabankMailer).to receive(:confirm_deposit).and_raise(StandardError.new('mailer failure'))
+    it 'logs the underlying ticket error and sends a fallback notice' do
+      error = StandardError.new('ticket failure')
+      allow(TdxClient.instance).to receive(:add_comment).and_raise(error)
+      expect(Rails.logger).to receive(:error).with(
+        a_string_including("dataset #{dataset.key}", 'ticket 123', 'StandardError: ticket failure')
+      )
       fallback = double
-      allow(fallback).to receive(:deliver_now)
-      expect(DatabankMailer).to receive(:confirmation_not_sent).with(dataset.key, instance_of(StandardError)).and_return(fallback)
+      expect(fallback).to receive(:deliver_now)
+      expect(DatabankMailer).to receive(:confirmation_not_sent).with(dataset.key, error).and_return(fallback)
+
+      expect(dataset.send_publication_notice).to be false
+    end
+
+    it 'reports a missing ticket instead of returning success without sending a notice' do
+      dataset.ticket_id = nil
+      expect(TdxClient.instance).not_to receive(:add_comment)
+      expect(Rails.logger).to receive(:error).with(
+        a_string_including("dataset #{dataset.key}", 'Cannot send publication notice without a ticket')
+      )
+      fallback = double
+      expect(fallback).to receive(:deliver_now)
+      expect(DatabankMailer).to receive(:confirmation_not_sent).with(
+        dataset.key, an_instance_of(RuntimeError)
+      ).and_return(fallback)
 
       expect(dataset.send_publication_notice).to be false
     end
