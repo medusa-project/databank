@@ -32,6 +32,6 @@ RSpec.describe Dataset::Ticketable, type: :model do
       comment: "Pre-publication change of type updated occurred for datafile file-id"
     )
 
-    dataset.handle_prepub_change(ticket_id: 123, datafile: datafile, change_type: "updated")
+    dataset.handle_prepub_file_change(datafile: datafile, change_type: "updated")
   end
 end

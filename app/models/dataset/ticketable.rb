@@ -118,11 +118,23 @@ module Dataset::Ticketable
     TdxClient.instance.add_comment(ticket_id: ticket_id, comment: change) if ticket_id.present?
   end
 
-  def handle_prepub_change(ticket_id:, datafile:, change_type:)
+  def handle_prepub_metadata_change(change_type:, details:)
+    raise "Pre-publication change handling occurred outside of prepub state" unless in_pre_publication_review?
+
+    create_consult_ticket if ticket_id.blank?
+    handle_missing_ticket if ticket_id.blank?
+    change = "Pre-publication change of type #{change_type} occurred with details: #{details}."
+    add_comment(change: change)
+  end
+
+  def handle_prepub_file_change(datafile:, change_type:)
+    raise "Pre-publication change handling occurred outside of prepub state" unless in_pre_publication_review?
+
+    create_consult_ticket if ticket_id.blank?
+    handle_missing_ticket if ticket_id.blank?
     change = "Pre-publication change of type #{change_type} occurred " \
-             "for datafile #{datafile.web_id}: #{datafile.binary_name} " \
-             "in dataset #{databank_url}"
-    TdxClient.instance.add_comment(ticket_id: ticket_id, comment: change)
+             "for datafile #{datafile.web_id}: #{datafile.binary_name}."
+    add_comment(change: change)
   end
 
   def handle_missing_person(email:)

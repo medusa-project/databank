@@ -314,109 +314,15 @@ collaborators to access the data files while the dataset is not public.</li>
     old_publication_state = @dataset.publication_state
     old_creator_state = @dataset.org_creators || false
     @dataset.release_date ||= Date.current
-    
+
     respond_to do |format|
       if @dataset.update(dataset_params)
-        if Databank::PublicationState::DRAFT_ARRAY.include?(old_publication_state)
-          @under_review = @dataset.in_pre_publication_review?
-          if @under_review == true
-            @has_unmodified_review = @dataset.has_unmodified_review?
-            if @has_unmodified_review == true
-              @review_request = @dataset.latest_review_request
-              # update @review_request to modified = true if there is any change to a dataset with an unmodified review
-              @review_request.update(modified: true)
-            end
-          end
-        end
-        begin
-          if dataset_params[:org_creators] == "true" && old_creator_state == false
-            # Convert individual creators to additional contacts (contributors) atomically.
-            @dataset.ind_creators_to_contributors!
-            params["context"] = "continue_edit"
-          elsif dataset_params[:org_creators] == "false" && old_creator_state == true
-            # Convert additional contacts (contributors) back to individual authors atomically.
-            @dataset.transaction do
-              @dataset.institutional_creators.delete_all
-              @dataset.contributors_to_ind_creators!
-            end
-            params["context"] = "continue_edit"
-          end
-        rescue StandardError => e
-          Rails.logger.error("creator/contributor switch failed for dataset #{@dataset.key}: #{e.class}: #{e.message}")
-          @dataset.update_column(:org_creators, old_creator_state)
-          @dataset.reload
-          @dataset.errors.add(:base, "Unable to switch creator type. Please verify required author/contact fields and try again.")
+        handle_prepub_metadata_update(old_publication_state)
+        return if switch_creator_type(old_creator_state, format)
 
-          @dataset.creators.build unless @dataset.creators.count.positive?
-          @dataset.funders.build unless @dataset.funders.count.positive?
-          @dataset.related_materials.build unless @dataset.related_materials.count.positive?
-          @completion_check = Dataset.completion_check(@dataset)
-          @dataset.org_creators = @dataset.org_creators || false
-          @publish_modal_msg = Dataset.publish_modal_msg(dataset: @dataset)
-          @dataset.embargo ||= Databank::PublicationState::Embargo::NONE
-          @token = @dataset.current_token
-          @funder_info_arr = FUNDER_INFO_ARR
-          @license_info_arr = LICENSE_INFO_ARR
-          @dataset.subject = Databank::Subject::NONE unless @dataset.subject
-          @title = @dataset.title.present? ? "Edit #{@dataset.title}" : "Edit Dataset #{@dataset.key}"
-
-          format.html { render :edit, status: :unprocessable_content }
-          format.json { render json: @dataset.errors, status: :unprocessable_content }
-          return
-        end
-        if params.has_key?("context") && params["context"] == "exit"
-          if Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
-            
-            format.html {
-              redirect_to "/datasets?q=&#{CGI.escape('editor')}=#{current_user.username}&context=exit_draft"
-            }
-          else
-            format.html {
-              redirect_to "/datasets?q=&#{CGI.escape('editor')}=#{current_user.username}&context=exit_doi"
-            }
-          end
-        elsif params.has_key?("context") && params["context"] == "publish"
-          if Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
-            raise "invalid publication state for update-and-publish"
-            # only update complete datasets
-          elsif Dataset.completion_check(@dataset) == "ok"
-            # set publication_state
-            @dataset.publication_state = if @dataset.embargo && [Databank::PublicationState::Embargo::FILE,
-                                                                 Databank::PublicationState::Embargo::METADATA].include?(@dataset.embargo)
-                                           @dataset.embargo
-                                         else
-                                           Databank::PublicationState::RELEASED
-                                         end
-            if old_publication_state != Databank::PublicationState::RELEASED && @dataset.publication_state == Databank::PublicationState::RELEASED
-              @dataset.release_date ||= Date.current
-            end
-            @dataset.save
-            # send_dataset_to_medusa only sends metadata files unless old_publication_state is draft
-            MedusaIngest.send_dataset_to_medusa(@dataset) if Application.server_envs.include?(Rails.env)
-            if @dataset.is_test? || Rails.env.test? || Rails.env.development? || @dataset.update_doi
-              format.html { redirect_to dataset_path(@dataset.key) }
-              format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
-            else
-              format.html {
-                redirect_to dataset_path(@dataset.key),
-                            notice: "Error updating DataCite Metadata, details have been logged."
-              }
-              format.json { render json: @dataset.errors, status: :unprocessable_content }
-            end
-          else # this else means completion_check was not ok within publish context
-            # Rails.logger.warn Dataset.completion_check(@dataset)
-            raise "Error: Cannot update published dataset with incomplete information."
-          end
-        elsif params.has_key?("context") && params["context"] == "continue_edit"
-          format.html { redirect_to edit_dataset_path(@dataset) }
-          format.json { render :edit, status: :ok, location: edit_dataset_path(@dataset) }
-        else # this else means context was not set to exit or publish - this is the normal draft update
-          format.html { redirect_to dataset_path(@dataset.key) }
-          format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
-        end
-      else # this else means update failed
-        format.html { render :edit }
-        format.json { render json: @dataset.errors, status: :unprocessable_content }
+        respond_to_update_context(format, old_publication_state)
+      else
+        render_failed_dataset_update(format)
       end
     end
   end
@@ -1047,6 +953,124 @@ collaborators to access the data files while the dataset is not public.</li>
   def confirm_review; end
 
   private
+
+  def handle_prepub_metadata_update(old_publication_state)
+    return unless Databank::PublicationState::DRAFT_ARRAY.include?(old_publication_state)
+
+    @under_review = @dataset.in_pre_publication_review?
+    return unless @under_review == true
+
+    @dataset.handle_prepub_metadata_change(
+      change_type: "metadata",
+      details: "Metadata was modified. #{dataset_params.inspect}"
+    )
+    @has_unmodified_review = @dataset.has_unmodified_review?
+    return unless @has_unmodified_review == true
+
+    @review_request = @dataset.latest_review_request
+    @review_request.update(modified: true)
+  end
+
+  def switch_creator_type(old_creator_state, format)
+    if dataset_params[:org_creators] == "true" && old_creator_state == false
+      @dataset.ind_creators_to_contributors!
+      params["context"] = "continue_edit"
+    elsif dataset_params[:org_creators] == "false" && old_creator_state == true
+      @dataset.transaction do
+        @dataset.institutional_creators.delete_all
+        @dataset.contributors_to_ind_creators!
+      end
+      params["context"] = "continue_edit"
+    end
+    false
+  rescue StandardError => e
+    Rails.logger.error("creator/contributor switch failed for dataset #{@dataset.key}: #{e.class}: #{e.message}")
+    @dataset.update_column(:org_creators, old_creator_state)
+    @dataset.reload
+    @dataset.errors.add(:base, "Unable to switch creator type. Please verify required author/contact fields and try again.")
+
+    @dataset.creators.build unless @dataset.creators.count.positive?
+    @dataset.funders.build unless @dataset.funders.count.positive?
+    @dataset.related_materials.build unless @dataset.related_materials.count.positive?
+    @completion_check = Dataset.completion_check(@dataset)
+    @dataset.org_creators = @dataset.org_creators || false
+    @publish_modal_msg = Dataset.publish_modal_msg(dataset: @dataset)
+    @dataset.embargo ||= Databank::PublicationState::Embargo::NONE
+    @token = @dataset.current_token
+    @funder_info_arr = FUNDER_INFO_ARR
+    @license_info_arr = LICENSE_INFO_ARR
+    @dataset.subject = Databank::Subject::NONE unless @dataset.subject
+    @title = @dataset.title.present? ? "Edit #{@dataset.title}" : "Edit Dataset #{@dataset.key}"
+
+    format.html { render :edit, status: :unprocessable_content }
+    format.json { render json: @dataset.errors, status: :unprocessable_content }
+    true
+  end
+
+  def respond_to_update_context(format, old_publication_state)
+    if params.has_key?("context") && params["context"] == "exit"
+      respond_to_update_exit(format)
+    elsif params.has_key?("context") && params["context"] == "publish"
+      respond_to_update_publish(format, old_publication_state)
+    elsif params.has_key?("context") && params["context"] == "continue_edit"
+      format.html { redirect_to edit_dataset_path(@dataset) }
+      format.json { render :edit, status: :ok, location: edit_dataset_path(@dataset) }
+    else
+      format.html { redirect_to dataset_path(@dataset.key) }
+      format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+    end
+  end
+
+  def respond_to_update_exit(format)
+    if Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
+      format.html {
+        redirect_to "/datasets?q=&#{CGI.escape('editor')}=#{current_user.username}&context=exit_draft"
+      }
+    else
+      format.html {
+        redirect_to "/datasets?q=&#{CGI.escape('editor')}=#{current_user.username}&context=exit_doi"
+      }
+    end
+  end
+
+  def respond_to_update_publish(format, old_publication_state)
+    if Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)
+      raise "invalid publication state for update-and-publish"
+    elsif Dataset.completion_check(@dataset) == "ok"
+      @dataset.publication_state = if @dataset.embargo && [Databank::PublicationState::Embargo::FILE,
+                                                           Databank::PublicationState::Embargo::METADATA].include?(@dataset.embargo)
+                                     @dataset.embargo
+                                   else
+                                     Databank::PublicationState::RELEASED
+                                   end
+      if old_publication_state != Databank::PublicationState::RELEASED && @dataset.publication_state == Databank::PublicationState::RELEASED
+        @dataset.release_date ||= Date.current
+      end
+      @dataset.save
+      MedusaIngest.send_dataset_to_medusa(@dataset) if Application.server_envs.include?(Rails.env)
+      respond_to_publish_result(format)
+    else
+      raise "Error: Cannot update published dataset with incomplete information."
+    end
+  end
+
+  def respond_to_publish_result(format)
+    if @dataset.is_test? || Rails.env.test? || Rails.env.development? || @dataset.update_doi
+      format.html { redirect_to dataset_path(@dataset.key) }
+      format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+    else
+      format.html {
+        redirect_to dataset_path(@dataset.key),
+                    notice: "Error updating DataCite Metadata, details have been logged."
+      }
+      format.json { render json: @dataset.errors, status: :unprocessable_content }
+    end
+  end
+
+  def render_failed_dataset_update(format)
+    format.html { render :edit }
+    format.json { render json: @dataset.errors, status: :unprocessable_content }
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_dataset

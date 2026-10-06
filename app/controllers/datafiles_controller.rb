@@ -27,7 +27,7 @@ class DatafilesController < ApplicationController
            "and a change of type #{change_type} occurred in datafile #{@datafile.web_id}"
     return @dataset.handle_missing_ticket(note: note) if ticket_id.blank?
 
-    @dataset.handle_prepub_change(ticket_id: ticket_id, datafile: @datafile, change_type: change_type)
+    @dataset.handle_prepub_file_change(datafile: @datafile, change_type: change_type)
   end
 
   # Responds to `GET /datafiles`

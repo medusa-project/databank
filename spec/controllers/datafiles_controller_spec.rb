@@ -26,8 +26,8 @@ RSpec.describe DatafilesController, type: :controller do
       let(:ticket_id) { 123 }
 
       it "records the change on the dataset ticket" do
-        expect(reported_dataset).to receive(:handle_prepub_change).with(
-          ticket_id: 123, datafile: reported_datafile, change_type: Databank::FileChangeType::ADDED
+        expect(reported_dataset).to receive(:handle_prepub_file_change).with(
+          datafile: reported_datafile, change_type: Databank::FileChangeType::ADDED
         )
 
         controller.report_prepub_change(Databank::FileChangeType::ADDED)
@@ -42,7 +42,7 @@ RSpec.describe DatafilesController, type: :controller do
           note: "ticket_id missing for dataset dataset-key in pre-publication review " \
                 "and a change of type deleted occurred in datafile file-id"
         )
-        expect(reported_dataset).not_to receive(:handle_prepub_change)
+        expect(reported_dataset).not_to receive(:handle_prepub_file_change)
 
         controller.report_prepub_change(Databank::FileChangeType::DELETED)
       end
