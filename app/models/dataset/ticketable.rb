@@ -132,7 +132,7 @@ module Dataset::Ticketable
 
     create_consult_ticket if ticket_id.blank?
     handle_missing_ticket if ticket_id.blank?
-    change = "Datafile #{change_type}" \
+    change = "Datafile #{change_type} " \
              "web_id #{datafile.web_id}, name: #{datafile.binary_name}."
     add_comment(change: change)
   end
