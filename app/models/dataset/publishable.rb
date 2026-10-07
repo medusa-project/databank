@@ -12,7 +12,7 @@ module Dataset::Publishable
   end
 
   def send_publication_notice
-    create_non_consult_ticket if ticket_id.blank?
+    create_non_consult_ticket(msg: "Ticket created to send publication notice for dataset #{key}.") if ticket_id.blank?
     if ticket_id.blank?
       handle_missing_ticket
       return nil
