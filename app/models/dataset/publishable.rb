@@ -12,8 +12,11 @@ module Dataset::Publishable
   end
 
   def send_publication_notice
-    raise "Cannot send publication notice without a ticket" if ticket_id.blank?
-
+    create_non_consult_ticket if ticket_id.blank?
+    if ticket_id.blank?
+      handle_missing_ticket
+      return nil
+    end
     recipient_array = ([depositor_email] + creators.map(&:email)).reject(&:blank?).uniq
     comment = "Dataset published.\nDOI: (#{identifier})"
     add_comment(change: comment, notify: recipient_array)

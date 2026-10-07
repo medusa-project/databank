@@ -5,11 +5,9 @@ namespace :notify do
 
   desc 'send all incomplete dataset 1 month alerts'
   task :send_incomplete_1m_all => :environment do
-    Dataset.all.each do |dataset|
-      if dataset.publication_state == Databank::PublicationState::DRAFT && (dataset.created_at.to_date == 1.month.ago.to_date)
-        dataset.send_incomplete_1m
-      end
-    end
+    # do nothing, but leave the task defined until the cron job is corrected
+    # This task is temporarily disabled.
+    nil
   end
 
   desc 'send all approaching embargo 1 month alerts'

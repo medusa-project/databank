@@ -19,30 +19,6 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # Sends an email to the depositor and the curators for use when a new version is approved.
-  # The email is sent to the depositor and the admin.
-  # @param dataset_key [String] the key of the dataset
-  def approve_version(dataset_key:)
-    @dataset = Dataset.find_by(key: dataset_key)
-    subject_base = "Illinois Data Bank] New Version Request Approved"
-    subject = prepend_system_code(subject_base)
-    mail(to: @dataset.depositor_email,
-         cc: IDB_CONFIG[:admin][:contact_email],
-         subject: subject)
-  end
-
-  ##
-  # Sends an email to the curators for use when a new version is requested.
-  # @param dataset_key [String] the key of the dataset
-  def request_version(dataset_key:)
-    @dataset = Dataset.find_by(key: dataset_key)
-    subject_base = "Illinois Data Bank] Version Request"
-    subject = prepend_system_code(subject_base)
-    mail(to:      IDB_CONFIG[:admin][:contact_email],
-         subject: subject)
-  end
-
-  ##
   # Sends an email to the curators for use when requested files for a new version is copied.
   # @param dataset_key [String] the key of the dataset
   def notify_version_copy_complete(dataset_key:)
@@ -51,55 +27,6 @@ class DatabankMailer < ActionMailer::Base
     subject = prepend_system_code(subject_base)
     mail(to:      IDB_CONFIG[:admin][:contact_email],
          subject: subject)
-  end
-
-  ##
-  # Sends an email to the depositor (and copies curators) for use when a new version is requested.
-  # @param dataset_key [String] the key of the dataset
-  def acknowledge_request_version(dataset_key:, current_user_name:, current_user_email:)
-    @dataset = Dataset.find_by(key: dataset_key)
-    @current_user_name = current_user_name
-    @current_user_email = current_user_email
-    subject_base = "Illinois Data Bank] Version Request Acknowledgement"
-    subject = prepend_system_code(subject_base)
-    recipients = [@dataset.depositor_email, current_user_email].uniq
-    mail(to:      recipients,
-         cc:      IDB_CONFIG[:admin][:contact_email],
-         subject: subject)
-  end
-
-  ##
-  # Sends an email to the depositor, creators, and curators for use when a dataset is deposited.
-  # @param dataset_key [String] the key of the dataset
-  def confirm_deposit(dataset_key)
-    @dataset = Dataset.find_by(key: dataset_key)
-    if @dataset
-      subject_base = "Illinois Data Bank] Dataset deposited (#{@dataset.identifier})"
-      subject = prepend_system_code(subject_base)
-      to_array = []
-      to_array << @dataset.depositor_email
-      @dataset.creators.each do |creator|
-        to_array << creator.email
-      end
-      to_array << IDB_CONFIG[:admin][:contact_email]
-      to_array << IDB_CONFIG[:admin][:temp_contact_email]
-      mail(to: to_array, subject: subject)
-    else
-      Rails.logger.warn "Confirmation email not sent: #{dataset_key}."
-    end
-  end
-
-  ##
-  # Sends an email to the curators for use when a dataset is updated.
-  def confirm_deposit_update(dataset_key)
-    @dataset = Dataset.find_by(key: dataset_key)
-    if @dataset
-      subject_base = "Illinois Data Bank] Dataset updated (#{@dataset.identifier})"
-      subject = prepend_system_code(subject_base)
-      mail(to: [IDB_CONFIG[:admin][:contact_email], IDB_CONFIG[:admin][:temp_contact_email]], subject: subject)
-    else
-      Rails.logger.warn "Update confirmation email not sent: #{dataset_key}."
-    end
   end
 
   ##
@@ -133,54 +60,6 @@ class DatabankMailer < ActionMailer::Base
   def valid_email?(address:)
     pattern = URI::MailTo::EMAIL_REGEXP
     pattern.match?(address)
-  end
-
-  ##
-  # Sends an email to the depositor for use when a dataset is incomplete for 1 month.
-  # @param dataset_key [String] the key of the dataset
-  def dataset_incomplete_1m(dataset_key)
-    subject_base = "Illinois Data Bank] Incomplete dataset deposit"
-    subject = prepend_system_code(subject_base)
-    @dataset = Dataset.find_by(key: dataset_key)
-    if @dataset
-      mail(to:      @dataset.depositor_email,
-           cc:      [IDB_CONFIG[:admin][:contact_email], IDB_CONFIG[:admin][:temp_contact_email]],
-           subject: subject)
-    else
-      Rails.logger.warn "Dataset incomplete 1m email not sent: #{dataset_key}."
-    end
-  end
-
-  ##
-  # Sends an email to the depositor for use when the embargo is approaching in 1 month.
-  # @param dataset_key [String] the key of the dataset
-  def embargo_approaching_1m(dataset_key)
-    subject_base = "Illinois Data Bank] Dataset release date approaching"
-    subject = prepend_system_code(subject_base)
-    @dataset = Dataset.find_by(key: dataset_key)
-    if @dataset
-      mail(to:      @dataset.depositor_email,
-           cc:      [IDB_CONFIG[:admin][:contact_email], IDB_CONFIG[:admin][:temp_contact_email]],
-           subject: subject)
-    else
-      Rails.logger.warn "Embargo 1m email not sent: #{dataset_key}."
-    end
-  end
-
-  ##
-  # Sends an email to the depositor for use when the embargo is approaching in 1 week.
-  # @param dataset_key [String] the key of the dataset
-  def embargo_approaching_1w(dataset_key)
-    subject_base = "Illinois Data Bank] Dataset release date approaching"
-    subject = prepend_system_code(subject_base)
-    @dataset = Dataset.find_by(key: dataset_key)
-    if @dataset
-      mail(to:      @dataset.depositor_email,
-           cc:      [IDB_CONFIG[:admin][:contact_email], IDB_CONFIG[:admin][:temp_contact_email]],
-           subject: subject)
-    else
-      Rails.logger.warn "Embargo 1w email not sent: #{dataset_key}."
-    end
   end
 
   ##

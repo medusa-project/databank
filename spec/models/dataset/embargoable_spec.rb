@@ -96,24 +96,46 @@ RSpec.describe Dataset::Embargoable, type: :model do
   end
 
   describe '#send_embargo_approaching_1m' do
-    it 'sends the one-month embargo approaching notification' do
-      notification = instance_double(ActionMailer::MessageDelivery, deliver_now: true)
-      expect(DatabankMailer).to receive(:embargo_approaching_1m).with(dataset.key).and_return(notification)
+    it 'adds the one-month embargo notice to the ticket and notifies the depositor' do
+      dataset.update!(
+        depositor_email: 'depositor@example.org',
+        release_date: Date.new(2026, 2, 3)
+      )
+      allow(dataset).to receive(:ingest_datetime).and_return(Time.zone.parse('2025-01-02T03:04:05Z'))
+      expect(dataset).to receive(:add_comment).with(
+        change: a_string_including(
+          '2025-01-02',
+          '2026-02-03',
+          'coming up in one month',
+          'maximum amount of time a dataset may be embargoed is one year',
+          "/datasets/#{dataset.key}/edit"
+        ),
+        notify: ['depositor@example.org']
+      )
 
       dataset.send_embargo_approaching_1m
-
-      expect(notification).to have_received(:deliver_now)
     end
   end
 
   describe '#send_embargo_approaching_1w' do
-    it 'sends the one-week embargo approaching notification' do
-      notification = instance_double(ActionMailer::MessageDelivery, deliver_now: true)
-      expect(DatabankMailer).to receive(:embargo_approaching_1w).with(dataset.key).and_return(notification)
+    it 'adds the one-week embargo notice to the ticket and notifies the depositor' do
+      dataset.update!(
+        depositor_email: 'depositor@example.org',
+        release_date: Date.new(2026, 2, 3)
+      )
+      allow(dataset).to receive(:ingest_datetime).and_return(Time.zone.parse('2025-01-02T03:04:05Z'))
+      expect(dataset).to receive(:add_comment).with(
+        change: a_string_including(
+          '2025-01-02',
+          '2026-02-03',
+          'coming up in one week',
+          'maximum amount of time a dataset may be embargoed is one year',
+          "/datasets/#{dataset.key}/edit"
+        ),
+        notify: ['depositor@example.org']
+      )
 
       dataset.send_embargo_approaching_1w
-
-      expect(notification).to have_received(:deliver_now)
     end
   end
 end

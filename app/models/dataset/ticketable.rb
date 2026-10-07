@@ -115,26 +115,31 @@ module Dataset::Ticketable
   end
 
   def add_comment(change:, notify: [])
+    if ticket_id.blank?
+      create_non_consult_ticket(msg: "Ticket created to add a notification for dataset #{key}.")
+    end
+
+    handle_missing_ticket if ticket_id.blank?
     TdxClient.instance.add_comment(ticket_id: ticket_id, comment: change, notify: notify) if ticket_id.present?
   end
 
-  def handle_prepub_metadata_change(change_type:, details:)
+  def handle_prepub_metadata_change(change_type:, details:, notify: nil)
     raise "Pre-publication change handling occurred outside of prepub state" unless in_pre_publication_review?
 
     create_consult_ticket if ticket_id.blank?
     handle_missing_ticket if ticket_id.blank?
     change = "Change of type #{change_type} occurred: #{details}."
-    add_comment(change: change)
+    add_comment(change: change, notify: notify)
   end
 
-  def handle_prepub_file_change(datafile:, change_type:)
+  def handle_prepub_file_change(datafile:, change_type:, notify: nil)
     raise "Pre-publication change handling occurred outside of prepub state" unless in_pre_publication_review?
 
     create_consult_ticket if ticket_id.blank?
     handle_missing_ticket if ticket_id.blank?
     change = "Datafile #{change_type} " \
              "web_id #{datafile.web_id}, name: #{datafile.binary_name}."
-    add_comment(change: change)
+    add_comment(change: change, notify: notify)
   end
 
   def handle_missing_person(email:)

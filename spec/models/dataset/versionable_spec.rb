@@ -263,32 +263,33 @@ RSpec.describe Dataset::Versionable, type: :model do
     end
   end
 
-  describe '#send_version_request_emails' do
-    it 'logs and suppresses syntax errors from the mailer' do
-      dataset = create(:dataset)
-      request_mail = instance_double(ActionMailer::MessageDelivery)
-      logger = Rails.logger
+  describe '#acknowledge_version_request' do
+    it 'comments with the version request details and notifies the current user' do
+      dataset = create(:dataset, ticket_id: 123, version_comment: 'Adding revised data')
+      source_datafile = instance_double(
+        Datafile,
+        bytestream_name: 'data.csv',
+        bytestream_size: 1_024
+      )
+      version_file = instance_double(VersionFile, source_datafile: source_datafile, selected: true)
+      allow(dataset).to receive(:version_files).and_return([version_file])
 
-      allow(DatabankMailer).to receive(:request_version).with(dataset_key: dataset.key).and_return(request_mail)
-      allow(request_mail).to receive(:deliver_now).and_raise(Net::SMTPSyntaxError.new('bad address'))
-      allow(Rails).to receive(:logger).and_return(logger)
-      expect(logger).to receive(:warn).with('bad address')
-      expect(logger).to receive(:warn).with(/could not version request mail/)
+      expect(dataset).to receive(:add_comment).with(
+        change: [
+          'New Version Request',
+          'Requested by: Test User (test@example.org)',
+          "Name: #{dataset.depositor_name}",
+          "Email: #{dataset.depositor_email}",
+          'Topic: New Version Request',
+          "Dataset: #{dataset.databank_url}",
+          'Version Comment: Adding revised data',
+          'Files:',
+          'data.csv | 1 KB | Selected'
+        ].join("\n"),
+        notify: ['test@example.org']
+      )
 
-      expect { dataset.send_version_request_emails(current_user_name: 'Test User', current_user_email: 'test@example.org') }.not_to raise_error
-    end
-
-    it 're-raises unexpected errors after logging them' do
-      dataset = create(:dataset)
-      request_mail = instance_double(ActionMailer::MessageDelivery)
-      logger = Rails.logger
-
-      allow(DatabankMailer).to receive(:request_version).with(dataset_key: dataset.key).and_return(request_mail)
-      allow(request_mail).to receive(:deliver_now).and_raise(StandardError.new('boom'))
-      allow(Rails).to receive(:logger).and_return(logger)
-      expect(logger).to receive(:warn).with('error while trying to send version_request_emails boom')
-
-      expect { dataset.send_version_request_emails(current_user_name: 'Test User', current_user_email: 'test@example.org') }.to raise_error(StandardError, 'boom')
+      dataset.acknowledge_version_request(current_user_name: 'Test User', current_user_email: 'test@example.org')
     end
   end
 

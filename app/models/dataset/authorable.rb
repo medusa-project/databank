@@ -161,10 +161,25 @@ module Dataset::Authorable
   end
 
   ##
-  # send email to notify depositor that dataset is incomplete one month after creation
+  # Notify the depositor that the dataset is incomplete one month after creation.
   def send_incomplete_1m
-    notification = DatabankMailer.dataset_incomplete_1m(self.key)
-    notification.deliver_now
+    edit_url = "#{IDB_CONFIG[:root_url_text]}/datasets/#{key}/edit"
+    comment = [
+      "Hello,",
+      "Thank you for beginning a dataset deposit in the Illinois Data Bank on #{created_at.iso8601}.",
+      "We are writing because 1 month has passed since you began this deposit.",
+      "If you would like to complete or delete your deposit, you can do so here: #{edit_url}.",
+      "We would be happy to answer any questions you may have about depositing your data.",
+      "Please email us at #{IDB_CONFIG[:admin][:contact_email]}.",
+      "Thank you,",
+      "Research Data Service Curators",
+      "Research Data Service",
+      "University of Illinois Urbana-Champaign",
+      "databank@library.illinois.edu",
+      "(217) 300-3513"
+    ].join("\n\n")
+
+    add_comment(change: comment, notify: [depositor_email])
   end
 
 end

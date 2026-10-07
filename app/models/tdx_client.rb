@@ -177,6 +177,10 @@ class TdxClient
   end
 
   def add_comment(ticket_id:, comment:, notify: [])
+    raise "Ticket ID is required to add a comment" if ticket_id.blank?
+
+    raise "Ticket not found" if find_ticket_by_id(ticket_id).nil?
+
     # require notify to be an array, empty or containing only strings
     notify = [notify] if notify.is_a?(String)
     # if notify is not a string or nil or array of strings, set it to an empty array

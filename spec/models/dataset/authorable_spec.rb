@@ -1,6 +1,36 @@
 require 'rails_helper'
 
 RSpec.describe Dataset::Authorable, type: :model do
+  describe '#send_incomplete_1m' do
+    it 'adds the incomplete-deposit notice to the ticket and notifies the depositor' do
+      dataset = create(
+        :dataset,
+        depositor_email: 'depositor@example.org',
+        created_at: Time.zone.parse('2026-01-02T03:04:05Z')
+      )
+      expected_message = [
+        'Hello,',
+        'Thank you for beginning a dataset deposit in the Illinois Data Bank on 2026-01-02T03:04:05Z.',
+        'We are writing because 1 month has passed since you began this deposit.',
+        "If you would like to complete or delete your deposit, you can do so here: #{IDB_CONFIG[:root_url_text]}/datasets/#{dataset.key}/edit.",
+        'We would be happy to answer any questions you may have about depositing your data.',
+        "Please email us at #{IDB_CONFIG[:admin][:contact_email]}.",
+        'Thank you,',
+        'Research Data Service Curators',
+        'Research Data Service',
+        'University of Illinois Urbana-Champaign',
+        'databank@library.illinois.edu',
+        '(217) 300-3513'
+      ].join("\n\n")
+      expect(dataset).to receive(:add_comment).with(
+        change: expected_message,
+        notify: ['depositor@example.org']
+      )
+
+      dataset.send_incomplete_1m
+    end
+  end
+
   describe '#creator_editors' do
     it 'returns unique creator-based editor recipients only' do
       dataset = create(:dataset)

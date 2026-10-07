@@ -53,10 +53,9 @@ module Dataset::Versionable
   end
 
   ##
-  # send email to notify depositor that dataset version is approved
+  # Adds a comment to the ticket, includes a notification to the depositor that the dataset version has been approved
   def send_approve_version
-    notification = DatabankMailer.approve_version(dataset_key: self.key)
-    notification.deliver_now
+    add_comment(change: "Dataset version approved", notify: [depositor_email])
   end
 
   def version_copies_complete?
@@ -134,7 +133,6 @@ module Dataset::Versionable
     else
       (self.version_group.group_hash[:entries][0][:version]).to_i > dataset_version.to_i
     end
-
   end
 
   def version_eligible_for_review?
@@ -163,21 +161,30 @@ module Dataset::Versionable
       next_idb_dataset.nil?
   end
 
-  def send_version_request_emails(current_user_name:, current_user_email:)
-    begin
-      request_version_email = DatabankMailer.request_version(dataset_key: key)
-      request_version_email.deliver_now
-      acknowledge_v_request_email = DatabankMailer.acknowledge_request_version(dataset_key:        key,
-                                                                               current_user_name:  current_user_name,
-                                                                               current_user_email: current_user_email)
-      acknowledge_v_request_email.deliver_now
-    rescue Net::SMTPSyntaxError => e
-      Rails.logger.warn(e.message)
-      Rails.logger.warn("could not version request mail #{key}")
-    rescue StandardError => e
-      Rails.logger.warn("error while trying to send version_request_emails #{e.message}")
-      raise e
+  def acknowledge_version_request(current_user_name:, current_user_email:)
+    file_details = version_files.map do |version_file|
+      source_datafile = version_file.source_datafile
+      size = ApplicationController.helpers.number_to_human_size(source_datafile.bytestream_size)
+      selected = version_file.selected ? "Selected" : "Not Selected"
+      "#{source_datafile.bytestream_name} | #{size} | #{selected}"
     end
+
+    comment = [
+      "New Version Request",
+      "Requested by: #{current_user_name} (#{current_user_email})",
+      "Depositor Name: #{depositor_name}",
+      "Depositor Email: #{depositor_email}",
+      "Topic: New Version Request",
+      "Dataset: #{databank_url}",
+      "Version Comment: #{version_comment}",
+      "Files:",
+      *file_details
+    ].join("\n")
+
+    add_comment(
+      change: comment,
+      notify: [current_user_email]
+    )
   end
 
   def add_version_nested_objects(previous:)
