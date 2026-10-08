@@ -1,8 +1,76 @@
 %h2 Integration with the Ticketing System
-%p This section provides guidance on how to configure and manage the integration with the ticketing system.
-%h3 Configuration Options
-%p Tickets are assigned to the current default assignee. This can be managed through the ticket configuration selection in the admin dashboard.
-%h3 Managing Tickets
-%p A ticket is automatically created and associated with a dataset when a review is requested. Changes to a dataset in pre-publication review trigger a comment in the associated ticket, and curators are notified accordingly.
-%p On the landing page for each dataset, curators can navigate to ticket integration details by clicking on the "Ticket" link in the curator options bar.
-%p From there, they can view ticket details or associate a ticket with a dataset, but any additional comments should be made in the ticketing system itself.
+%p Databank creates and updates TeamDynamix tickets for datasets. This section explains when that happens, who is notified, and what to do when something goes wrong.
+
+%h3 Ticket Assignee
+%ul
+  %li New tickets are assigned to the person selected under "Choose Ticket Assignee" in the form above. If no valid assignee is selected, a default assignee is used.
+  %li Changing the assignee affects only tickets created afterward. Existing tickets are not reassigned. Reassignment can be done in TeamDynamix.
+  %li All tickets are placed in the same responsible group in TeamDynamix.
+
+%h3 When Tickets Are Created
+%p Every dataset ticket is titled "[Dataset] &lt;dataset key&gt;" and its description includes a link to the dataset. A dataset has at most one associated ticket.
+%p Links to other tickets can be added within the ticketing system. Tickets can be merged or child/parent associations can be established.
+%ul
+  %li
+    %strong Review request:
+    if a ticket with the dataset's title already exists, a comment is added to it. Otherwise a new consultation ticket is created, using the consultation form.
+  %li
+    %strong Publication:
+    if the dataset has no ticket, a general ticket is created so the publication notice can be sent.
+  %li
+    %strong Other notifications:
+    if Databank needs to add a comment and there is no ticket, a general ticket is created first.
+  %li
+    %strong Manually:
+    curators can create a ticket from the dataset's Ticket page (see below).
+  %li
+    %strong Datasets that pre-date ticketing:
+    a consultation ticket can be created that presumes the depositor is the requestor.
+
+%h3 When Comments Are Added and Who Is Notified
+%table.table.table-bordered
+  %p TeamDynamix notifies according to its own ticket settings, which generally includes the requestor, the assignee, and people subscribed to the ticket.
+  %caption Events that add a comment to the dataset's ticket
+  %thead
+    %tr
+      %th(scope="col") Event
+      %th(scope="col") Explicitly Notified
+  %tbody
+    %tr
+      %th(scope="row") Review requested
+      %td The requestor
+    %tr
+      %th(scope="row") Metadata changed during pre-publication review
+      %td No one is named explicitly; TeamDynamix notifies according to its own ticket settings
+    %tr
+      %th(scope="row") Files added, removed or changed during pre-publication review
+      %td No one is named explicitly; TeamDynamix notifies according to its own ticket settings
+    %tr
+      %th(scope="row") Dataset published (includes the DOI)
+      %td The depositor and all creators who have an email address
+
+%h3 Using the Ticket Page
+%p On a dataset's landing page, select "Ticket" in the curator options bar. The Ticket page lets you do the following.
+%ul
+  %li
+    %strong View an existing ticket:
+    follow the link to open it in TeamDynamix. The page also shows the ticket description and its comments.
+  %li
+    %strong Change the ticket association:
+    enter the TeamDynamix ticket ID. It must be a positive whole number, and the ticket must exist in TeamDynamix. Saving replaces the dataset's current ticket, and later notifications go to the new ticket, so check the ID before saving.
+  %li
+    %strong Create a ticket:
+    if the dataset has no ticket, you can optionally enter a description and select "create ticket". A ticket cannot be created if one already exists.
+%p The Ticket page is read-only for comments. Add any additional comments in TeamDynamix.
+
+%h3 Troubleshooting
+%ul
+  %li
+    %strong "Missing ticket" email:
+    Databank could not find or create a ticket, or could not match a person. The message says why. Create a ticket, or associate an existing one, from the dataset's Ticket page. A failed ticket creation can also stop the publication notice from being sent, so check the dataset's ticket after publishing.
+  %li
+    %strong "No person found with email" comment:
+    people are matched to TeamDynamix accounts by email address. The depositor or collaborator needs to be registered in TeamDynamix under the email address on the dataset, or they cannot be added as a ticket contact or named as the requestor.
+  %li
+    %strong "The ticket could not be found or verified":
+    check the ticket ID and that it belongs to the correct TeamDynamix application.
