@@ -24,10 +24,11 @@
         %h4.panel-title
           %a( role="button" data-toggle="collapse" data-parent="#ticket-config" href="#ticketConfigPanel" aria-expanded="false" aria-controls="ticketConfigPanel" class="accordion-toggle collapsed" )
             %span.metadata-label Manage Ticket Configuration
-            %span( class="glyphicon glyphicon-bullhorn" )
+            %span( class="glyphicon glyphicon-cog" )
       .panel-collapse.collapse(id="ticketConfigPanel" aria-labelledby="ticketConfigHeading" )
         .panel-body
           = render partial: 'ticket_config_form'
+          = render partial: 'ticket_guide'
   .panel-group(id="file-audit-request")
     .panel.panel-default
       .panel-heading(id="fileAuditRequestHeading")

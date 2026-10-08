@@ -7,6 +7,16 @@
   - if @existing_ticket.present?
     %h3
       = link_to "View Ticket #{@dataset.ticket_id} in TeamDynamix", @dataset.ticket_url, target: "_blank", rel: "noopener"
+    .panel-group(id="ticket-associate")
+      .panel.panel-default
+        .panel-heading(id="ticketAssociateHeading")
+          %h4.panel-title
+            %a( role="button" data-toggle="collapse" data-parent="#ticket-associate" href="#ticketAssociatePanel" aria-expanded="false" aria-controls="ticketAssociatePanel" class="accordion-toggle collapsed" )
+              %span.metadata-label Change Ticket Association
+              %span( class="glyphicon glyphicon-pencil" )
+        .panel-collapse.collapse(id="ticketAssociatePanel" aria-labelledby="ticketAssociateHeading" )
+          .panel-body
+            = render 'datasets/ticket_associate_form'
     %h3 Ticket Description
     = simple_format(@existing_ticket["Description"])
     -if @dataset.notes.any?
@@ -22,15 +32,7 @@
           = sanitize(comment["Body"])
   - else
     %p No ticket available for this dataset.
-    = form_with url: associate_ticket_dataset_path(@dataset), scope: :dataset, method: :patch, local: true do |form|
-      .form-group
-        = form.label :ticket_id, "TeamDynamix ticket ID", for: "dataset_ticket_id"
-        %p#ticket-id-help Enter the ID of an existing TeamDynamix ticket to associate it with this dataset.
-        - if @ticket_association_error.present?
-          %p#ticket-id-error.alert.alert-danger(role="alert")
-            = @ticket_association_error
-        = form.text_field :ticket_id, id: "dataset_ticket_id", value: @ticket_id_input || @dataset.ticket_id, class: "form-control", required: true, inputmode: "numeric", pattern: "[1-9][0-9]*", autofocus: @ticket_association_error.present?, aria: { describedby: @ticket_association_error.present? ? "ticket-id-help ticket-id-error" : "ticket-id-help", invalid: @ticket_association_error.present? ? "true" : nil }
-      = form.submit "Associate ticket", class: "btn btn-primary"
+    = render 'datasets/ticket_associate_form'
     %h3 Create a new ticket
     = form_with url: create_ticket_dataset_path(@dataset), scope: :ticket, method: :post, local: true do |form|
       .form-group
