@@ -586,9 +586,6 @@ collaborators to access the data files while the dataset is not public.</li>
                end
     @dataset.identifier = "#{shoulder}#{@dataset.key}_V1" if !@dataset.identifier || @dataset.identifier == ""
     ReviewRequest.create(dataset_key: @dataset.key, requested_at: Time.zone.now, requestor_name: current_user.name, requestor_email: current_user.email)
-    # DatabankMailer.request_review(dataset_key:        @dataset.key,
-    #                               current_user_name:  current_user.name,
-    #                               current_user_email: current_user.email).deliver_now
     respond_to do |format|
       if @dataset.save
         format.html { render :confirm_review }

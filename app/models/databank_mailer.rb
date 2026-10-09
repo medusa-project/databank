@@ -19,17 +19,6 @@ class DatabankMailer < ActionMailer::Base
   end
 
   ##
-  # Sends an email to the curators for use when requested files for a new version is copied.
-  # @param dataset_key [String] the key of the dataset
-  def notify_version_copy_complete(dataset_key:)
-    @dataset = Dataset.find_by(key: dataset_key)
-    subject_base = "Illinois Data Bank] Version Copy Complete"
-    subject = prepend_system_code(subject_base)
-    mail(to:      IDB_CONFIG[:admin][:contact_email],
-         subject: subject)
-  end
-
-  ##
   # Sends an email to the curators for use when a user requests help.
   # @param params [Hash] the parameters of the help request
   # params hash has two keys:
@@ -103,22 +92,6 @@ because dataset not found for key: #{dataset_key}."
     subject = prepend_system_code(subject_base)
     @curator_report = report
     mail(to: report.requestor_email, subject: subject)
-  end
-
-  ##
-  # Sends an email to the curators when a pre-publication review is requested,
-  # including both the depositor and the requesting user (if they are different).
-  # @param dataset_key [String] the key of the dataset
-  # @param current_user_name [String] display name of the logged-in user making the request
-  # @param current_user_email [String] email of the logged-in user making the request
-  def request_review(dataset_key:, current_user_name:, current_user_email:)
-    @dataset = Dataset.find_by(key: dataset_key)
-    @current_user_name = current_user_name
-    @current_user_email = current_user_email
-    subject_base = "Illinois Data Bank] Dataset Consultation Request"
-    subject = prepend_system_code(subject_base)
-    recipients = [IDB_CONFIG[:admin][:contact_email], @current_user_email, @dataset.depositor_email].uniq
-    mail(to: recipients, subject: subject)
   end
 
   ##

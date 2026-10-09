@@ -16,7 +16,7 @@ class CuratorReportJob
         if Rails.env.test? || Rails.env.development?
             Rails.logger.info("CuratorReportJob succeeded for report ID: #{@report.id}, sending email to user #{@report.requestor_email}")
         else
-            DatabankMailer.curation_report(@report).deliver_now
+            DatabankMailer.curator_report(@report).deliver_now
         end
     end
 

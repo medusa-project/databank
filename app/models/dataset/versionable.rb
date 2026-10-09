@@ -89,10 +89,23 @@ module Dataset::Versionable
 
     incomplete_files.each(&:copy_file)
     if Application.server_envs.include?(Rails.env)
-      files_copied_email = DatabankMailer.notify_version_copy_complete(dataset_key: key)
-      files_copied_email.deliver_now
+      file_details = version_files.map do |version_file|
+        source_datafile = version_file.source_datafile
+        size = ApplicationController.helpers.number_to_human_size(source_datafile.bytestream_size)
+        selected = version_file.selected ? "Selected" : "Not Selected"
+        complete = version_file.selected && version_file.complete? ? "Complete" : "Not Complete"
+        "#{source_datafile.bytestream_name} | #{size} | #{selected} | #{complete}"
+      end
+      comment = [
+        "Topic: Version Copy Complete",
+        "Dataset: #{databank_url}",
+        "",
+        "Version Copy Complete",
+        *file_details
+      ].join("\n")
+      add_comment(change: comment)
     else
-      Rails.logger.warn("skipping version copy email in #{Rails.env} for #{key}")
+      Rails.logger.warn("skipping version copy ticket comment in #{Rails.env} for #{key}")
     end
   end
   handle_asynchronously :copy_version_files

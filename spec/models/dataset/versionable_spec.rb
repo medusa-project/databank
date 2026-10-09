@@ -384,21 +384,49 @@ RSpec.describe Dataset::Versionable, type: :model do
       expect(dataset.copy_version_files_without_delay).to be true
     end
 
-    it 'copies incomplete selected files and sends completion mail in server envs' do
-      file_to_copy = instance_double(VersionFile, selected: true, complete?: false)
-      complete_file = instance_double(VersionFile, selected: true, complete?: true)
-      mail = instance_double(ActionMailer::MessageDelivery)
+    it 'copies incomplete selected files and comments with completion details in server envs' do
+      source_datafile = instance_double(Datafile, bytestream_name: 'data.csv', bytestream_size: 1_024)
+      complete_file_source = instance_double(Datafile, bytestream_name: 'other.csv', bytestream_size: 2_048)
+      file_to_copy = instance_double(
+        VersionFile,
+        selected: true,
+        complete?: false,
+        source_datafile: source_datafile
+      )
+      allow(file_to_copy).to receive(:complete?).and_return(false, true)
+      complete_file = instance_double(
+        VersionFile,
+        selected: true,
+        complete?: true,
+        source_datafile: complete_file_source
+      )
+      unselected_file_source = instance_double(Datafile, bytestream_name: 'unused.csv', bytestream_size: 512)
+      unselected_file = instance_double(
+        VersionFile,
+        selected: false,
+        complete?: false,
+        source_datafile: unselected_file_source
+      )
 
-      allow(dataset).to receive(:version_files).and_return([file_to_copy, complete_file])
+      allow(dataset).to receive(:version_files).and_return([file_to_copy, complete_file, unselected_file])
       allow(Application).to receive(:server_envs).and_return([Rails.env])
-      allow(DatabankMailer).to receive(:notify_version_copy_complete).with(dataset_key: dataset.key).and_return(mail)
       expect(file_to_copy).to receive(:copy_file)
-      expect(mail).to receive(:deliver_now)
+      expect(dataset).to receive(:add_comment).with(
+        change: [
+          'Topic: Version Copy Complete',
+          "Dataset: #{dataset.databank_url}",
+          '',
+          'Version Copy Complete',
+          'data.csv | 1 KB | Selected | Complete',
+          'other.csv | 2 KB | Selected | Complete',
+          'unused.csv | 512 Bytes | Not Selected | Not Complete'
+        ].join("\n")
+      )
 
       dataset.copy_version_files_without_delay
     end
 
-    it 'logs instead of mailing outside server envs' do
+    it 'logs instead of commenting outside server envs' do
       file_to_copy = instance_double(VersionFile, selected: true, complete?: false)
       logger = Rails.logger
 
@@ -406,7 +434,7 @@ RSpec.describe Dataset::Versionable, type: :model do
       allow(Application).to receive(:server_envs).and_return([])
       allow(Rails).to receive(:logger).and_return(logger)
       expect(file_to_copy).to receive(:copy_file)
-      expect(logger).to receive(:warn).with(/skipping version copy email/)
+      expect(logger).to receive(:warn).with(/skipping version copy ticket comment/)
 
       dataset.copy_version_files_without_delay
     end

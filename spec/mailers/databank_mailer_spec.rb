@@ -17,15 +17,6 @@ RSpec.describe DatabankMailer, type: :mailer do
 
   let(:dataset_key) { dataset.key }
 
-  describe '#notify_version_copy_complete' do
-    it 'emails curator contact when copy finishes' do
-      mail = described_class.notify_version_copy_complete(dataset_key: dataset_key)
-
-      expect(mail.to).to eq([IDB_CONFIG[:admin][:contact_email]])
-      expect(mail.subject).to include('Version Copy Complete')
-    end
-  end
-
   describe '#contact_help' do
     let(:consultation_params) do
       {
