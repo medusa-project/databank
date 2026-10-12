@@ -194,10 +194,7 @@ module Dataset::Versionable
       *file_details
     ].join("\n")
 
-    add_comment(
-      change: comment,
-      notify: [current_user_email]
-    )
+    create_non_consult_ticket(msg: comment)
   end
 
   def add_version_nested_objects(previous:)

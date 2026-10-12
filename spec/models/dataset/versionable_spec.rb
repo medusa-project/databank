@@ -264,8 +264,8 @@ RSpec.describe Dataset::Versionable, type: :model do
   end
 
   describe '#acknowledge_version_request' do
-    it 'comments with the version request details and notifies the current user' do
-      dataset = create(:dataset, ticket_id: 123, version_comment: 'Adding revised data')
+    it 'creates a non-consult ticket with the version request details' do
+      dataset = create(:dataset, version_comment: 'Adding revised data')
       source_datafile = instance_double(
         Datafile,
         bytestream_name: 'data.csv',
@@ -274,19 +274,18 @@ RSpec.describe Dataset::Versionable, type: :model do
       version_file = instance_double(VersionFile, source_datafile: source_datafile, selected: true)
       allow(dataset).to receive(:version_files).and_return([version_file])
 
-      expect(dataset).to receive(:add_comment).with(
-        change: [
+      expect(dataset).to receive(:create_non_consult_ticket).with(
+        msg: [
           'New Version Request',
           'Requested by: Test User (test@example.org)',
-          "Name: #{dataset.depositor_name}",
-          "Email: #{dataset.depositor_email}",
+          "Depositor Name: #{dataset.depositor_name}",
+          "Depositor Email: #{dataset.depositor_email}",
           'Topic: New Version Request',
           "Dataset: #{dataset.databank_url}",
           'Version Comment: Adding revised data',
           'Files:',
           'data.csv | 1 KB | Selected'
-        ].join("\n"),
-        notify: ['test@example.org']
+        ].join("\n")
       )
 
       dataset.acknowledge_version_request(current_user_name: 'Test User', current_user_email: 'test@example.org')
