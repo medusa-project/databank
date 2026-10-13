@@ -124,7 +124,10 @@ module Dataset::Ticketable
   end
 
   def handle_prepub_metadata_change(change_type:, details:, notify: nil)
-    raise "Pre-publication change handling occurred outside of prepub state" unless in_pre_publication_review?
+    review_request = latest_review_request
+    raise "Pre-publication change handling occurred outside of prepub state" if review_request.nil?
+
+    review_request.update!(modified: true) unless review_request.modified?
 
     create_consult_ticket if ticket_id.blank?
     handle_missing_ticket if ticket_id.blank?
@@ -133,8 +136,10 @@ module Dataset::Ticketable
   end
 
   def handle_prepub_file_change(datafile:, change_type:, notify: nil)
-    raise "Pre-publication change handling occurred outside of prepub state" unless in_pre_publication_review?
+    review_request = latest_review_request
+    raise "Pre-publication change handling occurred outside of prepub state" if review_request.nil?
 
+    review_request.update!(modified: true) unless review_request.modified?
     create_consult_ticket if ticket_id.blank?
     handle_missing_ticket if ticket_id.blank?
     change = "Datafile #{change_type} " \

@@ -963,11 +963,6 @@ collaborators to access the data files while the dataset is not public.</li>
       change_type: "metadata",
       details: changes.inspect
     )
-    @has_unmodified_review = @dataset.has_unmodified_review?
-    return unless @has_unmodified_review == true
-
-    @review_request = @dataset.latest_review_request
-    @review_request.update(modified: true)
   end
 
   def switch_creator_type(old_creator_state, format)
