@@ -26,12 +26,17 @@ RSpec.describe Dataset::Ticketable, type: :model do
   end
 
   it 'adds pre-publication changes to the specified ticket' do
-    datafile = instance_double(Datafile, web_id: "file-id")
+    allow_any_instance_of(ReviewRequest).to receive(:create_ticket_review_request)
+    review_request = create(:review_request, dataset: dataset)
+    datafile = instance_double(Datafile, web_id: "file-id", binary_name: "file.txt")
     expect(client).to receive(:add_comment).with(
       ticket_id: 123,
-      comment: "Pre-publication change of type updated occurred for datafile file-id"
+      comment: "Datafile updated web_id file-id, name: file.txt.",
+      notify: nil
     )
 
     dataset.handle_prepub_file_change(datafile: datafile, change_type: "updated")
+
+    expect(review_request.reload.modified).to be true
   end
 end

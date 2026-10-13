@@ -7,6 +7,7 @@ RSpec.describe ReviewRequestsController, type: :controller do
 
   before do
     sign_in admin
+    allow_any_instance_of(ReviewRequest).to receive(:create_ticket_review_request)
   end
 
   describe 'GET #index' do

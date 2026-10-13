@@ -108,6 +108,7 @@ RSpec.describe TdxClient, type: :model do
 
   describe '#add_comment' do
     it 'posts comment and notification recipients with keyword arguments' do
+      allow(client).to receive(:find_ticket_by_id).with(123).and_return("ID" => 123)
       expect(client).to receive(:post_json).with(
         url: "#{url}/feed",
         body: { Comments: "Message", Notify: ["person@example.com"] },

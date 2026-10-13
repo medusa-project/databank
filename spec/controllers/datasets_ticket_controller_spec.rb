@@ -27,7 +27,7 @@ RSpec.describe DatasetsController, type: :controller do
       expect(page.at_css('#ticket_description')['aria-describedby']).to eq('ticket-description-help')
     end
 
-    it 'does not show the form when an existing ticket is found' do
+    it 'shows ticket details and keeps the association form collapsed when a ticket is found' do
       dataset.update!(ticket_id: 123)
       allow(client).to receive(:find_ticket_by_id).with(123).and_return('ID' => 123, 'Description' => 'Ticket description')
       allow(client).to receive(:comments).with(ticket_id: 123).and_return([])
@@ -35,8 +35,11 @@ RSpec.describe DatasetsController, type: :controller do
       get :ticket, params: { id: dataset.to_param }
 
       expect(response).to have_http_status(:ok)
-      expect(Nokogiri::HTML(response.body).at_css('#dataset_ticket_id')).to be_nil
-      expect(Nokogiri::HTML(response.body).at_css('#ticket_description')).to be_nil
+      page = Nokogiri::HTML(response.body)
+      association_panel = page.at_css('#ticketAssociatePanel')
+      expect(association_panel['class'].split).to include('collapse')
+      expect(association_panel.at_css('#dataset_ticket_id')).to be_present
+      expect(page.at_css('#ticket_description')).to be_nil
     end
   end
 

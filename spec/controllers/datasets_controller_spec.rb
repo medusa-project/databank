@@ -342,6 +342,8 @@ RSpec.describe DatasetsController, type: :controller do
 
   describe 'POST #request_review' do
     it 'requests a review' do
+      allow_any_instance_of(ReviewRequest).to receive(:create_ticket_review_request)
+
       post :request_review, params: { id: dataset.to_param }
       expect(response).to be_successful
     end

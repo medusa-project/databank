@@ -122,19 +122,20 @@ RSpec.describe Dataset::Publishable, type: :model do
       expect(dataset.send_publication_notice).to be false
     end
 
-    it 'reports a missing ticket instead of returning success without sending a notice' do
+    it 'creates a ticket before sending a publication notice when none is associated' do
       dataset.ticket_id = nil
-      expect(TdxClient.instance).not_to receive(:add_comment)
-      expect(Rails.logger).to receive(:error).with(
-        a_string_including("dataset #{dataset.key}", 'Cannot send publication notice without a ticket')
+      expect(dataset).to receive(:create_non_consult_ticket).with(
+        msg: "Ticket created to send publication notice for dataset #{dataset.key}."
+      ) do
+        dataset.ticket_id = 123
+      end
+      expect(TdxClient.instance).to receive(:add_comment).with(
+        ticket_id: 123,
+        comment: "Dataset published.\nDOI: (10.1234/example)",
+        notify: [dataset.depositor_email]
       )
-      fallback = double
-      expect(fallback).to receive(:deliver_now)
-      expect(DatabankMailer).to receive(:confirmation_not_sent).with(
-        dataset.key, an_instance_of(RuntimeError)
-      ).and_return(fallback)
 
-      expect(dataset.send_publication_notice).to be false
+      expect(dataset.send_publication_notice).to be true
     end
   end
 
@@ -234,6 +235,8 @@ RSpec.describe Dataset::Publishable, type: :model do
 
       it 'reverts the publication state and returns an error if DOI publication fails' do
         allow(dataset).to receive(:publish_doi).and_return({status: "error"})
+        dataset.ticket_id = 123
+        allow(TdxClient.instance).to receive(:add_comment)
         old_publication_state = dataset.publication_state
         result = dataset.publish(user)
         expect(dataset.publication_state).to eq(old_publication_state)

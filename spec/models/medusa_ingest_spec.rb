@@ -157,6 +157,7 @@ RSpec.describe MedusaIngest, type: :model do
 
   describe '.send_dataset_to_medusa' do
     it 'sends a dataset to Medusa' do
+      create(:creator, :contact, dataset: dataset)
       allow(StorageManager.instance.draft_root).to receive(:write_string_to)
       allow(MedusaIngest).to receive(:send_datafile_to_medusa)
       # separate ingests are created for dataset system files and each datafile
