@@ -25,18 +25,56 @@ RSpec.describe Dataset::Ticketable, type: :model do
     expect(dataset.current_contacts).to eq([{ "UID" => "person-uid" }])
   end
 
-  it 'adds pre-publication changes to the specified ticket' do
+  it 'marks the latest review modified when a file is added during pre-publication review' do
     allow_any_instance_of(ReviewRequest).to receive(:create_ticket_review_request)
-    review_request = create(:review_request, dataset: dataset)
-    datafile = instance_double(Datafile, web_id: "file-id", binary_name: "file.txt")
+    earlier_review = create(:review_request, dataset: dataset, created_at: 2.days.ago)
+    latest_review = create(:review_request, dataset: dataset, created_at: 1.day.ago)
+    datafile = instance_double(Datafile, web_id: "file-id", binary_name: "added.txt")
     expect(client).to receive(:add_comment).with(
       ticket_id: 123,
-      comment: "Datafile updated web_id file-id, name: file.txt.",
+      comment: "Datafile added web_id file-id, name: added.txt.",
       notify: nil
     )
 
-    dataset.handle_prepub_file_change(datafile: datafile, change_type: "updated")
+    expect(dataset.in_pre_publication_review?).to be true
+    dataset.handle_prepub_file_change(datafile: datafile, change_type: "added")
 
-    expect(review_request.reload.modified).to be true
+    expect(latest_review.reload.modified).to be true
+    expect(earlier_review.reload.modified).to be false
+  end
+
+  it 'marks the latest review modified when a file is removed during pre-publication review' do
+    allow_any_instance_of(ReviewRequest).to receive(:create_ticket_review_request)
+    earlier_review = create(:review_request, dataset: dataset, created_at: 2.days.ago)
+    latest_review = create(:review_request, dataset: dataset, created_at: 1.day.ago)
+    datafile = instance_double(Datafile, web_id: "file-id", binary_name: "removed.txt")
+    expect(client).to receive(:add_comment).with(
+      ticket_id: 123,
+      comment: "Datafile removed web_id file-id, name: removed.txt.",
+      notify: nil
+    )
+
+    expect(dataset.in_pre_publication_review?).to be true
+    dataset.handle_prepub_file_change(datafile: datafile, change_type: "removed")
+
+    expect(latest_review.reload.modified).to be true
+    expect(earlier_review.reload.modified).to be false
+  end
+
+  it 'marks the latest review modified when metadata changes during pre-publication review' do
+    allow_any_instance_of(ReviewRequest).to receive(:create_ticket_review_request)
+    earlier_review = create(:review_request, dataset: dataset, created_at: 2.days.ago)
+    latest_review = create(:review_request, dataset: dataset, created_at: 1.day.ago)
+    expect(client).to receive(:add_comment).with(
+      ticket_id: 123,
+      comment: "Change of type metadata occurred: title changed.",
+      notify: nil
+    )
+
+    expect(dataset.in_pre_publication_review?).to be true
+    dataset.handle_prepub_metadata_change(change_type: "metadata", details: "title changed")
+
+    expect(latest_review.reload.modified).to be true
+    expect(earlier_review.reload.modified).to be false
   end
 end
