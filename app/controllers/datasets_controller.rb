@@ -106,6 +106,8 @@ collaborators to access the data files while the dataset is not public.</li>
   # GET /datasets
   # GET /datasets.json
   def index
+    return render_400 unless params[:q].nil? || params[:q].is_a?(String)
+
     if current_user
       user_role = current_user.role
       user = User.find_by(email: current_user&.email)

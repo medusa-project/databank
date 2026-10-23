@@ -31,6 +31,31 @@ RSpec.describe "DatasetSearch", type: :request do
       expect(response.headers["X-Robots-Tag"]).to eq("noindex, nofollow")
       expect(response.body).to include("Datasets: &lt;script&gt;alert(1)&lt;/script&gt; | Illinois Data Bank | Illinois")
       expect(response.body).not_to include(query)
+      expect(Nokogiri::HTML(response.body).at_css('input[name="q"]')["value"]).to eq(query)
+    end
+
+    it "accepts an empty search query as the default listing" do
+      get datasets_path(q: "")
+
+      expect(response).to have_http_status(:success)
+      expect(response.headers["X-Robots-Tag"]).to be_nil
+      expect(Nokogiri::HTML(response.body).at_css('input[name="q"]')["placeholder"]).to eq("search for datasets")
+    end
+
+    {
+      "a nested query" => "q[key]=value",
+      "an array query" => "q[]=value",
+      "an array of nested queries" => "q[][key]=value"
+    }.each do |description, query_string|
+      it "rejects #{description} before searching or generating a report" do
+        expect(Dataset).not_to receive(:filtered_list)
+        expect(Dataset).not_to receive(:citation_report)
+        expect(DatabankMailer).not_to receive(:error)
+
+        get "/datasets?#{query_string}"
+
+        expect(response).to have_http_status(:bad_request)
+      end
     end
   end
 

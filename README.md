@@ -102,6 +102,13 @@ To run Playwright browser tests against a running application instance:
 npm run playwright:test
 ```
 
+### Dataset Search Parameters
+
+`GET /datasets` accepts `q` as a single search string. Omitting `q` or passing an
+empty string returns the default listing. Nested or array values (for example,
+`q[key]=value` or `q[]=value`) return HTTP 400 before search or report generation,
+using the existing bad-request response rather than unexpected-error email alerts.
+
 ### Migration Bundle Export (Legacy Databank)
 
 Legacy databank can export migration bundles for databank-2 import.
