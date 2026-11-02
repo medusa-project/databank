@@ -158,9 +158,7 @@ collaborators to access the data files while the dataset is not public.</li>
       @has_unmodified_review = @dataset.has_unmodified_review?
       @review_request = @dataset.latest_review_request
     end
-    @globus_downloadable = @dataset.globus_downloadable?
-    @dataset_preserved = @dataset.fileset_preserved?
-    @dataset_aggregate_downloadable = (@dataset_preserved || @globus_downloadable) && !@dataset.external_files?
+    set_file_display_variables
     @dataset.ensure_embargo
     @dataset.ensure_version_group
     set_file_mode
@@ -256,7 +254,8 @@ collaborators to access the data files while the dataset is not public.</li>
 
     @token = @dataset.current_token
 
-    set_file_mode
+    set_file_display_variables
+    @shared_by_link = false
 
     @funder_info_arr = FUNDER_INFO_ARR
     @license_info_arr = LICENSE_INFO_ARR
@@ -1066,6 +1065,12 @@ collaborators to access the data files while the dataset is not public.</li>
   def render_failed_dataset_update(format)
     format.html { render :edit }
     format.json { render json: @dataset.errors, status: :unprocessable_content }
+  end
+
+  def set_file_display_variables
+    @globus_downloadable = @dataset.globus_downloadable?
+    @dataset_preserved = @dataset.fileset_preserved?
+    @dataset_aggregate_downloadable = (@dataset_preserved || @globus_downloadable) && !@dataset.external_files?
   end
 
   # Use callbacks to share common setup or constraints between actions.
