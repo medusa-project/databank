@@ -230,7 +230,7 @@
           .panel-collapse.collapse(id="materialsPanel" aria-labelledby="materialsHeading" )
             .panel-body
               = render partial: 'materials_subform', locals: {f: f}
-      - if (Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state)) && ( (can? :update, @dataset ) ) ||  (can? :update, @dataset)
+      - if (Databank::PublicationState::DRAFT_ARRAY.include?(@dataset.publication_state))
         = render partial: 'datafiles_subform', locals: {f: f}
         .panel-group(id="advancedUpload")
           .panel.panel-default
@@ -279,6 +279,8 @@
                         %p This will not duplicate imports of files with the same name; this is checked during the process, so only new files will be imported.
                         %p After clicking this button, the curator must refresh the page to see the imported files.
         %div(id="divFiles")
+      - else
+        = render "datasets/show_files", dataset: @dataset
   .review-deposit-agreement.container-fluid
     - if (params[:action] == 'new')
       %div(id="review_link")
