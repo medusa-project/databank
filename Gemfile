@@ -50,8 +50,8 @@ gem "minitar"
 # Use rchardet to attempt to detect character encoding
 gem "rchardet"
 
-# Use io-like for IO utilities
-gem "io-like"
+# medusa_storage includes IO::Like as a module; 0.4 changes it to a class.
+gem "io-like", "~> 0.3.1"
 
 # Use roda for routing magic
 gem "roda"

@@ -51,6 +51,11 @@ ORCiD
    bundle install
    ```
 
+   Keep `io-like` on the 0.3.x series: the current `medusa_storage`
+   dependency requires its module-based API. Version 0.4 changes `IO::Like`
+   to a class and prevents application boot, including deployment asset
+   precompilation.
+
 3. Set up the database:
 
    ```sh
