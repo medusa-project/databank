@@ -56,6 +56,10 @@ ORCiD
    to a class and prevents application boot, including deployment asset
    precompilation.
 
+   Keep `json` below version 3 while using Rails 7.2. Its JSON encoder passes
+   `quirks_mode`, which JSON 3 rejects. This also breaks Tus S3 upload creation
+   when it serializes upload metadata.
+
 3. Set up the database:
 
    ```sh
