@@ -51,6 +51,15 @@ ORCiD
    bundle install
    ```
 
+   Keep `io-like` on the 0.3.x series: the current `medusa_storage`
+   dependency requires its module-based API. Version 0.4 changes `IO::Like`
+   to a class and prevents application boot, including deployment asset
+   precompilation.
+
+   Keep `json` below version 3 while using Rails 7.2. Its JSON encoder passes
+   `quirks_mode`, which JSON 3 rejects. This also breaks Tus S3 upload creation
+   when it serializes upload metadata.
+
 3. Set up the database:
 
    ```sh
