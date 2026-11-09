@@ -86,7 +86,7 @@ class Migration::Legacy::ExportSerializer
     @dataset = dataset
   end
 
-  def as_json # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+  def as_json(_options = nil) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     {
       key:                        dataset.key,
       title:                      dataset.title,
@@ -296,7 +296,7 @@ class Migration::Legacy::AuditExportSerializer
     @dataset = dataset
   end
 
-  def as_json # rubocop:disable Metrics/AbcSize
+  def as_json(_options = nil) # rubocop:disable Metrics/AbcSize
     {
       type:       "Audit",
       attributes: {
@@ -432,7 +432,7 @@ class Migration::Legacy::GuideExportSerializer
     @record = record
   end
 
-  def as_json
+  def as_json(_options = nil)
     {
       type:       record.class.name,
       attributes: serialized_attributes
@@ -472,7 +472,7 @@ class Migration::Legacy::FeaturedResearcherExportSerializer
     @featured_researcher = featured_researcher
   end
 
-  def as_json
+  def as_json(_options = nil)
     {
       type:       "FeaturedResearcher",
       attributes: {
@@ -508,7 +508,7 @@ class Migration::Legacy::UserExportSerializer
     @user = user
   end
 
-  def as_json
+  def as_json(_options = nil)
     {
       type:       "User",
       attributes: {
@@ -579,7 +579,7 @@ class Migration::Legacy::PermissionExportSerializer
     @user_uid = user_uid
   end
 
-  def as_json
+  def as_json(_options = nil)
     {
       type:       type,
       attributes: {
@@ -606,7 +606,7 @@ class Migration::Legacy::DatasetAccessGrantExportSerializer
     @abilities = abilities
   end
 
-  def as_json
+  def as_json(_options = nil)
     {
       type:       "DatasetAccessGrant",
       attributes: {
@@ -631,7 +631,7 @@ class Migration::Legacy::MedusaIngestExportSerializer
     @medusa_ingest = medusa_ingest
   end
 
-  def as_json # rubocop:disable Metrics/AbcSize
+  def as_json(_options = nil) # rubocop:disable Metrics/AbcSize
     {
       type:       "MedusaIngest",
       attributes: {
@@ -671,7 +671,7 @@ class Migration::Legacy::DatasetDownloadTallyExportSerializer
     @dataset_download_tally = dataset_download_tally
   end
 
-  def as_json
+  def as_json(_options = nil)
     {
       type:       "DatasetDownloadTally",
       attributes: {
@@ -696,7 +696,7 @@ class Migration::Legacy::FileDownloadTallyExportSerializer
     @file_download_tally = file_download_tally
   end
 
-  def as_json
+  def as_json(_options = nil)
     {
       type:       "FileDownloadTally",
       attributes: {
@@ -723,7 +723,7 @@ class Migration::Legacy::DayFileDownloadExportSerializer
     @day_file_download = day_file_download
   end
 
-  def as_json
+  def as_json(_options = nil)
     {
       type:       "DayFileDownload",
       attributes: {

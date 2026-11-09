@@ -4,6 +4,28 @@ require "rake"
 Rails.application.load_tasks if Rake::Task.tasks.empty?
 
 RSpec.describe Migration::Legacy::ExportSerializer do
+  let(:additional_dataset_attributes) do
+    {
+      corresponding_creator_email: "ada@example.edu",
+      all_globus: false,
+      all_medusa: true,
+      complete: true,
+      org_creators: false,
+      external_files_link: nil,
+      external_files_note: nil,
+      medusa_dataset_dir: "datasets/example",
+      suppress_changelog: false,
+      version_comment: "Initial version",
+      have_permission: "yes",
+      removed_private: "na",
+      agree: "yes"
+    }
+  end
+
+  before do
+    allow(Token).to receive(:where).with(dataset_key: kind_of(String)).and_return(Token.none)
+  end
+
   it "serializes related material relationship assertions" do
     related_material = instance_double(
       "RelatedMaterial",
@@ -27,6 +49,7 @@ RSpec.describe Migration::Legacy::ExportSerializer do
 
     dataset = instance_double(
       "Dataset",
+      **additional_dataset_attributes,
       key: "IDB-1234000",
       title: "Legacy Dataset",
       identifier: "10.13012/B2IDB-1234000_V1",
@@ -107,6 +130,7 @@ RSpec.describe Migration::Legacy::ExportSerializer do
 
     dataset = instance_double(
       "Dataset",
+      **additional_dataset_attributes,
       key: "IDB-1234568",
       title: "Legacy Dataset",
       identifier: "10.13012/B2IDB-1234568_V1",
@@ -170,6 +194,7 @@ RSpec.describe Migration::Legacy::ExportSerializer do
 
     dataset = instance_double(
       "Dataset",
+      **additional_dataset_attributes,
       key: "IDB-1234567",
       title: "Legacy Dataset",
       identifier: "10.13012/B2IDB-1234567_V1",
@@ -206,6 +231,10 @@ RSpec.describe Migration::Legacy::ExportSerializer do
 
     payload = described_class.new(dataset).as_json
 
+    expect(payload).to include(additional_dataset_attributes)
+    expect(payload[:token]).to be_nil
+    expect(payload[:owner_uid]).to eq("legacy:legacy@example.edu")
+    expect(payload[:url]).to eq("#{IDB_CONFIG[:root_url_text]}/datasets/IDB-1234567.json")
     expect(payload[:nested_updated_at]).to eq(Time.utc(2026, 6, 1, 12, 30, 0))
 
     expect(payload[:notes]).to eq([
@@ -222,6 +251,80 @@ RSpec.describe Migration::Legacy::ExportSerializer do
         updated_at: Time.utc(2026, 6, 1, 11, 30, 0)
       }
     ])
+  end
+end
+
+RSpec.describe "Legacy export JSON compatibility" do
+  let(:dataset) do
+    Dataset.new(
+      key: "IDB-1234567",
+      title: "Measurements <draft>",
+      depositor_email: "legacy@example.edu",
+      release_date: Date.new(2026, 6, 1),
+      created_at: Time.utc(2026, 6, 1, 8, 0, 0),
+      updated_at: Time.utc(2026, 6, 1, 12, 0, 0)
+    )
+  end
+  let(:serializers) do
+    [
+      Migration::Legacy::ExportSerializer.new(dataset),
+      Migration::Legacy::AuditExportSerializer.new(audit: Audited::Audit.new, dataset: dataset),
+      Migration::Legacy::GuideExportSerializer.new(Guide::Section.new),
+      Migration::Legacy::FeaturedResearcherExportSerializer.new(FeaturedResearcher.new),
+      Migration::Legacy::UserExportSerializer.new(User.new),
+      Migration::Legacy::PermissionExportSerializer.new(
+        type: "Depositor", email: "legacy@example.edu", user_provider: "shibboleth", user_uid: "legacy"
+      ),
+      Migration::Legacy::DatasetAccessGrantExportSerializer.new(
+        dataset_key: dataset.key, email: "legacy@example.edu", access_level: "read",
+        user_provider: "shibboleth", user_uid: "legacy", legacy_resource_id: 1, abilities: ["read"]
+      ),
+      Migration::Legacy::MedusaIngestExportSerializer.new(MedusaIngest.new(idb_class: "dataset")),
+      Migration::Legacy::DatasetDownloadTallyExportSerializer.new(DatasetDownloadTally.new),
+      Migration::Legacy::FileDownloadTallyExportSerializer.new(FileDownloadTally.new),
+      Migration::Legacy::DayFileDownloadExportSerializer.new(DayFileDownload.new)
+    ]
+  end
+
+  before do
+    allow(User).to receive(:find_by).with(email: dataset.depositor_email).and_return(nil)
+    allow(Token).to receive(:where).with(dataset_key: dataset.key).and_return(Token.none)
+  end
+
+  it "accepts Rails JSON options without changing the export fields" do
+    serializers.each do |serializer|
+      aggregate_failures(serializer.class.name) do
+        expect(serializer.as_json(nil)).to eq(serializer.as_json)
+        expect(serializer.as_json(escape_html_entities: false)).to eq(serializer.as_json)
+      end
+    end
+  end
+
+  it "encodes each serializer through Rails with the same result as its payload" do
+    serializers.each do |serializer|
+      aggregate_failures(serializer.class.name) do
+        expect(ActiveSupport::JSON.encode(serializer)).to eq(ActiveSupport::JSON.encode(serializer.as_json))
+        expect(ActiveSupport::JSON.encode(serializer, escape_html_entities: false)).to eq(
+          ActiveSupport::JSON.encode(serializer.as_json, escape_html_entities: false)
+        )
+      end
+    end
+  end
+
+  it "preserves dataset fields in the flat NDJSON export" do
+    nested = Migration::Legacy::ExportSerializer.new(dataset).as_json
+    flat = Migration::Legacy::FlatExportSerializer.serialize_dataset(dataset)
+
+    expect(flat.except(:type, :dataset_id)).to eq(nested.except(:key, :url, :datafiles))
+    decoded = JSON.parse(JSON.generate(flat))
+    expect(decoded).to include(
+      "type" => "dataset",
+      "dataset_id" => dataset.key,
+      "title" => "Measurements <draft>",
+      "release_date" => "2026-06-01",
+      "created_at" => "2026-06-01 08:00:00 UTC",
+      "updated_at" => "2026-06-01 12:00:00 UTC"
+    )
   end
 end
 
