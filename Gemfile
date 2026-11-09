@@ -108,6 +108,7 @@ gem "equivalent-xml"
 
 # Security patches for Dependabot vulnerabilities
 gem "addressable", ">= 2.9.0"
+gem "crass", ">= 1.0.8"
 gem "erb", ">= 6.0.4"
 # Rails 7.2 passes quirks_mode, which JSON 3 no longer accepts.
 gem "json", ">= 2.21.2", "< 3"
