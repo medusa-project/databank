@@ -9,7 +9,7 @@ Databank is the Ruby on Rails web application component of Illinois Data Bank, w
 ### Prerequisites
 
 - Ruby (version 3.3.6)
-- Rails (version 7.2.3)
+- Rails (version 8.0.5.2 or a later 8.0.x security release)
 - PostgreSQL
 - Solr
 
@@ -50,6 +50,19 @@ ORCiD
    ```sh
    bundle install
    ```
+
+   Keep `io-like` on the 0.3.x series: the current `medusa_storage`
+   dependency requires its module-based API. Version 0.4 changes `IO::Like`
+   to a class and prevents application boot, including deployment asset
+   precompilation.
+
+   Rails must be at least 8.0.5.2 to include the security fixes for Active
+   Storage and the other Rails components. The application retains its
+   existing Rails 7.1 framework defaults to avoid unrelated behavior changes.
+
+   Keep `json` below version 3 while using Rails 8.0. Its JSON encoder passes
+   `quirks_mode`, which JSON 3 rejects. This also breaks Tus S3 upload creation
+   when it serializes upload metadata.
 
 3. Set up the database:
 
@@ -105,6 +118,8 @@ npm run playwright:test
 ### Migration Bundle Export (Legacy Databank)
 
 Legacy databank can export migration bundles for databank-2 import.
+The Rails 8.0 upgrade preserves the existing export fields and NDJSON date
+and timestamp representations.
 
 ```sh
 bin/rails migration:legacy:export_bundle

@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 ruby '3.3.6'
-gem 'rails', '~> 7.2.3', '>= 7.2.3.2'
+gem 'rails', '~> 8.0.5', '>= 8.0.5.2'
 
 # Use postgresql as the database for Active Record
 gem "pg", force_ruby_platform: true
@@ -16,7 +16,7 @@ gem "terser"
 # gem 'therubyracer', platforms: :ruby
 
 # Use in-house storage gem to manage flexible storage on filesystems and s3 buckets
-gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "feature-1"
+gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "databank"
 
 # Use aws-sdk to manage signed urls for downloads
 gem "aws-sdk"
@@ -50,8 +50,8 @@ gem "minitar"
 # Use rchardet to attempt to detect character encoding
 gem "rchardet"
 
-# Use io-like for IO utilities
-gem "io-like"
+# medusa_storage includes IO::Like as a module; 0.4 changes it to a class.
+gem "io-like", "~> 0.3.1"
 
 # Use roda for routing magic
 gem "roda"
@@ -108,8 +108,10 @@ gem "equivalent-xml"
 
 # Security patches for Dependabot vulnerabilities
 gem "addressable", ">= 2.9.0"
+gem "crass", ">= 1.0.8"
 gem "erb", ">= 6.0.4"
-gem "json", ">= 2.21.2"
+# Rails 8.0 passes quirks_mode, which JSON 3 no longer accepts.
+gem "json", ">= 2.21.2", "< 3"
 gem "net-imap", ">= 0.6.4.1"
 gem "nokogiri", ">= 1.19.4", force_ruby_platform: true
 gem "nokogiri-diff", force_ruby_platform: true

@@ -8,6 +8,8 @@ config/databank-local.yml
 config/medusa_storage-local.yml
 config/credentials/demo.key
 config/credentials/production.key
+config/ticket-development.yml
+config/ticket-test.yml
 
 *.rbc
 capybara-*.html
@@ -179,3 +181,6 @@ node_modules
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Copilot session files
+.copilot/
