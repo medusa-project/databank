@@ -13,11 +13,11 @@ class SessionsController < ApplicationController
     end
   end
 
-  # Responds to `POST /auth/:provider/callback`
+  # Responds to `GET/POST /auth/:provider/callback`
   def create
     auth = request.env["omniauth.auth"]
 
-    unless auth[:provider] && ['shibboleth', 'developer'].include?(auth[:provider])
+    unless auth.is_a?(Hash) && ['shibboleth', 'developer'].include?(auth[:provider])
       unauthorized
       return
     end

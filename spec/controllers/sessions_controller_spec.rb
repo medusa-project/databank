@@ -21,6 +21,32 @@ RSpec.describe SessionsController, type: :controller do
   end
 
   describe 'POST #create' do
+    [nil, "", [], false].each do |auth|
+      it "rejects a callback with #{auth.inspect} authentication data without an error notification" do
+        request.env['omniauth.auth'] = auth
+        expect(User).not_to receive(:from_omniauth)
+        expect(DatabankMailer).not_to receive(:error)
+
+        post :create, params: { provider: 'shibboleth' }
+
+        expect(response).to redirect_to(root_url)
+        expect(flash[:notice]).to eq('The supplied credentials could not be authenciated.')
+        expect(session[:user_id]).to be_nil
+      end
+    end
+
+    it 'handles a direct GET callback without authentication data' do
+      request.env.delete('omniauth.auth')
+      expect(User).not_to receive(:from_omniauth)
+      expect(DatabankMailer).not_to receive(:error)
+
+      get :create, params: { provider: 'shibboleth' }
+
+      expect(response).to redirect_to(root_url)
+      expect(flash[:notice]).to eq('The supplied credentials could not be authenciated.')
+      expect(session[:user_id]).to be_nil
+    end
+
     it 'redirects to unauthorized when provider is missing or unsupported' do
       request.env['omniauth.auth'] = { uid: 'person@illinois.edu' }.with_indifferent_access
 
