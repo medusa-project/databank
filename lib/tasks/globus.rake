@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 namespace :globus do
-  desc "copy datasets to globus"
+  desc "copy datasets to globus (set GLOBUS_VERBOSE=true for progress and diagnostic output)"
   task copy_datasets: :environment do
+    verbose = ENV["GLOBUS_VERBOSE"].to_s.match?(/\A(?:1|true|yes|on)\z/i)
+    output = ->(message) { puts message if verbose }
     destination_root = StorageManager.instance.globus_download_root
     storage_location = lambda do |root, key|
       if root.root_type == :s3
@@ -13,7 +15,7 @@ namespace :globus do
     end
     datasets = Dataset.select(&:files_public?)
     datasets.each do |dataset|
-      puts "copying dataset: #{dataset.title}, key: #{dataset.key}"
+      output.call("copying dataset: #{dataset.title}, key: #{dataset.key}")
       dataset.datafiles.each do |datafile|
         operation = "resolving storage locations"
         context = "dataset=#{dataset.key.inspect} datafile_id=#{datafile.id} " \
@@ -37,14 +39,14 @@ namespace :globus do
           operation = "updating file Globus flag"
           datafile.update(in_globus: true) if !datafile.in_globus
         else
-          puts "WARNING: destination absent after copy\n  #{context}"
+          output.call("WARNING: destination absent after copy\n  #{context}")
         end
       rescue Aws::S3::Errors::NotFound => e
-        puts "WARNING: S3 NotFound while #{operation}; skipping file\n  #{context}\n  #{e.class}: #{e.message}"
-        puts "  A copy-time 404 does not identify which storage request failed; verify both locations."
+        output.call("WARNING: S3 NotFound while #{operation}; skipping file\n  #{context}\n  #{e.class}: #{e.message}")
+        output.call("  A copy-time 404 does not identify which storage request failed; verify both locations.")
         next
       rescue StandardError => e
-        puts "ERROR: failed while #{operation}; stopping task\n  #{context}\n  #{e.class}: #{e.message}"
+        output.call("ERROR: failed while #{operation}; stopping task\n  #{context}\n  #{e.class}: #{e.message}")
         raise
       end
       # if all datafiles copied successfully, update dataset's all_globus field to true

@@ -14,6 +14,7 @@ RSpec.describe "globus:copy_datasets logging" do
   let(:dataset) { double("dataset", title: "Demo", key: "DEMO-123", datafiles: [datafile], files_public?: true) }
 
   before do
+    ENV.delete("GLOBUS_VERBOSE")
     stub_const("Dataset", double("Dataset", select: [dataset]))
     stub_const("StorageManager", Class.new { include Singleton })
     allow(StorageManager).to receive(:instance).and_return(double(globus_download_root: destination))
@@ -30,13 +31,19 @@ RSpec.describe "globus:copy_datasets logging" do
   end
 
   after do
+    ENV.delete("GLOBUS_VERBOSE")
     Rake.application = @previous_rake_application
+  end
+
+  def invoke_with_verbose_output
+    ENV["GLOBUS_VERBOSE"] = "true"
+    task.invoke
   end
 
   it "identifies copy-time 404s without claiming that the source is missing" do
     allow(destination).to receive(:copy_content_to).and_raise(Aws::S3::Errors::NotFound.new(nil, "missing"))
 
-    expect { task.invoke }.to output(
+    expect { invoke_with_verbose_output }.to output(
       a_string_including(
         "S3 NotFound while copying source to destination; skipping file",
         'dataset="DEMO-123" datafile_id=3258', 'web_id="4ds7w" filename="lorem.txt"',
@@ -50,7 +57,7 @@ RSpec.describe "globus:copy_datasets logging" do
     allow(destination).to receive(:exist?).and_raise(Aws::S3::Errors::NotFound.new(nil, "missing bucket"))
     expect(destination).not_to receive(:copy_content_to)
 
-    expect { task.invoke }.to output(
+    expect { invoke_with_verbose_output }.to output(
       a_string_including("S3 NotFound while checking destination before copy", "missing bucket")
     ).to_stdout
   end
@@ -58,7 +65,7 @@ RSpec.describe "globus:copy_datasets logging" do
   it "reports an absent destination after a copy without marking the file copied" do
     expect(datafile).not_to receive(:update)
 
-    expect { task.invoke }.to output(a_string_including("WARNING: destination absent after copy")).to_stdout
+    expect { invoke_with_verbose_output }.to output(a_string_including("WARNING: destination absent after copy")).to_stdout
   end
 
   it "prints unexpected failures and preserves the exception" do
@@ -66,7 +73,7 @@ RSpec.describe "globus:copy_datasets logging" do
     allow(destination).to receive(:copy_content_to).and_raise(error)
 
     expect do
-      expect { task.invoke }.to raise_error(error)
+      expect { invoke_with_verbose_output }.to raise_error(error)
     end.to output(a_string_including("ERROR: failed while copying source to destination", "AccessDenied: denied")).to_stdout
   end
 
@@ -77,6 +84,6 @@ RSpec.describe "globus:copy_datasets logging" do
     expect(destination).not_to receive(:copy_content_to)
     expect(datafile).not_to receive(:update)
 
-    expect { task.invoke }.to output("copying dataset: Demo, key: DEMO-123\n").to_stdout
+    expect { task.invoke }.not_to output.to_stdout
   end
 end
