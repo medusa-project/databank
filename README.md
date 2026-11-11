@@ -115,6 +115,22 @@ To run Playwright browser tests against a running application instance:
 npm run playwright:test
 ```
 
+### Copying Public Datasets to Globus
+
+```sh
+RAILS_ENV=demo bundle exec rails globus:copy_datasets
+```
+
+The pinned `medusa_storage` dependency uses the deprecated S3 object streaming
+API. The application overrides its multipart upload method in
+`config/initializers/medusa_storage_s3.rb` to use `Aws::S3::TransferManager`
+and put the upload stream in binary mode. This prevents Rails' UTF-8 internal
+encoding from transcoding file bytes and preserves the existing multipart
+ETag verification and metadata handling.
+
+After deploying this fix, rerun the command on demo to validate the actual
+storage endpoints. Already-present destination files are skipped by the task.
+
 ### Migration Bundle Export (Legacy Databank)
 
 Legacy databank can export migration bundles for databank-2 import.
