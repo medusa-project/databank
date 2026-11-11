@@ -11,7 +11,7 @@ class Metric
                :datasets_tsv, :datafiles_csv, :container_contents_csv, :funders_csv, :related_materials_csv].freeze
   MIMETYPE_DEFAULT = "application/octet-stream"
   DATASETS_TSV_HEADINGS = ["doi", "ingest_date", "release_date", "num_files", "num_bytes", "total_downloads",
-                           "num_relationships", "num_creators", "subject", "citation_text"].freeze
+                           "num_relationships", "num_creators", "subject", "keywords", "citation_text"].freeze
   CONTAINER_CONTENTS_CSV_HEADINGS = ["doi", "container_filename", "content_filepath", "content_filename",
                                      "file_format"].freeze
   RELATED_MATERIALS_CSV_HEADINGS = ["doi", "datacite_relationship", "material_id_type", "material_id",
@@ -800,7 +800,8 @@ class Metric
        dataset.total_downloads,
        dataset.num_external_relationships,
        dataset.creators.count,
-       dataset.subject.to_s,
+       dataset.subject,
+       dataset.normalized_keywords,
        dataset.plain_text_citation]
     end
 
