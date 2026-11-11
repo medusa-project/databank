@@ -353,6 +353,12 @@ class Dataset < ApplicationRecord
     {status: "error", error_text: message}
   end
 
+  def normalized_keywords
+    return nil if keywords.blank?
+
+    keywords.to_s.downcase.split(";").map(&:strip).join("; ")
+  end
+
   private
 
   def most_recent_updated_date

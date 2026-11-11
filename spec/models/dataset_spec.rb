@@ -4,6 +4,20 @@ require 'rails_helper'
 RSpec.describe Dataset, type: :model do
   let(:dataset) { build(:dataset) }
 
+  describe '#normalized_keywords' do
+    it 'trims semicolon-separated keywords while preserving their order, duplicates, commas, and internal whitespace' do
+      dataset.keywords = "  Zebra  fish, ecology \t; Alpha\tBeta ; ZEBRA  FISH, ECOLOGY  "
+
+      expect(dataset.normalized_keywords).to eq("zebra  fish, ecology; alpha\tbeta; zebra  fish, ecology")
+    end
+
+    it 'returns an empty string when keywords are nil' do
+      dataset.keywords = nil
+
+      expect(dataset.normalized_keywords).to eq('')
+    end
+  end
+
   describe 'validations' do
     it 'is valid with valid attributes' do
       expect(dataset).to be_valid
