@@ -2323,6 +2323,10 @@ GEM
       websocket (~> 1.0)
     shoulda-matchers (8.0.1)
       activesupport (>= 7.2)
+    signet (0.22.2)
+      addressable (~> 2.8)
+      faraday (>= 0.17.5, < 3.a)
+      jwt (>= 1.5, < 4.0)
     simple_form (5.4.1)
       actionpack (>= 7.0)
       activemodel (>= 7.0)
@@ -2508,6 +2512,7 @@ DEPENDENCIES
   sdoc
   selenium-webdriver
   shoulda-matchers
+  signet (~> 0.21)
   simple_form
   simplecov
   sunspot_rails

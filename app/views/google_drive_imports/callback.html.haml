@@ -1,0 +1,6 @@
+%section#google-drive-oauth-result{data: {success: @oauth_success ? "true" : "false"}}
+  %h1 Google Drive authorization
+  - if @oauth_success
+    %p Authorization succeeded. You can close this window and return to the dataset to select a file.
+  - else
+    %p{role: "alert"}= @oauth_error

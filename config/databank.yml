@@ -45,7 +45,11 @@ downloader:
   :task_definition: <%= Rails.application.credentials[:extractor][:task_definition] %>
 
 :globus_only_gb: <%= Rails.application.credentials[:globus_only_gb] %>
-
+:google:
+  :api_key: <%= Rails.application.credentials[:google][:api_key] %>
+  :client_id: <%= Rails.application.credentials[:google][:client_id] %>
+  :client_secret: <%= Rails.application.credentials[:google][:client_secret] %>
+  :project_number: 913890769831 # public, not a secret
 :iiif:
   :draft_base: <%= Rails.application.credentials[:iiif][:draft_base] %>
   :medusa_base: <%= Rails.application.credentials[:iiif][:medusa_base] %>

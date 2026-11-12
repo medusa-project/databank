@@ -148,6 +148,9 @@ gem "omniauth-shibboleth"
 
 gem "omniauth-rails_csrf_protection"
 
+# Google's OAuth client for server-side Drive authorization and token refresh.
+gem "signet", "~> 0.21"
+
 # Use Boxr to interact with Box API
 gem "boxr"
 

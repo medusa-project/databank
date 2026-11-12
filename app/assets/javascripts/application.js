@@ -28,6 +28,7 @@
 //= require creators
 //= require databank
 //= require datasets
+//= require google_drive_import
 //= require tus
 //= require files_row_mutations
 //= require files_remote_ingest

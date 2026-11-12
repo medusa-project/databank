@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_24_233755) do
+ActiveRecord::Schema[8.0].define(version: 2026_11_12_170000) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
@@ -274,6 +274,36 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_24_233755) do
     t.string "code"
   end
 
+  create_table "google_drive_connections", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "dataset_id", null: false
+    t.text "encrypted_credentials"
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dataset_id"], name: "index_google_drive_connections_on_dataset_id"
+    t.index ["expires_at"], name: "index_google_drive_connections_on_expires_at"
+    t.index ["user_id"], name: "index_google_drive_connections_on_user_id"
+  end
+
+  create_table "google_drive_imports", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "dataset_id", null: false
+    t.bigint "google_drive_connection_id", null: false
+    t.integer "datafile_id"
+    t.string "status", default: "queued", null: false
+    t.jsonb "source_metadata", default: {}, null: false
+    t.bigint "bytes_downloaded", default: 0, null: false
+    t.text "error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["datafile_id"], name: "unique_drive_import_datafile", unique: true
+    t.index ["dataset_id"], name: "index_google_drive_imports_on_dataset_id"
+    t.index ["google_drive_connection_id"], name: "index_google_drive_imports_on_google_drive_connection_id"
+    t.index ["status"], name: "index_google_drive_imports_on_status"
+    t.index ["user_id"], name: "index_google_drive_imports_on_user_id"
+  end
+
   create_table "guide_items", force: :cascade do |t|
     t.integer "section_id"
     t.string "anchor"
@@ -492,5 +522,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_24_233755) do
   end
 
   add_foreign_key "dataset_download_tallies", "datasets", column: "dataset_key", primary_key: "key"
+  add_foreign_key "google_drive_connections", "datasets"
+  add_foreign_key "google_drive_connections", "users"
+  add_foreign_key "google_drive_imports", "datafiles", on_delete: :nullify
+  add_foreign_key "google_drive_imports", "datasets"
+  add_foreign_key "google_drive_imports", "google_drive_connections"
+  add_foreign_key "google_drive_imports", "users"
   add_foreign_key "version_files", "datasets"
 end

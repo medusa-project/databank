@@ -91,6 +91,8 @@ class Dataset < ApplicationRecord
   validates :dataset_version, presence: true
 
   has_many :datafiles, dependent: :destroy
+  has_many :google_drive_imports, dependent: :destroy
+  has_many :google_drive_connections, dependent: :destroy
   has_many :version_files, dependent: :destroy
   has_many :creators, dependent: :destroy
   has_many :contributors, dependent: :destroy

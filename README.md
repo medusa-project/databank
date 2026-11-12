@@ -115,6 +115,75 @@ To run Playwright browser tests against a running application instance:
 npm run playwright:test
 ```
 
+### Google Drive import (curator pilot)
+
+The Google Drive control remains inside the curator-only block. The backend
+also requires dataset management permission; a depositor cannot invoke it
+directly. Imports are independent copies of one ordinary file, up to
+10,000,000,000 bytes. Google documents, folders, shortcuts, Shared Drives,
+empty files, and duplicate dataset filenames are rejected.
+
+Before deploying:
+
+1. Enable Google Drive API and Google Picker API in the same Google Cloud
+   project. Configure Google Auth platform branding, an External audience,
+   test users while in Testing, and only the
+   `https://www.googleapis.com/auth/drive.file` scope.
+2. Create a Web application OAuth client. Register the application origin
+   (`https://<host>`) and exact redirect URI
+   (`https://<host>/integrations/google_drive/callback`). Authorization uses
+   a popup so that unsaved dataset form edits are not discarded.
+3. Configure the environment's Rails credentials under `google`:
+   `api_key`, `client_id`, `client_secret`, and `project_number`. The project
+   number is numeric and is not the project ID (`databank-integration`).
+   Do not commit decrypted credentials. Restrict the Picker key to the
+   Picker API and website origins using Google's current
+   [Picker setup guidance](https://developers.google.com/workspace/drive/picker/guides/web-picker).
+4. Run `bundle install` and `bin/rails db:migrate`, precompile assets, and
+   restart the application and delayed-job workers. Workers must consume
+   the `google_drive` queue (workers without queue filtering already do).
+5. Provide private, writable staging space under the existing
+   `storage_tmpdir` (or Rails' `tmp` directory if unset), with at least 10 GB free per concurrent import and
+   additional capacity when draft storage is on the same filesystem.
+   Transfers download in bounded 8 MiB ranges, record durable progress, and
+   resume after interruptions. Workers sharing this directory can resume
+   the same partial file; a worker without it safely restarts the download.
+   Storage copying uses the existing filesystem/S3 adapter and checksum
+   verification. Each job attempt permits up to three hours and three
+   attempts. Ensure the global worker lock timeout is longer than this.
+6. Schedule `bin/rails google_drive:cleanup` hourly in the deployment
+   environment. This expires abandoned imports and removes temporary
+   credentials after 24 hours. Successful, failed, and cancelled imports
+   erase credentials as soon as no active imports need them.
+
+Refresh credentials are encrypted using a key derived from Rails'
+`secret_key_base`; it must remain stable and be shared by web and worker
+processes. Only a short-lived access token reaches Picker, never the refresh
+token or client secret. Token and authorization-code parameters are filtered
+from Rails logs; configure reverse-proxy/access logs not to record the OAuth
+callback query string. External OAuth apps in Testing generally have
+seven-day refresh-token lifetimes for Drive scopes; production use also
+requires the applicable Google verification and institutional approval.
+
+Meaningful local checks use mocked Google responses:
+
+```sh
+bundle exec rspec spec/services/google_drive/client_spec.rb \
+  spec/models/google_drive_connection_spec.rb \
+  spec/jobs/google_drive_import_job_spec.rb \
+  spec/controllers/google_drive_imports_controller_spec.rb
+```
+
+These check backend contracts, not actual Google consent or Picker behavior.
+No live Google credentials are needed. Do not exercise production from
+automated tests. For the production-only browser smoke test, use a curator
+and a disposable draft dataset: authorize a test Google account, import a
+small CSV, verify its downloaded bytes, revisit the page to check persistent
+status, and test cancellation and duplicate-name rejection. Verify a file
+shared by another account as well. Keep the pilot curator-only until the
+live flow, browser accessibility, and production-like 10 GB transfers have
+been qualified; a large-file success is not implied by the unit tests.
+
 ### Copying Public Datasets to Globus
 
 ```sh

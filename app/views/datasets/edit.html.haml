@@ -7,6 +7,8 @@
   = render partial: 'shared/loading_modal'
   = render partial: 'remote_file_modal'
   = render partial: 'api_modal'
+  - if can? :manage, @dataset
+    = render partial: 'google_drive_confirmation'
   -if @dataset.org_creators
     =render partial: 'offer_ind_auth_modal'
   -else

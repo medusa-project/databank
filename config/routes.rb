@@ -14,6 +14,16 @@ Rails.application.routes.draw do
   draw :curator_report
   draw :datafile
   draw :dataset
+  get "/integrations/google_drive/callback", to: "google_drive_imports#callback", as: :google_drive_callback
+  scope "/datasets/:dataset_key/google_drive", controller: :google_drive_imports do
+    post "authorize", action: :authorize, as: :authorize_google_drive
+    delete "authorization", action: :disconnect
+    get "picker", action: :picker, as: :google_drive_picker
+    post "preview", action: :preview, as: :preview_google_drive
+    get "imports", action: :index, as: :google_drive_imports
+    post "imports", action: :create
+    delete "imports/:id", action: :destroy, as: :google_drive_import
+  end
   post '/ensure_local_buckets', to: 'welcome#ensure_local_buckets'
   resources :extractor_errors
   resources :extractor_responses

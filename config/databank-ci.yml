@@ -61,6 +61,10 @@
   :org_id: org_id
   :publisher_id: publisher_id
   :illinois_external_org_id: external_org_id
+:google:
+  :api_key: api_key
+  :client_id: client_id
+  :client_secret: client_secret
 :globus_only_gb: 2
 :delayed_job_pid_dir: /home/databank/shared/tmp/pids
 :tasks_url: deprecated
