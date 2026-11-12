@@ -146,9 +146,10 @@ class GoogleDriveImportJob
   end
 
   # Permission problems are configuration errors; retrying cannot fix them.
+  # Binary mode prevents Rails' UTF-8 default_internal from transcoding file bytes.
   def open_staging_file(path)
     FileUtils.mkdir_p(File.dirname(path), mode: 0o700)
-    File.open(path, File::RDWR | File::CREAT, 0o600)
+    File.open(path, File::RDWR | File::CREAT | File::BINARY, 0o600, binmode: true)
   rescue Errno::EACCES, Errno::EPERM, Errno::EROFS => e
     Rails.logger.error("Google Drive staging directory #{File.dirname(path)} is not writable (#{e.class})")
     raise GoogleDrive::Error, "The import worker cannot write to its staging directory. " \

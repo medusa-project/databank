@@ -40,6 +40,18 @@ RSpec.describe GoogleDriveImportJob do
     expect(File.exist?(import.staging_path)).to be(false)
   end
 
+  it "stores binary bytes that are not valid UTF-8 unchanged" do
+    content = "%PDF-\xB5\xFF\x00\xE2".b
+    metadata = drive_metadata(content)
+    binary_import = GoogleDriveImport.enqueue!(dataset: dataset, user: user, connection: connection, metadata: metadata)
+    allow(client).to receive(:metadata).and_return(metadata)
+    allow(client).to receive(:chunk).with(metadata, 0).and_return(content)
+    expect(Encoding.default_internal).to eq(Encoding::UTF_8)
+    described_class.new(binary_import.id).perform
+    expect(binary_import.reload.status).to eq("complete")
+    expect(draft_root.path_to(binary_import.datafile.storage_key).binread).to eq(content)
+  end
+
   it "passes a binary IO, base64 checksum, and exact size to the storage adapter" do
     expect(draft_root).to receive(:copy_io_to).with(import.datafile.storage_key, kind_of(File),
                                                   Digest::MD5.base64digest("hello"), 5).and_call_original
