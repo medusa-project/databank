@@ -114,6 +114,40 @@ RSpec.describe GoogleDriveImportJob do
     expect(connection.reload.encrypted_credentials).to be_present
   end
 
+  it "fails clearly without retrying when the staging directory is not writable" do
+    allow(FileUtils).to receive(:mkdir_p).and_raise(Errno::EACCES, "dir_s_mkdir - /media/efs")
+    expect { job.perform }.not_to raise_error
+    expect(import.reload.status).to eq("failed")
+    expect(import.error_message).to include("staging directory")
+    expect(import.datafile).to be_nil
+    expect(connection.reload.encrypted_credentials).to be_nil
+  end
+
+  it "uses a configured staging directory" do
+    stub_const("IDB_CONFIG", IDB_CONFIG.merge(google: {staging_dir: File.join(@storage_directory, "drive")}))
+    expect(import.staging_path).to eq(File.join(@storage_directory, "drive", "#{import.id}.part"))
+  end
+
+  it "waits without failing when there is not enough staging space" do
+    allow(job).to receive(:free_bytes).and_return(1)
+    expect(client).not_to receive(:chunk)
+    expect { job.perform }.to change { Delayed::Job.where(queue: "google_drive").count }.by(1)
+    expect(import.reload.status).to eq("queued")
+    expect(import.error_message).to include("disk space")
+    expect(Delayed::Job.find(import.datafile.job_id).run_at).to be > 5.minutes.from_now
+  end
+
+  it "runs only one import at a time across workers" do
+    other = PG.connect(ActiveRecord::Base.connection.raw_connection.conninfo_hash.compact.reject { |_, v| v == "" })
+    other.exec("SELECT pg_advisory_lock(#{described_class::SLOT_LOCK_KEY})")
+    expect(client).not_to receive(:chunk)
+    job.perform
+    expect(import.reload.status).to eq("queued")
+    expect(import.error_message).to include("another Google Drive import")
+  ensure
+    other&.close
+  end
+
   it "cleans up after retries are exhausted" do
     job.failure(nil)
     expect(import.reload.status).to eq("failed")

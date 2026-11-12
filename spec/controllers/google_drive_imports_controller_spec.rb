@@ -134,6 +134,28 @@ RSpec.describe GoogleDriveImportsController, type: :controller do
     expect(connection.reload.encrypted_credentials).to be_nil
   end
 
+  it "removes final import notices without removing completed files" do
+    cancelled = GoogleDriveImport.enqueue!(dataset: dataset, user: user, connection: connection, metadata: drive_metadata)
+    delete :destroy, params: base_params.merge(id: cancelled.id)
+    delete :dismiss, params: base_params.merge(id: cancelled.id)
+    expect(response).to have_http_status(:no_content)
+    expect(GoogleDriveImport.exists?(cancelled.id)).to be(false)
+
+    complete = GoogleDriveImport.enqueue!(dataset: dataset, user: user, connection: connection,
+                                          metadata: drive_metadata.merge("id" => "other", "name" => "other.txt"))
+    complete.update!(status: "complete")
+    delete :dismiss, params: base_params.merge(id: complete.id)
+    expect(GoogleDriveImport.exists?(complete.id)).to be(false)
+    expect(Datafile.exists?(complete.datafile_id)).to be(true)
+  end
+
+  it "does not remove notices for active imports" do
+    import = GoogleDriveImport.enqueue!(dataset: dataset, user: user, connection: connection, metadata: drive_metadata)
+    delete :dismiss, params: base_params.merge(id: import.id)
+    expect(response).to have_http_status(:conflict)
+    expect(import.reload.status).to eq("queued")
+  end
+
   it "removes unused authorization when selection is cancelled" do
     delete :disconnect, params: base_params
     expect(response).to have_http_status(:no_content)

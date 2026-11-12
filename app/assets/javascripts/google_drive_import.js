@@ -130,6 +130,19 @@
         row.append(jQuery("<a>", {
           href: window.location.pathname, text: "Reload the page to show the imported file"
         }));
+        row.append(document.createTextNode(" "));
+      }
+      if (item.status === "complete" || item.status === "failed" || item.status === "cancelled") {
+        row.append(jQuery("<button>", {
+          type: "button", id: "remove-drive-import-" + item.id,
+          "class": "btn btn-default btn-sm", text: "Remove",
+          "aria-label": "Remove " + item.status + " import notice for " + item.name
+        }).on("click", function () {
+          request(basePath() + "/imports/" + item.id + "/notice", "DELETE").then(function () {
+            jQuery('[data-dataset-action="import-google-drive"]').trigger("focus");
+            refreshImports();
+          }).catch(showError);
+        }));
       }
       list.append(row);
     });

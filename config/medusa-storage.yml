@@ -87,4 +87,4 @@ production:
       :prefix: "reports/"
     - :name: tmpfs
       :type: filesystem
-      :path: /home/databank/mnt/databank-demo-main-rw
+      :path: /home/databank/shared/tmp/uploads

@@ -125,6 +125,25 @@ class GoogleDriveImportsController < ApplicationController
     render json: import.status_payload
   end
 
+  def dismiss
+    import = @dataset.google_drive_imports.find(params[:id])
+    removed = import.with_lock do
+      next false if import.active?
+
+      # Completed datafiles stay in the dataset; only the notice record is removed.
+      import.cleanup_incomplete! unless import.status == "complete"
+      import.destroy!
+      true
+    end
+    unless removed
+      render json: {error: "Cancel the import before removing its notice."}, status: :conflict
+      return
+    end
+
+    import.google_drive_connection.release_if_unused!
+    head :no_content
+  end
+
   private
 
   def load_curator_dataset

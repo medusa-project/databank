@@ -5,6 +5,22 @@ require "base64"
 require "fileutils"
 
 class GoogleDriveImportJob
+  # Postgres advisory lock key that limits Drive imports to one at a time across all workers.
+  SLOT_LOCK_KEY = 4_727_301_847
+  SLOT_RETRY_DELAY = 1.minute
+  SPACE_RETRY_DELAY = 10.minutes
+  # Free space always left on the staging disk for other server work.
+  RESERVE_BYTES = 10_000_000_000
+
+  class Deferred < StandardError
+    attr_reader :delay
+
+    def initialize(message, delay)
+      super(message)
+      @delay = delay
+    end
+  end
+
   def initialize(import_id)
     @import_id = import_id
   end
@@ -21,7 +37,9 @@ class GoogleDriveImportJob
     import = GoogleDriveImport.find_by(id: @import_id)
     return unless import&.active?
 
-    perform_import(import)
+    with_import_slot { perform_import(import) }
+  rescue Deferred => e
+    defer!(e.message, e.delay)
   rescue GoogleDrive::RetryableError
     raise
   rescue GoogleDrive::Error => e
@@ -49,6 +67,50 @@ class GoogleDriveImportJob
 
   private
 
+  def with_import_slot
+    connection = ActiveRecord::Base.connection
+    unless connection.select_value("SELECT pg_try_advisory_lock(#{SLOT_LOCK_KEY})")
+      raise Deferred.new("Waiting for another Google Drive import to finish.", SLOT_RETRY_DELAY)
+    end
+
+    begin
+      yield
+    ensure
+      connection.select_value("SELECT pg_advisory_unlock(#{SLOT_LOCK_KEY})")
+    end
+  end
+
+  # Re-enqueue rather than retry so waiting does not consume failure attempts.
+  # Imports that wait too long are failed by google_drive:cleanup when their authorization expires.
+  def defer!(message, delay)
+    import = GoogleDriveImport.find_by(id: @import_id)
+    return unless import&.active?
+
+    import.update!(status: "queued", error_message: message)
+    job = Delayed::Job.enqueue(self.class.new(import.id), queue: "google_drive", run_at: delay.from_now)
+    import.datafile&.update!(job_id: job.id)
+  end
+
+  def ensure_staging_space!(import, file)
+    needed = import.source_metadata.fetch("size").to_i - file.size + RESERVE_BYTES
+    available = free_bytes(File.dirname(import.staging_path))
+    return if available.nil? || available >= needed
+
+    Rails.logger.warn("Google Drive import #{@import_id} waiting for staging space " \
+                      "(#{available} bytes free, #{needed} needed)")
+    raise Deferred.new("Waiting for temporary disk space on the server.", SPACE_RETRY_DELAY)
+  end
+
+  def free_bytes(directory)
+    output = IO.popen(["df", "-Pk", directory], err: File::NULL, &:read)
+    return nil unless $?.success?
+
+    Integer(output.lines.last.split[3]) * 1024
+  rescue SystemCallError, ArgumentError, NoMethodError
+    Rails.logger.warn("Google Drive import #{@import_id} could not check free space in #{directory}")
+    nil
+  end
+
   def fail_import!(message)
     import = GoogleDriveImport.find_by(id: @import_id)
     import.fail!(message) if import&.active?
@@ -60,6 +122,7 @@ class GoogleDriveImportJob
     verify_source!(client, import)
     import.update!(status: "importing", error_message: nil)
     with_staging_file(import) do |file|
+      ensure_staging_space!(import, file)
       download!(client, import, file)
       verify_source!(client, import)
       verify_checksum!(import, file)
@@ -70,14 +133,26 @@ class GoogleDriveImportJob
   end
 
   def with_staging_file(import)
-    FileUtils.mkdir_p(File.dirname(import.staging_path), mode: 0o700)
-    File.open(import.staging_path, File::RDWR | File::CREAT, 0o600) do |file|
+    file = open_staging_file(import.staging_path)
+    begin
       unless file.flock(File::LOCK_EX | File::LOCK_NB)
         raise GoogleDrive::RetryableError, "Another worker is handling this import."
       end
 
       yield file
+    ensure
+      file.close
     end
+  end
+
+  # Permission problems are configuration errors; retrying cannot fix them.
+  def open_staging_file(path)
+    FileUtils.mkdir_p(File.dirname(path), mode: 0o700)
+    File.open(path, File::RDWR | File::CREAT, 0o600)
+  rescue Errno::EACCES, Errno::EPERM, Errno::EROFS => e
+    Rails.logger.error("Google Drive staging directory #{File.dirname(path)} is not writable (#{e.class})")
+    raise GoogleDrive::Error, "The import worker cannot write to its staging directory. " \
+                              "Contact the Research Data Service."
   end
 
   def verify_checksum!(import, file)

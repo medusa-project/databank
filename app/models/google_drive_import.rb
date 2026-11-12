@@ -59,9 +59,15 @@ class GoogleDriveImport < ApplicationRecord
      bytes_downloaded: bytes_downloaded, error: error_message, datafile_id: datafile&.web_id}
   end
 
+  def self.staging_directory
+    configured = IDB_CONFIG.dig(:google, :staging_dir).presence
+    return configured.to_s if configured
+
+    File.join((StorageManager.instance.tmpdir.presence || Rails.root.join("tmp")).to_s, "google-drive-imports")
+  end
+
   def staging_path
-    directory = StorageManager.instance.tmpdir.presence || Rails.root.join("tmp")
-    File.join(directory, "google-drive-imports", "#{id}.part")
+    File.join(self.class.staging_directory, "#{id}.part")
   end
 
   def remove_staging_file

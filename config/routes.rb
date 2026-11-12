@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     get "imports", action: :index, as: :google_drive_imports
     post "imports", action: :create
     delete "imports/:id", action: :destroy, as: :google_drive_import
+    delete "imports/:id/notice", action: :dismiss, as: :dismiss_google_drive_import
   end
   post '/ensure_local_buckets', to: 'welcome#ensure_local_buckets'
   resources :extractor_errors

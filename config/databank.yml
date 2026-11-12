@@ -50,6 +50,8 @@ downloader:
   :client_id: <%= Rails.application.credentials[:google][:client_id] %>
   :client_secret: <%= Rails.application.credentials[:google][:client_secret] %>
   :project_number: 913890769831 # public, not a secret
+  # Optional writable directory for partial downloads; defaults to storage_tmpdir/google-drive-imports.
+  :staging_dir: <%= Rails.application.credentials.dig(:google, :staging_dir) %>
 :iiif:
   :draft_base: <%= Rails.application.credentials[:iiif][:draft_base] %>
   :medusa_base: <%= Rails.application.credentials[:iiif][:medusa_base] %>

@@ -142,9 +142,18 @@ Before deploying:
 4. Run `bundle install` and `bin/rails db:migrate`, precompile assets, and
    restart the application and delayed-job workers. Workers must consume
    the `google_drive` queue (workers without queue filtering already do).
-5. Provide private, writable staging space under the existing
-   `storage_tmpdir` (or Rails' `tmp` directory if unset), with at least 10 GB free per concurrent import and
-   additional capacity when draft storage is on the same filesystem.
+5. Provide private staging space writable by the delayed-job user. Set
+   `google.staging_dir` in Rails credentials to choose it explicitly;
+   otherwise imports use `<storage_tmpdir>/google-drive-imports` (or Rails'
+   `tmp` directory if `storage_tmpdir` is unset). Production uses
+   `/home/databank/shared/tmp/uploads`, which persists across deploys.
+   Only one Drive import runs at a time across all workers; others wait in
+   the queue. Before downloading, a job checks that the staging disk can hold
+   the rest of the file plus a 10 GB reserve; otherwise it waits and checks
+   again every 10 minutes without using a retry attempt. Imports still
+   waiting when their authorization expires (24 hours) are failed by
+   `google_drive:cleanup`. Peak staging use is therefore one file (at most
+   10 GB), plus draft storage if it is on the same filesystem.
    Transfers download in bounded 8 MiB ranges, record durable progress, and
    resume after interruptions. Workers sharing this directory can resume
    the same partial file; a worker without it safely restarts the download.
