@@ -45,6 +45,43 @@ RSpec.describe BoxStorage::Client do
                               "version" => "6789", "canDownload" => true)
   end
 
+  it "accepts a PDF when Box omits optional permission and availability fields" do
+    raw = {
+      id: "12345", type: "file", name: "test.pdf", size: 5, sha1: "a" * 40,
+      file_version: {id: "6789"}, item_status: "active"
+    }
+    response = instance_double(Net::HTTPOK, code: "200", body: raw.to_json)
+    allow(http).to receive(:request).and_yield(response)
+    result = described_class.validate_metadata!(client.metadata("12345"))
+    expect(result).to include("name" => "test.pdf", "mimeType" => "application/pdf", "canDownload" => nil)
+  end
+
+  it "distinguishes explicit download denials, unavailable content, and inactive files" do
+    [
+      [{"canDownload" => false}, /does not allow your account to download/],
+      [{"available" => false}, /content is not available for download/],
+      [{"item_status" => "trashed"}, /not active in Box/]
+    ].each do |change, message|
+      expect { described_class.validate_metadata!(box_metadata.merge(change)) }
+        .to raise_error(BoxStorage::Error, message)
+    end
+  end
+
+  it "logs rejection flags without including filenames or credentials" do
+    metadata = box_metadata.merge("canDownload" => false, "access_token" => "private-token")
+    expect(Rails.logger).to receive(:warn).with(
+      'Box import metadata rejected: {"type":"file","canDownload":false,"available":true,"item_status":"active"}'
+    )
+    expect { described_class.validate_metadata!(metadata) }.to raise_error(BoxStorage::Error)
+  end
+
+  it "still enforces Box authorization when optional download permission is missing" do
+    response = instance_double(Net::HTTPForbidden, code: "403")
+    allow(http).to receive(:request).and_yield(response)
+    expect { client.chunk(box_metadata.merge("canDownload" => nil), 0) }
+      .to raise_error(BoxStorage::Error, /denied access.*HTTP 403/)
+  end
+
   it "follows Box download redirects without forwarding the OAuth bearer token" do
     redirect = instance_double(Net::HTTPFound, code: "302")
     allow(redirect).to receive(:[]).with("Location").and_return("https://dl.boxcloud.com/d/file/download")

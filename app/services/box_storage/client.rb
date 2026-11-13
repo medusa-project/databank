@@ -69,9 +69,18 @@ class BoxStorage::Client
   end
 
   def self.validate_metadata!(metadata)
-    unless metadata["type"] == "file" && metadata["canDownload"] == true &&
-           metadata["available"] != false && metadata["item_status"] == "active"
+    unless metadata["type"] == "file"
       raise BoxStorage::Error, "Choose a downloadable file in Box. Folders, links, and Box Notes are not supported."
+    end
+    unless metadata["item_status"] == "active"
+      raise BoxStorage::Error, "This file is not active in Box. Choose a file that has not been deleted or trashed."
+    end
+    # Box can omit permissions; the authenticated content endpoint still enforces download access.
+    unless metadata["canDownload"].nil? || metadata["canDownload"] == true
+      raise BoxStorage::Error, "Box does not allow your account to download this file. Check its permissions or choose another file."
+    end
+    if metadata["available"] == false
+      raise BoxStorage::Error, "Box reports that this file's content is not available for download. Choose another file or try again later."
     end
     name = metadata["name"]
     unless name.is_a?(String) && name.present? && name.bytesize <= 255 &&
@@ -87,6 +96,10 @@ class BoxStorage::Client
     end
 
     metadata
+  rescue BoxStorage::Error
+    Rails.logger.warn("Box import metadata rejected: " \
+                      "#{metadata.slice('type', 'canDownload', 'available', 'item_status').to_json}")
+    raise
   end
 
   def chunk(metadata, offset)

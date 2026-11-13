@@ -109,6 +109,7 @@ class CloudImportsController < ApplicationController
   end
 
   def import_error(exception)
+    Rails.logger.warn("#{source_name} import #{action_name} failed: #{exception.message}")
     if action_name == "callback"
       @oauth_error = exception.message
       render :callback, status: :unprocessable_content

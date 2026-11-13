@@ -49,6 +49,15 @@ RSpec.describe BoxImportsController, type: :controller do
     expect(response.headers["Cache-Control"]).to include("no-store")
   end
 
+  it "logs Box preview failures with the provider and action before a job is queued" do
+    allow(client).to receive(:metadata).and_return(box_metadata.merge("available" => false))
+    expect(Rails.logger).to receive(:warn).with(/Box import metadata rejected:/)
+    expect(Rails.logger).to receive(:warn).with(/Box import preview failed: .*not available for download/)
+    expect { post :preview, params: base_params.merge(file_id: "12345") }.not_to change(BoxImport, :count)
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(JSON.parse(response.body)["error"]).to include("not available for download")
+  end
+
   it "confirms validated selection, blocks a second active import, cancels and clears notices" do
     post :preview, params: base_params.merge(file_id: "12345")
     selection = JSON.parse(response.body).fetch("selection_id")

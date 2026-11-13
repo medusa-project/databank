@@ -209,6 +209,13 @@ without consuming failure attempts.
 Refresh credentials remain encrypted on the server for at most 24 hours; only
 a downscoped `base_picker` token is returned to the browser. Box refresh tokens
 rotate and are replaced under a database lock.
+Box can omit the optional download-permission field; imports defer that check
+to Box's authenticated content endpoint when it is absent. Explicit permission
+denials and unavailable content are still rejected. Preview/authorization
+failures are logged by the web process with the provider and action (for example,
+`Box import preview failed`), before any background job is queued. Metadata
+rejections also log only type, download-permission, availability, and item-status
+flags, not filenames, tokens, or the full API response.
 
 Before deploying:
 
