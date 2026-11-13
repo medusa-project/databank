@@ -58,7 +58,7 @@ RSpec.describe BoxStorage::Client do
 
   it "distinguishes explicit download denials, unavailable content, and inactive files" do
     [
-      [{"canDownload" => false}, /does not allow your account to download/],
+      [{"canDownload" => false}, /Check file permissions and the app's read\/write scope, then authorize Box again/],
       [{"available" => false}, /content is not available for download/],
       [{"item_status" => "trashed"}, /not active in Box/]
     ].each do |change, message|

@@ -77,7 +77,7 @@ class BoxStorage::Client
     end
     # Box can omit permissions; the authenticated content endpoint still enforces download access.
     unless metadata["canDownload"].nil? || metadata["canDownload"] == true
-      raise BoxStorage::Error, "Box does not allow your account to download this file. Check its permissions or choose another file."
+      raise BoxStorage::Error, "Box does not allow this download. Check file permissions and the app's read/write scope, then authorize Box again."
     end
     if metadata["available"] == false
       raise BoxStorage::Error, "Box reports that this file's content is not available for download. Choose another file or try again later."

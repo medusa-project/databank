@@ -219,10 +219,16 @@ flags, not filenames, tokens, or the full API response.
 
 Before deploying:
 
-1. Configure a Box OAuth 2.0 app with the **Read all files and folders stored in
-   Box** (`root_readonly`) scope. Enterprise policy may require administrator
-   approval. This is user OAuth, not JWT or Client Credentials Grant; the
-   configured enterprise ID is not used for this flow.
+1. Configure a Box OAuth 2.0 app with the **Read and write all files and folders
+   stored in Box** (`root_readwrite`) scope. Box requires this scope for
+   downloads; `root_readonly` permits browsing but is insufficient for importing
+   file content. The server token consequently has write capability, but this
+   integration only reads/downloads files and gives the browser a restricted
+   `base_picker` token. Enterprise policy may require administrator approval.
+   This is user OAuth, not JWT or Client Credentials Grant; the configured
+   enterprise ID is not used for this flow. After changing scopes, save the Box
+   app configuration, deploy the matching OAuth-request change, and authorize
+   Box again from the dataset; existing tokens do not acquire the new scope.
 2. Register the exact redirect URI `https://<host>/integrations/box/callback`
    for each deployment, and add the application origin to the Box app's CORS
    allowed origins for the browser-based Content Picker.

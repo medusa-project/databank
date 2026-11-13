@@ -19,12 +19,12 @@ RSpec.describe BoxImportsController, type: :controller do
     allow(BoxStorage::Client).to receive(:new).and_return(client)
   end
 
-  it "authorizes with state and read-only scope and validates the callback" do
+  it "authorizes with state and the scope required for downloads and validates the callback" do
     post :authorize, params: base_params
     url = URI(JSON.parse(response.body).fetch("authorization_url"))
     query = URI.decode_www_form(url.query).to_h
     expect(url.host).to eq("account.box.com")
-    expect(query).to include("scope" => "root_readonly", "state" => session[:box_oauth][:state])
+    expect(query).to include("scope" => "root_readwrite", "state" => session[:box_oauth][:state])
     expect(response.body).not_to include("box-secret")
     state = session[:box_oauth][:state]
     expect(BoxStorage::Client).to receive(:token_request).with(

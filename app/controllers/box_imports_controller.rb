@@ -8,7 +8,7 @@ class BoxImportsController < CloudImportsController
     session[:box_oauth] = {state: state, dataset_id: @dataset.id, user_id: current_user.id,
                           expires_at: 10.minutes.from_now.to_i, redirect_uri: box_callback_url}
     query = URI.encode_www_form(response_type: "code", client_id: BoxStorage::Client.settings[:client_id],
-                                redirect_uri: box_callback_url, state: state, scope: "root_readonly")
+                                redirect_uri: box_callback_url, state: state, scope: "root_readwrite")
     render json: {authorization_url: "https://account.box.com/api/oauth2/authorize?#{query}"}
   end
 
