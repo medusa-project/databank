@@ -15,13 +15,14 @@ RSpec.describe GoogleDrive::Client do
   end
 
   describe ".validate_metadata!" do
-    it "accepts ordinary files and the exact 10 GB boundary" do
+    it "accepts ordinary files, 38 GB files, and the exact 50 GB boundary" do
       expect(described_class.validate_metadata!(drive_metadata)).to eq(drive_metadata)
-      expect { described_class.validate_metadata!(drive_metadata.merge("size" => "10000000000")) }.not_to raise_error
+      expect { described_class.validate_metadata!(drive_metadata.merge("size" => "38000000000")) }.not_to raise_error
+      expect { described_class.validate_metadata!(drive_metadata.merge("size" => "50000000000")) }.not_to raise_error
     end
 
-    it "rejects empty files, missing sizes and one byte over the limit" do
-      ["0", nil, "10000000001", "-1", "invalid"].each do |size|
+    it "rejects empty files, missing sizes, and one byte over the 50 GB limit" do
+      ["0", nil, "50000000001", "-1", "invalid"].each do |size|
         expect { described_class.validate_metadata!(drive_metadata.merge("size" => size)) }.to raise_error(GoogleDrive::Error)
       end
     end

@@ -120,7 +120,7 @@ npm run playwright:test
 The Google Drive control remains inside the curator-only block. The backend
 also requires dataset management permission; a depositor cannot invoke it
 directly. Imports are independent copies of one ordinary file, up to
-10,000,000,000 bytes. Google documents, folders, shortcuts, Shared Drives,
+50,000,000,000 bytes (50 GB). Google documents, folders, shortcuts, Shared Drives,
 empty files, and duplicate dataset filenames are rejected.
 
 Before deploying:
@@ -187,7 +187,7 @@ and a disposable draft dataset: authorize a test Google account, import a
 small CSV, verify its downloaded bytes, revisit the page to check persistent
 status, and test cancellation and duplicate-name rejection. Verify a file
 shared by another account as well. Keep the pilot curator-only until the
-live flow, browser accessibility, and production-like 10 GB transfers have
+live flow, browser accessibility, and production-like 50 GB transfers have
 been qualified; a large-file success is not implied by the unit tests.
 
 ### Copying Public Datasets to Globus

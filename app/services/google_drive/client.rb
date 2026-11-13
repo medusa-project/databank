@@ -7,7 +7,7 @@ module GoogleDrive
   class Client
     SCOPE = "https://www.googleapis.com/auth/drive.file"
     FILE_FIELDS = "id,name,size,mimeType,md5Checksum,version,modifiedTime,driveId,trashed,capabilities(canDownload)"
-    MAX_BYTES = 10_000_000_000
+    MAX_BYTES = 50_000_000_000
     CHUNK_BYTES = 8 * 1024 * 1024
 
     def self.settings
@@ -79,7 +79,7 @@ module GoogleDrive
         raise Error, "Rename this file in Google Drive before importing it."
       end
       unless metadata["size"].to_s.match?(/\A\d+\z/) && metadata["size"].to_i.between?(1, MAX_BYTES)
-        raise Error, "Choose a nonempty file no larger than 10 GB."
+        raise Error, "Choose a nonempty file no larger than 50 GB."
       end
       raise Error, "Google Drive did not return a file version." if metadata["version"].blank?
 
