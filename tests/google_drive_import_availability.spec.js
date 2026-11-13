@@ -37,6 +37,7 @@ test.beforeEach(async ({ page }) => {
       }
     };
   });
+  await page.addScriptTag({ path: path.resolve("app/assets/javascripts/cloud_import.js") });
   await page.addScriptTag({ path: path.resolve("app/assets/javascripts/google_drive_import.js") });
 });
 
@@ -86,4 +87,56 @@ test("background polling errors announce the error without stealing focus", asyn
   await page.evaluate(() => { window.failPolling = true; });
   await expect(page.getByRole("alert")).toHaveText("Status temporarily unavailable");
   await expect(page.locator("#dataset-title")).toBeFocused();
+});
+
+test("Google Picker still confirms a selected file through the shared import UI", async ({ page }) => {
+  await page.route("https://apis.google.com/js/api.js", route => route.fulfill({
+    contentType: "text/javascript", body: `
+      window.gapi = { load: (_name, options) => options.callback() };
+      window.google = { picker: {
+        Action: { PICKED: "picked", CANCEL: "cancel" }, ViewId: { DOCS: "docs" },
+        DocsView: class {
+          setIncludeFolders() { return this; } setSelectFolderEnabled() { return this; }
+        },
+        PickerBuilder: class {
+          setAppId() { return this; } setDeveloperKey() { return this; }
+          setOAuthToken() { return this; } setOrigin() { return this; }
+          addView() { return this; } setTitle() { return this; }
+          setCallback(callback) { window.googlePickerCallback = callback; return this; }
+          build() { return { setVisible() {}, dispose() {} }; }
+        }
+      }};
+    `,
+  }));
+  await page.evaluate(() => {
+    window.imports = [];
+    const ajax = window.jQuery.ajax;
+    window.jQuery.ajax = options => {
+      let data;
+      if (options.url.endsWith("/authorize")) { data = { authorization_url: "about:blank#drive-authorize" }; }
+      else if (options.url.endsWith("/picker")) { data = { app_id: "123", api_key: "key", access_token: "access" }; }
+      else if (options.url.endsWith("/preview")) {
+        data = { name: "test.csv", size: 5, selection_id: "selected" };
+      } else if (options.type === "POST") {
+        window.imports = [{ id: 2, name: "test.csv", size: 5, bytes_downloaded: 0, status: "queued" }];
+        data = window.imports[0];
+      } else { return ajax(options); }
+      queueMicrotask(() => options.success(data));
+    };
+  });
+  const button = page.getByRole("button", { name: "Import from Google Drive" });
+  await expect(button).toBeEnabled();
+  const popupPromise = page.waitForEvent("popup");
+  await button.click();
+  const popup = await popupPromise;
+  await popup.waitForURL("about:blank#drive-authorize");
+  await popup.evaluate(() => window.opener.postMessage({ type: "databank-google-drive-authorized" }, "*"));
+  await popup.close();
+  await expect.poll(() => page.evaluate(() => typeof window.googlePickerCallback)).toBe("function");
+  await page.evaluate(() => window.googlePickerCallback({
+    action: "picked", docs: [{ id: "drive-id", mimeType: "text/csv" }],
+  }));
+  await expect(page.getByRole("button", { name: "Confirm", exact: true })).toBeFocused();
+  await page.getByRole("button", { name: "Confirm", exact: true }).click();
+  await expect(button).toBeDisabled();
 });

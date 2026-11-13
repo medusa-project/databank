@@ -44,6 +44,7 @@ class Datafile < ApplicationRecord
   include Datafile::Viewable
   belongs_to :dataset
   has_one :google_drive_import, dependent: :nullify
+  has_one :box_import, dependent: :nullify
   has_many :nested_items, dependent: :destroy
 
   WEB_ID_LENGTH = 5
@@ -52,6 +53,7 @@ class Datafile < ApplicationRecord
   after_create :set_dataset_nested_updated_at
   before_destroy :set_dataset_nested_updated_at
   before_destroy -> { google_drive_import&.cancel_from_datafile! }, prepend: true
+  before_destroy -> { box_import&.cancel_from_datafile! }, prepend: true
   before_destroy :destroy_job
   before_destroy :remove_binary
 

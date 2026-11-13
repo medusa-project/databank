@@ -93,6 +93,8 @@ class Dataset < ApplicationRecord
   has_many :datafiles, dependent: :destroy
   has_many :google_drive_imports, dependent: :destroy
   has_many :google_drive_connections, dependent: :destroy
+  has_many :box_imports, dependent: :destroy
+  has_many :box_connections, dependent: :destroy
   has_many :version_files, dependent: :destroy
   has_many :creators, dependent: :destroy
   has_many :contributors, dependent: :destroy

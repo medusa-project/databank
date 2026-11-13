@@ -6,7 +6,7 @@ require "fileutils"
 
 class GoogleDriveImportJob
   # Postgres advisory lock key that limits Drive imports to one at a time across all workers.
-  SLOT_LOCK_KEY = 4_727_301_847
+  SLOT_LOCK_KEY = CloudImports::TransferSlot::LOCK_KEY
   SLOT_RETRY_DELAY = 1.minute
   SPACE_RETRY_DELAY = 10.minutes
   # Free space always left on the staging disk for other server work.
@@ -40,9 +40,9 @@ class GoogleDriveImportJob
     with_import_slot { perform_import(import) }
   rescue Deferred => e
     defer!(e.message, e.delay)
-  rescue GoogleDrive::RetryableError
+  rescue GoogleDrive::RetryableError, CloudImports::RetryableError
     raise
-  rescue GoogleDrive::Error => e
+  rescue CloudImports::Error => e
     Rails.logger.warn("Google Drive import #{@import_id} stopped: #{e.message}")
     fail_import!(e.message)
   rescue Errno::ENOSPC
@@ -68,16 +68,10 @@ class GoogleDriveImportJob
   private
 
   def with_import_slot
-    connection = ActiveRecord::Base.connection
-    unless connection.select_value("SELECT pg_try_advisory_lock(#{SLOT_LOCK_KEY})")
-      raise Deferred.new("Waiting for another Google Drive import to finish.", SLOT_RETRY_DELAY)
-    end
+    acquired = CloudImports::TransferSlot.synchronize { yield }
+    return if acquired
 
-    begin
-      yield
-    ensure
-      connection.select_value("SELECT pg_advisory_unlock(#{SLOT_LOCK_KEY})")
-    end
+    raise Deferred.new("Waiting for another cloud import to finish.", SLOT_RETRY_DELAY)
   end
 
   # Re-enqueue rather than retry so waiting does not consume failure attempts.

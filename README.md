@@ -157,7 +157,7 @@ Before deploying:
    against abrupt worker or host termination.
    Filesystem-backed draft storage still stages a full copy in the private
    `google.staging_dir` (if configured), `<storage_tmpdir>/google-drive-imports`,
-   or Rails' `tmp` directory. Only one Drive import runs at a time across all
+   or Rails' `tmp` directory. Only one cloud import (Drive or Box) runs at a time across all
    workers; others wait in the queue. Filesystem staging checks for room for
    the remaining file plus a 10 GB reserve and waits if needed. Imports still
    waiting when their authorization expires (24 hours) are failed by
@@ -195,6 +195,48 @@ status, and test cancellation and duplicate-name rejection. Verify a file
 shared by another account as well. Keep the pilot curator-only until the
 live flow, browser accessibility, and production-like 50 GB transfers have
 been qualified; a large-file success is not implied by the unit tests.
+
+### Box import (curator pilot)
+
+Box uses the same confirmation, persistent status, cancellation, Clear Notice,
+and per-dataset active-import restriction as Google Drive. Users authorize their
+own Box accounts; only ordinary downloadable files up to 50,000,000,000 bytes
+are accepted. Folders, web links, and Box Notes are excluded. Imports require
+S3-backed draft storage and use the shared resumable multipart transfer service
+with 8 MiB buffers, SHA-1 source verification, and multipart ETag verification.
+Box and Drive jobs share the single active-transfer slot; queued jobs wait
+without consuming failure attempts.
+Refresh credentials remain encrypted on the server for at most 24 hours; only
+a downscoped `base_picker` token is returned to the browser. Box refresh tokens
+rotate and are replaced under a database lock.
+
+Before deploying:
+
+1. Configure a Box OAuth 2.0 app with the **Read all files and folders stored in
+   Box** (`root_readonly`) scope. Enterprise policy may require administrator
+   approval. This is user OAuth, not JWT or Client Credentials Grant; the
+   configured enterprise ID is not used for this flow.
+2. Register the exact redirect URI `https://<host>/integrations/box/callback`
+   for each deployment, and add the application origin to the Box app's CORS
+   allowed origins for the browser-based Content Picker.
+3. Configure `box.client_id` and `box.client_secret` in that environment's
+   Rails credentials (referenced by `databank.yml`). Never expose the secret
+   or refresh token in page content or logs.
+4. Run `bin/rails db:migrate`, precompile assets, and restart web and delayed-job
+   processes. Workers must consume the `box` queue (unfiltered workers do).
+5. Schedule `bin/rails box:cleanup` hourly. Use an S3 lifecycle rule to abort
+   incomplete multipart uploads after one day, as with Drive. Permit the
+   worker to create, upload, complete, abort, read, and delete S3 objects.
+6. Permit the pinned Box Content Picker JS/CSS from
+   `https://cdn01.boxcdn.net/platform/elements/26.3.0/en-US/` and Box API access
+   in any deployed Content Security Policy. The picker loads only on use.
+
+Test on demo using a curator and a disposable draft: authorize Box, select a
+small binary file, confirm its name and size, check downloaded bytes, then test
+a larger file, cancellation, duplicate filenames, and returning to the page
+during an import. Verify keyboard navigation, Escape/cancel behavior, and
+screen-reader announcements in the real Box OAuth/Picker flow; automated tests
+stub provider responses and do not certify Box's third-party UI accessibility.
 
 ### Copying Public Datasets to Globus
 

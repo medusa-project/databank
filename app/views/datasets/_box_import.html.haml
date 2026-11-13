@@ -1,0 +1,20 @@
+.row
+  .col-md-5
+    %button.btn.btn-success.fileinput-button{type: "button", data: {dataset_action: "import-box"}, aria: {describedby: "box-import-guidance box-import-availability"}, disabled: true}
+      Import from Box
+    %p#box-import-availability{role: "status"} Checking Box import status...
+  .col-md-7#box-import-guidance
+    %p
+      %strong Curator pilot:
+      Box authorization opens in a separate window and is independent of Data Bank sign-in.
+    %ol
+      %li Authorize access to your Box account.
+      %li Select one ordinary file you own or collaborate on. Folders, links, and Box Notes are not supported.
+      %li Review the filename and size, then confirm the import.
+      %li The file is copied in the background. Return to this page to check its status.
+    %p Maximum file size: 50 GB. Existing filenames cannot be overwritten.
+%section#box-imports{data: {base_path: "/datasets/#{@dataset.key}/box"}, aria: {labelledby: "box-import-status-title"}, tabindex: "-1"}
+  %h3#box-import-status-title Box imports
+  %p#box-error{role: "alert"}
+  %p.sr-only#box-import-announcement{role: "status", aria: {atomic: "true"}}
+  %ul#box-import-list

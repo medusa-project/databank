@@ -28,7 +28,9 @@
 //= require creators
 //= require databank
 //= require datasets
+//= require cloud_import
 //= require google_drive_import
+//= require box_import
 //= require tus
 //= require files_row_mutations
 //= require files_remote_ingest

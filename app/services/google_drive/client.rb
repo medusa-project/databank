@@ -7,8 +7,8 @@ module GoogleDrive
   class Client
     SCOPE = "https://www.googleapis.com/auth/drive.file"
     FILE_FIELDS = "id,name,size,mimeType,md5Checksum,version,modifiedTime,driveId,trashed,capabilities(canDownload)"
-    MAX_BYTES = 50_000_000_000
-    CHUNK_BYTES = 8 * 1024 * 1024
+    MAX_BYTES = CloudImports::MAX_BYTES
+    CHUNK_BYTES = CloudImports::CHUNK_BYTES
 
     def self.settings
       IDB_CONFIG.fetch(:google, {})

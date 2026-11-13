@@ -1,0 +1,14 @@
+%dialog#box-picker-dialog{aria: {labelledby: "box-picker-title"}}
+  %h2#box-picker-title{tabindex: "-1"} Select one file from Box
+  #box-picker-container
+  %button.btn.btn-default#box-picker-cancel{type: "button"} Cancel
+%dialog#box-confirmation{aria: {labelledby: "box-confirmation-title", describedby: "box-selected-details box-copy-notice"}}
+  %h2#box-confirmation-title Confirm Box import
+  %dl#box-selected-details
+    %dt Filename
+    %dd#box-selected-name
+    %dt Size
+    %dd#box-selected-size
+  %p#box-copy-notice This creates an independent copy in Illinois Data Bank. Later changes in Box will not update this copy.
+  %button.btn.btn-primary#box-confirm{type: "button"} Start import
+  %button.btn.btn-default#box-dismiss{type: "button"} Cancel

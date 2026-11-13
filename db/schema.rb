@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_11_13_170000) do
+ActiveRecord::Schema[8.0].define(version: 2026_11_13_220000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -44,6 +44,38 @@ ActiveRecord::Schema[8.0].define(version: 2026_11_13_170000) do
     t.index ["created_at"], name: "index_audits_on_created_at"
     t.index ["request_uuid"], name: "index_audits_on_request_uuid"
     t.index ["user_id", "user_type"], name: "user_index"
+  end
+
+  create_table "box_connections", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "dataset_id", null: false
+    t.text "encrypted_credentials"
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dataset_id"], name: "index_box_connections_on_dataset_id"
+    t.index ["expires_at"], name: "index_box_connections_on_expires_at"
+    t.index ["user_id"], name: "index_box_connections_on_user_id"
+  end
+
+  create_table "box_imports", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "dataset_id", null: false
+    t.bigint "box_connection_id", null: false
+    t.integer "datafile_id"
+    t.string "status", default: "queued", null: false
+    t.jsonb "source_metadata", default: {}, null: false
+    t.bigint "bytes_downloaded", default: 0, null: false
+    t.text "error_message"
+    t.string "s3_upload_id"
+    t.jsonb "s3_uploaded_parts", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["box_connection_id"], name: "index_box_imports_on_box_connection_id"
+    t.index ["datafile_id"], name: "index_box_imports_on_datafile_id", unique: true
+    t.index ["dataset_id"], name: "index_box_imports_on_dataset_id"
+    t.index ["status"], name: "index_box_imports_on_status"
+    t.index ["user_id"], name: "index_box_imports_on_user_id"
   end
 
   create_table "contributors", id: :serial, force: :cascade do |t|
@@ -523,6 +555,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_11_13_170000) do
     t.index ["dataset_id"], name: "index_version_files_on_dataset_id"
   end
 
+  add_foreign_key "box_connections", "datasets"
+  add_foreign_key "box_connections", "users"
+  add_foreign_key "box_imports", "box_connections"
+  add_foreign_key "box_imports", "datafiles", on_delete: :nullify
+  add_foreign_key "box_imports", "datasets"
+  add_foreign_key "box_imports", "users"
   add_foreign_key "dataset_download_tallies", "datasets", column: "dataset_key", primary_key: "key"
   add_foreign_key "google_drive_connections", "datasets"
   add_foreign_key "google_drive_connections", "users"

@@ -13,6 +13,10 @@
   :queue_mode: local
   :access_key_id: "minioadmin"
   :secret_access_key: "minioadmin"
+:box:
+  :client_id: client_id
+  :client_secret: client_secret
+  :enterprise_id: 123456
 :storage:
   :draft_type: s3
   :draft_path: na

@@ -15,6 +15,17 @@ Rails.application.routes.draw do
   draw :datafile
   draw :dataset
   get "/integrations/google_drive/callback", to: "google_drive_imports#callback", as: :google_drive_callback
+  get "/integrations/box/callback", to: "box_imports#callback", as: :box_callback
+  scope "/datasets/:dataset_key/box", controller: :box_imports do
+    post "authorize", action: :authorize
+    delete "authorization", action: :disconnect
+    get "picker", action: :picker
+    post "preview", action: :preview
+    get "imports", action: :index
+    post "imports", action: :create
+    delete "imports/:id", action: :destroy
+    delete "imports/:id/notice", action: :dismiss
+  end
   scope "/datasets/:dataset_key/google_drive", controller: :google_drive_imports do
     post "authorize", action: :authorize, as: :authorize_google_drive
     delete "authorization", action: :disconnect

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class GoogleDriveImport < ApplicationRecord
-  ACTIVE_STATUSES = ["queued", "importing"].freeze
-  STATUSES = (ACTIVE_STATUSES + ["complete", "failed", "cancelled"]).freeze
+  ACTIVE_STATUSES = CloudImports::ACTIVE_STATUSES
+  STATUSES = CloudImports::STATUSES
 
   belongs_to :user
   belongs_to :dataset
@@ -13,18 +13,7 @@ class GoogleDriveImport < ApplicationRecord
   before_destroy :abort_s3_upload!
 
   def self.ensure_importable!(dataset, user)
-    unless user && Ability.new(user).can?(
-      :manage, dataset
-    )
-      raise GoogleDrive::Error,
-            "Only curators can import from Google Drive during this pilot."
-    end
-    if Databank::Application.file_mode == Databank::FileMode::READ_ONLY
-      raise GoogleDrive::Error, "File changes are currently disabled."
-    end
-    unless [Databank::PublicationState::DRAFT, Databank::PublicationState::TempSuppress::VERSION].include?(dataset.publication_state)
-      raise GoogleDrive::Error, "Files can only be imported into an editable draft dataset."
-    end
+    CloudImports.ensure_importable!(dataset, user, provider: "Google Drive")
   end
 
   def self.enqueue!(dataset:, user:, connection:, metadata:)

@@ -303,7 +303,7 @@ RSpec.describe GoogleDriveImportJob do
     expect(client).not_to receive(:chunk)
     job.perform
     expect(import.reload.status).to eq("queued")
-    expect(import.error_message).to include("another Google Drive import")
+    expect(import.error_message).to include("another cloud import")
   ensure
     other&.close
   end
