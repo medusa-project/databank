@@ -11,7 +11,10 @@ test.beforeEach(async ({ page }) => {
     <section id="google-drive-imports" data-base-path="/datasets/test/google_drive" tabindex="-1">
       <p id="google-drive-error" role="alert"></p>
       <p id="google-drive-import-announcement" role="status" aria-atomic="true"></p>
-      <ul id="google-drive-import-list"></ul>
+      <section id="google-drive-import-notices" aria-labelledby="google-drive-import-status-title" hidden>
+        <h3 id="google-drive-import-status-title">Google Drive import notifications</h3>
+        <ul id="google-drive-import-list"></ul>
+      </section>
     </section>
     <dialog id="google-drive-confirmation">
       <button id="google-drive-confirm">Confirm</button>
@@ -87,6 +90,26 @@ test("background polling errors announce the error without stealing focus", asyn
   await page.evaluate(() => { window.failPolling = true; });
   await expect(page.getByRole("alert")).toHaveText("Status temporarily unavailable");
   await expect(page.locator("#dataset-title")).toBeFocused();
+});
+
+test("shows the notification box only while notices exist and restores focus when they disappear", async ({ page }) => {
+  const notices = page.getByRole("region", { name: "Google Drive import notifications" });
+  await expect(notices).toBeVisible();
+  await page.getByRole("button", { name: "Cancel import of test.csv" }).focus();
+  await page.evaluate(() => { window.imports = []; });
+  await expect(page.locator("#google-drive-import-notices")).toBeHidden();
+  await expect(page.getByRole("button", { name: "Import from Google Drive" })).toBeFocused();
+  await page.locator("#dataset-title").focus();
+  await page.evaluate(() => { window.failPolling = true; });
+  await expect(page.getByRole("alert")).toHaveText("Status temporarily unavailable");
+  await expect(page.locator("#dataset-title")).toBeFocused();
+  await expect(page.locator("#google-drive-import-notices")).toBeHidden();
+  await page.evaluate(() => {
+    window.failPolling = false;
+    window.imports = [{ id: 2, name: "again.csv", size: 5, bytes_downloaded: 0, status: "queued" }];
+  });
+  await expect(notices).toBeVisible();
+  await expect(notices).toContainText("again.csv");
 });
 
 test("Google Picker still confirms a selected file through the shared import UI", async ({ page }) => {

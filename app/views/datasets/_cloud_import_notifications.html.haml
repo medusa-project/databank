@@ -1,0 +1,8 @@
+%section{id: "#{prefix}-imports", data: {base_path: base_path}, aria: {label: "#{name} import status"}, tabindex: "-1"}
+  %p{id: "#{prefix}-error", role: "alert"}
+  %p.sr-only{id: "#{prefix}-import-announcement", role: "status", aria: {atomic: "true"}}
+  %section.panel.panel-default{id: "#{prefix}-import-notices", aria: {labelledby: "#{prefix}-import-status-title"}, hidden: true}
+    .panel-heading
+      %h3.panel-title{id: "#{prefix}-import-status-title"} #{name} import notifications
+    .panel-body
+      %ul{id: "#{prefix}-import-list"}

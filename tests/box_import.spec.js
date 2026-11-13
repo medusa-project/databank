@@ -10,7 +10,10 @@ test("Box picker confirms one file, queues the import, and supports cancellation
     <section id="box-imports" data-base-path="/datasets/test/box" tabindex="-1">
       <p id="box-error" role="alert"></p>
       <p id="box-import-announcement" role="status"></p>
-      <ul id="box-import-list"></ul>
+      <section id="box-import-notices" aria-labelledby="box-import-status-title" hidden>
+        <h3 id="box-import-status-title">Box import notifications</h3>
+        <ul id="box-import-list"></ul>
+      </section>
     </section>
     <dialog id="box-picker-dialog" aria-labelledby="box-picker-title">
       <h2 id="box-picker-title" tabindex="-1">Select one file from Box</h2>
@@ -74,6 +77,7 @@ test("Box picker confirms one file, queues the import, and supports cancellation
 
   const importButton = page.getByRole("button", { name: "Import from Box" });
   await expect(importButton).toBeEnabled();
+  await expect(page.locator("#box-import-notices")).toBeHidden();
   const popupPromise = page.waitForEvent("popup");
   await importButton.click();
   const popup = await popupPromise;
@@ -104,10 +108,13 @@ test("Box picker confirms one file, queues the import, and supports cancellation
   await expect(page.getByRole("button", { name: "Start import" })).toBeFocused();
   await page.getByRole("button", { name: "Start import" }).click();
   await expect(importButton).toBeDisabled();
+  await expect(page.getByRole("region", { name: "Box import notifications" })).toBeVisible();
   await expect(page.locator("#box-import-availability")).toContainText("queued or in progress");
   await page.getByRole("button", { name: "Cancel import of sample.csv" }).click();
   await expect(importButton).toBeEnabled();
   await expect(importButton).toBeFocused();
   await page.getByRole("button", { name: "Clear Notice for sample.csv (cancelled)", exact: true }).click();
   await expect(page.locator("#box-import-list")).toBeEmpty();
+  await expect(page.locator("#box-import-notices")).toBeHidden();
+  await expect(importButton).toBeFocused();
 });

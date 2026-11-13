@@ -284,23 +284,20 @@
                           %span.glyphicon.glyphicon-link
                           Import from Google Drive
                         %p#google-drive-import-availability{role: "status"} Checking Google Drive import status…
-                      .col-md-7#google-drive-import-guidance
-                        %p
-                          %strong Note to curators:
-                          %em
-                            This feature is under development and only works for specific test users. Contact Colleen to participate.
-                        %ol
-                          %li Sign into Google Drive in another tab in this browser. This is separate from signing in to Illinois Data Bank.
-                          %li Select one file, such as a CSV, ZIP, PDF, or image, in the Google Drive selector. Google Docs, Sheets, and Slides are not supported.
-                          %li Review the selected filename and size, then confirm the import.
-                          %li The file is copied in the background. Check the import status on this page, even after leaving and returning.
-                        %p Maximum file size: 50 GB. Existing filenames cannot be overwritten.
-                        %p Google authorization opens in a separate window.
-                    %section#google-drive-imports{data: {base_path: "/datasets/#{@dataset.key}/google_drive"}, aria: {labelledby: "google-drive-import-status-title"}, tabindex: "-1"}
-                      %h3#google-drive-import-status-title Google Drive imports
-                      %p#google-drive-error{role: "alert"}
-                      %p.sr-only#google-drive-import-announcement{role: "status", aria: {atomic: "true"}}
-                      %ul#google-drive-import-list
+                      .col-md-7
+                        #google-drive-import-guidance
+                          %p
+                            %strong Note to curators:
+                            %em
+                              This feature is under development and only works for specific test users. Contact Colleen to participate.
+                          %ol
+                            %li Sign into Google Drive in another tab in this browser. This is separate from signing in to Illinois Data Bank.
+                            %li Select one file, such as a CSV, ZIP, PDF, or image, in the Google Drive selector. Google Docs, Sheets, and Slides are not supported.
+                            %li Review the selected filename and size, then confirm the import.
+                            %li The file is copied in the background. Check the import status on this page, even after leaving and returning.
+                          %p Maximum file size: 50 GB. Existing filenames cannot be overwritten.
+                          %p Google authorization opens in a separate window.
+                        = render partial: "datasets/cloud_import_notifications", locals: {prefix: "google-drive", name: "Google Drive", base_path: "/datasets/#{@dataset.key}/google_drive"}
                     = render partial: "datasets/box_import"
                     .row.curator-only
                       .col-md-5

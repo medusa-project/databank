@@ -105,6 +105,7 @@ window.DatabankCloudImport = function (options) {
     list.data("snapshot", snapshot);
     var focusedId = document.activeElement && document.activeElement.id;
     var focusWasInList = list[0].contains(document.activeElement);
+    element("import-notices").prop("hidden", imports.length === 0);
     var announcements = [];
     list.children().each(function () {
       var id = jQuery(this).data("import-id");

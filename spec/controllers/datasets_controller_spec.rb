@@ -83,6 +83,26 @@ RSpec.describe DatasetsController, type: :controller do
       get :edit, params: { id: dataset.to_param }
       expect(response).to be_successful
     end
+
+    context 'for a curator' do
+      render_views
+
+      it 'places initially hidden cloud import notification panels beside their guidance' do
+        sign_in create(:user, :admin)
+        get :edit, params: { id: dataset.to_param }
+
+        document = Nokogiri::HTML(response.body)
+        ["google-drive", "box"].each do |prefix|
+          section = document.at_css("##{prefix}-import-guidance + ##{prefix}-imports")
+          expect(section).to be_present
+          expect(section.parent["class"]).to include("col-md-7")
+          expect(section.at_css("##{prefix}-import-notices[hidden] h3").text)
+            .to include("import notifications")
+          expect(section.at_css("##{prefix}-error[role='alert']")).to be_present
+          expect(section.at_css("##{prefix}-import-notices ##{prefix}-error")).to be_nil
+        end
+      end
+    end
   end
 
   describe 'GET #pre_deposit' do
