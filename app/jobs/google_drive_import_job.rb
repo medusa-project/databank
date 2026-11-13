@@ -121,15 +121,42 @@ class GoogleDriveImportJob
     client = GoogleDrive::Client.new(import.google_drive_connection)
     verify_source!(client, import)
     import.update!(status: "importing", error_message: nil)
-    with_staging_file(import) do |file|
-      ensure_staging_space!(import, file)
-      download!(client, import, file)
-      verify_source!(client, import)
-      verify_checksum!(import, file)
-      store!(import, file)
+    root = StorageManager.instance.draft_root
+    if root.is_a?(MedusaStorage::Root::S3)
+      GoogleDrive::S3MultipartUpload.new(import, root).upload!(client) do
+        verify_source!(client, import)
+        ensure_active!(import)
+      end
+      finalize_s3_upload!(import, root)
+    else
+      with_staging_file(import) do |file|
+        ensure_staging_space!(import, file)
+        download!(client, import, file)
+        verify_source!(client, import)
+        verify_checksum!(import, file)
+        store!(import, file)
+      end
+      import.remove_staging_file
     end
-    import.remove_staging_file
     import.google_drive_connection.release_if_unused!
+  end
+
+  def finalize_s3_upload!(import, root)
+    import.dataset.with_lock do
+      import.with_lock do
+        unless import.active? && import.datafile
+          raise GoogleDrive::Error, "The import was cancelled."
+        end
+
+        GoogleDriveImport.ensure_importable!(import.dataset, import.user.reload)
+        unless root.size(import.datafile.storage_key) == import.source_metadata.fetch("size").to_i
+          raise GoogleDrive::Error, "The stored file size does not match the Drive file."
+        end
+        import.datafile.update!(storage_root: root.name, mime_type: import.source_metadata["mimeType"],
+                                upload_status: "uploaded")
+        import.update!(status: "complete", error_message: nil, s3_upload_id: nil, s3_uploaded_parts: [])
+      end
+    end
   end
 
   def with_staging_file(import)

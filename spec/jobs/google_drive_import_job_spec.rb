@@ -63,13 +63,161 @@ RSpec.describe GoogleDriveImportJob do
     s3 = Aws::S3::Client.new(region: "us-east-1", stub_responses: true)
     root = MedusaStorage::Root::S3.new(name: "drive-test", bucket: "drive-test", region: "us-east-1")
     root.s3_client = s3
-    s3.stub_responses(:head_object, content_length: 5)
+    expected_etag = MedusaStorage::EtagCalculator.new(GoogleDrive::Client::CHUNK_BYTES).tap do |digester|
+      digester << "hello"
+    end.etag
+    s3.stub_responses(:head_object, [
+      {status_code: 404, headers: {}, body: ""},
+      {content_length: 5, metadata: {"google-drive-import-id" => import.id.to_s}, etag: expected_etag}
+    ])
+    s3.stub_responses(:upload_part, etag: "\"#{Digest::MD5.hexdigest("hello")}\"")
     allow(StorageManager.instance).to receive(:draft_root).and_return(root)
     job.perform
     expect(import.reload.status).to eq("complete")
-    upload = s3.api_requests.find { |request| request[:operation_name] == :put_object }
-    expect(upload[:params]).to include(bucket: "drive-test", key: import.datafile.storage_key,
-                                      content_md5: Digest::MD5.base64digest("hello"))
+    operations = s3.api_requests.map { |request| request[:operation_name] }
+    expect(operations).to include(:create_multipart_upload, :upload_part, :complete_multipart_upload)
+    expect(operations).not_to include(:put_object)
+    expect(File.exist?(import.staging_path)).to be(false)
+  end
+
+  it "streams 8 MiB Drive ranges to S3 without staging the full file" do
+    content = "x".b * (GoogleDrive::Client::CHUNK_BYTES + 10)
+    metadata = drive_metadata(content)
+    streaming_import = GoogleDriveImport.enqueue!(dataset: dataset, user: user, connection: connection,
+                                                  metadata: metadata)
+    allow(client).to receive(:metadata).and_return(metadata)
+    allow(client).to receive(:chunk) do |_source, offset|
+      content.byteslice(offset, GoogleDrive::Client::CHUNK_BYTES)
+    end
+    s3 = Aws::S3::Client.new(region: "us-east-1", stub_responses: true)
+    root = MedusaStorage::Root::S3.new(name: "drive-test", bucket: "drive-test", region: "us-east-1")
+    root.s3_client = s3
+    expected_etag = MedusaStorage::EtagCalculator.new(GoogleDrive::Client::CHUNK_BYTES).tap do |digester|
+      digester << content
+    end.etag
+    s3.stub_responses(:head_object, [
+      {status_code: 404, headers: {}, body: ""},
+      {content_length: content.bytesize, metadata: {"google-drive-import-id" => streaming_import.id.to_s},
+       etag: expected_etag}
+    ])
+    s3.stub_responses(:upload_part, lambda do |context|
+      {etag: "\"#{Digest::MD5.hexdigest(context.params[:body])}\""}
+    end)
+    allow(StorageManager.instance).to receive(:draft_root).and_return(root)
+
+    described_class.new(streaming_import.id).perform
+
+    parts = s3.api_requests.select { |request| request[:operation_name] == :upload_part }
+    expect(parts.map { |part| part[:params][:body].bytesize }).to eq(
+      [GoogleDrive::Client::CHUNK_BYTES, 10]
+    )
+    expect(streaming_import.reload.status).to eq("complete")
+    expect(File.exist?(streaming_import.staging_path)).to be(false)
+  end
+
+  it "aborts the S3 multipart upload when the Drive checksum does not match" do
+    s3 = Aws::S3::Client.new(region: "us-east-1", stub_responses: true)
+    root = MedusaStorage::Root::S3.new(name: "drive-test", bucket: "drive-test", region: "us-east-1")
+    root.s3_client = s3
+    s3.stub_responses(:head_object, status_code: 404, headers: {}, body: "")
+    s3.stub_responses(:upload_part, etag: "\"part-etag\"")
+    s3.stub_responses(:abort_multipart_upload, {})
+    allow(StorageManager.instance).to receive(:draft_root).and_return(root)
+    allow(client).to receive(:chunk).and_return("wrong")
+
+    job.perform
+
+    expect(import.reload.status).to eq("failed")
+    operations = s3.api_requests.map { |request| request[:operation_name] }
+    expect(operations).to include(:abort_multipart_upload)
+    expect(operations).not_to include(:complete_multipart_upload)
+  end
+
+  it "resumes uploaded S3 parts after a worker interruption" do
+    content = "x".b * (GoogleDrive::Client::CHUNK_BYTES + 10)
+    metadata = drive_metadata(content)
+    resumable_import = GoogleDriveImport.enqueue!(dataset: dataset, user: user, connection: connection,
+                                                  metadata: metadata)
+    interrupted = false
+    allow(client).to receive(:metadata).and_return(metadata)
+    allow(client).to receive(:chunk) do |_source, offset|
+      if offset == GoogleDrive::Client::CHUNK_BYTES && !interrupted
+        interrupted = true
+        raise GoogleDrive::RetryableError, "temporary"
+      end
+      content.byteslice(offset, GoogleDrive::Client::CHUNK_BYTES)
+    end
+    s3 = Aws::S3::Client.new(region: "us-east-1", stub_responses: true)
+    root = MedusaStorage::Root::S3.new(name: "drive-test", bucket: "drive-test", region: "us-east-1")
+    root.s3_client = s3
+    complete = false
+    expected_etag = MedusaStorage::EtagCalculator.new(GoogleDrive::Client::CHUNK_BYTES).tap do |digester|
+      digester << content
+    end.etag
+    s3.stub_responses(:head_object, lambda do |_context|
+      if complete
+        {content_length: content.bytesize, metadata: {"google-drive-import-id" => resumable_import.id.to_s},
+         etag: expected_etag}
+      else
+        {status_code: 404, headers: {}, body: ""}
+      end
+    end)
+    s3.stub_responses(:upload_part, lambda do |context|
+      {etag: "\"#{Digest::MD5.hexdigest(context.params[:body])}\""}
+    end)
+    s3.stub_responses(:complete_multipart_upload, lambda do |_context|
+      complete = true
+      {}
+    end)
+    allow(StorageManager.instance).to receive(:draft_root).and_return(root)
+
+    expect { described_class.new(resumable_import.id).perform }.to raise_error(GoogleDrive::RetryableError)
+    expect(resumable_import.reload.bytes_downloaded).to eq(GoogleDrive::Client::CHUNK_BYTES)
+    described_class.new(resumable_import.id).error(nil, GoogleDrive::RetryableError.new("temporary"))
+    described_class.new(resumable_import.id).perform
+
+    upload_parts = s3.api_requests.select { |request| request[:operation_name] == :upload_part }
+    expect(upload_parts.map { |part| part[:params][:part_number] }).to eq([1, 2])
+    expect(resumable_import.reload.status).to eq("complete")
+  end
+
+  it "recognizes an S3 upload completed just before a worker interruption" do
+    content = "hello"
+    parts = [{"part_number" => 1, "etag" => "part-etag", "md5" => Digest::MD5.base64digest(content),
+              "size" => content.bytesize}]
+    import.update!(s3_upload_id: "completed-upload", s3_uploaded_parts: parts,
+                   bytes_downloaded: content.bytesize)
+    s3 = Aws::S3::Client.new(region: "us-east-1", stub_responses: true)
+    root = MedusaStorage::Root::S3.new(name: "drive-test", bucket: "drive-test", region: "us-east-1")
+    root.s3_client = s3
+    expected_etag = MedusaStorage::EtagCalculator.new(GoogleDrive::Client::CHUNK_BYTES).tap do |digester|
+      digester << content
+    end.etag
+    s3.stub_responses(:head_object, content_length: content.bytesize,
+                                  metadata: {"google-drive-import-id" => import.id.to_s}, etag: expected_etag)
+    allow(StorageManager.instance).to receive(:draft_root).and_return(root)
+
+    job.perform
+
+    expect(import.reload.status).to eq("complete")
+    expect(import.s3_upload_id).to be_nil
+    expect(s3.api_requests.map { |request| request[:operation_name] }).not_to include(
+      :create_multipart_upload, :upload_part, :complete_multipart_upload
+    )
+  end
+
+  it "aborts the S3 multipart upload when an import is cancelled" do
+    import.update!(status: "cancelled", s3_upload_id: "incomplete-upload")
+    s3 = Aws::S3::Client.new(region: "us-east-1", stub_responses: true)
+    root = MedusaStorage::Root::S3.new(name: "drive-test", bucket: "drive-test", region: "us-east-1")
+    root.s3_client = s3
+    s3.stub_responses(:abort_multipart_upload, {})
+    allow(StorageManager.instance).to receive(:draft_root).and_return(root)
+
+    import.abort_s3_upload!
+
+    expect(import.reload.s3_upload_id).to be_nil
+    expect(s3.api_requests.map { |request| request[:operation_name] }).to include(:abort_multipart_upload)
   end
 
   it "does not leave a stored object if cancellation happens while copying" do

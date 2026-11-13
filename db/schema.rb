@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_11_12_170000) do
+ActiveRecord::Schema[8.0].define(version: 2026_11_13_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -297,6 +297,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_11_12_170000) do
     t.text "error_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "s3_upload_id"
+    t.jsonb "s3_uploaded_parts", default: [], null: false
     t.index ["datafile_id"], name: "unique_drive_import_datafile", unique: true
     t.index ["dataset_id"], name: "index_google_drive_imports_on_dataset_id"
     t.index ["google_drive_connection_id"], name: "index_google_drive_imports_on_google_drive_connection_id"

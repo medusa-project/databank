@@ -10,6 +10,7 @@ class GoogleDriveImport < ApplicationRecord
   belongs_to :datafile, optional: true
   validates :status, inclusion: {in: STATUSES}
   before_destroy :remove_staging_file
+  before_destroy :abort_s3_upload!
 
   def self.ensure_importable!(dataset, user)
     unless user && Ability.new(user).can?(
@@ -81,6 +82,7 @@ class GoogleDriveImport < ApplicationRecord
   end
 
   def cleanup_incomplete!
+    abort_s3_upload!
     remove_staging_file
     datafile&.destroy!
     reload
@@ -90,8 +92,18 @@ class GoogleDriveImport < ApplicationRecord
     return unless active?
 
     update!(status: "cancelled", error_message: "The dataset file was removed.")
+    abort_s3_upload!
     remove_staging_file
     google_drive_connection.release_if_unused!
+  end
+
+  def abort_s3_upload!
+    return if s3_upload_id.blank?
+
+    root = StorageManager.instance.draft_root
+    return unless root.is_a?(MedusaStorage::Root::S3)
+
+    GoogleDrive::S3MultipartUpload.new(self, root).abort!
   end
 
   def self.cleanup_expired!
