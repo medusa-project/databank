@@ -103,6 +103,28 @@ RSpec.describe GoogleDriveImportsController, type: :controller do
     expect(JSON.parse(response.body)["error"]).to include("already exists")
   end
 
+  it "rejects a second import if another was queued after preview" do
+    post :preview, params: base_params.merge(file_id: "drive-file-123")
+    selection_id = JSON.parse(response.body).fetch("selection_id")
+    existing = GoogleDriveImport.enqueue!(dataset: dataset, user: user, connection: connection,
+                                          metadata: drive_metadata.merge("name" => "other.csv"))
+
+    ["queued", "importing"].each do |status|
+      existing.update!(status: status)
+      expect {
+        post :create, params: base_params.merge(selection_id: selection_id)
+      }.not_to change(GoogleDriveImport, :count)
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(JSON.parse(response.body)["error"]).to include("already queued or in progress")
+    end
+
+    existing.update!(status: "complete")
+    expect {
+      post :create, params: base_params.merge(selection_id: selection_id)
+    }.to change(GoogleDriveImport, :count).by(1)
+    expect(response).to have_http_status(:accepted)
+  end
+
   it "rejects confirmation from a different selection or browser tab" do
     post :preview, params: base_params.merge(file_id: "drive-file-123")
     expect {

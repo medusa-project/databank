@@ -122,6 +122,8 @@ also requires dataset management permission; a depositor cannot invoke it
 directly. Imports are independent copies of one ordinary file, up to
 50,000,000,000 bytes (50 GB). Google documents, folders, shortcuts, Shared Drives,
 empty files, and duplicate dataset filenames are rejected.
+Only one import may be queued or in progress per dataset; wait for it to
+finish or cancel it before starting another.
 
 Before deploying:
 

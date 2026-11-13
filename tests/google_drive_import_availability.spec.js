@@ -1,0 +1,51 @@
+const { test, expect } = require("@playwright/test");
+const { execFileSync } = require("node:child_process");
+const path = require("node:path");
+
+test("disables Drive imports while a dataset import is active and re-enables afterward", async ({ page }) => {
+  const jqueryRoot = execFileSync("bundle", ["show", "jquery-rails"], { encoding: "utf8" }).trim();
+  await page.setContent(`
+    <button data-dataset-action="import-google-drive" disabled>Import from Google Drive</button>
+    <p id="google-drive-import-availability" role="status">Checking Google Drive import status</p>
+    <section id="google-drive-imports" data-base-path="/datasets/test/google_drive" tabindex="-1">
+      <p id="google-drive-error" role="alert"></p>
+      <ul id="google-drive-import-list"></ul>
+    </section>
+    <dialog id="google-drive-confirmation">
+      <button id="google-drive-confirm">Confirm</button>
+      <button id="google-drive-dismiss">Dismiss</button>
+    </dialog>
+  `);
+  await page.addScriptTag({ path: path.join(jqueryRoot, "vendor/assets/javascripts/jquery.js") });
+  await page.evaluate(() => {
+    window.imports = [{ id: 1, name: "test.csv", size: 5, bytes_downloaded: 0, status: "queued" }];
+    const originalTimeout = window.setTimeout;
+    window.setTimeout = (callback, delay, ...args) =>
+      originalTimeout(callback, delay === 5000 || delay === 15000 ? 50 : delay, ...args);
+    window.jQuery.ajax = (options) => {
+      if (options.type === "DELETE") {
+        window.imports[0].status = "cancelled";
+        queueMicrotask(() => options.success({}));
+      } else {
+        queueMicrotask(() => options.success(structuredClone(window.imports)));
+      }
+    };
+  });
+  await page.addScriptTag({ path: path.resolve("app/assets/javascripts/google_drive_import.js") });
+
+  const button = page.getByRole("button", { name: "Import from Google Drive" });
+  const availability = page.locator("#google-drive-import-availability");
+  await expect(button).toBeDisabled();
+  await expect(availability).toContainText("queued or in progress");
+  await page.getByRole("button", { name: "Cancel import of test.csv" }).click();
+  await expect(button).toBeEnabled();
+  await expect(button).toBeFocused();
+  await expect(availability).toBeEmpty();
+
+  await page.evaluate(() => { window.imports[0].status = "importing"; });
+  await expect(button).toBeDisabled();
+  await expect(page.locator("#google-drive-imports")).toBeFocused();
+  await page.evaluate(() => { window.imports[0].status = "complete"; });
+  await expect(button).toBeEnabled();
+  await expect(availability).toBeEmpty();
+});

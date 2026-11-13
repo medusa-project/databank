@@ -62,9 +62,29 @@
 
   function showError(error) {
     jQuery("#google-drive-error").text(error.message);
-    jQuery('[data-dataset-action="import-google-drive"]')
-      .prop("disabled", false)
-      .trigger("focus");
+    focusImportControl();
+  }
+
+  function focusImportControl() {
+    var button = jQuery('[data-dataset-action="import-google-drive"]');
+    (button.prop("disabled") ? jQuery("#google-drive-imports") : button).trigger("focus");
+  }
+
+  function updateImportAvailability(imports) {
+    var active = imports.some(function (item) {
+      return item.status === "queued" || item.status === "importing";
+    });
+    var button = jQuery('[data-dataset-action="import-google-drive"]');
+    var hadFocus = button.is(":focus");
+    button.prop("disabled", active);
+    jQuery("#google-drive-import-availability").text(
+      active
+        ? "A Google Drive import is queued or in progress for this dataset. Wait for it to finish or cancel it before starting another."
+        : "",
+    );
+    if (active && hadFocus) {
+      focusImportControl();
+    }
   }
 
   function basePath() {
@@ -126,9 +146,7 @@
                 request(basePath() + "/authorization", "DELETE").catch(
                   showError,
                 );
-                jQuery('[data-dataset-action="import-google-drive"]')
-                  .prop("disabled", false)
-                  .trigger("focus");
+                focusImportControl();
               }
             }
           })
@@ -178,10 +196,7 @@
           }).on("click", function () {
             request(basePath() + "/imports/" + item.id, "DELETE")
               .then(function () {
-                jQuery('[data-dataset-action="import-google-drive"]').trigger(
-                  "focus",
-                );
-                refreshImports();
+                return refreshImports().then(focusImportControl);
               })
               .catch(showError);
           }),
@@ -215,10 +230,7 @@
           }).on("click", function () {
             request(basePath() + "/imports/" + item.id + "/notice", "DELETE")
               .then(function () {
-                jQuery('[data-dataset-action="import-google-drive"]').trigger(
-                  "focus",
-                );
-                refreshImports();
+                return refreshImports().then(focusImportControl);
               })
               .catch(showError);
           }),
@@ -235,14 +247,12 @@
     window.clearTimeout(pollTimer);
     return request(basePath() + "/imports")
       .then(function (imports) {
+        updateImportAvailability(imports);
         renderImports(imports);
-        if (
-          imports.some(function (item) {
-            return item.status === "queued" || item.status === "importing";
-          })
-        ) {
-          pollTimer = window.setTimeout(refreshImports, 5000);
-        }
+        var active = imports.some(function (item) {
+          return item.status === "queued" || item.status === "importing";
+        });
+        pollTimer = window.setTimeout(refreshImports, active ? 5000 : 15000);
       })
       .catch(function (error) {
         showError(error);
@@ -308,16 +318,15 @@
     jQuery("#google-drive-confirm").on("click", function () {
       var button = jQuery(this).prop("disabled", true);
       request(basePath() + "/imports", "POST", { selection_id: selectionId })
-        .then(function () {
+        .then(function (importStatus) {
+          updateImportAvailability([importStatus]);
           document.getElementById("google-drive-confirmation").close();
-          jQuery('[data-dataset-action="import-google-drive"]').trigger(
-            "focus",
-          );
           refreshImports();
         })
         .catch(function (error) {
           document.getElementById("google-drive-confirmation").close();
           showError(error);
+          refreshImports();
         })
         .finally(function () {
           button.prop("disabled", false);
@@ -335,7 +344,7 @@
     document
       .getElementById("google-drive-confirmation")
       .addEventListener("close", function () {
-        jQuery('[data-dataset-action="import-google-drive"]').trigger("focus");
+        focusImportControl();
       });
   });
 })();

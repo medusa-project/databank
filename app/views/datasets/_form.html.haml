@@ -280,9 +280,10 @@
                   - if (can? :manage, @dataset) && @dataset.persisted?
                     .row
                       .col-md-5
-                        %button.btn.btn-success.fileinput-button(type="button" data-dataset-action="import-google-drive" aria-describedby="google-drive-import-guidance")
+                        %button.btn.btn-success.fileinput-button(type="button" data-dataset-action="import-google-drive" aria-describedby="google-drive-import-guidance google-drive-import-availability" disabled)
                           %span.glyphicon.glyphicon-link
                           Import from Google Drive
+                        %p#google-drive-import-availability{role: "status"} Checking Google Drive import status…
                       .col-md-7#google-drive-import-guidance
                         %p
                           %strong Note to curators:
@@ -294,7 +295,7 @@
                           %li Review the selected filename and size, then confirm the import.
                           %li The file is copied in the background. Check the import status on this page, even after leaving and returning.
                         %p Maximum file size: 50 GB. Existing filenames cannot be overwritten.
-                    %section#google-drive-imports{data: {base_path: "/datasets/#{@dataset.key}/google_drive"}, aria: {labelledby: "google-drive-import-status-title"}}
+                    %section#google-drive-imports{data: {base_path: "/datasets/#{@dataset.key}/google_drive"}, aria: {labelledby: "google-drive-import-status-title"}, tabindex: "-1"}
                       %h3#google-drive-import-status-title Google Drive imports
                       %p#google-drive-error{role: "alert"}
                       %div{role: "status", aria: {live: "polite", relevant: "additions text"}}

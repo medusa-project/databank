@@ -31,6 +31,9 @@ class GoogleDriveImport < ApplicationRecord
     validate_source = GoogleDrive::Client.validate_metadata!(metadata)
     dataset.with_lock do
       ensure_importable!(dataset, user)
+      if dataset.google_drive_imports.where(status: ACTIVE_STATUSES).exists?
+        raise GoogleDrive::Error, "A Google Drive import is already queued or in progress for this dataset."
+      end
       unless connection.dataset_id == dataset.id && connection.user_id == user.id &&
              connection.expires_at > Time.current && connection.encrypted_credentials.present?
         raise GoogleDrive::Error, "Google authorization is unavailable. Authorize Google Drive again."
