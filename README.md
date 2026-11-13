@@ -124,6 +124,10 @@ directly. Imports are independent copies of one ordinary file, up to
 empty files, and duplicate dataset filenames are rejected.
 Only one import may be queued or in progress per dataset; wait for it to
 finish or cancel it before starting another.
+Import status changes are announced separately from byte-progress updates.
+Background polling errors do not move keyboard focus, and focus is restored
+when a focused import control disappears. The confirmation dialog describes
+the selected filename and size; authorization opens in a separate window.
 
 Before deploying:
 

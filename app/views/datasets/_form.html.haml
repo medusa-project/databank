@@ -295,11 +295,12 @@
                           %li Review the selected filename and size, then confirm the import.
                           %li The file is copied in the background. Check the import status on this page, even after leaving and returning.
                         %p Maximum file size: 50 GB. Existing filenames cannot be overwritten.
+                        %p Google authorization opens in a separate window.
                     %section#google-drive-imports{data: {base_path: "/datasets/#{@dataset.key}/google_drive"}, aria: {labelledby: "google-drive-import-status-title"}, tabindex: "-1"}
                       %h3#google-drive-import-status-title Google Drive imports
                       %p#google-drive-error{role: "alert"}
-                      %div{role: "status", aria: {live: "polite", relevant: "additions text"}}
-                        %ul#google-drive-import-list
+                      %p.sr-only#google-drive-import-announcement{role: "status", aria: {atomic: "true"}}
+                      %ul#google-drive-import-list
                     .row.curator-only
                       .col-md-5
                         %button.btn.btn-success.fileinput-button(type="button" data-dataset-action="import-globus")

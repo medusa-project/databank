@@ -60,9 +60,14 @@
     });
   }
 
-  function showError(error) {
-    jQuery("#google-drive-error").text(error.message);
-    focusImportControl();
+  function showError(error, background) {
+    var message = jQuery("#google-drive-error");
+    if (message.text() !== error.message) {
+      message.text(error.message);
+    }
+    if (!background) {
+      focusImportControl();
+    }
   }
 
   function focusImportControl() {
@@ -77,11 +82,13 @@
     var button = jQuery('[data-dataset-action="import-google-drive"]');
     var hadFocus = button.is(":focus");
     button.prop("disabled", active);
-    jQuery("#google-drive-import-availability").text(
-      active
+    var message = active
         ? "A Google Drive import is queued or in progress for this dataset. Wait for it to finish or cancel it before starting another."
-        : "",
-    );
+        : "";
+    var availability = jQuery("#google-drive-import-availability");
+    if (availability.text() !== message) {
+      availability.text(message);
+    }
     if (active && hadFocus) {
       focusImportControl();
     }
@@ -165,9 +172,27 @@
     }
     list.data("snapshot", snapshot);
     var focusedId = document.activeElement && document.activeElement.id;
-    list.empty();
+    var focusWasInList = list[0].contains(document.activeElement);
+    var announcements = [];
+    list.children().each(function () {
+      var id = jQuery(this).data("import-id");
+      if (!imports.some(function (item) { return item.id === id; })) {
+        jQuery(this).remove();
+      }
+    });
     imports.forEach(function (item) {
-      var row = jQuery("<li>");
+      var previousRow = jQuery("#drive-import-row-" + item.id);
+      var state = JSON.stringify([item.name, item.status, item.error]);
+      var progressText = " " + item.bytes_downloaded.toLocaleString() +
+        " of " + item.size.toLocaleString() + " bytes downloaded. ";
+      if (previousRow.data("state") === state) {
+        previousRow.find("progress").attr({ max: item.size, value: item.bytes_downloaded });
+        previousRow.find(".drive-import-progress-text").text(progressText);
+        return;
+      }
+      announcements.push(item.name + ": " + item.status + "." + (item.error ? " " + item.error : ""));
+      var row = jQuery("<li>", { id: "drive-import-row-" + item.id })
+        .data("import-id", item.id).data("state", state);
       row.append(jQuery("<span>").text(item.name + ": " + item.status + ". "));
       if (item.status === "queued" || item.status === "importing") {
         row.append(
@@ -177,15 +202,7 @@
             "aria-label": "Download progress for " + item.name,
           }),
         );
-        row.append(
-          document.createTextNode(
-            " " +
-              item.bytes_downloaded.toLocaleString() +
-              " of " +
-              item.size.toLocaleString() +
-              " bytes downloaded. ",
-          ),
-        );
+        row.append(jQuery("<span>", { "class": "drive-import-progress-text", text: progressText }));
         row.append(
           jQuery("<button>", {
             type: "button",
@@ -208,6 +225,7 @@
       if (item.status === "complete") {
         row.append(
           jQuery("<a>", {
+            id: "reload-drive-import-" + item.id,
             href: window.location.pathname,
             text: "Reload the page to show the imported file",
           }),
@@ -226,7 +244,7 @@
             class: "btn btn-default btn-sm",
             text: "Clear Notice",
             "aria-label":
-              "Clear " + item.status + " import notice for " + item.name,
+              "Clear Notice for " + item.name + " (" + item.status + ")",
           }).on("click", function () {
             request(basePath() + "/imports/" + item.id + "/notice", "DELETE")
               .then(function () {
@@ -236,10 +254,24 @@
           }),
         );
       }
-      list.append(row);
+      if (previousRow.length) {
+        previousRow.replaceWith(row);
+      } else {
+        list.append(row);
+      }
     });
-    if (focusedId && document.getElementById(focusedId)) {
-      document.getElementById(focusedId).focus();
+    if (announcements.length) {
+      jQuery("#google-drive-import-announcement").text(announcements.join(" "));
+    }
+    if (focusWasInList) {
+      if (focusedId && document.getElementById(focusedId)) {
+        var target = document.getElementById(focusedId);
+        if (document.activeElement !== target) {
+          target.focus();
+        }
+      } else {
+        focusImportControl();
+      }
     }
   }
 
@@ -255,7 +287,7 @@
         pollTimer = window.setTimeout(refreshImports, active ? 5000 : 15000);
       })
       .catch(function (error) {
-        showError(error);
+        showError(error, true);
         pollTimer = window.setTimeout(refreshImports, 15000);
       });
   }
