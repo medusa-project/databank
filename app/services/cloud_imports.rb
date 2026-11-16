@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module CloudImports
-  MAX_BYTES = 50_000_000_000
+  MAX_BYTES = 153_600_000_000
   CHUNK_BYTES = 8 * 1024 * 1024
   ACTIVE_STATUSES = ["queued", "importing"].freeze
   STATUSES = (ACTIVE_STATUSES + ["complete", "failed", "cancelled"]).freeze
