@@ -1,4 +1,4 @@
-.row
+.row.curator-only
   .col-md-5
     %button.btn.btn-success.fileinput-button{type: "button", data: {dataset_action: "import-box"}, aria: {describedby: "box-import-guidance box-import-availability"}, disabled: true}
       Import from Box
@@ -13,5 +13,5 @@
         %li Select one ordinary file you own or collaborate on. Folders, links, and Box Notes are not supported.
         %li Review the filename and size, then confirm the import.
         %li The file is copied in the background. Return to this page to check its status.
-      %p Maximum file size: 50 GB. Existing filenames cannot be overwritten.
+      %p Maximum file size: 150 GB. Existing filenames cannot be overwritten.
     = render partial: "datasets/cloud_import_notifications", locals: {prefix: "box", name: "Box", base_path: "/datasets/#{@dataset.key}/box"}
