@@ -892,7 +892,31 @@ function addInternalEditorRow() {
 }
 
 function addEditorRow() {
-  return addInternalEditorRow();
+  var input = jQuery("#newEditor");
+  var email = input.val().trim();
+  input.val(email);
+
+  if (email === "" || !input[0].checkValidity()) {
+    alert("email address must be in valid format");
+    input.trigger("focus");
+    return;
+  }
+
+  var row = jQuery("<div>", { class: "row" });
+  var checkboxColumn = jQuery("<div>", { class: "col-md-1" }).appendTo(row);
+  var checkboxContainer = jQuery("<div>", { class: "pull-right" }).appendTo(
+    checkboxColumn,
+  );
+  jQuery("<input>", {
+    name: "editor_emails[]",
+    type: "checkbox",
+    value: email,
+    checked: true,
+    "aria-label": email,
+  }).appendTo(checkboxContainer);
+  jQuery("<div>", { class: "col-md-3" }).text(email).appendTo(row);
+  row.prependTo("#newEditorsDiv");
+  input.val("").trigger("focus");
 }
 
 function importFromGlobus() {

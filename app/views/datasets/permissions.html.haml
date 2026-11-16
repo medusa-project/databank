@@ -7,49 +7,21 @@
           %span( class="metadata-label" ) Permissions
     .panel-collapse.collapse.in(id="permissionsPanel" aria-labelledby="permissionsHeading" )
       .panel-body
-        %strong Groups allowed to review this dataset, even when in a draft, held, or embargoed state:
-        %hr
+        %strong Additional Editor Email Addresses:
         =form_tag("/datasets/#{@dataset.key}/update_permissions", method: :post) do
-          %input(type="hidden" name="permission_action" value="update_permission" )
-          .row
-            .col-md-1
-              .pull-right
-                -if @dataset.data_curation_network
-                  %input(type="checkbox" name="can_read[]" value="#{Databank::UserRole::NETWORK_REVIEWER}" checked="checked")
-                -else
-                  %input(type="checkbox" name="can_read[]" value="#{Databank::UserRole::NETWORK_REVIEWER}")
-            .col-md-3
-              Data Curation Network (DCN)
-          %hr
-          %strong Reviewer Email Addresses:
-
           -@dataset.reviewer_emails.each do |email|
-            .row
-              .col-md-1
-                .pull-right
-                  %input(type="checkbox" name="reviewer_emails[]" value="#{email}" checked="checked")
-              .col-md-3
-                =email
-          %div#newReviewersDiv
-          .row
-            .col-md-3.col-md-offset-1
-              %input(type="email" name="newReviewer" id="newReviewer" class="form-control" placeholder="enter email address then click Add")
-            .col-md-2
-              %button(type="button" id="addReviewerBtn" class= "btn btn-success")
-                Add
-          %hr
-          %strong Editor Email Addresses:
-
+            =hidden_field_tag "reviewer_emails[]", email, id: nil
           -@dataset.editor_emails.each do |email|
             .row
               .col-md-1
                 .pull-right
-                  %input(type="checkbox" name="editor_emails[]" value="#{email}" checked="checked")
+                  %input(type="checkbox" name="editor_emails[]" value="#{email}" checked="checked" aria-label="#{email}")
               .col-md-3
                 =email
-          %div#newEditorsDiv
+          %div#newEditorsDiv(aria-live="polite" aria-relevant="additions")
           .row
             .col-md-3.col-md-offset-1
+              %label.sr-only(for="newEditor") New editor email address
               %input(type="email" name="newEditor" id="newEditor" class="form-control" placeholder="enter email address then click Add")
             .col-md-2
               %button(type="button" id="addEditorBtn" class= "btn btn-success")

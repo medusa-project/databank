@@ -404,6 +404,16 @@ npm run playwright:test
 
 Playwright expects the Rails application to already be running and reachable at `http://127.0.0.1:3000` unless `PLAYWRIGHT_BASE_URL` is set.
 
+To check editor previews, saving/removing editor permissions, and preservation of existing reviewers:
+
+```
+npx playwright test tests/dataset_permissions_workflow.spec.js --project=chromium --workers=1
+```
+
+When serving Rails in the test environment, rebuild changed JavaScript with
+`RAILS_ENV=test bin/rails assets:precompile` and restart the server before browser
+testing. A restart alone does not refresh precompiled assets.
+
 To open the Playwright HTML report from the dev container with the forwarded report port:
 
 ```
