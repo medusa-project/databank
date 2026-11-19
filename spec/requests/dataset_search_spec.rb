@@ -32,6 +32,35 @@ RSpec.describe "DatasetSearch", type: :request do
       expect(response.body).to include("Datasets: &lt;script&gt;alert(1)&lt;/script&gt; | Illinois Data Bank | Illinois")
       expect(response.body).not_to include(query)
     end
+
+    it "filters results by search term and selected facets" do
+      get datasets_path, params: { q: "taxi", subjects: ["Technology and Engineering"], license_codes: ["CC01"] }
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include(datasets(:released3).title)
+      expect(response.body).not_to include(datasets(:released1).title)
+
+      get datasets_path, params: { q: "taxi", subjects: ["No matching subject"] }
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).not_to include(datasets(:released3).title)
+    end
+
+    it "ignores a malformed facet while still applying the search term" do
+      get datasets_path, params: { q: "taxi", subjects: "not-an-array" }
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include(datasets(:released3).title)
+      expect(response.body).not_to include(datasets(:released1).title)
+    end
+
+    it "filters results by a selected facet without a search term" do
+      get datasets_path, params: { subjects: ["Technology and Engineering"] }
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include(datasets(:released3).title)
+      expect(response.body).not_to include(datasets(:released1).title)
+    end
   end
 
   describe "GET /datasets for depositor" do

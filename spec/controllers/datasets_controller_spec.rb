@@ -46,6 +46,46 @@ RSpec.describe DatasetsController, type: :controller do
       expect(response.body).to eq('report body')
       expect(response.headers['Content-Disposition']).to include('report.txt')
     end
+
+    it 'passes search controls and array facets to the search service' do
+      allow(User).to receive(:find_by).with(email: user.email).and_return(user)
+      allow(user).to receive(:datasets_user_can_view).with(user: user).and_return([dataset])
+      allow(Dataset).to receive(:filtered_list).and_return([])
+      allow(Dataset).to receive(:citation_report).and_return('report body')
+      search_params = {
+        q: 'taxi', editor: 'researcher1', sort_by: 'sort_released_asc', page: '2', per_page: '50',
+        license_codes: ['CC01'], subjects: ['Technology and Engineering'], depositors: ['researcher1'],
+        funder_codes: ['nsf'], visibility_codes: ['public'], external_files: ['true'],
+        publication_years: ['2002']
+      }
+
+      get :index, params: search_params
+
+      expect(Dataset).to have_received(:filtered_list) do |user_role:, user:, params:|
+        expect(params).to eq(search_params.stringify_keys)
+        expect(params[:q]).to eq('taxi')
+        expect(params[:per_page]).to eq('50')
+      end
+    end
+
+    it 'ignores malformed facet values without discarding valid search parameters' do
+      allow(User).to receive(:find_by).with(email: user.email).and_return(user)
+      allow(user).to receive(:datasets_user_can_view).with(user: user).and_return([dataset])
+      allow(Dataset).to receive(:filtered_list).and_return([])
+      allow(Dataset).to receive(:citation_report).and_return('report body')
+      allow(Rails.logger).to receive(:warn).and_call_original
+
+      get :index, params: { q: 'taxi', subjects: 'bad', license_codes: { code: 'CC01' },
+                            funder_codes: ['nsf'], publication_years: '' }
+
+      expect(response).to be_successful
+      expect(Rails.logger).to have_received(:warn).with(
+        'Ignoring malformed dataset search filters: license_codes, subjects, publication_years'
+      )
+      expect(Dataset).to have_received(:filtered_list) do |user_role:, user:, params:|
+        expect(params).to eq({ 'q' => 'taxi', 'funder_codes' => ['nsf'] })
+      end
+    end
   end
 
   describe 'GET #show' do

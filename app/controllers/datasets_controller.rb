@@ -1004,23 +1004,11 @@ collaborators to access the data files while the dataset is not public.</li>
     :license_codes, :subjects, :depositors, :funder_codes, :visibility_codes, :external_files, :publication_years
   ].freeze
 
-  # Normalize search params before passing to the search service.
-  # Converts single string values to arrays and rejects malformed requests.
+  # Ignore malformed facet values while preserving the other search controls.
   def normalize_search_params(params)
-    normalized = params.permit(*ARRAY_PARAM_KEYS).to_h
-
-    # A non-empty string that doesn't respond to #each is malformed.
-    if normalized.any? { |_k, v| v.is_a?(String) && !v.respond_to?(:each) }
-      raise ActionController::RoutingError.new('Not Found')
-    end
-
-    # Convert single values to arrays so the service layer always gets arrays.
-    ARRAY_PARAM_KEYS.each do |key|
-      next unless normalized.key?(key)
-      val = normalized[key]
-      normalized[key] = [val] if val.is_a?(String) && val.present?
-    end
-
+    normalized = params.permit(:q, :editor, :sort_by, :page, :per_page, ARRAY_PARAM_KEYS.index_with { [] }).to_h
+    ignored_keys = ARRAY_PARAM_KEYS.select { |key| params.key?(key) && !normalized.key?(key) }
+    Rails.logger.warn("Ignoring malformed dataset search filters: #{ignored_keys.join(', ')}") if ignored_keys.any?
     normalized
   end
 
