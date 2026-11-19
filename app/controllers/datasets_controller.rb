@@ -124,7 +124,7 @@ collaborators to access the data files while the dataset is not public.</li>
       @title = "Datasets"
       @is_search_results = false
     end
-    @search = Dataset.filtered_list(user_role: user_role, user: user, params: params)
+    @search = Dataset.filtered_list(user_role: user_role, user: user, params: normalize_search_params(params))
     @report = Dataset.citation_report(@search, request.original_url, current_user)
     send_data @report, filename: "report.txt" if params.has_key?("download") && params["download"] == "now"
   end
@@ -998,6 +998,31 @@ collaborators to access the data files while the dataset is not public.</li>
   def confirm_review; end
 
   private
+
+  # Search parameter keys expected as arrays.
+  ARRAY_PARAM_KEYS = [
+    :license_codes, :subjects, :depositors, :funder_codes, :visibility_codes, :external_files, :publication_years
+  ].freeze
+
+  # Normalize search params before passing to the search service.
+  # Converts single string values to arrays and rejects malformed requests.
+  def normalize_search_params(params)
+    normalized = params.permit(*ARRAY_PARAM_KEYS).to_h
+
+    # A non-empty string that doesn't respond to #each is malformed.
+    if normalized.any? { |_k, v| v.is_a?(String) && !v.respond_to?(:each) }
+      raise ActionController::RoutingError.new('Not Found')
+    end
+
+    # Convert single values to arrays so the service layer always gets arrays.
+    ARRAY_PARAM_KEYS.each do |key|
+      next unless normalized.key?(key)
+      val = normalized[key]
+      normalized[key] = [val] if val.is_a?(String) && val.present?
+    end
+
+    normalized
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_dataset
