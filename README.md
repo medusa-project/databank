@@ -120,7 +120,7 @@ npm run playwright:test
 The Google Drive control remains inside the curator-only block. The backend
 also requires dataset management permission; a depositor cannot invoke it
 directly. Imports are independent copies of one ordinary file, up to
-50,000,000,000 bytes (50 GB). Google documents, folders, shortcuts, Shared Drives,
+150,000,000,000 bytes (150 GB). Google documents, folders, shortcuts, Shared Drives,
 empty files, and duplicate dataset filenames are rejected.
 Only one import may be queued or in progress per dataset; wait for it to
 finish or cancel it before starting another.
@@ -148,8 +148,8 @@ Before deploying:
 4. Run `bundle install` and `bin/rails db:migrate`, precompile assets, and
    restart the application and delayed-job workers. Workers must consume
    the `google_drive` queue (workers without queue filtering already do).
-5. Google Drive imports to S3-backed draft storage stream 8 MiB Drive ranges
-   directly into resumable S3 multipart uploads, using one range in memory
+5. Google Drive imports to S3-backed draft storage stream dynamically sized
+   Drive ranges directly into resumable S3 multipart uploads, using one range in memory
    rather than staging the full file on local disk. Progress and uploaded S3
    parts are persisted so a worker can resume after interruption. Failed and
    cancelled imports abort their multipart uploads. Configure an S3 lifecycle
@@ -193,19 +193,23 @@ and a disposable draft dataset: authorize a test Google account, import a
 small CSV, verify its downloaded bytes, revisit the page to check persistent
 status, and test cancellation and duplicate-name rejection. Verify a file
 shared by another account as well. Keep the pilot curator-only until the
-live flow, browser accessibility, and production-like 50 GB transfers have
+live flow, browser accessibility, and production-like 150 GB transfers have
 been qualified; a large-file success is not implied by the unit tests.
 
 ### Box import (curator pilot)
 
 Box uses the same confirmation, persistent status, cancellation, Clear Notice,
 and per-dataset active-import restriction as Google Drive. Users authorize their
-own Box accounts; only ordinary downloadable files up to 50,000,000,000 bytes
+own Box accounts; only ordinary downloadable files up to 150,000,000,000 bytes
 are accepted. Folders, web links, and Box Notes are excluded. Imports require
 S3-backed draft storage and use the shared resumable multipart transfer service
-with 8 MiB buffers, SHA-1 source verification, and multipart ETag verification.
+with dynamically sized buffers, SHA-1 source verification, and multipart ETag verification.
 Box and Drive jobs share the single active-transfer slot; queued jobs wait
 without consuming failure attempts.
+S3 parts are at least 8 MiB and sized for at most 8,500 parts (about
+16.83 MiB at 150 GB); retries preserve the size of already uploaded parts.
+Existing uploads whose saved part size would exceed S3's 10,000-part limit
+must be started again.
 Refresh credentials remain encrypted on the server for at most 24 hours; only
 a downscoped `base_picker` token is returned to the browser. Box refresh tokens
 rotate and are replaced under a database lock.

@@ -89,7 +89,7 @@ class BoxStorage::Client
       raise BoxStorage::Error, "Choose an ordinary file with a valid filename in Box."
     end
     unless metadata["size"].to_s.match?(/\A\d+\z/) && metadata["size"].to_i.between?(1, MAX_BYTES)
-      raise BoxStorage::Error, "Choose a nonempty file no larger than 50 GB."
+      raise BoxStorage::Error, "Choose a nonempty file no larger than 150 GB."
     end
     unless metadata["version"].present? && metadata["sha1"].to_s.match?(/\A[0-9a-f]{40}\z/i)
       raise BoxStorage::Error, "Box did not return a file version and checksum. Select another file."
@@ -102,9 +102,9 @@ class BoxStorage::Client
     raise
   end
 
-  def chunk(metadata, offset)
+  def chunk(metadata, offset, part_bytes = CHUNK_BYTES)
     validate_id!(metadata.fetch("id"))
-    last_byte = [offset + CHUNK_BYTES, metadata.fetch("size").to_i].min - 1
+    last_byte = [offset + part_bytes, metadata.fetch("size").to_i].min - 1
     uri = URI("https://api.box.com/2.0/files/#{metadata.fetch('id')}/content")
     uri.query = URI.encode_www_form(version: metadata.fetch("version"))
     headers = {"Range" => "bytes=#{offset}-#{last_byte}"}

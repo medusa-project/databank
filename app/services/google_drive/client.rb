@@ -79,15 +79,15 @@ module GoogleDrive
         raise Error, "Rename this file in Google Drive before importing it."
       end
       unless metadata["size"].to_s.match?(/\A\d+\z/) && metadata["size"].to_i.between?(1, MAX_BYTES)
-        raise Error, "Choose a nonempty file no larger than 50 GB."
+        raise Error, "Choose a nonempty file no larger than 150 GB."
       end
       raise Error, "Google Drive did not return a file version." if metadata["version"].blank?
 
       metadata
     end
 
-    def chunk(metadata, offset)
-      last_byte = [offset + CHUNK_BYTES, metadata.fetch("size").to_i].min - 1
+    def chunk(metadata, offset, part_bytes = CHUNK_BYTES)
+      last_byte = [offset + part_bytes, metadata.fetch("size").to_i].min - 1
       uri = URI("https://www.googleapis.com/drive/v3/files/#{metadata.fetch('id')}?alt=media")
       expected_range = "bytes #{offset}-#{last_byte}/#{metadata.fetch('size')}"
       response = request(uri, "Range" => "bytes=#{offset}-#{last_byte}") do |res|

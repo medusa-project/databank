@@ -12,9 +12,11 @@ RSpec.describe BoxStorage::Client do
     allow(Net::HTTP).to receive(:start).and_yield(http)
   end
 
-  it "accepts the 50 GB boundary but rejects larger, empty, unavailable and non-file items" do
-    expect(described_class.validate_metadata!(box_metadata.merge("size" => "50000000000"))["size"]).to eq("50000000000")
-    [{"size" => "50000000001"}, {"size" => "0"}, {"type" => "folder"}, {"canDownload" => false},
+  it "accepts the 150 GB boundary but rejects larger, empty, unavailable and non-file items" do
+    expect(described_class.validate_metadata!(box_metadata.merge("size" => "150000000000"))["size"]).to eq("150000000000")
+    expect { described_class.validate_metadata!(box_metadata.merge("size" => "150000000001")) }
+      .to raise_error(BoxStorage::Error, /150 GB/)
+    [{"size" => "0"}, {"type" => "folder"}, {"canDownload" => false},
      {"name" => "../file"}, {"name" => "note.boxnote"}, {"sha1" => nil}, {"version" => nil}].each do |change|
       expect { described_class.validate_metadata!(box_metadata.merge(change)) }.to raise_error(BoxStorage::Error)
     end
@@ -109,6 +111,17 @@ RSpec.describe BoxStorage::Client do
     allow(response).to receive(:[]).with("Location").and_return("https://example.com/download")
     expect(http).to receive(:request).once.and_yield(response)
     expect { client.chunk(box_metadata, 0) }.to raise_error(BoxStorage::Error, /unexpected download location/)
+  end
+
+  it "requests the specified part size" do
+    response = instance_double(Net::HTTPPartialContent, code: "206")
+    allow(response).to receive(:[]).with("Content-Range").and_return("bytes 1-3/5")
+    allow(response).to receive(:read_body).and_yield("ell")
+    expect(http).to receive(:request) do |request, &block|
+      expect(request["Range"]).to eq("bytes=1-3")
+      block.call(response)
+    end
+    expect(client.chunk(box_metadata, 1, 3)).to eq("ell")
   end
 
   it "rejects incorrect ranges and oversized responses" do

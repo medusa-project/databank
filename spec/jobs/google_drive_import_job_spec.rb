@@ -28,6 +28,7 @@ RSpec.describe GoogleDriveImportJob do
     allow(GoogleDrive::Client).to receive(:new).with(connection).and_return(client)
     allow(client).to receive(:metadata).and_return(drive_metadata)
     allow(client).to receive(:chunk).with(drive_metadata, 0).and_return("hello")
+    allow(client).to receive(:chunk).with(drive_metadata, 0, CloudImports::CHUNK_BYTES).and_return("hello")
   end
 
   it "copies verified bytes to filesystem storage and persists completion" do
@@ -86,8 +87,8 @@ RSpec.describe GoogleDriveImportJob do
     streaming_import = GoogleDriveImport.enqueue!(dataset: dataset, user: user, connection: connection,
                                                   metadata: metadata)
     allow(client).to receive(:metadata).and_return(metadata)
-    allow(client).to receive(:chunk) do |_source, offset|
-      content.byteslice(offset, GoogleDrive::Client::CHUNK_BYTES)
+    allow(client).to receive(:chunk) do |_source, offset, part_bytes|
+      content.byteslice(offset, part_bytes)
     end
     s3 = Aws::S3::Client.new(region: "us-east-1", stub_responses: true)
     root = MedusaStorage::Root::S3.new(name: "drive-test", bucket: "drive-test", region: "us-east-1")
@@ -140,12 +141,12 @@ RSpec.describe GoogleDriveImportJob do
                                                   metadata: metadata)
     interrupted = false
     allow(client).to receive(:metadata).and_return(metadata)
-    allow(client).to receive(:chunk) do |_source, offset|
+    allow(client).to receive(:chunk) do |_source, offset, part_bytes|
       if offset == GoogleDrive::Client::CHUNK_BYTES && !interrupted
         interrupted = true
         raise GoogleDrive::RetryableError, "temporary"
       end
-      content.byteslice(offset, GoogleDrive::Client::CHUNK_BYTES)
+      content.byteslice(offset, part_bytes)
     end
     s3 = Aws::S3::Client.new(region: "us-east-1", stub_responses: true)
     root = MedusaStorage::Root::S3.new(name: "drive-test", bucket: "drive-test", region: "us-east-1")

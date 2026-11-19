@@ -15,16 +15,18 @@ RSpec.describe GoogleDrive::Client do
   end
 
   describe ".validate_metadata!" do
-    it "accepts ordinary files, 38 GB files, and the exact 50 GB boundary" do
+    it "accepts ordinary files and the exact 150 GB boundary" do
       expect(described_class.validate_metadata!(drive_metadata)).to eq(drive_metadata)
       expect { described_class.validate_metadata!(drive_metadata.merge("size" => "38000000000")) }.not_to raise_error
-      expect { described_class.validate_metadata!(drive_metadata.merge("size" => "50000000000")) }.not_to raise_error
+      expect { described_class.validate_metadata!(drive_metadata.merge("size" => "150000000000")) }.not_to raise_error
     end
 
-    it "rejects empty files, missing sizes, and one byte over the 50 GB limit" do
-      ["0", nil, "50000000001", "-1", "invalid"].each do |size|
+    it "rejects empty files, missing sizes, and one byte over the 150 GB limit" do
+      ["0", nil, "150000000001", "-1", "invalid"].each do |size|
         expect { described_class.validate_metadata!(drive_metadata.merge("size" => size)) }.to raise_error(GoogleDrive::Error)
       end
+      expect { described_class.validate_metadata!(drive_metadata.merge("size" => "150000000001")) }
+        .to raise_error(GoogleDrive::Error, /150 GB/)
     end
 
     it "rejects native documents, folders, shortcuts and Shared Drives" do
@@ -108,6 +110,17 @@ RSpec.describe GoogleDrive::Client do
         block.call(response)
       end
       expect(client.chunk(drive_metadata, 2)).to eq("llo")
+    end
+
+    it "requests the specified part size" do
+      response = instance_double(Net::HTTPPartialContent, code: "206")
+      allow(response).to receive(:[]).with("Content-Range").and_return("bytes 1-3/5")
+      allow(response).to receive(:read_body).and_yield("ell")
+      expect(http).to receive(:request) do |request, &block|
+        expect(request["Range"]).to eq("bytes=1-3")
+        block.call(response)
+      end
+      expect(client.chunk(drive_metadata, 1, 3)).to eq("ell")
     end
 
     it "rejects a server ignoring Range rather than buffering the full file" do

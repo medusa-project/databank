@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class CloudImports::S3MultipartUpload
-  PART_BYTES = CloudImports::CHUNK_BYTES
-
   def initialize(import, root, provider: "Google Drive")
     @import = import
     @provider = provider
@@ -17,8 +15,9 @@ class CloudImports::S3MultipartUpload
 
     ensure_upload!
     parts = normalized_parts
+    @part_bytes = part_bytes_for(parts)
     digest = @import.source_metadata["sha1"].present? ? Digest::SHA1.new : Digest::MD5.new
-    etag_calculator = MedusaStorage::EtagCalculator.new(PART_BYTES)
+    etag_calculator = MedusaStorage::EtagCalculator.new(@part_bytes)
     offset = verify_saved_parts!(drive_client, parts, digest, etag_calculator)
     upload_remaining_parts!(drive_client, parts, digest, etag_calculator, offset)
     verify_source_checksum!(digest)
@@ -53,7 +52,7 @@ class CloudImports::S3MultipartUpload
         raise CloudImports::Error, "The saved S3 multipart upload is incomplete. Start a new import."
       end
 
-      chunk = drive_client.chunk(@import.source_metadata, offset)
+      chunk = drive_client.chunk(@import.source_metadata, offset, @part_bytes)
       unless chunk.bytesize == part_size(offset) && chunk.bytesize == part.fetch("size").to_i &&
              Digest::MD5.base64digest(chunk) == part.fetch("md5")
         raise CloudImports::Error, "A previously uploaded part no longer matches the #{@provider} file."
@@ -69,7 +68,11 @@ class CloudImports::S3MultipartUpload
   def upload_remaining_parts!(drive_client, parts, digest, etag_calculator, offset)
     while offset < file_size
       ensure_active!
-      chunk = drive_client.chunk(@import.source_metadata, offset)
+      chunk = drive_client.chunk(@import.source_metadata, offset, @part_bytes)
+      unless chunk.bytesize == part_size(offset)
+        raise CloudImports::RetryableError, "#{@provider} returned an incomplete file range."
+      end
+
       upload_part!(parts, chunk)
       digest.update(chunk)
       etag_calculator << chunk
@@ -181,8 +184,20 @@ class CloudImports::S3MultipartUpload
     @import.source_metadata.fetch("size").to_i
   end
 
+  def part_bytes_for(parts)
+    return CloudImports.part_bytes(file_size) if parts.empty?
+
+    size = parts.first.fetch("size").to_i
+    if size <= 0 || size > file_size || (file_size + size - 1) / size > CloudImports::MAX_PARTS ||
+       (size < 5 * 1024 * 1024 && size < file_size)
+      raise CloudImports::Error, "The saved S3 multipart upload cannot be resumed. Start a new import."
+    end
+
+    size
+  end
+
   def part_size(offset)
-    [PART_BYTES, file_size - offset].min
+    [@part_bytes, file_size - offset].min
   end
 
   def ensure_active!

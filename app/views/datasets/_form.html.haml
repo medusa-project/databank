@@ -295,7 +295,7 @@
                             %li Select one file, such as a CSV, ZIP, PDF, or image, in the Google Drive selector. Google Docs, Sheets, and Slides are not supported.
                             %li Review the selected filename and size, then confirm the import.
                             %li The file is copied in the background. Check the import status on this page, even after leaving and returning.
-                          %p Maximum file size: 50 GB. Existing filenames cannot be overwritten.
+                          %p Maximum file size: 150 GB. Existing filenames cannot be overwritten.
                           %p Google authorization opens in a separate window.
                         = render partial: "datasets/cloud_import_notifications", locals: {prefix: "google-drive", name: "Google Drive", base_path: "/datasets/#{@dataset.key}/google_drive"}
                     = render partial: "datasets/box_import"
