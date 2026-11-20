@@ -481,9 +481,9 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def suppress_changelog
     authorize! :manage, @dataset
-    @dataset.suppress_changelog = true
+    result = DatasetSuppressionService.new(@dataset).suppress_changelog
     respond_to do |format|
-      if @dataset.save
+      if result.saved
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Dataset changelog has suppressed.) }
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
@@ -495,9 +495,9 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def unsuppress_changelog
     authorize! :manage, @dataset
-    @dataset.suppress_changelog = false
+    result = DatasetSuppressionService.new(@dataset).unsuppress_changelog
     respond_to do |format|
-      if @dataset.save
+      if result.saved
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Dataset changelog has been unsuppressed.) }
         format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
       else
@@ -509,9 +509,9 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def temporarily_suppress_files
     authorize! :manage, @dataset
-    @dataset.hold_state = Databank::PublicationState::TempSuppress::FILE
+    result = DatasetSuppressionService.new(@dataset).temporarily_suppress_files
     respond_to do |format|
-      if @dataset.save
+      if result.saved
         format.html {
           redirect_to dataset_path(@dataset.key), notice: %(Dataset files have been temporarily suppressed.)
         }
@@ -525,10 +525,10 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def temporarily_suppress_metadata
     authorize! :manage, @dataset
-    @dataset.hold_state = Databank::PublicationState::TempSuppress::METADATA
+    result = DatasetSuppressionService.new(@dataset).temporarily_suppress_metadata
     respond_to do |format|
-      if @dataset.save
-        if @dataset.update_doi
+      if result.saved
+        if result.doi_updated
           format.html {
             redirect_to dataset_path(@dataset.key),
                         notice: %(Dataset metadata and files have been temporarily suppressed.)
@@ -550,10 +550,10 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def unsuppress
     authorize! :manage, @dataset
-    @dataset.hold_state = Databank::PublicationState::TempSuppress::NONE
+    result = DatasetSuppressionService.new(@dataset).unsuppress
     respond_to do |format|
-      if @dataset.save
-        if @dataset.update_doi
+      if result.saved
+        if result.doi_updated
           format.html { redirect_to dataset_path(@dataset.key), notice: %(Dataset has been unsuppressed.) }
           format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
         else
@@ -572,36 +572,27 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def permanently_suppress_files
     authorize! :manage, @dataset
-    @dataset.publication_state = Databank::PublicationState::PermSuppress::FILE
-    @dataset.hold_state = Databank::PublicationState::PermSuppress::FILE
-    @dataset.embargo = Databank::PublicationState::Embargo::NONE
-    @dataset.tombstone_date = Date.current
-    begin
-      @dataset.remove_from_globus_download
-      respond_to do |format|
-        if @dataset.save
-          format.html {
-            redirect_to dataset_path(@dataset.key), notice: %(Dataset files have been permanently suppressed.)
-          }
-          format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
-        else
-          format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
-          format.json { render json: @dataset.errors, status: :unprocessable_content }
-        end
-      end
-    rescue StandardError
-      @dataset.save
-      respond_to do |format|
+    result = DatasetSuppressionService.new(@dataset).permanently_suppress_files
+    respond_to do |format|
+      if result.integration_failed?
         format.html { redirect_to dataset_path(@dataset.key), notice: %(Failed to remove from Globus Download.) }
         format.json { render json: {}, status: :unprocessable_content }
+      elsif result.saved
+        format.html {
+          redirect_to dataset_path(@dataset.key), notice: %(Dataset files have been permanently suppressed.)
+        }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), notice: %(Error - see log.) }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end
 
   def suppress_review
-    @dataset.hold_state = Databank::PublicationState::TempSuppress::VERSION
+    result = DatasetSuppressionService.new(@dataset).suppress_review
     respond_to do |format|
-      if @dataset.save
+      if result.saved
         format.html {
           redirect_to dataset_path(@dataset.key), notice: %(Dataset version candidate under curator review.)
         }
@@ -614,10 +605,9 @@ collaborators to access the data files while the dataset is not public.</li>
   end
 
   def unsuppress_review
-    @dataset.hold_state = Databank::PublicationState::TempSuppress::NONE
+    result = DatasetSuppressionService.new(@dataset).unsuppress_review
     respond_to do |format|
-      if @dataset.save
-        @dataset.send_approve_version
+      if result.saved
         format.html {
           redirect_to dataset_path(@dataset.key), notice: %(Dataset released for pre-publication review.)
         }
@@ -631,33 +621,22 @@ collaborators to access the data files while the dataset is not public.</li>
 
   def permanently_suppress_metadata
     authorize! :manage, @dataset
-    @dataset.hold_state = Databank::PublicationState::PermSuppress::METADATA
-    @dataset.publication_state = Databank::PublicationState::PermSuppress::METADATA
-    @dataset.tombstone_date = Date.current.iso8601
-    @dataset.embargo = Databank::PublicationState::Embargo::NONE
-    @dataset.save
-    begin
-      @dataset.hide_doi
-      @dataset.remove_from_globus_download
-      respond_to do |format|
-        if @dataset.save
-          format.html {
-            redirect_to dataset_path(@dataset.key),
-                        notice: %(Dataset has been permanently supressed in Illinois Data Bank and DataCite.)
-          }
-          format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
-        else
-          format.html { redirect_to dataset_path(@dataset.key), %(Error - see log.) }
-          format.json { render json: @dataset.errors, status: :unprocessable_content }
-        end
-      end
-    rescue StandardError
-      @dataset.save
-      respond_to do |format|
+    result = DatasetSuppressionService.new(@dataset).permanently_suppress_metadata
+    respond_to do |format|
+      if result.integration_failed?
         format.html {
           redirect_to dataset_path(@dataset.key), alert: %(Failed to remove from DataCite or Globus Download.)
         }
         format.json { render json: {}, status: :unprocessable_content }
+      elsif result.saved
+        format.html {
+          redirect_to dataset_path(@dataset.key),
+                      notice: %(Dataset has been permanently supressed in Illinois Data Bank and DataCite.)
+        }
+        format.json { render :show, status: :ok, location: dataset_path(@dataset.key) }
+      else
+        format.html { redirect_to dataset_path(@dataset.key), %(Error - see log.) }
+        format.json { render json: @dataset.errors, status: :unprocessable_content }
       end
     end
   end

@@ -319,6 +319,7 @@ RSpec.describe Metric, type: :model do
           num_external_relationships: 3,
           creators: [double, double],
           subject: 'Physical Sciences',
+          normalized_keywords: 'sample keywords',
           plain_text_citation: 'Citation text'
         )
         allow(dataset).to receive(:handle_related_materials)
@@ -329,6 +330,7 @@ RSpec.describe Metric, type: :model do
         rows = File.read(target_path).lines.map(&:strip)
         expect(rows.first).to include('doi')
         expect(rows[1]).to include('10.13012/B2IDB-XYZ_V1')
+        expect(rows[1]).to include('sample keywords')
         expect(rows[1]).to include('Citation text')
       end
     end

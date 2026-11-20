@@ -358,8 +358,6 @@ class Dataset < ApplicationRecord
   end
 
   def normalized_keywords
-    return nil if keywords.blank?
-
     keywords.to_s.downcase.split(";").map(&:strip).join("; ")
   end
 

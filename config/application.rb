@@ -183,6 +183,7 @@ module Databank
     # config.i18n.default_locale = :de
 
     config.load_defaults "7.1"
+    config.active_support.to_time_preserves_timezone = :zone
     config.action_controller.raise_on_open_redirects = false
     config.active_job.queue_adapter = :delayed_job
     config.generators.javascript_engine = :js

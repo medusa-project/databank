@@ -34,7 +34,10 @@ RSpec.describe MetricsController, type: :controller do
     required_files = {
       Rails.root.join('public/dataset_downloads.csv').to_s => "doi,date,tally\n",
       Rails.root.join('public/datafile_downloads.csv').to_s => "doi,file,date,tally\n",
-      Rails.root.join('public/archive_file_contents.csv').to_s => "doi,container_filename,content_filepath,content_filename,file_format\n"
+      Rails.root.join('public/archive_file_contents.csv').to_s => "doi,container_filename,content_filepath,content_filename,file_format\n",
+      METRICS_CONFIG[:funders_csv][:relative_path].to_s => "doi,funder,grant\n",
+      METRICS_CONFIG[:related_materials_csv][:relative_path].to_s =>
+        "doi,datacite_relationship,material_id_type,material_id,material_type\n"
     }
 
     return if required_files.keys.all? { |path| File.exist?(path) }
